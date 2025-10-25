@@ -95,5 +95,28 @@ InsertPack=(PackSource="StarterContent.upack",PackName="StarterContent")
 19. Click `Play` then you should see your drone.
 ![alt text](image-5.png)
 
-### 
+### 👷 To Control Drone using remote RC ###
+1. In my case i'm using `Jumper RC Bumbblee`.
+2. To ensure `AirSim` can support drone control you've to apply below seeting in your `C:\Users\<Urnam>\Documents\AirSim`. Open `settings.json` and paste below line
+```
+{
+  "SettingsVersion": 1.2,
+  "SimMode": "Multirotor",
+  "ViewMode": "FlyWithMe",
+  "CameraDirector": {
+    "FollowDistance": -3
+  },
+  "Vehicles": {
+    "SimpleFlight": {
+      "VehicleType": "SimpleFlight",
+      "DefaultVehicleState": "Armed",
+      "AllowAPIAlways": true,
+      "RC": {
+        "RemoteControlID": 0,
+        "AllowAPIWhenDisconnected": true
+      }
+    }
+  }
+}
+```
 
