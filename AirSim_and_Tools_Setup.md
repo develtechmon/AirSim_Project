@@ -122,11 +122,11 @@ InsertPack=(PackSource="StarterContent.upack",PackName="StarterContent")
 ```
 3. You may need restart your `unreal engine` and plug in your `RC controller`.
 4. Below is setting i use in `RC controller`. You have to map this so that you can fly your drone smoothly
-   ```
-	CH1 - IRudder (Yaw)
-   	CH2 - IThrottle - Apply INVERT
-   	CH3 - Empty
-   	CH4 - IAileron (Roll)
-   	CH5 - IElevator (Pitch) - Apply INVERT
-   ```
+```
+CH1 - IRudder (Yaw)
+CH2 - IThrottle - Apply INVERT
+CH3 - Empty
+CH4 - IAileron (Roll)
+CH5 - IElevator (Pitch) - Apply INVERT
+```
 
