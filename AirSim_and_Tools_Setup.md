@@ -97,7 +97,8 @@ InsertPack=(PackSource="StarterContent.upack",PackName="StarterContent")
 
 ### 👷 To Control Drone using remote RC ###
 1. In my case i'm using `Jumper RC Bumbblee`.
-2. To ensure `AirSim` can support drone control you've to apply below seeting in your `C:\Users\<Urnam>\Documents\AirSim`. Open `settings.json` and paste below line
+2. To ensure `AirSim` can support drone control using RC you've to apply below setting in your `C:\Users\<Urnam>\Documents\AirSim`. Open `settings.json` and paste below line.
+4. In this setting it can support `RC control` and `Code Flight Program` which written in python
 ```
 {
   "SettingsVersion": 1.2,
@@ -119,4 +120,13 @@ InsertPack=(PackSource="StarterContent.upack",PackName="StarterContent")
   }
 }
 ```
+3. You may need restart your `unreal engine` and plug in your `RC controller`.
+4. Below is setting i use in `RC controller`. You have to map this so that you can fly your drone smoothly
+   ```
+	CH1 - IRudder (Yaw)
+   	CH2 - IThrottle - Apply INVERT
+   	CH3 - Empty
+   	CH4 - IAileron (Roll)
+   	CH5 - IElevator (Pitch) - Apply INVERT
+   ```
 
