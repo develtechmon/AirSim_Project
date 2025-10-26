@@ -130,3 +130,21 @@ CH4 - IAileron (Roll)
 CH5 - IElevator (Pitch) - Apply INVERT
 ```
 
+### Ready Environment Available for AirSim Drone ###
+
+You can download environments that available for free. Some of the environments can be purchases on unreal engine marketplace.
+See below link to download this environments
+```
+https://github.com/microsoft/airsim/releases
+```
+
+You can start try to download `AirSimNH.zip` as show below.
+```
+https://github.com/microsoft/AirSim/releases/download/v1.8.1-windows/AirSimNH.zip
+```
+Omce `download` is complete, please extract the `AirSimnNH.zip` and go its directory using  `windows terminal`. To run this environment, use following command
+with specific resolution
+
+```
+.\AirSimNH.exe -WINDOWED -ResX=1280 -ResY=720
+```
