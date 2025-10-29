@@ -20,4 +20,6 @@ tornado==4.5.3
 zipp==3.23.0
 pynput==1.8.1
 airsim==1.8.1
+pygame==2.6.1
+
 
