@@ -1,0 +1,34 @@
+{
+  "total_timesteps": 1000,
+  "algorithm": "PPO",
+  "environment": "ImpactResilienceEnv",
+  "observation_dim": 42,
+  "action_dim": 4,
+  "use_curriculum": false,
+  "impact_types": [
+    "sharp_collision",
+    "sustained_force",
+    "rotational",
+    "free_fall"
+  ],
+  "network_architecture": {
+    "policy": [
+      256,
+      256
+    ],
+    "value": [
+      256,
+      256
+    ]
+  },
+  "ppo_params": {
+    "learning_rate": 0.0003,
+    "n_steps": 2048,
+    "batch_size": 64,
+    "n_epochs": 10,
+    "gamma": 0.99,
+    "gae_lambda": 0.95,
+    "clip_range": 0.2,
+    "ent_coef": 0.01
+  }
+}

@@ -27,4 +27,7 @@ stable-baselines3==2.7.0
 swig==4.4.0
 ale-py==0.11.2
 
+
+## --> pip install PyWavelets
+
 ## ---> !pip install swig "gymnasium[all]" stable-baselines3[extra] tensorboard ale-py
