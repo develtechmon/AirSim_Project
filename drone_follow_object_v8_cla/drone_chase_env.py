@@ -145,12 +145,23 @@ class DroneChaseEnv(gym.Env):
         # Calculate action magnitude
         action_magnitude = np.sqrt(vx**2 + vy**2 + vz**2)
         
+        # Calculate Yaw to face taret
+        drone_state = self.client.getMultirotorState()
+        drone_pos = self._get_position(drone_state)
+        
+        # Calculate direction to target
+        dx = self.target_position[0] - drone_pos[0]
+        dy = self.target_position[1] - drone_pos[1]
+    
+        # Calculate yaw angle (in degrees)
+        target_yaw = math.degrees(math.atan2(dy, dx))
+        
         # Use WORLD FRAME velocity control
         self.client.moveByVelocityAsync(
             float(vx), float(vy), float(vz), 
             duration=duration,
             drivetrain=airsim.DrivetrainType.MaxDegreeOfFreedom,
-            yaw_mode=airsim.YawMode(False, 0)
+            yaw_mode=airsim.YawMode(False, target_yaw)
         ).join()
         
         # Get current state

@@ -33,3 +33,4 @@ ale-py==0.11.2
 ## ---> !pip install swig "gymnasium[all]" stable-baselines3[extra] tensorboard ale-py
 ## For GPu support --> pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
 
+## To interpret the result of training using tensorboard --  tensorboard --logdir=logs/single
