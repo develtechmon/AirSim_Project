@@ -49,6 +49,8 @@ pip install --no-build-isolation \
   ale-py
 
 ## For GPU support --> pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu128
+## To solve ssl match issue --> pip install backports.ssl_match_hostname
+## To install airsim --> pip install --no-build-isolation airsim
 
 
 
