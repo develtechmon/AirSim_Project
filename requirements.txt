@@ -28,7 +28,7 @@ swig==4.4.0
 ale-py==0.11.2
 
 ### Windows ####
-
+## python 3.9
 ## --> pip install PyWavelets
 
 ## ---> !pip install swig "gymnasium[all]" stable-baselines3[extra] tensorboard ale-py
@@ -51,6 +51,7 @@ pip install --no-build-isolation \
 ## For GPU support --> pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu128
 ## To solve ssl match issue --> pip install backports.ssl_match_hostname
 ## To install airsim --> pip install --no-build-isolation airsim
+
 
 
 
