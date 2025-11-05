@@ -1,0 +1,1 @@
+Using this only for training the model. The drone will learn to follow the target.
