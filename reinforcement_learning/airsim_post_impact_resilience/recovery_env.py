@@ -58,7 +58,7 @@ class PostImpactRecoveryEnv(gym.Env):
         
         # Observation: 35 dimensions
         self.observation_space = spaces.Box(
-            low=-np.inf, high=np.inf, shape=(35,), dtype=np.float32
+            low=-np.inf, high=np.inf, shape=(36,), dtype=np.float32
         )
         
         # AirSim
