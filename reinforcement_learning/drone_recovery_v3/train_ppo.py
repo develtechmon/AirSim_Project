@@ -132,8 +132,25 @@ class DetailedLoggingCallback(BaseCallback):
                 self.recent_returns.append(ep_return)
                 
                 # Check if episode was successful
+                # SUCCESS = Episode ended well (hover_success or timeout with good performance)
+                # FAILURE = Episode ended badly (crash, out of bounds)
                 reason = info.get("reason", "timeout")
-                is_success = (reason == "hover_success") or (ep_return > 50)
+                
+                # Define success based on termination reason AND performance
+                if reason == "hover_success":
+                    # Explicit success condition (Stage 1)
+                    is_success = True
+                elif reason in ["ground_collision", "out_of_bounds"]:
+                    # Explicit failure conditions - NEVER count as success
+                    is_success = False
+                elif reason == "timeout":
+                    # Timeout can be success if performance was good
+                    # Good performance = positive return AND reasonable episode length
+                    is_success = (ep_return > 0) and (ep_length > 100)
+                else:
+                    # Unknown reason - conservative classification
+                    is_success = (ep_return > 50)
+                
                 self.episode_successes.append(1 if is_success else 0)
                 self.recent_successes.append(1 if is_success else 0)
                 
