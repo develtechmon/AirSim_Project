@@ -1,0 +1,2 @@
+time/iterations,time/steps_per_second,time/time_elapsed,rollout/std_return,episode/length,episode/return,episode/success,rollout/ep_rew_mean,episode/reason,rollout/success_rate,time/fps,rollout/mean_return,rollout/ep_len_mean,time/total_timesteps,time/elapsed_hours,rollout/stage
+1,2.466624690823154,835,65.53492,27,122.82803,1,133.12014770507812,"crash",0.9696969696969697,2,167.29976,30.567164179104477,2048,0.2253360578748915,2

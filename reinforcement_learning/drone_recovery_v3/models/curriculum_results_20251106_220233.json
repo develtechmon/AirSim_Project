@@ -1,0 +1,8 @@
+{
+  "stage_1": {
+    "completed": false,
+    "error": "IOLoop is already running"
+  },
+  "total_time_hours": 0.10002584232224358,
+  "timestamp": "20251106_220233"
+}
