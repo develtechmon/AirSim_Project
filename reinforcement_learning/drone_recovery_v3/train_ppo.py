@@ -1,21 +1,22 @@
 """
-PPO Training Script for Drone Impact Recovery
-==============================================
-Features:
-- Curriculum learning with automatic stage advancement
-- Real-time training metrics and visualization
-- Learning verification and convergence detection
-- Automatic checkpointing and model saving
-- TensorBoard integration
+PPO Training Script for Drone Recovery - FIXED VERSION
+=======================================================
+Trains drone to recover from impacts using curriculum learning.
+
+KEY FIXES:
+1. Success logic: crashes NEVER count as success
+2. Proper episode length tracking
+3. Real-time progress feedback
+4. Reduced reward scale
 """
 
+import argparse
 import os
 import time
 import json
-from pathlib import Path
-from typing import Dict, List, Optional
-from collections import deque
 from datetime import datetime
+from collections import deque
+from typing import Optional
 
 import numpy as np
 import torch
@@ -28,9 +29,7 @@ from airsim_recovery_env import AirSimDroneRecoveryEnv
 
 
 class ProgressBarCallback(BaseCallback):
-    """
-    Display progress bar during training with live metrics.
-    """
+    """Display progress bar during training with live metrics."""
     
     def __init__(self, total_timesteps: int, update_freq: int = 100):
         super().__init__()
@@ -76,14 +75,7 @@ class ProgressBarCallback(BaseCallback):
 
 
 class DetailedLoggingCallback(BaseCallback):
-    """
-    Custom callback for detailed training monitoring and curriculum advancement.
-    
-    Tracks:
-    - Episode returns and success rates
-    - Learning progress metrics
-    - Stage advancement criteria
-    """
+    """Custom callback for detailed training monitoring."""
     
     def __init__(
         self, 
@@ -99,18 +91,11 @@ class DetailedLoggingCallback(BaseCallback):
         self.episode_returns = []
         self.episode_lengths = []
         self.episode_successes = []
-        self.current_stage = 1
-        
-        # Rolling statistics (last 100 episodes)
         self.recent_returns = deque(maxlen=100)
         self.recent_successes = deque(maxlen=100)
+        self.recent_lengths = deque(maxlen=100)
         
-        # Best model tracking
-        self.best_mean_reward = -np.inf
-        
-        # Training start time
         self.training_start_time = time.time()
-        self.last_log_time = time.time()
     
     def _on_step(self) -> bool:
         """Called at each step."""
@@ -130,17 +115,16 @@ class DetailedLoggingCallback(BaseCallback):
                 self.episode_returns.append(ep_return)
                 self.episode_lengths.append(ep_length)
                 self.recent_returns.append(ep_return)
+                self.recent_lengths.append(ep_length)
                 
-                # Check if episode was successful
-                # SUCCESS = Episode ended well (hover_success or timeout with good performance)
-                # FAILURE = Episode ended badly (crash, out of bounds)
+                # FIXED: Success logic based on termination reason
                 reason = info.get("reason", "timeout")
                 
                 # Define success based on termination reason AND performance
                 if reason == "hover_success":
                     # Explicit success condition (Stage 1)
                     is_success = True
-                elif reason in ["ground_collision", "out_of_bounds"]:
+                elif reason in ["ground_collision", "too_low", "out_of_bounds"]:
                     # Explicit failure conditions - NEVER count as success
                     is_success = False
                 elif reason == "timeout":
@@ -170,6 +154,7 @@ class DetailedLoggingCallback(BaseCallback):
                 print(f"   Success: {'✅ YES' if is_success else '❌ NO'}")
                 if len(self.recent_returns) >= 10:
                     print(f"   Rolling Avg (last 10): {np.mean(list(self.recent_returns)[-10:]):.2f}")
+                    print(f"   Rolling Length (last 10): {np.mean(list(self.recent_lengths)[-10:]):.0f} steps")
                 print(f"{'='*80}\n")
         
         # Periodic detailed logging
@@ -178,122 +163,35 @@ class DetailedLoggingCallback(BaseCallback):
         
         return True
     
-    def _detailed_log(self) -> None:
-        """Comprehensive logging of training progress."""
-        
-        if len(self.recent_returns) == 0:
+    def _detailed_log(self):
+        """Log detailed training statistics."""
+        if len(self.episode_returns) == 0:
             return
         
-        # Calculate statistics
+        # Compute statistics
         mean_return = np.mean(self.recent_returns)
-        std_return = np.std(self.recent_returns)
-        min_return = np.min(self.recent_returns)
-        max_return = np.max(self.recent_returns)
-        success_rate = np.mean(self.recent_successes) if len(self.recent_successes) > 0 else 0.0
+        mean_length = np.mean(self.recent_lengths)
+        success_rate = np.mean(self.recent_successes) if self.recent_successes else 0.0
         
         # Time statistics
-        elapsed_time = time.time() - self.training_start_time
-        time_since_last_log = time.time() - self.last_log_time
-        steps_per_second = self.check_freq / time_since_last_log if time_since_last_log > 0 else 0
-        
-        # Log to TensorBoard
-        self.logger.record("rollout/mean_return", mean_return)
-        self.logger.record("rollout/std_return", std_return)
-        self.logger.record("rollout/success_rate", success_rate)
-        self.logger.record("rollout/stage", self.current_stage)
-        self.logger.record("time/steps_per_second", steps_per_second)
-        self.logger.record("time/elapsed_hours", elapsed_time / 3600)
-        
-        # Console output
-        print("\n" + "="*80)
-        print(f"📊 TRAINING PROGRESS - Step {self.n_calls:,} | Stage {self.current_stage}")
-        print("="*80)
-        print(f"📈 Episode Return (last 100 episodes):")
-        print(f"   Mean: {mean_return:>8.2f} ± {std_return:.2f}")
-        print(f"   Range: [{min_return:>7.2f}, {max_return:>7.2f}]")
-        print(f"✅ Success Rate: {success_rate:>6.1%} ({int(success_rate*100)}/100 episodes)")
-        print(f"⏱️  Performance: {steps_per_second:.1f} steps/sec | {elapsed_time/3600:.2f} hours elapsed")
-        
-        # Stage advancement check
-        if self.current_stage < 3 and success_rate >= self.stage_advancement_threshold:
-            print(f"\n🎉 STAGE {self.current_stage} MASTERED!")
-            print(f"   Success rate: {success_rate:.1%} >= {self.stage_advancement_threshold:.1%}")
-            print(f"   Advancing to Stage {self.current_stage + 1}...")
-            self._advance_stage()
-        
-        # Check if learning is happening
-        if len(self.episode_returns) >= 100:
-            recent_100 = self.episode_returns[-100:]
-            older_100 = self.episode_returns[-200:-100] if len(self.episode_returns) >= 200 else self.episode_returns[:100]
-            improvement = np.mean(recent_100) - np.mean(older_100)
-            
-            if improvement > 0:
-                print(f"📈 Learning Progress: +{improvement:.2f} reward improvement (last 100 vs previous 100)")
-            else:
-                print(f"⚠️  Warning: Reward decreased by {abs(improvement):.2f} - possible instability")
-        
-        print("="*80 + "\n")
-        
-        # Save best model
-        if mean_return > self.best_mean_reward:
-            self.best_mean_reward = mean_return
-            save_path = f"models/best_model_stage{self.current_stage}.zip"
-            self.model.save(save_path)
-            print(f"💾 New best model saved: {save_path} (mean return: {mean_return:.2f})\n")
-        
-        self.last_log_time = time.time()
-    
-    def _advance_stage(self) -> None:
-        """Advance to next curriculum stage."""
-        self.current_stage += 1
-        
-        # Update environment stage
-        if hasattr(self.training_env, 'envs'):
-            for env in self.training_env.envs:
-                if hasattr(env, 'set_stage'):
-                    env.set_stage(self.current_stage)
-        
-        # Reset statistics for new stage
-        self.recent_successes.clear()
-        self.recent_returns.clear()
+        elapsed = time.time() - self.training_start_time
+        episodes_per_hour = len(self.episode_returns) / (elapsed / 3600)
         
         print(f"\n{'='*80}")
-        print(f"🚀 CURRICULUM ADVANCEMENT")
+        print(f"📈 TRAINING STATISTICS (Step {self.n_calls})")
         print(f"{'='*80}")
-        print(f"   New Stage: {self.current_stage}")
-        print(f"   New Objective: {self._get_stage_objective(self.current_stage)}")
+        print(f"   Episodes: {len(self.episode_returns)}")
+        print(f"   Mean Return (last 100): {mean_return:.2f}")
+        print(f"   Mean Length (last 100): {mean_length:.0f} steps")
+        print(f"   Success Rate (last 100): {success_rate:.1%}")
+        print(f"   Episodes/Hour: {episodes_per_hour:.1f}")
+        print(f"   Training Time: {elapsed/3600:.2f} hours")
         print(f"{'='*80}\n")
-    
-    def _get_stage_objective(self, stage: int) -> str:
-        """Get objective description for stage."""
-        objectives = {
-            1: "Learn stable hover at target position",
-            2: "Maintain stability under wind gusts and small disturbances",
-            3: "Recover from severe impacts, flips, and collisions"
-        }
-        return objectives.get(stage, "Unknown")
-
-
-class CurriculumManager:
-    """Manages curriculum learning progression."""
-    
-    def __init__(self, stages: List[int] = [1, 2, 3]):
-        self.stages = stages
-        self.current_stage_idx = 0
-        self.stage_histories = {stage: [] for stage in stages}
-    
-    def should_advance(self, success_rate: float, threshold: float = 0.80) -> bool:
-        """Check if should advance to next stage."""
-        return success_rate >= threshold and self.current_stage_idx < len(self.stages) - 1
-    
-    def advance(self) -> int:
-        """Advance to next stage."""
-        self.current_stage_idx += 1
-        return self.stages[self.current_stage_idx]
-    
-    def get_current_stage(self) -> int:
-        """Get current stage number."""
-        return self.stages[self.current_stage_idx]
+        
+        # Log to TensorBoard
+        self.logger.record("train/mean_return_100", mean_return)
+        self.logger.record("train/mean_length_100", mean_length)
+        self.logger.record("train/success_rate_100", success_rate)
 
 
 def train_drone_recovery(
@@ -430,7 +328,6 @@ def train_drone_recovery(
     print(f"🎯 Starting training for {total_timesteps:,} steps...")
     print(f"💡 Monitor progress:")
     print(f"   TensorBoard: tensorboard --logdir={log_dir}")
-    print(f"   Real-time: python monitor_training.py --log-dir {run_log_dir}")
     print()
     print("="*80)
     print("🚀 TRAINING STARTED - Watch for episode completions below")
@@ -482,108 +379,29 @@ def train_drone_recovery(
     return model
 
 
-def evaluate_model(
-    model_path: str,
-    n_episodes: int = 10,
-    stage: int = 1,
-    render: bool = False
-) -> Dict:
-    """
-    Evaluate trained model.
-    
-    Args:
-        model_path: Path to trained model
-        n_episodes: Number of evaluation episodes
-        stage: Curriculum stage
-        render: Whether to render (not supported in AirSim)
-    
-    Returns:
-        Dictionary of evaluation metrics
-    """
-    print(f"\n🔍 Evaluating model: {model_path}")
-    print(f"Episodes: {n_episodes} | Stage: {stage}\n")
-    
-    # Load model
-    env = AirSimDroneRecoveryEnv(stage=stage, debug=True)
-    model = PPO.load(model_path)
-    
-    episode_returns = []
-    episode_lengths = []
-    success_count = 0
-    
-    for ep in range(n_episodes):
-        obs, _ = env.reset()
-        done = False
-        ep_return = 0
-        ep_length = 0
-        
-        print(f"\n{'='*60}")
-        print(f"Episode {ep + 1}/{n_episodes}")
-        print(f"{'='*60}")
-        
-        while not done:
-            action, _ = model.predict(obs, deterministic=True)
-            obs, reward, terminated, truncated, info = env.step(action)
-            done = terminated or truncated
-            ep_return += reward
-            ep_length += 1
-            
-            if ep_length % 100 == 0:
-                print(f"  Step {ep_length}: Return={ep_return:.2f}, Pos Error={info['pos_error']:.2f}m")
-        
-        episode_returns.append(ep_return)
-        episode_lengths.append(ep_length)
-        
-        if info.get("reason") == "hover_success":
-            success_count += 1
-        
-        print(f"\nEpisode Result:")
-        print(f"  Return: {ep_return:.2f}")
-        print(f"  Length: {ep_length} steps")
-        print(f"  Reason: {info.get('reason', 'unknown')}")
-    
-    env.close()
-    
-    # Compute statistics
-    results = {
-        "mean_return": float(np.mean(episode_returns)),
-        "std_return": float(np.std(episode_returns)),
-        "mean_length": float(np.mean(episode_lengths)),
-        "success_rate": success_count / n_episodes
-    }
-    
-    print(f"\n{'='*60}")
-    print("📊 EVALUATION RESULTS")
-    print(f"{'='*60}")
-    print(f"Mean Return: {results['mean_return']:.2f} ± {results['std_return']:.2f}")
-    print(f"Mean Length: {results['mean_length']:.1f} steps")
-    print(f"Success Rate: {results['success_rate']:.1%}")
-    print(f"{'='*60}\n")
-    
-    return results
-
-
-if __name__ == "__main__":
-    import argparse
-    
-    parser = argparse.ArgumentParser(description="Train PPO for drone impact recovery")
-    parser.add_argument("--stage", type=int, default=1, choices=[1, 2, 3], help="Curriculum stage")
-    parser.add_argument("--timesteps", type=int, default=200_000, help="Total training timesteps")
+def main():
+    parser = argparse.ArgumentParser(description="Train drone recovery with PPO")
+    parser.add_argument("--stage", type=int, default=1, choices=[1, 2, 3], help="Training stage")
+    parser.add_argument("--timesteps", type=int, default=200_000, help="Total timesteps")
     parser.add_argument("--model", type=str, default=None, help="Path to pretrained model")
-    parser.add_argument("--eval", action="store_true", help="Evaluation mode")
-    parser.add_argument("--debug", action="store_true", help="Enable debug logging")
+    parser.add_argument("--log-dir", type=str, default="./logs", help="Log directory")
+    parser.add_argument("--save-freq", type=int, default=10_000, help="Checkpoint frequency")
+    parser.add_argument("--debug", action="store_true", help="Enable debug mode")
     
     args = parser.parse_args()
     
-    if args.eval:
-        if args.model is None:
-            print("❌ Error: --model required for evaluation mode")
-            exit(1)
-        evaluate_model(args.model, n_episodes=10, stage=args.stage)
-    else:
-        train_drone_recovery(
-            total_timesteps=args.timesteps,
-            stage=args.stage,
-            model_path=args.model,
-            debug=args.debug
-        )
+    model = train_drone_recovery(
+        total_timesteps=args.timesteps,
+        stage=args.stage,
+        model_path=args.model,
+        log_dir=args.log_dir,
+        save_freq=args.save_freq,
+        debug=args.debug
+    )
+    
+    return 0
+
+
+if __name__ == "__main__":
+    import sys
+    sys.exit(main())

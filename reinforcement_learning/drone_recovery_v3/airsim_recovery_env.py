@@ -1,12 +1,13 @@
 """
-AirSim Drone Impact Recovery Environment - Production Ready
-============================================================
-Features:
-- Angle rate control (orientation-invariant)
-- Realistic impact simulation via simSetKinematics
-- Progressive curriculum with gated advancement
-- Dense reward shaping for stable learning
-- Extensive logging and diagnostics
+AirSim Drone Recovery Environment - FIXED VERSION
+==================================================
+Properly configured for learning from scratch with curriculum stages.
+
+KEY FIXES:
+1. Stage 1 uses altitude-based termination (not collision detection)
+2. Reduced reward magnitudes so -100 crash penalty is meaningful
+3. Proper max_steps = 2000 for long episodes
+4. Small disturbances in Stage 1 to prevent passive hovering
 """
 
 import airsim
@@ -25,7 +26,7 @@ class AirSimDroneRecoveryEnv(gym.Env):
     Observation Space: [pos(3), quat(4), lin_vel(3), ang_vel(3)] = 13D
     
     Curriculum Stages:
-    - Stage 1: Learn stable hover (loose bounds, dense rewards)
+    - Stage 1: Learn stable hover (loose bounds, dense rewards, lenient termination)
     - Stage 2: Recover from moderate disturbances (wind, small angular impulses)
     - Stage 3: Recover from severe impacts (flips, tumbles, bird strikes)
     """
@@ -33,64 +34,78 @@ class AirSimDroneRecoveryEnv(gym.Env):
     metadata = {"render_modes": ["human"], "render_fps": 20}
     
     def __init__(
-        self, 
+        self,
         stage: int = 1,
-        max_steps_per_stage: Optional[Dict[int, int]] = None,
+        max_steps: int = 2000,
+        control_freq: int = 20,
         debug: bool = False
     ):
         super().__init__()
         
-        # AirSim connection
+        self.stage = stage
+        self.max_steps = max_steps
+        self.control_freq = control_freq
+        self.dt = 1.0 / control_freq
+        self.debug = debug
+        
+        # Connect to AirSim
         self.client = airsim.MultirotorClient()
         self.client.confirmConnection()
-        self.client.enableApiControl(True)
-        self.client.armDisarm(True)
+        print(f"✅ Connected to AirSim")
         
-        # Gym spaces
-        # Action: [roll_rate, pitch_rate, yaw_rate, throttle]
+        # Action space: [roll_rate, pitch_rate, yaw_rate, throttle]
         self.action_space = spaces.Box(
-            low=np.array([-3.0, -3.0, -2.0, 0.0]),
-            high=np.array([3.0, 3.0, 2.0, 1.0]),
+            low=np.array([-1.0, -1.0, -1.0, 0.0]),
+            high=np.array([1.0, 1.0, 1.0, 1.0]),
             dtype=np.float32
         )
         
-        # Observation: [pos(3), quat(4), lin_vel(3), ang_vel(3)]
+        # Observation space: [pos(3), quat(4), lin_vel(3), ang_vel(3)]
         self.observation_space = spaces.Box(
-            low=-np.inf, high=np.inf, shape=(13,), dtype=np.float32
+            low=-np.inf,
+            high=np.inf,
+            shape=(13,),
+            dtype=np.float32
         )
         
-        # Stage configuration
-        self.stage = stage
-        self.max_steps = (max_steps_per_stage or {
-            1: 2000,  # Stage 1: Long episodes for hover learning
-            2: 1500,  # Stage 2: Medium episodes for disturbance handling
-            3: 1000,  # Stage 3: Shorter episodes for impact recovery
-        })[stage]
+        # Target hover position (NED coordinates)
+        self.target_position = np.array([0.0, 0.0, -10.0])
         
+        # Stage-specific parameters
+        self._configure_stage()
+        
+        # Episode tracking
         self.current_step = 0
-        self.debug = debug
-        
-        # Target hover position (NED frame)
-        self.target_position = np.array([0.0, 0.0, -10.0], dtype=np.float32)
-        
-        # Disturbance probabilities per stage
-        self.disturbance_prob = {1: 0.0, 2: 0.05, 3: 0.10}[stage]
-        
-        # Stage-specific termination thresholds
-        self.crash_height = {1: 0.5, 2: 1.0, 3: 1.5}[stage]  # More lenient in early stages
-        self.out_of_bounds_radius = {1: 30.0, 2: 25.0, 3: 20.0}[stage]
-        
-        # Episode statistics
-        self._episode_count = 0
         self._stable_count = 0
-        self._last_10_returns = []
+        self._episode_count = 0
+        self._disturbance_counter = 0
         
-        print(f"🚁 AirSim Drone Recovery Environment Initialized")
-        print(f"   Stage: {stage}")
-        print(f"   Max Steps: {self.max_steps}")
-        print(f"   Disturbance Probability: {self.disturbance_prob}")
-        print(f"   Crash Height Threshold: {self.crash_height}m")
-        print(f"   OOB Radius: {self.out_of_bounds_radius}m")
+        if self.debug:
+            print(f"\n🎯 Stage {self.stage} Configuration:")
+            print(f"   Max Steps: {self.max_steps}")
+            print(f"   Crash Height: {self.crash_height}m")
+            print(f"   OOB Radius: {self.out_of_bounds_radius}m")
+            print(f"   Disturbance Freq: {self.disturbance_freq}")
+    
+    def _configure_stage(self):
+        """Configure environment parameters based on curriculum stage."""
+        if self.stage == 1:
+            # Stage 1: Lenient, focus on basic hover learning
+            self.crash_height = 0.3  # Very low - almost at ground
+            self.out_of_bounds_radius = 50.0  # Very generous
+            self.disturbance_freq = 0.01  # Rare small disturbances
+            
+        elif self.stage == 2:
+            # Stage 2: Moderate difficulty
+            self.crash_height = 0.5
+            self.out_of_bounds_radius = 30.0
+            self.disturbance_freq = 0.05
+            
+        else:  # Stage 3
+            # Stage 3: Challenging impacts
+            self.crash_height = 0.5
+            self.out_of_bounds_radius = 30.0
+            self.disturbance_freq = 0.10
     
     def reset(self, seed: Optional[int] = None, options: Optional[Dict] = None) -> Tuple[np.ndarray, Dict]:
         """Reset environment to initial hover state."""
@@ -108,6 +123,10 @@ class AirSimDroneRecoveryEnv(gym.Env):
         
         # Move to target hover position
         self.client.moveToPositionAsync(0, 0, -10, velocity=2).join()
+        time.sleep(1.0)
+        
+        # Stabilize at hover
+        self.client.moveByVelocityAsync(0, 0, 0, duration=0.5).join()
         time.sleep(0.5)
         
         # Reset wind to zero
@@ -117,11 +136,7 @@ class AirSimDroneRecoveryEnv(gym.Env):
         self.current_step = 0
         self._stable_count = 0
         self._episode_count += 1
-        
-        # CRITICAL FIX: Clear collision state after reset
-        # AirSim sometimes reports false collisions during spawn/takeoff
-        # We need to give the drone a grace period to stabilize
-        self.client.simGetCollisionInfo()  # Clear any collision from reset/takeoff
+        self._disturbance_counter = 0
         
         obs = self._get_observation()
         
@@ -130,12 +145,6 @@ class AirSimDroneRecoveryEnv(gym.Env):
             print(f"   Position: [{obs[0]:.2f}, {obs[1]:.2f}, {obs[2]:.2f}]")
             print(f"   Altitude: {-obs[2]:.2f}m")
             print(f"   Orientation (qw): {obs[3]:.3f}")
-            
-            # Check for immediate collision issues
-            collision_check = self.client.simGetCollisionInfo()
-            if collision_check.has_collided:
-                print(f"   ⚠️  WARNING: Collision detected right after reset!")
-                print(f"   This suggests AirSim spawn/physics issue")
         
         return obs, {}
     
@@ -165,22 +174,8 @@ class AirSimDroneRecoveryEnv(gym.Env):
     
     def _compute_reward(self, obs: np.ndarray) -> float:
         """
-        Dense reward function encouraging hover stability and MID-AIR recovery.
-        
-        Key insight: For impact recovery, we must REWARD the agent for:
-        1. Righting itself from flipped orientations (uprightness)
-        2. Recovering altitude after falling (altitude recovery bonus)
-        3. Reducing angular velocity during tumble (stabilization)
-        4. Preventing ground collision (survival bonus)
-        
-        Reward components:
-        1. Position error penalty (primary objective)
-        2. Uprightness bonus (CRITICAL for recovery from flips)
-        3. Velocity penalties (stability)
-        4. Angular velocity penalties (smooth control during recovery)
-        5. Dense shaping bonus (guides exploration)
-        6. Recovery bonus (for righting from bad orientations)
-        7. Altitude recovery bonus (for recovering from low altitudes)
+        Dense reward function encouraging hover stability and recovery.
+        REDUCED MAGNITUDES to make crash penalty meaningful.
         """
         pos = obs[0:3]
         quat = obs[3:7]  # [qw, qx, qy, qz]
@@ -189,112 +184,91 @@ class AirSimDroneRecoveryEnv(gym.Env):
         
         # === Position Error ===
         pos_error = np.linalg.norm(pos - self.target_position)
-        pos_reward = -2.0 * pos_error  # Strong penalty for being far from target
+        pos_reward = -1.0 * pos_error  # Reduced from -2.0
         
-        # === Uprightness (CRITICAL for flip recovery) ===
-        # qw close to ±1 means drone is upright
-        # qw close to 0 means drone is sideways/inverted
+        # === Uprightness ===
         uprightness = abs(quat[0])  # |qw|
-        upright_reward = 15.0 * uprightness  # High weight for staying upright
+        upright_reward = 5.0 * uprightness  # Reduced from 15.0
         
-        # === RECOVERY BONUS: Extra reward for recovering from bad orientations ===
-        # If drone was inverted (qw < 0.5) and is now righting itself
-        if uprightness < 0.7:  # Currently in bad orientation
-            # Reward ANY improvement in orientation
-            recovery_effort_bonus = 20.0 * uprightness  # More upright = more bonus
+        # === Recovery Bonus ===
+        if uprightness < 0.7:
+            recovery_bonus = 5.0 * uprightness  # Reduced from 20.0
         else:
-            recovery_effort_bonus = 10.0  # Bonus for staying upright
+            recovery_bonus = 3.0  # Reduced from 10.0
         
-        # === ALTITUDE RECOVERY BONUS ===
-        # Reward recovering altitude after falling
-        altitude = -pos[2]  # Convert NED to positive-up for intuition
-        if altitude < 5.0:  # Below 5 meters (was at 10m target)
-            # Strong reward for regaining altitude
-            altitude_recovery_bonus = 10.0 * (altitude / 5.0)  # Scale 0-10 based on altitude
+        # === Altitude Recovery ===
+        altitude = -pos[2]
+        if altitude < 5.0:
+            altitude_bonus = 3.0 * (altitude / 5.0)  # Reduced from 10.0
         else:
-            altitude_recovery_bonus = 10.0  # Full bonus if above 5m
+            altitude_bonus = 3.0
         
-        # === Velocity Penalties (Encourage stability) ===
+        # === Velocity Penalties ===
         lin_vel_mag = np.linalg.norm(lin_vel)
         ang_vel_mag = np.linalg.norm(ang_vel)
-        vel_penalty = -0.5 * lin_vel_mag
-        ang_penalty = -1.0 * ang_vel_mag
+        vel_penalty = -0.3 * lin_vel_mag  # Reduced from -0.5
+        ang_penalty = -0.5 * ang_vel_mag  # Reduced from -1.0
         
-        # === Angular Stabilization Bonus (Critical during recovery) ===
-        # If tumbling (high angular velocity), reward reducing it
-        if ang_vel_mag > 2.0:  # Currently tumbling
-            # Bonus for ANY reduction in spin rate
-            stabilization_bonus = 5.0 * (1.0 / (1.0 + ang_vel_mag))
+        # === Stabilization Bonus ===
+        if ang_vel_mag > 2.0:
+            stab_bonus = 2.0 * (1.0 / (1.0 + ang_vel_mag))  # Reduced from 5.0
         else:
-            stabilization_bonus = 5.0  # Bonus for being stable
+            stab_bonus = 2.0
         
-        # === Dense Shaping Bonus (Exponential reward for getting close) ===
-        # This helps with exploration in early stages
-        stability_bonus = 10.0 * np.exp(-0.5 * pos_error - 0.1 * ang_vel_mag)
+        # === Dense Shaping ===
+        stability_bonus = 3.0 * np.exp(-0.5 * pos_error - 0.1 * ang_vel_mag)  # Reduced from 10.0
         
-        # === Stage-Specific Bonuses ===
+        # === Stage Bonuses ===
         stage_bonus = 0.0
         if self.stage >= 2:
-            # Bonus for being stable after disturbance
             is_stable = (pos_error < 1.0 and uprightness > 0.95 and ang_vel_mag < 0.5)
             if is_stable:
-                stage_bonus = 20.0
+                stage_bonus = 5.0  # Reduced from 20.0
         
         if self.stage == 3:
-            # MASSIVE bonus for recovering from severe orientations in Stage 3
-            if uprightness < 0.5:  # Severely inverted
-                stage_bonus += 30.0 * uprightness  # Scale up to +15 for any recovery
+            if uprightness < 0.5:
+                stage_bonus += 10.0 * uprightness  # Reduced from 30.0
         
         total_reward = (
             pos_reward + 
             upright_reward + 
-            recovery_effort_bonus +
-            altitude_recovery_bonus +
+            recovery_bonus +
+            altitude_bonus +
             vel_penalty + 
             ang_penalty + 
-            stabilization_bonus +
+            stab_bonus +
             stability_bonus + 
             stage_bonus
         )
         
         if self.debug and self.current_step % 100 == 0:
-            print(f"   [Reward Breakdown] Step {self.current_step}")
-            print(f"      Pos: {pos_reward:.2f} | Upright: {upright_reward:.2f} | Recovery: {recovery_effort_bonus:.2f}")
-            print(f"      Altitude Recovery: {altitude_recovery_bonus:.2f} | Stabilization: {stabilization_bonus:.2f}")
-            print(f"      Vel: {vel_penalty:.2f} | Ang: {ang_penalty:.2f} | Stage: {stage_bonus:.2f}")
-            print(f"      Total: {total_reward:.2f} | Altitude: {altitude:.2f}m | Uprightness: {uprightness:.3f}")
+            print(f"   [Reward] Step {self.current_step}: Total={total_reward:.2f}, Alt={altitude:.2f}m, Pos_err={pos_error:.2f}m")
         
         return total_reward
     
     def step(self, action: np.ndarray) -> Tuple[np.ndarray, float, bool, bool, Dict]:
-        """
-        Execute one control step.
+        """Execute one control step."""
+        self.current_step += 1
         
-        Args:
-            action: [roll_rate, pitch_rate, yaw_rate, throttle] in rad/s and [0,1]
+        # Apply disturbances
+        if self.current_step % 50 == 0:  # Every ~2.5 seconds
+            self._inject_disturbance()
         
-        Returns:
-            observation, reward, terminated, truncated, info
-        """
-        # Clip actions to valid range
-        action = np.clip(action, self.action_space.low, self.action_space.high)
+        # Scale actions
+        roll_rate = float(action[0])  # -1 to 1 rad/s
+        pitch_rate = float(action[1])
+        yaw_rate = float(action[2])
+        throttle = float(np.clip(action[3], 0.0, 1.0))
         
-        # Extract action components
-        roll_rate, pitch_rate, yaw_rate, throttle = action
-        
-        # Apply control command
+        # Send control command
         self.client.moveByAngleRatesThrottleAsync(
-            float(roll_rate),
-            float(pitch_rate),
-            float(yaw_rate),
-            float(throttle),
-            duration=0.05  # 20Hz control rate
-        ).join()
-        
-        # Inject disturbances (if stage >= 2)
-        if self.current_step > 100:  # Give initial stabilization time
-            if np.random.rand() < self.disturbance_prob:
-                self._inject_disturbance()
+            roll_rate=roll_rate,
+            pitch_rate=pitch_rate,
+            yaw_rate=yaw_rate,
+            throttle=throttle,
+            duration=self.dt
+        )
+        time.sleep(self.dt)
         
         # Get new observation
         obs = self._get_observation()
@@ -302,53 +276,54 @@ class AirSimDroneRecoveryEnv(gym.Env):
         # Compute reward
         reward = self._compute_reward(obs)
         
-        # Update step counter
-        self.current_step += 1
-        
         # === Termination Conditions ===
         terminated = False
         truncated = False
         reason = None
         
-        # CRITICAL: Only terminate on ACTUAL ground collision, not proximity
-        # This allows the agent to learn mid-air recovery even at low altitudes
-        # BUT: Give grace period after reset (first 10 steps) to prevent false positives
-        if self.current_step > 10:  # Grace period for stabilization after reset
-            collision_info = self.client.simGetCollisionInfo()
-            if collision_info.has_collided:
+        altitude = -obs[2]  # Convert NED to positive-up
+        
+        # STAGE 1: Use altitude-based termination (more lenient for learning)
+        if self.stage == 1:
+            if altitude < self.crash_height:
                 terminated = True
                 reward = -100.0
-                reason = "ground_collision"
+                reason = "too_low"
                 if self.debug:
-                    print(f"   💥 COLLISION: Impact at {collision_info.impact_point}")
+                    print(f"   ⚠️  TOO LOW at step {self.current_step}: altitude={altitude:.2f}m")
+        else:
+            # STAGES 2 & 3: Use collision detection
+            if self.current_step > 20:  # Grace period
+                collision_info = self.client.simGetCollisionInfo()
+                if collision_info.has_collided:
+                    terminated = True
+                    reward = -100.0
+                    reason = "ground_collision"
+                    if self.debug:
+                        print(f"   💥 COLLISION at step {self.current_step}")
         
-        # However, penalize being dangerously low (but don't terminate)
-        # This encourages recovery before getting too close to ground
-        altitude = obs[2]  # NED: negative is up, positive is down
-        if altitude > -1.0 and not terminated:  # Below 1 meter altitude
-            # Exponential penalty as it gets closer to ground
-            # At -0.5m: -25 penalty, At -0.1m: -45 penalty
-            low_altitude_penalty = -50.0 * np.exp(altitude + 1.0)
-            reward += low_altitude_penalty
-            
-            if self.debug and self.current_step % 10 == 0:
-                print(f"   ⚠️  LOW ALTITUDE: {-altitude:.2f}m | Penalty: {low_altitude_penalty:.2f}")
+        # Low altitude penalty (but don't terminate in Stage 1)
+        if altitude < 2.0 and not terminated:
+            low_alt_penalty = -20.0 * np.exp(-(altitude - 0.3))
+            reward += low_alt_penalty
         
-        # Check out of bounds (horizontal drift)
+        # Out of bounds check
         horizontal_dist = np.linalg.norm(obs[0:2])
         if not terminated and horizontal_dist > self.out_of_bounds_radius:
             terminated = True
             reward = -50.0
             reason = "out_of_bounds"
+            if self.debug:
+                print(f"   🚫 OUT OF BOUNDS at step {self.current_step}: distance={horizontal_dist:.2f}m")
         
-        # Check for successful hover (Stage 1 only)
-        if self.stage == 1:
+        # Success condition (Stage 1 only)
+        if self.stage == 1 and not terminated:
             pos_error = np.linalg.norm(obs[0:3] - self.target_position)
             is_hovering = (
                 pos_error < 0.5 and
-                abs(obs[3]) > 0.98 and  # qw > 0.98 (very upright)
-                np.linalg.norm(obs[7:10]) < 0.3 and  # low linear velocity
-                np.linalg.norm(obs[10:13]) < 0.3  # low angular velocity
+                abs(obs[3]) > 0.98 and
+                np.linalg.norm(obs[7:10]) < 0.3 and
+                np.linalg.norm(obs[10:13]) < 0.3
             )
             
             if is_hovering:
@@ -356,11 +331,12 @@ class AirSimDroneRecoveryEnv(gym.Env):
             else:
                 self._stable_count = 0
             
-            # Success if hovering for 50 consecutive steps (~2.5 seconds)
             if self._stable_count >= 50:
                 terminated = True
-                reward += 100.0  # Success bonus
+                reward += 100.0
                 reason = "hover_success"
+                if self.debug:
+                    print(f"   ✅ HOVER SUCCESS at step {self.current_step}")
         
         # Timeout
         if self.current_step >= self.max_steps:
@@ -373,6 +349,7 @@ class AirSimDroneRecoveryEnv(gym.Env):
             "step": self.current_step,
             "pos_error": float(np.linalg.norm(obs[0:3] - self.target_position)),
             "uprightness": float(abs(obs[3])),
+            "altitude": float(altitude),
             "ang_vel_mag": float(np.linalg.norm(obs[10:13])),
         }
         
@@ -380,111 +357,95 @@ class AirSimDroneRecoveryEnv(gym.Env):
     
     def _inject_disturbance(self) -> None:
         """Inject stage-appropriate disturbances."""
+        if np.random.rand() > self.disturbance_freq:
+            return
+        
         state = self.client.simGetGroundTruthKinematics()
         
         if self.stage == 1:
-            # Stage 1: Small random disturbances every ~2 seconds
-            # This prevents passive hovering and forces agent to learn active control
-            # Without this, agent exploits AirSim's built-in stabilization
+            # Stage 1: Tiny disturbances
+            disturbance_type = np.random.choice(['wind', 'sensor_noise'])
             
-            if np.random.rand() < 0.02:  # 2% chance per step (~1 per 2 seconds at 20Hz)
-                disturbance_type = np.random.choice(['wind', 'sensor_noise'])
-                
-                if disturbance_type == 'wind':
-                    # Small wind gust (0.5 m/s max)
-                    state.linear_velocity.x_val += float(np.random.uniform(-0.5, 0.5))
-                    state.linear_velocity.y_val += float(np.random.uniform(-0.5, 0.5))
-                    
-                    if self.debug:
+            if disturbance_type == 'wind':
+                state.linear_velocity.x_val += float(np.random.uniform(-0.3, 0.3))
+                state.linear_velocity.y_val += float(np.random.uniform(-0.3, 0.3))
+                if self.debug:
+                    self._disturbance_counter += 1
+                    if self._disturbance_counter <= 5:
                         print(f"   [Stage 1] Wind gust applied")
-                
-                elif disturbance_type == 'sensor_noise':
-                    # Tiny angular perturbation (simulates sensor drift/noise)
-                    state.angular_velocity.x_val += float(np.random.uniform(-0.3, 0.3))
-                    state.angular_velocity.y_val += float(np.random.uniform(-0.3, 0.3))
-                    state.angular_velocity.z_val += float(np.random.uniform(-0.2, 0.2))
-                    
-                    if self.debug:
-                        print(f"   [Stage 1] Sensor noise applied")
-                
-                self.client.simSetKinematics(state, ignore_collision=True)
             
-            return
+            elif disturbance_type == 'sensor_noise':
+                state.angular_velocity.x_val += float(np.random.uniform(-0.2, 0.2))
+                state.angular_velocity.y_val += float(np.random.uniform(-0.2, 0.2))
+                state.angular_velocity.z_val += float(np.random.uniform(-0.1, 0.1))
+                if self.debug:
+                    self._disturbance_counter += 1
+                    if self._disturbance_counter <= 5:
+                        print(f"   [Stage 1] Sensor noise applied")
+            
+            self.client.simSetKinematics(state, ignore_collision=True)
         
-        if self.stage == 2:
+        elif self.stage == 2:
             # Stage 2: Moderate disturbances
             disturbance_type = np.random.choice(['wind', 'angular_impulse'], p=[0.6, 0.4])
             
             if disturbance_type == 'wind':
-                # Wind gust
-                wind = airsim.Vector3r(
-                    float(np.random.uniform(-5, 5)),
-                    float(np.random.uniform(-5, 5)),
-                    float(np.random.uniform(-2, 2))
-                )
-                self.client.simSetWind(wind)
-                if self.debug:
-                    print(f"   💨 Wind gust: [{wind.x_val:.1f}, {wind.y_val:.1f}, {wind.z_val:.1f}] m/s")
+                state.linear_velocity.x_val += float(np.random.uniform(-2.0, 2.0))
+                state.linear_velocity.y_val += float(np.random.uniform(-2.0, 2.0))
             
-            else:  # angular_impulse
-                # Small angular velocity injection
-                state.angular_velocity.x_val += float(np.random.uniform(-2, 2))
-                state.angular_velocity.y_val += float(np.random.uniform(-2, 2))
-                state.angular_velocity.z_val += float(np.random.uniform(-1, 1))
-                self.client.simSetKinematics(state, ignore_collision=True)
-                if self.debug:
-                    print(f"   🌀 Angular impulse applied")
-        
-        elif self.stage == 3:
-            # Stage 3: Severe impacts (flips, collisions, bird strikes)
-            impact_type = np.random.choice(['flip', 'spin', 'tumble', 'collision'])
-            
-            if impact_type == 'flip':
-                # Rapid pitch rotation (bird strike from front)
-                state.angular_velocity.y_val = float(np.random.uniform(-8, 8))
-                impact_str = f"Flip (pitch: {state.angular_velocity.y_val:.1f} rad/s)"
-            
-            elif impact_type == 'spin':
-                # Rapid yaw rotation (propeller strike)
-                state.angular_velocity.z_val = float(np.random.uniform(-6, 6))
-                impact_str = f"Spin (yaw: {state.angular_velocity.z_val:.1f} rad/s)"
-            
-            elif impact_type == 'tumble':
-                # Multi-axis tumble (collision)
-                state.angular_velocity.x_val = float(np.random.uniform(-5, 5))
-                state.angular_velocity.y_val = float(np.random.uniform(-5, 5))
-                state.angular_velocity.z_val = float(np.random.uniform(-3, 3))
-                impact_str = "Tumble (multi-axis)"
-            
-            else:  # collision
-                # Combined rotational + translational disturbance
-                state.angular_velocity.x_val = float(np.random.uniform(-4, 4))
-                state.angular_velocity.y_val = float(np.random.uniform(-4, 4))
-                state.linear_velocity.x_val += float(np.random.uniform(-3, 3))
-                state.linear_velocity.y_val += float(np.random.uniform(-3, 3))
-                impact_str = "Collision (rotation + translation)"
+            elif disturbance_type == 'angular_impulse':
+                state.angular_velocity.x_val += float(np.random.uniform(-2.0, 2.0))
+                state.angular_velocity.y_val += float(np.random.uniform(-2.0, 2.0))
+                state.angular_velocity.z_val += float(np.random.uniform(-1.0, 1.0))
             
             self.client.simSetKinematics(state, ignore_collision=True)
+        
+        else:  # Stage 3
+            # Stage 3: Severe impacts
+            disturbance_type = np.random.choice(['flip', 'tumble', 'collision'])
             
-            if self.debug:
-                print(f"   💥 Impact: {impact_str}")
+            if disturbance_type == 'flip':
+                state.angular_velocity.y_val += float(np.random.uniform(-6.0, 6.0))
+            
+            elif disturbance_type == 'tumble':
+                state.angular_velocity.x_val += float(np.random.uniform(-4.0, 4.0))
+                state.angular_velocity.y_val += float(np.random.uniform(-4.0, 4.0))
+                state.angular_velocity.z_val += float(np.random.uniform(-3.0, 3.0))
+            
+            elif disturbance_type == 'collision':
+                state.angular_velocity.x_val += float(np.random.uniform(-3.0, 3.0))
+                state.angular_velocity.y_val += float(np.random.uniform(-3.0, 3.0))
+                state.linear_velocity.x_val += float(np.random.uniform(-2.0, 2.0))
+                state.linear_velocity.y_val += float(np.random.uniform(-2.0, 2.0))
+            
+            self.client.simSetKinematics(state, ignore_collision=True)
     
-    def set_stage(self, new_stage: int) -> None:
-        """Update curriculum stage."""
-        if new_stage not in [1, 2, 3]:
-            raise ValueError(f"Invalid stage: {new_stage}. Must be 1, 2, or 3.")
-        
-        self.stage = new_stage
-        self.max_steps = {1: 2000, 2: 1500, 3: 1000}[new_stage]
-        self.disturbance_prob = {1: 0.0, 2: 0.05, 3: 0.10}[new_stage]
-        self.crash_height = {1: 0.5, 2: 1.0, 3: 1.5}[new_stage]
-        self.out_of_bounds_radius = {1: 30.0, 2: 25.0, 3: 20.0}[new_stage]
-        
-        print(f"\n🔄 Stage Updated → {new_stage}")
-        print(f"   Max Steps: {self.max_steps}")
-        print(f"   Disturbance Prob: {self.disturbance_prob}")
-    
-    def close(self) -> None:
+    def close(self):
         """Cleanup resources."""
         self.client.armDisarm(False)
         self.client.enableApiControl(False)
+
+
+if __name__ == "__main__":
+    # Quick test
+    print("Testing environment...")
+    env = AirSimDroneRecoveryEnv(stage=1, debug=True)
+    
+    obs, _ = env.reset()
+    print(f"Initial observation shape: {obs.shape}")
+    print(f"Initial altitude: {-obs[2]:.2f}m")
+    
+    for i in range(100):
+        action = env.action_space.sample()
+        obs, reward, terminated, truncated, info = env.step(action)
+        
+        if i % 20 == 0:
+            print(f"Step {i}: Reward={reward:.2f}, Alt={-obs[2]:.2f}m")
+        
+        if terminated or truncated:
+            print(f"\nEpisode ended at step {i}")
+            print(f"Reason: {info['reason']}")
+            break
+    
+    env.close()
+    print("✅ Environment test complete")
