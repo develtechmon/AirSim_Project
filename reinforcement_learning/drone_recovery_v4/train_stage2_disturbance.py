@@ -15,6 +15,10 @@ with a policy that already knows how to hover!
 python train_stage2_disturbance.py --timesteps 250000
 python train_stage2_disturbance.py --lr 1e-5 --timesteps 250000 (with lower learning rate)
 
+python train_stage2_disturbance.py --timesteps 250000
+How many episode ? - timesteps/500 = 250000/500 = 500 episodes
+
+Episode = 20000/max_steps = 20000/500 = 40
 """
 
 import torch
