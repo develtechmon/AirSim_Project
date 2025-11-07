@@ -32,6 +32,8 @@ Max error: 0.381m
 
     PID Expert is EXCELLENT! Ready to generate demonstrations.
 ======================================================================
+
+python pid_expert.py (5 min)
 """
 
 import airsim
