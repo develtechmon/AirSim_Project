@@ -1,0 +1,9 @@
+{
+  "stage": 1,
+  "total_timesteps": 200000,
+  "final_mean_return": -574.9822387695312,
+  "final_success_rate": 0.0,
+  "training_time_hours": 8.008302912712097,
+  "timestamp": "20251106_223032",
+  "log_dir": "./logs/PPO_stage1_20251106_223032"
+}
