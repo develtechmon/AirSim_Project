@@ -14,16 +14,15 @@ with a policy that already knows how to hover!
 
 python train_stage2_disturbance.py --timesteps 250000
 python train_stage2_disturbance.py --lr 1e-5 --timesteps 250000 (with lower learning rate)
-python train_stage2_disturbance.py --timesteps 250000 --lr 1e-5
-
 
 """
+
 import torch
 import torch.nn as nn
 import numpy as np
 from stable_baselines3 import PPO
 from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
-from stable_baselines3.common.callbacks import BaseCallback
+from stable_baselines3.common.callbacks import BaseCallback, CheckpointCallback
 from stable_baselines3.common.monitor import Monitor
 from drone_hover_disturbance_env import DroneHoverDisturbanceEnv
 import argparse
@@ -86,70 +85,6 @@ class ProgressCallback(BaseCallback):
                         print(f"{'='*70}\n")
         
         return True
-
-
-class RobustCheckpointCallback(BaseCallback):
-    """
-    Robust checkpoint callback that saves model and vecnormalize reliably
-    Saves every N episodes (not steps) for easier tracking
-    """
-    
-    def __init__(self, save_freq_episodes=10, save_path="./checkpoints/", 
-                 name_prefix="model", verbose=1):
-        super().__init__(verbose)
-        self.save_freq_episodes = save_freq_episodes
-        self.save_path = Path(save_path)
-        self.name_prefix = name_prefix
-        self.episode_count = 0
-        self.last_save_episode = 0
-        
-        # Create save directory
-        self.save_path.mkdir(parents=True, exist_ok=True)
-    
-    def _on_step(self) -> bool:
-        # Check if episode ended
-        if self.locals.get("dones"):
-            for i, done in enumerate(self.locals["dones"]):
-                if done:
-                    self.episode_count += 1
-                    
-                    # Check if we should save
-                    if self.episode_count % self.save_freq_episodes == 0:
-                        if self.episode_count != self.last_save_episode:
-                            self._save_checkpoint()
-                            self.last_save_episode = self.episode_count
-        
-        return True
-    
-    def _save_checkpoint(self):
-        """Save model and vecnormalize with confirmation"""
-        try:
-            episode = self.episode_count
-            
-            # Paths
-            model_path = self.save_path / f"{self.name_prefix}_ep{episode}.zip"
-            vecnorm_path = self.save_path / f"{self.name_prefix}_ep{episode}_vecnorm.pkl"
-            
-            print(f"\n💾 SAVING CHECKPOINT at Episode {episode}...")
-            
-            # Save model
-            self.model.save(str(model_path))
-            print(f"   ✅ Model saved: {model_path}")
-            
-            # Save VecNormalize if it exists
-            if self.training_env is not None:
-                try:
-                    from stable_baselines3.common.vec_env import VecNormalize
-                    if isinstance(self.training_env, VecNormalize):
-                        self.training_env.save(str(vecnorm_path))
-                        print(f"   ✅ VecNormalize saved: {vecnorm_path}")
-                except Exception as e:
-                    print(f"   ⚠️  VecNormalize save failed: {e}")
-            
-            print(f"   ✅ Checkpoint complete!\n")
-            
-        except Exception as e:
-            print(f"   ❌ Checkpoint save failed: {e}\n")
 
 
 def load_stage1_policy(model_path):
@@ -284,15 +219,15 @@ def main(args):
     # Setup callbacks
     progress_callback = ProgressCallback()
     
-    # Robust checkpoint - saves every 10 episodes
-    robust_checkpoint = RobustCheckpointCallback(
-        save_freq_episodes=10,
+    checkpoint_callback = CheckpointCallback(
+        save_freq=5000, # Every 10 episode (500 steps x 10)
         save_path="./models/stage2_checkpoints/",
         name_prefix="disturbance_policy",
+        save_vecnormalize=True,
         verbose=1
     )
     
-    callbacks = [progress_callback, robust_checkpoint]
+    callbacks = [progress_callback, checkpoint_callback]
     
     # Create directories
     Path("./models/stage2_checkpoints/").mkdir(parents=True, exist_ok=True)

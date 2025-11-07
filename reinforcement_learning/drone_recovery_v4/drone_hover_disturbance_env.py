@@ -198,27 +198,24 @@ class DroneHoverDisturbanceEnv(gym.Env):
         # Reward calculation
         reward = 0
         
-        # Distance rewards - IMPROVED!
-        # Strong exponential penalty for being far from center
-        reward -= (dist_from_center ** 2) * 3  # Quadratic penalty
+        # Distance rewards
+        if dist_from_center < 0.5:
+            reward += 20  # Close to center
+        else:
+            reward -= dist_from_center * 2
         
-        # Bonus for being close (gradient reward)
-        if dist_from_center < 2.0:
-            reward += (2.0 - dist_from_center) * 30  # Encourage getting closer
-        
-        # Altitude reward
         if dist_from_target_alt < 0.5:
             reward += 20  # Close to target altitude
         else:
             reward -= dist_from_target_alt * 3
         
-        # Hovering bonus (stable at center)
+        # Hovering bonus
         if is_stable:
-            reward += 100  # BIG bonus for perfect hovering!
+            reward += 50
         
-        # Action penalty - REDUCED (don't punish wind fighting too much!)
+        # Action penalty (smooth control)
         action_magnitude = np.linalg.norm(action)
-        reward -= action_magnitude * 0.5  # Less harsh
+        reward -= action_magnitude * 2
         
         # Wind compensation bonus (staying stable despite wind)
         wind_magnitude = np.linalg.norm(self.current_wind)
