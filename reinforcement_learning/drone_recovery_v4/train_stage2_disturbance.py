@@ -15,10 +15,26 @@ with a policy that already knows how to hover!
 python train_stage2_disturbance.py --timesteps 250000
 python train_stage2_disturbance.py --lr 1e-5 --timesteps 250000 (with lower learning rate)
 
-python train_stage2_disturbance.py --timesteps 250000 (use this one
+python train_stage2_disturbance.py --timesteps 250000 
+python train_stage2_disturbance.py (use this)
 How many episode ? - timesteps/500 = 250000/500 = 500 episodes
 
 Episode = 20000/max_steps = 20000/500 = 40
+"""
+
+"""
+STAGE 2: PPO TRAINING WITH DISTURBANCES
+========================================
+Trains the drone to handle wind disturbances using PPO (Reinforcement Learning).
+
+Key Features:
+- Loads your Stage 1 hover policy as starting point
+- Adds wind disturbances to environment
+- Fine-tunes with PPO for 2-3 hours
+- Expected result: 80%+ success with wind
+
+This is MUCH faster than training from scratch because we start
+with a policy that already knows how to hover!
 """
 
 import torch
@@ -223,12 +239,12 @@ def main(args):
     # Setup callbacks
     progress_callback = ProgressCallback()
     
+    # Use ORIGINAL CheckpointCallback with original frequency that worked
     checkpoint_callback = CheckpointCallback(
-        save_freq=5000, # Every 10 episode (500 steps x 10)
+        save_freq=25000,  # Original value that worked!
         save_path="./models/stage2_checkpoints/",
         name_prefix="disturbance_policy",
-        save_vecnormalize=True,
-        verbose=1
+        save_vecnormalize=True
     )
     
     callbacks = [progress_callback, checkpoint_callback]
@@ -240,6 +256,7 @@ def main(args):
     print("\n[5/5] Starting PPO training...")
     print(f"   Total timesteps: {args.timesteps:,}")
     print(f"   Learning rate: {args.lr}")
+    print(f"   Checkpoints: Every 25,000 steps (~50 episodes)")
     print(f"   Estimated time: {args.timesteps / 30000:.1f} hours (at ~30k steps/hour)")
     print()
     print("="*70)
