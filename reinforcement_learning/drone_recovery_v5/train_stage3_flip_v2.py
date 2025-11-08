@@ -21,7 +21,9 @@ from stable_baselines3 import PPO
 from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
 from stable_baselines3.common.callbacks import BaseCallback, CheckpointCallback
 from stable_baselines3.common.monitor import Monitor
-from drone_flip_recovery_env import DroneFlipRecoveryEnv
+# from drone_flip_recovery_env import DroneFlipRecoveryEnv
+from drone_flip_recovery_env_injector import DroneFlipRecoveryEnv
+
 import argparse
 from pathlib import Path
 

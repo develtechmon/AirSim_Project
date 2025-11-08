@@ -1,26 +1,32 @@
 """
-DRONE FLIP RECOVERY ENVIRONMENT - MOTOR-LEVEL TUMBLE (13 OBSERVATIONS)
-=======================================================================
-Stage 3: Simulates bird attacks using MOTOR-LEVEL disturbances
-
-KEY DIFFERENCE: Instead of trying to set orientation (which AirSim ignores),
-we apply ASYMMETRIC MOTOR FORCES to create real physical rotation!
+DRONE FLIP RECOVERY ENVIRONMENT - MID-AIR TUMBLE RECOVERY (13 OBSERVATIONS)
+===========================================================================
+Stage 3: Simulates bird attacks / sudden disturbances that cause mid-air tumbling
 
 The drone must learn to:
 1. Detect tumbling (using angular velocity - spinning fast!)
-2. Apply counter-rotation through motor commands
+2. Apply counter-rotation to stop the tumble
 3. Orient itself upright
 4. Stabilize and return to hover position
 5. Handle wind during recovery
+
+REALISTIC SCENARIO:
+- Drone hovering normally
+- Bird attack / wind gust → Sudden rotation
+- Drone tumbles in mid-air (spinning!)  
+- Must recover BEFORE hitting ground
+- Stabilize and resume hover
 
 Observation Space: (13,)
     - position: [x, y, z]
     - velocity: [vx, vy, vz]  
     - orientation: [qw, qx, qy, qz]
-    - angular_velocity: [wx, wy, wz] ← CRITICAL!
+    - angular_velocity: [wx, wy, wz] ← CRITICAL for detecting tumble!
 
 Action Space: (3,)
     - velocity commands: [vx, vy, vz] in range [-5, 5] m/s
+
+This is the FINAL stage - mid-air recovery without crashing!
 """
 
 import airsim
@@ -32,7 +38,14 @@ import time
 
 class DroneFlipRecoveryEnv(gym.Env):
     """
-    Drone flip recovery with REAL physics-based tumbling
+    Drone flip recovery environment with MID-AIR TUMBLE simulation
+    
+    The drone experiences:
+    - Random tumbling events (simulated bird attack)
+    - Must detect tumble via angular velocity
+    - Must counter-rotate to stabilize
+    - Must return to upright orientation
+    - Must resume hover without crashing
     """
     
     def __init__(self, target_altitude=10.0, max_steps=500, 
@@ -42,7 +55,7 @@ class DroneFlipRecoveryEnv(gym.Env):
         self.target_altitude = target_altitude
         self.max_steps = max_steps
         self.wind_strength = wind_strength
-        self.tumble_prob = flip_prob
+        self.tumble_prob = flip_prob  # Probability of tumbling event (accepts flip_prob parameter)
         self.debug = debug
         
         # Action space: velocity commands
@@ -78,16 +91,20 @@ class DroneFlipRecoveryEnv(gym.Env):
         self.tumble_recovered = False
         self.tumble_start_step = 0
         self.recovery_steps = 0
+        
+        # Tumble parameters
+        self.tumble_angular_velocity = np.zeros(3)
         self.tumble_duration = 0
-        self.tumble_force = np.zeros(3)  # Tumble forces instead of angular velocity
         
         if self.debug:
-            print(f"✓ Drone Flip Recovery Environment (MOTOR-LEVEL CONTROL)")
+            print(f"✓ Drone Flip Recovery Environment (13 observations)")
             print(f"  - Target: [0, 0, {-self.target_altitude}]")
+            print(f"  - Action: 3D velocity [-5, 5] m/s")
             print(f"  - Max steps: {self.max_steps}")
             print(f"  - Wind strength: 0-{self.wind_strength} m/s")
             print(f"  - Tumble probability: {self.tumble_prob*100:.0f}%")
-            print(f"  - Mode: MOTOR-LEVEL TUMBLE")
+            print(f"  - Observations: 13 (pos + vel + ori + ang_vel)")
+            print(f"  - Mode: MID-AIR TUMBLE RECOVERY")
     
     def _get_wind(self):
         """Generate random wind vector"""
@@ -111,40 +128,104 @@ class DroneFlipRecoveryEnv(gym.Env):
     
     def _initiate_tumble(self):
         """
-        Simulate bird attack using motor-level disturbance
+        Simulate bird attack / sudden disturbance
+        Apply angular velocity to make drone tumble
         """
-        # High tumble forces (will be applied as roll/pitch/yaw rates)
-        tumble_intensity = np.random.uniform(3.0, 5.0)  # Dramatic but controllable
+        # MUCH HIGHER tumble intensity for dramatic flips (5-10 rad/s)
+        tumble_intensity = np.random.uniform(5.0, 10.0)  # Increased from 1.5-3.0!
         
-        # Random tumble direction
-        self.tumble_force = np.array([
-            np.random.uniform(-tumble_intensity, tumble_intensity),  # Roll
-            np.random.uniform(-tumble_intensity, tumble_intensity),  # Pitch
-            np.random.uniform(-tumble_intensity * 0.5, tumble_intensity * 0.5)  # Yaw
+        # Random tumble direction (at least 2 axes for realistic tumble)
+        self.tumble_angular_velocity = np.array([
+            np.random.uniform(-tumble_intensity, tumble_intensity),
+            np.random.uniform(-tumble_intensity, tumble_intensity),
+            np.random.uniform(-tumble_intensity * 0.5, tumble_intensity * 0.5)  # Less Z-axis
         ])
         
-        # Tumble duration (50 steps = 2.5 seconds)
-        self.tumble_duration = 50
+        # Longer tumble duration (100 steps = 5 seconds)
+        self.tumble_duration = 100  # Increased from 20!
         
         self.tumble_initiated = True
         self.tumble_start_step = self.episode_steps
         
         if self.debug:
-            print(f"   🐦 BIRD ATTACK! Motor disturbance applied!")
-            print(f"      Tumble forces: Roll={self.tumble_force[0]:.2f}, "
-                  f"Pitch={self.tumble_force[1]:.2f}, Yaw={self.tumble_force[2]:.2f}")
-            print(f"      ⚠️  Drone will tumble for ~{self.tumble_duration * 0.05:.1f}s!")
+            print(f"   🐦 BIRD ATTACK! Tumble initiated!")
+            print(f"      Angular velocity: [{self.tumble_angular_velocity[0]:.2f}, "
+                  f"{self.tumble_angular_velocity[1]:.2f}, {self.tumble_angular_velocity[2]:.2f}] rad/s")
+            print(f"      ⚠️  SEVERE TUMBLE - Drone will flip multiple times!")
+    
+    def _apply_tumble_dynamics(self):
+        """
+        Apply tumbling angular velocity to drone
+        Simulates continuous rotation until recovered
+        """
+        if not self.tumble_initiated or self.tumble_recovered:
+            return
+        
+        # Get current pose
+        pose = self.client.simGetVehiclePose()
+        
+        # Get current orientation as quaternion
+        qw = pose.orientation.w_val
+        qx = pose.orientation.x_val
+        qy = pose.orientation.y_val
+        qz = pose.orientation.z_val
+        
+        # Apply angular velocity (integrate rotation)
+        dt = 0.05  # Time step
+        wx, wy, wz = self.tumble_angular_velocity
+        
+        # Quaternion derivative: dq/dt = 0.5 * q * omega
+        # Simplified integration for small dt
+        dqw = 0.5 * (-qx * wx - qy * wy - qz * wz) * dt
+        dqx = 0.5 * (qw * wx + qy * wz - qz * wy) * dt
+        dqy = 0.5 * (qw * wy - qx * wz + qz * wx) * dt
+        dqz = 0.5 * (qw * wz + qx * wy - qy * wx) * dt
+        
+        # Update quaternion
+        new_qw = qw + dqw
+        new_qx = qx + dqx
+        new_qy = qy + dqy
+        new_qz = qz + dqz
+        
+        # Normalize
+        norm = np.sqrt(new_qw**2 + new_qx**2 + new_qy**2 + new_qz**2)
+        new_qw /= norm
+        new_qx /= norm
+        new_qy /= norm
+        new_qz /= norm
+        
+        # Set new pose
+        pose.orientation = airsim.Quaternionr(new_qx, new_qy, new_qz, new_qw)
+        self.client.simSetVehiclePose(pose, True)
+        
+        # Decay tumble over time (simulates air resistance)
+        steps_since_tumble = self.episode_steps - self.tumble_start_step
+        decay_factor = max(0, 1.0 - (steps_since_tumble / self.tumble_duration))
+        self.tumble_angular_velocity *= (0.995 * decay_factor)  # Slower decay (was 0.98)
+        
+        # Check if tumble has naturally decayed (must be VERY stable)
+        if np.linalg.norm(self.tumble_angular_velocity) < 0.5:  # Stricter threshold (was 0.1)
+            # Check if drone is upright
+            if self._is_upright([new_qw, new_qx, new_qy, new_qz]):
+                self.tumble_recovered = True
+                self.recovery_steps = self.episode_steps - self.tumble_start_step
+                if self.debug:
+                    print(f"   ✅ RECOVERED! Took {self.recovery_steps} steps ({self.recovery_steps * 0.05:.1f}s)")
     
     def _is_upright(self, orientation):
-        """Check if drone is upright"""
+        """Check if drone is upright (not flipped)"""
         qw, qx, qy, qz = orientation
+        
+        # Up vector in world frame
         up_z = 1 - 2 * (qx * qx + qy * qy)
+        
+        # If z-component of up vector > 0.7, drone is mostly upright
         return up_z > 0.7
     
     def _is_tumbling(self, angular_velocity):
-        """Check if drone is tumbling"""
+        """Check if drone is currently tumbling (high angular velocity)"""
         ang_vel_magnitude = np.linalg.norm(angular_velocity)
-        return ang_vel_magnitude > 1.0
+        return ang_vel_magnitude > 2.0  # Spinning faster than 2.0 rad/s (was 0.5)
     
     def _get_observation(self):
         """Get current state (13 observations)"""
@@ -201,11 +282,12 @@ class DroneFlipRecoveryEnv(gym.Env):
         self.tumble_recovered = False
         self.tumble_start_step = 0
         self.recovery_steps = 0
-        self.tumble_force = np.zeros(3)
+        self.tumble_angular_velocity = np.zeros(3)
         
-        # Decide if tumble will happen
+        # Decide if tumble will happen (delayed)
         self.will_tumble = np.random.random() < self.tumble_prob
         if self.will_tumble:
+            # Tumble happens after 20-50 steps (1-2.5 seconds of normal flight)
             self.tumble_trigger_step = np.random.randint(20, 50)
             if self.debug:
                 print(f"   ⚠️  Tumble scheduled for step {self.tumble_trigger_step}")
@@ -225,48 +307,19 @@ class DroneFlipRecoveryEnv(gym.Env):
             if self.episode_steps >= self.tumble_trigger_step:
                 self._initiate_tumble()
         
-        # Apply tumble disturbance using motor-level commands
-        if self.tumble_initiated and not self.tumble_recovered:
-            steps_since_tumble = self.episode_steps - self.tumble_start_step
-            
-            # Apply decaying tumble force
-            decay_factor = max(0, 1.0 - (steps_since_tumble / self.tumble_duration))
-            current_tumble = self.tumble_force * decay_factor
-            
-            # Apply tumble as roll/pitch/yaw rates
-            try:
-                self.client.moveByRollPitchYawThrottleAsync(
-                    roll=float(np.clip(current_tumble[0] * 0.2, -1, 1)),
-                    pitch=float(np.clip(current_tumble[1] * 0.2, -1, 1)),
-                    yaw_rate=float(np.clip(current_tumble[2], -5, 5)),
-                    throttle=0.59,
-                    duration=0.05
-                ).join()
-            except:
-                pass
-            
-            # Check for recovery
-            obs = self._get_observation()
-            ang_vel = obs[10:13]
-            ori = obs[6:10]
-            
-            if np.linalg.norm(ang_vel) < 1.0 and self._is_upright(ori):
-                if not self.tumble_recovered:
-                    self.tumble_recovered = True
-                    self.recovery_steps = self.episode_steps - self.tumble_start_step
-                    if self.debug:
-                        print(f"   ✅ RECOVERED! Took {self.recovery_steps} steps ({self.recovery_steps * 0.05:.1f}s)")
-        else:
-            # Normal velocity control
-            action = np.clip(action, -5.0, 5.0)
-            self.client.moveByVelocityAsync(
-                float(action[0]),
-                float(action[1]),
-                float(action[2]),
-                duration=0.05,
-                drivetrain=airsim.DrivetrainType.MaxDegreeOfFreedom,
-                yaw_mode=airsim.YawMode(False, 0)
-            ).join()
+        # Apply tumble dynamics (rotation)
+        self._apply_tumble_dynamics()
+        
+        # Execute action (velocity command)
+        action = np.clip(action, -5.0, 5.0)
+        self.client.moveByVelocityAsync(
+            float(action[0]),
+            float(action[1]),
+            float(action[2]),
+            duration=0.05,
+            drivetrain=airsim.DrivetrainType.MaxDegreeOfFreedom,
+            yaw_mode=airsim.YawMode(False, 0)
+        ).join()
         
         # Update wind periodically
         self.wind_change_timer += 1
@@ -298,37 +351,43 @@ class DroneFlipRecoveryEnv(gym.Env):
         done = False
         info = {}
         
-        # TUMBLE RECOVERY REWARDS
+        # CRITICAL: TUMBLE RECOVERY REWARDS (highest priority)
         if self.tumble_initiated and not self.tumble_recovered:
-            reward -= ang_vel_magnitude * 10
+            # During tumble - reward for reducing angular velocity
+            reward -= ang_vel_magnitude * 10  # Penalty for spinning
             
             if is_upright:
-                reward += 500
+                reward += 500  # MASSIVE reward for getting upright
                 if not self.tumble_recovery_started:
                     self.tumble_recovery_started = True
                     if self.debug:
                         print(f"   🎯 Getting upright...")
             else:
-                reward -= 50
+                reward -= 50  # Penalty for being tilted
             
+            # Reward for reducing rotation rate
             if ang_vel_magnitude < 1.0:
-                reward += 100
+                reward += 100  # Good - slowing down
             
+            # Small penalty for distance (but not priority during recovery)
             reward -= dist_from_center * 0.5
             reward -= dist_from_target_alt * 0.5
         
         # AFTER RECOVERY: Normal hover rewards
         elif self.tumble_recovered or not self.will_tumble:
+            # Hover position reward
             if dist_from_center < 0.5:
                 reward += 20
             else:
                 reward -= dist_from_center * 2
             
+            # Altitude reward
             if dist_from_target_alt < 0.5:
                 reward += 15
             else:
                 reward -= dist_from_target_alt * 3
             
+            # Upright reward
             if is_upright:
                 reward += 10
                 self.stable_steps += 1
@@ -336,24 +395,26 @@ class DroneFlipRecoveryEnv(gym.Env):
                 reward -= 20
                 self.stable_steps = 0
             
+            # Stability reward (low angular velocity)
             if ang_vel_magnitude < 0.2:
                 reward += 5
             else:
                 reward -= ang_vel_magnitude * 2
             
+            # Bonus for sustained stability
             if self.stable_steps > 50:
                 reward += 10
         
         # Termination conditions
-        if alt < 1.0:
+        if alt < 1.0:  # Crashed
             reward -= 1000
             done = True
             info['reason'] = 'crash'
-        elif alt > 20.0:
+        elif alt > 20.0:  # Too high
             reward -= 500
             done = True
             info['reason'] = 'too_high'
-        elif dist_from_center > 10.0:
+        elif dist_from_center > 10.0:  # Too far
             reward -= 500
             done = True
             info['reason'] = 'too_far'

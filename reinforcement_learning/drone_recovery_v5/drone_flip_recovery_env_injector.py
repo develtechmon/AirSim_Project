@@ -1,14 +1,11 @@
 """
-DRONE FLIP RECOVERY ENVIRONMENT - MOTOR-LEVEL TUMBLE (13 OBSERVATIONS)
-=======================================================================
-Stage 3: Simulates bird attacks using MOTOR-LEVEL disturbances
-
-KEY DIFFERENCE: Instead of trying to set orientation (which AirSim ignores),
-we apply ASYMMETRIC MOTOR FORCES to create real physical rotation!
+DRONE FLIP RECOVERY ENVIRONMENT - WITH DISTURBANCE INJECTOR (13 OBSERVATIONS)
+==============================================================================
+Stage 3: Uses external DisturbanceInjector for realistic bird attacks and impacts
 
 The drone must learn to:
-1. Detect tumbling (using angular velocity - spinning fast!)
-2. Apply counter-rotation through motor commands
+1. Detect tumbling/disturbances (using angular velocity)
+2. Apply counter-rotation to stop the tumble
 3. Orient itself upright
 4. Stabilize and return to hover position
 5. Handle wind during recovery
@@ -28,11 +25,17 @@ import numpy as np
 import gymnasium as gym
 from gymnasium import spaces
 import time
+import sys
+import os
+
+# Import the disturbance injector
+sys.path.append(os.path.dirname(__file__))
+from disturbance_injector import DisturbanceInjector, DisturbanceType
 
 
 class DroneFlipRecoveryEnv(gym.Env):
     """
-    Drone flip recovery with REAL physics-based tumbling
+    Drone flip recovery with REALISTIC disturbance injection
     """
     
     def __init__(self, target_altitude=10.0, max_steps=500, 
@@ -42,7 +45,7 @@ class DroneFlipRecoveryEnv(gym.Env):
         self.target_altitude = target_altitude
         self.max_steps = max_steps
         self.wind_strength = wind_strength
-        self.tumble_prob = flip_prob
+        self.disturbance_prob = flip_prob  # Probability of disturbance
         self.debug = debug
         
         # Action space: velocity commands
@@ -65,6 +68,9 @@ class DroneFlipRecoveryEnv(gym.Env):
         self.client = airsim.MultirotorClient()
         self.client.confirmConnection()
         
+        # Create disturbance injector
+        self.disturbance_injector = DisturbanceInjector(self.client)
+        
         # Episode tracking
         self.episode_steps = 0
         self.stable_steps = 0
@@ -72,22 +78,20 @@ class DroneFlipRecoveryEnv(gym.Env):
         self.wind_change_timer = 0
         self.wind_change_interval = np.random.uniform(1.0, 3.0)
         
-        # Tumble tracking
-        self.tumble_initiated = False
-        self.tumble_recovery_started = False
-        self.tumble_recovered = False
-        self.tumble_start_step = 0
+        # Disturbance tracking
+        self.disturbance_initiated = False
+        self.disturbance_recovered = False
+        self.disturbance_start_step = 0
         self.recovery_steps = 0
-        self.tumble_duration = 0
-        self.tumble_force = np.zeros(3)  # Tumble forces instead of angular velocity
+        self.disturbance_info = {}
         
         if self.debug:
-            print(f"✓ Drone Flip Recovery Environment (MOTOR-LEVEL CONTROL)")
+            print(f"✓ Drone Flip Recovery Environment (DISTURBANCE INJECTOR)")
             print(f"  - Target: [0, 0, {-self.target_altitude}]")
             print(f"  - Max steps: {self.max_steps}")
             print(f"  - Wind strength: 0-{self.wind_strength} m/s")
-            print(f"  - Tumble probability: {self.tumble_prob*100:.0f}%")
-            print(f"  - Mode: MOTOR-LEVEL TUMBLE")
+            print(f"  - Disturbance probability: {self.disturbance_prob*100:.0f}%")
+            print(f"  - Mode: EXTERNAL DISTURBANCE INJECTION")
     
     def _get_wind(self):
         """Generate random wind vector"""
@@ -108,32 +112,6 @@ class DroneFlipRecoveryEnv(gym.Env):
             float(self.current_wind[1]),
             float(self.current_wind[2])
         ))
-    
-    def _initiate_tumble(self):
-        """
-        Simulate bird attack using motor-level disturbance
-        """
-        # High tumble forces (will be applied as roll/pitch/yaw rates)
-        tumble_intensity = np.random.uniform(3.0, 5.0)  # Dramatic but controllable
-        
-        # Random tumble direction
-        self.tumble_force = np.array([
-            np.random.uniform(-tumble_intensity, tumble_intensity),  # Roll
-            np.random.uniform(-tumble_intensity, tumble_intensity),  # Pitch
-            np.random.uniform(-tumble_intensity * 0.5, tumble_intensity * 0.5)  # Yaw
-        ])
-        
-        # Tumble duration (50 steps = 2.5 seconds)
-        self.tumble_duration = 50
-        
-        self.tumble_initiated = True
-        self.tumble_start_step = self.episode_steps
-        
-        if self.debug:
-            print(f"   🐦 BIRD ATTACK! Motor disturbance applied!")
-            print(f"      Tumble forces: Roll={self.tumble_force[0]:.2f}, "
-                  f"Pitch={self.tumble_force[1]:.2f}, Yaw={self.tumble_force[2]:.2f}")
-            print(f"      ⚠️  Drone will tumble for ~{self.tumble_duration * 0.05:.1f}s!")
     
     def _is_upright(self, orientation):
         """Check if drone is upright"""
@@ -195,24 +173,30 @@ class DroneFlipRecoveryEnv(gym.Env):
         self.wind_change_timer = 0
         self.wind_change_interval = np.random.uniform(1.0, 3.0)
         
-        # Tumble tracking
-        self.tumble_initiated = False
-        self.tumble_recovery_started = False
-        self.tumble_recovered = False
-        self.tumble_start_step = 0
+        # Disturbance tracking
+        self.disturbance_initiated = False
+        self.disturbance_recovered = False
+        self.disturbance_start_step = 0
         self.recovery_steps = 0
-        self.tumble_force = np.zeros(3)
+        self.disturbance_info = {}
         
-        # Decide if tumble will happen
-        self.will_tumble = np.random.random() < self.tumble_prob
-        if self.will_tumble:
-            self.tumble_trigger_step = np.random.randint(20, 50)
+        # Decide if disturbance will happen
+        self.will_have_disturbance = np.random.random() < self.disturbance_prob
+        if self.will_have_disturbance:
+            self.disturbance_trigger_step = np.random.randint(20, 50)
+            # Choose random disturbance type (focus on tumbling types)
+            self.disturbance_type = np.random.choice([
+                DisturbanceType.BIRD_ATTACK,
+                DisturbanceType.FLIP,
+                DisturbanceType.SPIN,
+                DisturbanceType.COLLISION,
+            ])
             if self.debug:
-                print(f"   ⚠️  Tumble scheduled for step {self.tumble_trigger_step}")
+                print(f"   ⚠️  Disturbance scheduled: {self.disturbance_type.value} at step {self.disturbance_trigger_step}")
         else:
-            self.tumble_trigger_step = -1
+            self.disturbance_trigger_step = -1
             if self.debug:
-                print(f"   ✅ No tumble this episode")
+                print(f"   ✅ No disturbance this episode")
         
         return self._get_observation(), {}
     
@@ -220,53 +204,35 @@ class DroneFlipRecoveryEnv(gym.Env):
         """Execute one step"""
         self.episode_steps += 1
         
-        # Trigger tumble if scheduled
-        if self.will_tumble and not self.tumble_initiated:
-            if self.episode_steps >= self.tumble_trigger_step:
-                self._initiate_tumble()
+        # Trigger disturbance if scheduled
+        if self.will_have_disturbance and not self.disturbance_initiated:
+            if self.episode_steps >= self.disturbance_trigger_step:
+                # Inject disturbance!
+                intensity = np.random.uniform(0.8, 1.5)  # High intensity
+                self.disturbance_info = self.disturbance_injector.inject_disturbance(
+                    self.disturbance_type,
+                    intensity=intensity
+                )
+                self.disturbance_initiated = True
+                self.disturbance_start_step = self.episode_steps
+                
+                if self.debug:
+                    print(f"   🐦 DISTURBANCE APPLIED!")
+                    print(f"      Type: {self.disturbance_info['type']}")
+                    print(f"      Intensity: {intensity:.2f}")
+                    if 'angular_velocity' in self.disturbance_info:
+                        print(f"      Angular velocity: {self.disturbance_info['angular_velocity']:.1f} deg/s")
         
-        # Apply tumble disturbance using motor-level commands
-        if self.tumble_initiated and not self.tumble_recovered:
-            steps_since_tumble = self.episode_steps - self.tumble_start_step
-            
-            # Apply decaying tumble force
-            decay_factor = max(0, 1.0 - (steps_since_tumble / self.tumble_duration))
-            current_tumble = self.tumble_force * decay_factor
-            
-            # Apply tumble as roll/pitch/yaw rates
-            try:
-                self.client.moveByRollPitchYawThrottleAsync(
-                    roll=float(np.clip(current_tumble[0] * 0.2, -1, 1)),
-                    pitch=float(np.clip(current_tumble[1] * 0.2, -1, 1)),
-                    yaw_rate=float(np.clip(current_tumble[2], -5, 5)),
-                    throttle=0.59,
-                    duration=0.05
-                ).join()
-            except:
-                pass
-            
-            # Check for recovery
-            obs = self._get_observation()
-            ang_vel = obs[10:13]
-            ori = obs[6:10]
-            
-            if np.linalg.norm(ang_vel) < 1.0 and self._is_upright(ori):
-                if not self.tumble_recovered:
-                    self.tumble_recovered = True
-                    self.recovery_steps = self.episode_steps - self.tumble_start_step
-                    if self.debug:
-                        print(f"   ✅ RECOVERED! Took {self.recovery_steps} steps ({self.recovery_steps * 0.05:.1f}s)")
-        else:
-            # Normal velocity control
-            action = np.clip(action, -5.0, 5.0)
-            self.client.moveByVelocityAsync(
-                float(action[0]),
-                float(action[1]),
-                float(action[2]),
-                duration=0.05,
-                drivetrain=airsim.DrivetrainType.MaxDegreeOfFreedom,
-                yaw_mode=airsim.YawMode(False, 0)
-            ).join()
+        # Execute action (velocity command)
+        action = np.clip(action, -5.0, 5.0)
+        self.client.moveByVelocityAsync(
+            float(action[0]),
+            float(action[1]),
+            float(action[2]),
+            duration=0.05,
+            drivetrain=airsim.DrivetrainType.MaxDegreeOfFreedom,
+            yaw_mode=airsim.YawMode(False, 0)
+        ).join()
         
         # Update wind periodically
         self.wind_change_timer += 1
@@ -293,32 +259,42 @@ class DroneFlipRecoveryEnv(gym.Env):
         is_tumbling = self._is_tumbling(ang_vel)
         ang_vel_magnitude = np.linalg.norm(ang_vel)
         
+        # Check for recovery
+        if self.disturbance_initiated and not self.disturbance_recovered:
+            # Consider recovered if stable and upright
+            if ang_vel_magnitude < 0.8 and is_upright and dist_from_target_alt < 2.0:
+                self.disturbance_recovered = True
+                self.recovery_steps = self.episode_steps - self.disturbance_start_step
+                if self.debug:
+                    print(f"   ✅ RECOVERED! Took {self.recovery_steps} steps ({self.recovery_steps * 0.05:.1f}s)")
+        
         # Reward calculation
         reward = 0.0
         done = False
         info = {}
         
-        # TUMBLE RECOVERY REWARDS
-        if self.tumble_initiated and not self.tumble_recovered:
+        # DISTURBANCE RECOVERY REWARDS
+        if self.disturbance_initiated and not self.disturbance_recovered:
+            # During disturbance - reward for reducing angular velocity
             reward -= ang_vel_magnitude * 10
             
             if is_upright:
                 reward += 500
-                if not self.tumble_recovery_started:
-                    self.tumble_recovery_started = True
-                    if self.debug:
-                        print(f"   🎯 Getting upright...")
             else:
                 reward -= 50
             
             if ang_vel_magnitude < 1.0:
                 reward += 100
             
+            # Altitude maintenance
+            if alt > 2.0:  # Still flying
+                reward += 50
+            
             reward -= dist_from_center * 0.5
             reward -= dist_from_target_alt * 0.5
         
         # AFTER RECOVERY: Normal hover rewards
-        elif self.tumble_recovered or not self.will_tumble:
+        elif self.disturbance_recovered or not self.will_have_disturbance:
             if dist_from_center < 0.5:
                 reward += 20
             else:
@@ -367,11 +343,11 @@ class DroneFlipRecoveryEnv(gym.Env):
         info['is_upright'] = is_upright
         info['is_tumbling'] = is_tumbling
         info['angular_velocity_mag'] = ang_vel_magnitude
-        info['tumble_initiated'] = self.tumble_initiated
-        info['tumble_recovered'] = self.tumble_recovered
+        info['tumble_initiated'] = self.disturbance_initiated
+        info['tumble_recovered'] = self.disturbance_recovered
         info['wind_magnitude'] = np.linalg.norm(self.current_wind)
         
-        if self.tumble_recovered:
+        if self.disturbance_recovered:
             info['recovery_steps'] = self.recovery_steps
         
         return obs, reward, done, False, info
