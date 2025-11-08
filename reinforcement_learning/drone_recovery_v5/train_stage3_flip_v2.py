@@ -247,8 +247,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     
     parser.add_argument('--stage2-model', type=str, 
-                        default='./models/flip_recovery_policy_interrupted.zip',
-                        help='Path to Stage 2 trained policy')
+                    default='./models/hover_disturbance_policy_interrupted.zip',
+                    help='Path to Stage 2 trained policy')
     parser.add_argument('--timesteps', type=int, default=300000,
                         help='Total training timesteps')
     parser.add_argument('--wind-strength', type=float, default=5.0,
