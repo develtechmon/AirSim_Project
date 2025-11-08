@@ -131,18 +131,18 @@ class DroneFlipRecoveryEnv(gym.Env):
         Simulate bird attack / sudden disturbance
         Apply angular velocity to make drone tumble
         """
-        # Random tumble intensity (1-3 rad/s on each axis)
-        tumble_intensity = np.random.uniform(1.5, 3.0)
+        # MUCH HIGHER tumble intensity for dramatic flips (5-10 rad/s)
+        tumble_intensity = np.random.uniform(5.0, 10.0)  # Increased from 1.5-3.0!
         
-        # Random tumble direction
+        # Random tumble direction (at least 2 axes for realistic tumble)
         self.tumble_angular_velocity = np.array([
             np.random.uniform(-tumble_intensity, tumble_intensity),
             np.random.uniform(-tumble_intensity, tumble_intensity),
-            np.random.uniform(-tumble_intensity, tumble_intensity)
+            np.random.uniform(-tumble_intensity * 0.5, tumble_intensity * 0.5)  # Less Z-axis
         ])
         
-        # Tumble duration (will decay over time)
-        self.tumble_duration = 20  # Steps for tumble to naturally decay
+        # Longer tumble duration (100 steps = 5 seconds)
+        self.tumble_duration = 100  # Increased from 20!
         
         self.tumble_initiated = True
         self.tumble_start_step = self.episode_steps
@@ -151,6 +151,7 @@ class DroneFlipRecoveryEnv(gym.Env):
             print(f"   🐦 BIRD ATTACK! Tumble initiated!")
             print(f"      Angular velocity: [{self.tumble_angular_velocity[0]:.2f}, "
                   f"{self.tumble_angular_velocity[1]:.2f}, {self.tumble_angular_velocity[2]:.2f}] rad/s")
+            print(f"      ⚠️  SEVERE TUMBLE - Drone will flip multiple times!")
     
     def _apply_tumble_dynamics(self):
         """
@@ -200,10 +201,10 @@ class DroneFlipRecoveryEnv(gym.Env):
         # Decay tumble over time (simulates air resistance)
         steps_since_tumble = self.episode_steps - self.tumble_start_step
         decay_factor = max(0, 1.0 - (steps_since_tumble / self.tumble_duration))
-        self.tumble_angular_velocity *= (0.98 * decay_factor)  # Gradual decay
+        self.tumble_angular_velocity *= (0.995 * decay_factor)  # Slower decay (was 0.98)
         
-        # Check if tumble has naturally decayed
-        if np.linalg.norm(self.tumble_angular_velocity) < 0.1:
+        # Check if tumble has naturally decayed (must be VERY stable)
+        if np.linalg.norm(self.tumble_angular_velocity) < 0.5:  # Stricter threshold (was 0.1)
             # Check if drone is upright
             if self._is_upright([new_qw, new_qx, new_qy, new_qz]):
                 self.tumble_recovered = True
@@ -224,7 +225,7 @@ class DroneFlipRecoveryEnv(gym.Env):
     def _is_tumbling(self, angular_velocity):
         """Check if drone is currently tumbling (high angular velocity)"""
         ang_vel_magnitude = np.linalg.norm(angular_velocity)
-        return ang_vel_magnitude > 0.5  # Spinning faster than 0.5 rad/s
+        return ang_vel_magnitude > 2.0  # Spinning faster than 2.0 rad/s (was 0.5)
     
     def _get_observation(self):
         """Get current state (13 observations)"""

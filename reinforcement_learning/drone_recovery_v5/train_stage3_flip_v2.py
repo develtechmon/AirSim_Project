@@ -51,11 +51,15 @@ class ProgressCallback(BaseCallback):
                     self.episode_lengths.append(ep_length)
                     
                     # Track recovery stats
-                    has_recovered = info.get("has_recovered", False)
+                    tumble_initiated = info.get("tumble_initiated", False)
+                    tumble_recovered = info.get("tumble_recovered", False)
                     recovery_steps = info.get("recovery_steps", 0)
-                    self.recovery_successes.append(1 if has_recovered else 0)
-                    if has_recovered:
-                        self.recovery_times.append(recovery_steps)
+                    
+                    # Only track if tumble happened
+                    if tumble_initiated:
+                        self.recovery_successes.append(1 if tumble_recovered else 0)
+                        if tumble_recovered:
+                            self.recovery_times.append(recovery_steps)
                     
                     # Print every 10 episodes
                     if self.episode_count % 10 == 0:
@@ -105,7 +109,7 @@ def main(args):
             max_steps=500,
             wind_strength=args.wind_strength,
             flip_prob=args.flip_prob,
-            debug=False
+            debug=True  # Changed to True to see tumble messages!
         )
         env = Monitor(env)
         return env
@@ -241,7 +245,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     
     parser.add_argument('--stage2-model', type=str, 
-                        default='./models/hover_disturbance_policy_interrupted.zip',
+                        default='./models/flip_recovery_policy_interrupted.zip',
                         help='Path to Stage 2 trained policy')
     parser.add_argument('--timesteps', type=int, default=300000,
                         help='Total training timesteps')
