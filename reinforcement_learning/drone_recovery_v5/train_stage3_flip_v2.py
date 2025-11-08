@@ -241,7 +241,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     
     parser.add_argument('--stage2-model', type=str, 
-                        default='./models/hover_disturbance_policy.zip',
+                        default='./models/hover_disturbance_policy_interrupted.zip',
                         help='Path to Stage 2 trained policy')
     parser.add_argument('--timesteps', type=int, default=300000,
                         help='Total training timesteps')

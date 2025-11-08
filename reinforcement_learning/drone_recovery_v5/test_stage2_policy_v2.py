@@ -12,6 +12,47 @@ Success criteria:
 
 Usage:
     python test_stage2_policy_v2.py --episodes 10
+
+python test_stage2_policy_v2.py --episodes 10 (i'm using this command)
+
+*************** Final Result *****************  
+======================================================================
+Episode  1/10 | Steps: 500 | Success: ✅ | Dist: 0.19m | Wind: 2.1m/s (max: 4.7) | Reason: timeout
+Episode  2/10 | Steps: 500 | Success: ✅ | Dist: 0.24m | Wind: 1.6m/s (max: 4.3) | Reason: timeout
+Episode  3/10 | Steps: 500 | Success: ✅ | Dist: 0.19m | Wind: 1.4m/s (max: 4.6) | Reason: timeout
+Episode  4/10 | Steps: 500 | Success: ✅ | Dist: 0.24m | Wind: 1.4m/s (max: 4.1) | Reason: timeout
+Episode  5/10 | Steps: 500 | Success: ✅ | Dist: 0.28m | Wind: 1.8m/s (max: 3.6) | Reason: timeout
+Episode  6/10 | Steps: 500 | Success: ✅ | Dist: 0.30m | Wind: 2.1m/s (max: 3.5) | Reason: timeout
+Episode  7/10 | Steps: 500 | Success: ✅ | Dist: 0.30m | Wind: 2.7m/s (max: 4.6) | Reason: timeout
+Episode  8/10 | Steps: 500 | Success: ✅ | Dist: 0.16m | Wind: 2.3m/s (max: 4.8) | Reason: timeout
+Episode  9/10 | Steps: 500 | Success: ✅ | Dist: 0.19m | Wind: 1.2m/s (max: 2.9) | Reason: timeout
+Episode 10/10 | Steps: 500 | Success: ✅ | Dist: 0.21m | Wind: 2.2m/s (max: 3.6) | Reason: timeout
+======================================================================
+
+======================================================================
+📊 TEST RESULTS
+======================================================================
+Success Rate: 100% (10/10 episodes)
+Average Distance: 0.23m (successful episodes)
+Average Wind Handled: 1.9 m/s
+Maximum Wind Survived: 4.8 m/s
+Average Episode Length: 500.0 steps
+
+======================================================================
+✅ EXCELLENT! Policy handles wind disturbances very well!
+   Ready for Stage 3 (flip recovery)
+   ✅ Model can be used for transfer learning to Stage 3!
+======================================================================
+
+======================================================================
+📊 COMPARISON TO STAGE 1
+======================================================================
+Stage 1 (no wind):  95%+ success, ~0.39m avg distance
+Stage 2 (with wind): 100% success, 0.23m avg distance
+
+✅ Successfully maintained hover ability despite wind!
+======================================================================
+
 """
 
 import numpy as np
@@ -208,7 +249,7 @@ def find_model_files(model_path, vecnormalize_path):
         return model_interrupted, vecnorm_interrupted
     
     # Check for any checkpoint files
-    checkpoint_dir = './models_v2/stage2_checkpoints/'
+    checkpoint_dir = './models/stage2_checkpoints/'
     if os.path.exists(checkpoint_dir):
         checkpoints = [f for f in os.listdir(checkpoint_dir) if f.endswith('.zip')]
         if checkpoints:
@@ -228,9 +269,9 @@ def find_model_files(model_path, vecnormalize_path):
     print(f"   1. {model_path}")
     print(f"   2. {model_interrupted}")
     print(f"   3. Checkpoints in {checkpoint_dir}")
-    print("\nAvailable files in ./models_v2/:")
-    if os.path.exists('./models_v2/'):
-        for f in os.listdir('./models_v2/'):
+    print("\nAvailable files in ./models/:")
+    if os.path.exists('./models/'):
+        for f in os.listdir('./models/'):
             if f.endswith('.zip') or f.endswith('.pkl'):
                 print(f"      - {f}")
     print("\nPlease specify the correct path using:")
@@ -248,7 +289,7 @@ Examples:
   python test_stage2_policy_v2.py
   
   # Specify custom paths
-  python test_stage2_policy_v2.py --model ./models_v2/my_model.zip --vecnormalize ./models_v2/my_vecnorm.pkl
+  python test_stage2_policy_v2.py --model ./models/my_model.zip --vecnormalize ./models/my_vecnorm.pkl
   
   # Test with different settings
   python test_stage2_policy_v2.py --episodes 20 --wind-strength 3.0
@@ -256,10 +297,10 @@ Examples:
     )
     
     parser.add_argument('--model', type=str,
-                        default='./models_v2/hover_disturbance_policy.zip',
+                        default='./models/hover_disturbance_policy.zip',
                         help='Path to trained Stage 2 model (auto-detects _interrupted version)')
     parser.add_argument('--vecnormalize', type=str,
-                        default='./models_v2/hover_disturbance_vecnormalize.pkl',
+                        default='./models/hover_disturbance_vecnormalize.pkl',
                         help='Path to VecNormalize stats (auto-detects _interrupted version)')
     parser.add_argument('--episodes', type=int, default=10,
                         help='Number of test episodes (default: 10)')

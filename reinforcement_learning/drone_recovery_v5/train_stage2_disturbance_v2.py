@@ -15,6 +15,43 @@ Usage:
     python train_stage2_disturbance_v2.py
 
 That's it! Just like the original!
+
+python train_stage2_disturbance_v2.py (i'm using this command)
+
+*************** Final Result *****************  
+======================================================================
+📊 EPISODE 340
+======================================================================
+   Last 10 Episodes:
+      Avg Return: 41045.9 <--- High return
+      Avg Length: 500.0 steps <--- High length
+      Max Length: 500 steps
+   Current wind: 2.4 m/s
+======================================================================
+
+-----------------------------------------
+| rollout/                |             |
+|    ep_len_mean          | 500         |
+|    ep_rew_mean          | 4.09e+04    |
+| time/                   |             |
+|    fps                  | 12          |
+|    iterations           | 84          |
+|    time_elapsed         | 14268       |
+|    total_timesteps      | 172032      |
+| train/                  |             |
+|    approx_kl            | 0.002353337 |
+|    clip_fraction        | 0.00508     |
+|    clip_range           | 0.2         |
+|    entropy_loss         | -4.22       |
+|    explained_variance   | 0.00973     |
+|    learning_rate        | 3e-05       |
+|    loss                 | 9.15e+05    |
+|    n_updates            | 830         |
+|    policy_gradient_loss | -0.00441    |
+|    std                  | 0.987       |
+|    value_loss           | 1.92e+06    |
+-----------------------------------------
+
 """
 
 import torch
