@@ -67,18 +67,27 @@ class DisturbanceInjector:
             dict: Information about the applied disturbance
         """
         
-        if disturbance_type == DisturbanceType.COLLISION:
-            return self._apply_collision(intensity)
-        elif disturbance_type == DisturbanceType.BIRD_ATTACK:
+        # if disturbance_type == DisturbanceType.COLLISION:
+        #     return self._apply_collision(intensity)
+        # elif disturbance_type == DisturbanceType.BIRD_ATTACK:
+        #     return self._apply_bird_attack(intensity)
+        # elif disturbance_type == DisturbanceType.WIND_GUST:
+        #     return self._apply_wind_gust(intensity)
+        # elif disturbance_type == DisturbanceType.FLIP:
+        #     return self._apply_flip(intensity)
+        # elif disturbance_type == DisturbanceType.SPIN:
+        #     return self._apply_spin(intensity)
+        # elif disturbance_type == DisturbanceType.DROP:
+        #     return self._apply_drop(intensity)
+        # else:
+        #     raise ValueError(f"Unknown disturbance type: {disturbance_type}")
+
+        if disturbance_type == DisturbanceType.BIRD_ATTACK:
             return self._apply_bird_attack(intensity)
-        elif disturbance_type == DisturbanceType.WIND_GUST:
-            return self._apply_wind_gust(intensity)
         elif disturbance_type == DisturbanceType.FLIP:
             return self._apply_flip(intensity)
         elif disturbance_type == DisturbanceType.SPIN:
             return self._apply_spin(intensity)
-        elif disturbance_type == DisturbanceType.DROP:
-            return self._apply_drop(intensity)
         else:
             raise ValueError(f"Unknown disturbance type: {disturbance_type}")
     

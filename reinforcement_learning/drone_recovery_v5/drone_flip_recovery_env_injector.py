@@ -189,7 +189,7 @@ class DroneFlipRecoveryEnv(gym.Env):
                 DisturbanceType.BIRD_ATTACK,
                 DisturbanceType.FLIP,
                 DisturbanceType.SPIN,
-                DisturbanceType.COLLISION,
+                #DisturbanceType.COLLISION,Disable collision for now
             ])
             if self.debug:
                 print(f"   ⚠️  Disturbance scheduled: {self.disturbance_type.value} at step {self.disturbance_trigger_step}")
