@@ -35,6 +35,104 @@ Key Features:
 
 This is MUCH faster than training from scratch because we start
 with a policy that already knows how to hover!
+
+RESULT
+
+command - python train_stage2_disturbance.py
+=====================================================================
+📊 EPISODE 1000
+======================================================================
+   Last 10 Episodes:
+      Avg Return: 34058.1
+      Avg Length: 500.0 steps
+      Max Length: 500 steps
+   Current wind: 4.0 m/s
+======================================================================
+
+------------------------------------------
+| rollout/                |              |
+|    ep_len_mean          | 500          |
+|    ep_rew_mean          | 3.14e+04     |
+| time/                   |              |
+|    fps                  | 12           |
+|    iterations           | 243          |
+|    time_elapsed         | 41434        |
+|    total_timesteps      | 497664       |
+| train/                  |              |
+|    approx_kl            | 0.0035859286 |
+|    clip_fraction        | 0.00859      |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -4.13        |
+|    explained_variance   | 0            |
+|    learning_rate        | 3e-05        |
+|    loss                 | 8.3e+05      |
+|    n_updates            | 2420         |
+|    policy_gradient_loss | -0.00389     |
+|    std                  | 0.96         |
+|    value_loss           | 1.54e+06     |
+------------------------------------------
+------------------------------------------
+| rollout/                |              |
+|    ep_len_mean          | 500          |
+|    ep_rew_mean          | 3.17e+04     |
+| time/                   |              |
+|    fps                  | 12           |
+|    iterations           | 244          |
+|    time_elapsed         | 41603        |
+|    total_timesteps      | 499712       |
+| train/                  |              |
+|    approx_kl            | 0.0021657948 |
+|    clip_fraction        | 0.00298      |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -4.13        |
+|    explained_variance   | 1.79e-07     |
+|    learning_rate        | 3e-05        |
+|    loss                 | 8.56e+05     |
+|    n_updates            | 2430         |
+|    policy_gradient_loss | -0.00221     |
+|    std                  | 0.96         |
+|    value_loss           | 1.61e+06     |
+------------------------------------------
+------------------------------------------
+| rollout/                |              |
+|    ep_len_mean          | 500          |
+|    ep_rew_mean          | 3.19e+04     |
+| time/                   |              |
+|    fps                  | 12           |
+|    iterations           | 245          |
+|    time_elapsed         | 41773        |
+|    total_timesteps      | 501760       |
+| train/                  |              |
+|    approx_kl            | 0.0044627436 |
+|    clip_fraction        | 0.0173       |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -4.13        |
+|    explained_variance   | -1.19e-07    |
+|    learning_rate        | 3e-05        |
+|    loss                 | 7.24e+05     |
+|    n_updates            | 2440         |
+|    policy_gradient_loss | -0.0051      |
+|    std                  | 0.96         |
+|    value_loss           | 1.42e+06     |
+------------------------------------------
+ 100% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 501,760/500,000  [ 11:33:39 < 0:00:00 , 11 it/s ]
+
+======================================================================
+✅ TRAINING COMPLETE!
+======================================================================
+
+💾 Model saved:
+   - ./models/hover_disturbance_policy.zip
+   - ./models/hover_disturbance_vecnormalize.pkl
+
+📊 Training Statistics:
+   Total episodes: 1008
+   Avg return: 9436.0
+   Avg length: 497.7
+
+✅ Next step: Run test_stage2_policy.py to evaluate!
+======================================================================
+
 """
 
 import torch

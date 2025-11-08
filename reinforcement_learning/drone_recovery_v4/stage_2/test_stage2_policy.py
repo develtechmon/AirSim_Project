@@ -12,15 +12,123 @@ python test_stage2_policy.py --help
 
 # Shows examples:
 Examples:
-  # Auto-detect model files
-  python test_stage2_policy.py
+# Auto-detect model files
+python test_stage2_policy.py
   
-  # Specify custom paths
-  python test_stage2_policy.py --model ./models/my_model.zip --vecnormalize ./models/my_vecnorm.pkl
+# Specify custom paths
+python test_stage2_policy.py --model ./models/my_model.zip --vecnormalize ./models/my_vecnorm.pkl
   
-  # Test with different settings
-  python test_stage2_policy.py --episodes 20 --wind-strength 3.0
-  
+# Test with different settings
+python test_stage2_policy.py --episodes 20 --wind-strength 3.0
+
+# Basic test (10 episodes)
+python test_stage2_policy.py (run this one)
+
+# Comprehensive test (20 episodes)
+python test_stage2_policy.py --episodes 20
+
+# Test with lower wind (easier)
+python test_stage2_policy.py --wind-strength 3.0
+
+# Test with higher wind (harder challenge)
+python test_stage2_policy.py --wind-strength 7.0
+
+# Test specific checkpoint
+python test_stage2_policy.py --model ./models/stage2_checkpoints/disturbance_policy_500000_steps.zip --vecnormalize ./models/stage2_checkpoints/disturbance_policy_vecnormalize_500000_steps.pkl
+
+# Full comprehensive test
+python test_stage2_policy.py --episodes 50 --wind-strength 5.0
+```
+
+---
+
+## 📊 **AFTER TESTING:**
+
+### **If Success Rate ≥90%:** ✅
+```
+🎉 STAGE 2 COMPLETE!
+✅ Mastered wind disturbance recovery!
+✅ Ready for Stage 3 (flip recovery)!
+
+Next Steps:
+1. Celebrate! 🎉
+2. Save your model safely
+3. Move to Stage 3 training
+```
+
+### **If Success Rate 80-89%:** ✅
+```
+✅ STAGE 2 COMPLETE!
+Good performance with wind
+Can proceed to Stage 3
+
+Optional: Train 100-200 more episodes for 90%+
+```
+
+### **If Success Rate <80%:** ⚠️
+```
+⚠️ Something unexpected!
+With +34k return, should be >90%
+
+Action: Share test results for debugging
+```
+
+---
+
+## 🎯 **MY PREDICTION:**
+
+**Based on Episode 1000 return of +34,058:**
+```
+Expected Test Results:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Success Rate: 95-100% ✅
+Avg Distance: 0.35-0.45m ✅
+Wind Tolerance: Full 5 m/s ✅
+
+Verdict: EXCELLENT! Ready for Stage 3!
+```
+
+---
+
+## 📂 **YOUR MODEL FILES:**
+
+After 1000 episodes (500,000 steps), you have:
+```
+models/
+├── hover_disturbance_policy.zip              ← Final model
+├── hover_disturbance_vecnormalize.pkl        ← Final normalization
+└── stage2_checkpoints/
+    ├── disturbance_policy_25000_steps.zip    ← Episode 50
+    ├── disturbance_policy_50000_steps.zip    ← Episode 100
+    ├── disturbance_policy_75000_steps.zip    ← Episode 150
+    ├── ...
+    └── disturbance_policy_500000_steps.zip   ← Episode 1000 ✅
+
+RESULT
+command - python test_stage2_policy.py
+======================================================================
+📊 TEST RESULTS
+======================================================================
+Success Rate: 100% (10/10 episodes)
+Average Distance: 0.48m (successful episodes)
+Average Wind Handled: 1.8 m/s
+Maximum Wind Survived: 4.8 m/s
+Average Episode Length: 500.0 steps
+
+======================================================================
+✅ EXCELLENT! Policy handles wind disturbances very well!
+   Ready for Stage 3 (flip recovery)
+======================================================================
+
+======================================================================
+📊 COMPARISON TO STAGE 1
+======================================================================
+Stage 1 (no wind):  100% success, 0.39m avg distance
+Stage 2 (with wind): 100% success, 0.48m avg distance
+
+✅ Successfully maintained hover ability despite wind!
+======================================================================
+
 """
 
 import numpy as np
