@@ -36,18 +36,18 @@ class DisturbanceInjector:
             'bird_attack': {
                 'force_range': (30, 80),
                 'duration': 0.15,
-                'angular_impulse': (360, 540),   # degrees/sec - SEVERE IMPACT!
+                'angular_impulse': (180, 360),   # degrees/sec (INCREASED!)
             },
             'wind_gust': {
                 'force_range': (20, 60),
                 'duration': 0.3,
             },
             'flip': {
-                'angular_velocity': (450, 720), # degrees/sec - EXTREME FLIP!
+                'angular_velocity': (270, 540), # degrees/sec (INCREASED!)
                 'axis': ['roll', 'pitch'],      # which axis to flip
             },
             'spin': {
-                'angular_velocity': (540, 900), # degrees/sec - EXTREME SPIN!
+                'angular_velocity': (180, 360), # degrees/sec (INCREASED!)
             },
             'drop': {
                 'force_range': (-80, -40),      # Downward force
@@ -67,18 +67,27 @@ class DisturbanceInjector:
             dict: Information about the applied disturbance
         """
         
-        if disturbance_type == DisturbanceType.COLLISION:
-            return self._apply_collision(intensity)
-        elif disturbance_type == DisturbanceType.BIRD_ATTACK:
+        # if disturbance_type == DisturbanceType.COLLISION:
+        #     return self._apply_collision(intensity)
+        # elif disturbance_type == DisturbanceType.BIRD_ATTACK:
+        #     return self._apply_bird_attack(intensity)
+        # elif disturbance_type == DisturbanceType.WIND_GUST:
+        #     return self._apply_wind_gust(intensity)
+        # elif disturbance_type == DisturbanceType.FLIP:
+        #     return self._apply_flip(intensity)
+        # elif disturbance_type == DisturbanceType.SPIN:
+        #     return self._apply_spin(intensity)
+        # elif disturbance_type == DisturbanceType.DROP:
+        #     return self._apply_drop(intensity)
+        # else:
+        #     raise ValueError(f"Unknown disturbance type: {disturbance_type}")
+
+        if disturbance_type == DisturbanceType.BIRD_ATTACK:
             return self._apply_bird_attack(intensity)
-        elif disturbance_type == DisturbanceType.WIND_GUST:
-            return self._apply_wind_gust(intensity)
         elif disturbance_type == DisturbanceType.FLIP:
             return self._apply_flip(intensity)
         elif disturbance_type == DisturbanceType.SPIN:
             return self._apply_spin(intensity)
-        elif disturbance_type == DisturbanceType.DROP:
-            return self._apply_drop(intensity)
         else:
             raise ValueError(f"Unknown disturbance type: {disturbance_type}")
     
@@ -239,8 +248,8 @@ class DisturbanceInjector:
         # Convert to radians/sec
         angular_vel_rad = np.radians(angular_vel)
         
-        # Duration of rotation application - LONGER for more dramatic effect!
-        duration = 0.8  # seconds (was 0.5) - creates persistent rotation!
+        # Duration of rotation application
+        duration = 0.5  # seconds to apply rotation
         
         # Apply rotation using angle rates
         try:
