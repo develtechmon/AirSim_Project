@@ -11,6 +11,7 @@
         "./reinforcement_learning/airsim_post_impact_resilience_v2",
         "./reinforcement_learning/drone_recovery",
         "./reinforcement_learning/drone_recovery_v4",
+        "./reinforcement_learning/drone_recovery_v5",
         "./reinforcement_learning/drone_recovery_v5"
     ]
 }
