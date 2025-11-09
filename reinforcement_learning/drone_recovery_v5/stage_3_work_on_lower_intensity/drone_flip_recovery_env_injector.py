@@ -1,17 +1,23 @@
 """
-DRONE FLIP RECOVERY ENVIRONMENT - ULTIMATE VERSION (PhD Project)
-=================================================================
-Drop-in replacement that works with your existing code!
+DRONE FLIP RECOVERY ENVIRONMENT - WITH DISTURBANCE INJECTOR (13 OBSERVATIONS)
+==============================================================================
+Stage 3: Uses external DisturbanceInjector for realistic bird attacks and impacts
 
-Changes from your current version:
-1. target_altitude: 10m → 30m (massive recovery space!)
-2. max_steps: 500 → 600 (more time for recovery)
-3. intensity: 0.8-1.5 → 0.7-1.5 with curriculum
-4. rewards: Single-phase → Two-phase recovery
-5. crash threshold: 1.0m → 0.5m (more space)
-6. too_high: 20m → 40m (matches 30m altitude)
+The drone must learn to:
+1. Detect tumbling/disturbances (using angular velocity)
+2. Apply counter-rotation to stop the tumble
+3. Orient itself upright
+4. Stabilize and return to hover position
+5. Handle wind during recovery
 
-Just run your same command: python train_stage3_flip_v2.py
+Observation Space: (13,)
+    - position: [x, y, z]
+    - velocity: [vx, vy, vz]  
+    - orientation: [qw, qx, qy, qz]
+    - angular_velocity: [wx, wy, wz] ← CRITICAL!
+
+Action Space: (3,)
+    - velocity commands: [vx, vy, vz] in range [-5, 5] m/s
 """
 
 import airsim
@@ -29,17 +35,17 @@ from disturbance_injector import DisturbanceInjector, DisturbanceType
 
 class DroneFlipRecoveryEnv(gym.Env):
     """
-    ULTIMATE Drone flip recovery - handles 0.7x to 1.5x intensity
+    Drone flip recovery with REALISTIC disturbance injection
     """
     
-    def __init__(self, target_altitude=30.0, max_steps=600, 
+    def __init__(self, target_altitude=10.0, max_steps=500, 
                  wind_strength=5.0, flip_prob=0.9, debug=False):
         super().__init__()
         
-        self.target_altitude = target_altitude  # 30m!
-        self.max_steps = max_steps  # 600!
+        self.target_altitude = target_altitude
+        self.max_steps = max_steps
         self.wind_strength = wind_strength
-        self.disturbance_prob = flip_prob
+        self.disturbance_prob = flip_prob  # Probability of disturbance
         self.debug = debug
         
         # Action space: velocity commands
@@ -67,7 +73,6 @@ class DroneFlipRecoveryEnv(gym.Env):
         
         # Episode tracking
         self.episode_steps = 0
-        self.episode_count = 0  # For curriculum
         self.stable_steps = 0
         self.current_wind = np.zeros(3)
         self.wind_change_timer = 0
@@ -79,14 +84,14 @@ class DroneFlipRecoveryEnv(gym.Env):
         self.disturbance_start_step = 0
         self.recovery_steps = 0
         self.disturbance_info = {}
-        self.previous_ang_vel_magnitude = 0
         
         if self.debug:
-            print(f"✓ ULTIMATE Flip Recovery Environment (PhD Project)")
-            print(f"  - Altitude: {self.target_altitude}m (was 10m)")
-            print(f"  - Max steps: {self.max_steps} (was 500)")
-            print(f"  - Intensity: 0.7x-1.5x (full spectrum)")
-            print(f"  - Rewards: Two-phase recovery")
+            print(f"✓ Drone Flip Recovery Environment (DISTURBANCE INJECTOR)")
+            print(f"  - Target: [0, 0, {-self.target_altitude}]")
+            print(f"  - Max steps: {self.max_steps}")
+            print(f"  - Wind strength: 0-{self.wind_strength} m/s")
+            print(f"  - Disturbance probability: {self.disturbance_prob*100:.0f}%")
+            print(f"  - Mode: EXTERNAL DISTURBANCE INJECTION")
     
     def _get_wind(self):
         """Generate random wind vector"""
@@ -150,7 +155,7 @@ class DroneFlipRecoveryEnv(gym.Env):
         self.client.takeoffAsync().join()
         time.sleep(0.5)
         
-        # Move to starting position (30m!)
+        # Move to starting position
         start_x = np.random.uniform(-1, 1)
         start_y = np.random.uniform(-1, 1)
         self.client.moveToPositionAsync(
@@ -174,16 +179,17 @@ class DroneFlipRecoveryEnv(gym.Env):
         self.disturbance_start_step = 0
         self.recovery_steps = 0
         self.disturbance_info = {}
-        self.previous_ang_vel_magnitude = 0
         
         # Decide if disturbance will happen
         self.will_have_disturbance = np.random.random() < self.disturbance_prob
         if self.will_have_disturbance:
             self.disturbance_trigger_step = np.random.randint(20, 50)
+            # Choose random disturbance type (focus on tumbling types)
             self.disturbance_type = np.random.choice([
                 DisturbanceType.BIRD_ATTACK,
                 DisturbanceType.FLIP,
                 DisturbanceType.SPIN,
+                #DisturbanceType.COLLISION,Disable collision for now
             ])
             if self.debug:
                 print(f"   ⚠️  Disturbance scheduled: {self.disturbance_type.value} at step {self.disturbance_trigger_step}")
@@ -192,27 +198,17 @@ class DroneFlipRecoveryEnv(gym.Env):
             if self.debug:
                 print(f"   ✅ No disturbance this episode")
         
-        self.episode_count += 1
-        
         return self._get_observation(), {}
     
     def step(self, action):
         """Execute one step"""
         self.episode_steps += 1
         
-        # Trigger disturbance with CURRICULUM INTENSITY
+        # Trigger disturbance if scheduled
         if self.will_have_disturbance and not self.disturbance_initiated:
             if self.episode_steps >= self.disturbance_trigger_step:
-                # CURRICULUM: Progressive difficulty
-                progress = min(self.episode_steps / 500.0, 1.0)
-                
-                if progress < 0.3:
-                    intensity = np.random.uniform(0.7, 0.95)  # Easy
-                elif progress < 0.6:
-                    intensity = np.random.uniform(0.85, 1.15)  # Medium
-                else:
-                    intensity = np.random.uniform(1.0, 1.5)  # Hard
-                
+                # Inject disturbance!
+                intensity = np.random.uniform(0.8, 1.5)  # High intensity
                 self.disturbance_info = self.disturbance_injector.inject_disturbance(
                     self.disturbance_type,
                     intensity=intensity
@@ -227,7 +223,7 @@ class DroneFlipRecoveryEnv(gym.Env):
                     if 'angular_velocity' in self.disturbance_info:
                         print(f"      Angular velocity: {self.disturbance_info['angular_velocity']:.1f} deg/s")
         
-        # Execute action
+        # Execute action (velocity command)
         action = np.clip(action, -5.0, 5.0)
         self.client.moveByVelocityAsync(
             float(action[0]),
@@ -238,7 +234,7 @@ class DroneFlipRecoveryEnv(gym.Env):
             yaw_mode=airsim.YawMode(False, 0)
         ).join()
         
-        # Update wind
+        # Update wind periodically
         self.wind_change_timer += 1
         if self.wind_change_timer >= int(self.wind_change_interval / 0.05):
             self.current_wind = self._get_wind()
@@ -248,7 +244,12 @@ class DroneFlipRecoveryEnv(gym.Env):
         
         # Get observation
         obs = self._get_observation()
-        pos, vel, ori, ang_vel = obs[0:3], obs[3:6], obs[6:10], obs[10:13]
+        
+        # Parse observation
+        pos = obs[0:3]
+        vel = obs[3:6]
+        ori = obs[6:10]
+        ang_vel = obs[10:13]
         
         # Calculate metrics
         alt = -pos[2]
@@ -260,132 +261,88 @@ class DroneFlipRecoveryEnv(gym.Env):
         
         # Check for recovery
         if self.disturbance_initiated and not self.disturbance_recovered:
-            if ang_vel_magnitude < 0.8 and is_upright and dist_from_target_alt < 3.0:
+            # Consider recovered if stable and upright
+            if ang_vel_magnitude < 0.8 and is_upright and dist_from_target_alt < 2.0:
                 self.disturbance_recovered = True
                 self.recovery_steps = self.episode_steps - self.disturbance_start_step
                 if self.debug:
                     print(f"   ✅ RECOVERED! Took {self.recovery_steps} steps ({self.recovery_steps * 0.05:.1f}s)")
         
-        # TWO-PHASE RECOVERY REWARDS
+        # Reward calculation
         reward = 0.0
         done = False
         info = {}
         
+        # DISTURBANCE RECOVERY REWARDS
         if self.disturbance_initiated and not self.disturbance_recovered:
-            # PHASE 1: Extreme (>4 rad/s) - STOP SPIN!
-            if ang_vel_magnitude > 4.0:
-                reward -= ang_vel_magnitude * 35
-                if self.previous_ang_vel_magnitude > 0:
-                    reduction = self.previous_ang_vel_magnitude - ang_vel_magnitude
-                    if reduction > 0:
-                        reward += reduction * 150
-                if ang_vel_magnitude < 5.0:
-                    reward += 300
-                if ang_vel_magnitude < 4.5:
-                    reward += 200
-                if alt > 20.0:
-                    reward += 200
-                elif alt > 15.0:
-                    reward += 150
-                elif alt > 10.0:
-                    reward += 100
-                elif alt > 5.0:
-                    reward += 50
-                elif alt > 2.0:
-                    reward += 20
-                else:
-                    reward -= 300
-            
-            # PHASE 2: Moderate (1-4 rad/s) - ORIENT
-            elif ang_vel_magnitude > 1.0:
-                reward -= ang_vel_magnitude * 20
-                if is_upright:
-                    reward += 1000
-                else:
-                    reward -= 200
-                if ang_vel_magnitude < 3.0:
-                    reward += 300
-                if ang_vel_magnitude < 2.0:
-                    reward += 400
-                if self.previous_ang_vel_magnitude > 0:
-                    reduction = self.previous_ang_vel_magnitude - ang_vel_magnitude
-                    if reduction > 0:
-                        reward += reduction * 100
-                if alt > 15.0:
-                    reward += 150
-                elif alt > 10.0:
-                    reward += 100
-                elif alt > 5.0:
-                    reward += 50
-                elif alt > 2.0:
-                    reward += 20
-                else:
-                    reward -= 200
-            
-            # PHASE 3: Stable (<1 rad/s) - FINE CONTROL
-            else:
-                reward -= ang_vel_magnitude * 10
-                if is_upright:
-                    reward += 1500
-                else:
-                    reward -= 150
-                if ang_vel_magnitude < 0.5:
-                    reward += 500
-                if ang_vel_magnitude < 0.3:
-                    reward += 300
-                if alt > 25.0:
-                    reward += 200
-                elif alt > 20.0:
-                    reward += 150
-                elif alt > 15.0:
-                    reward += 100
-                elif alt > 10.0:
-                    reward += 50
-                else:
-                    reward -= 100
-                if dist_from_center < 1.0:
-                    reward += 100
-                if dist_from_target_alt < 2.0:
-                    reward += 150
-            
-            reward -= dist_from_center * 0.3
-            reward -= dist_from_target_alt * 0.2
+            # During disturbance - reward for reducing angular velocity
+
+            # Original Reward
+            #reward -= ang_vel_magnitude * 10
         
-        # AFTER RECOVERY
+            # if is_upright:
+            #     reward += 500
+            # else:
+            #     reward -= 50
+            
+            # if ang_vel_magnitude < 1.0:
+            #     reward += 100
+
+            # Added more reward
+            reward -= ang_vel_magnitude * 20
+
+            if is_upright:
+                reward += 1500
+            else:
+                reward -= 150
+            
+            if ang_vel_magnitude < 1.0:
+                reward += 300
+            
+            # Altitude maintenance
+            if alt > 2.0:  # Still flying
+                reward += 50
+            
+            reward -= dist_from_center * 0.5
+            reward -= dist_from_target_alt * 0.5
+        
+        # AFTER RECOVERY: Normal hover rewards
         elif self.disturbance_recovered or not self.will_have_disturbance:
             if dist_from_center < 0.5:
                 reward += 20
             else:
                 reward -= dist_from_center * 2
+            
             if dist_from_target_alt < 0.5:
                 reward += 15
             else:
                 reward -= dist_from_target_alt * 3
+            
             if is_upright:
                 reward += 10
                 self.stable_steps += 1
             else:
                 reward -= 20
                 self.stable_steps = 0
+            
             if ang_vel_magnitude < 0.2:
                 reward += 5
             else:
                 reward -= ang_vel_magnitude * 2
+            
             if self.stable_steps > 50:
                 reward += 10
         
-        self.previous_ang_vel_magnitude = ang_vel_magnitude
-        
-        # Termination (UPDATED)
-        if alt < 0.5:  # Was 1.0
-            reward -= 1500
+        # Termination conditions
+        if alt < 1.0:
+            reward -= 1000
             done = True
             info['reason'] = 'crash'
-        elif alt > 40.0:  # Was 20.0
+        elif alt > 20.0:
             reward -= 500
             done = True
             info['reason'] = 'too_high'
-        elif dist_from_center > 15.0:  # Was 10.0
+        elif dist_from_center > 10.0:
             reward -= 500
             done = True
             info['reason'] = 'too_far'
@@ -393,7 +350,7 @@ class DroneFlipRecoveryEnv(gym.Env):
             done = True
             info['reason'] = 'timeout'
         
-        # Info
+        # Info for tracking
         info['altitude'] = alt
         info['distance'] = dist_from_center
         info['is_upright'] = is_upright
@@ -402,10 +359,9 @@ class DroneFlipRecoveryEnv(gym.Env):
         info['tumble_initiated'] = self.disturbance_initiated
         info['tumble_recovered'] = self.disturbance_recovered
         info['wind_magnitude'] = np.linalg.norm(self.current_wind)
+        
         if self.disturbance_recovered:
             info['recovery_steps'] = self.recovery_steps
-        if self.disturbance_initiated:
-            info['disturbance_intensity'] = self.disturbance_info.get('intensity', 1.0)
         
         return obs, reward, done, False, info
     
