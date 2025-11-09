@@ -20,6 +20,8 @@ python train_stage3_flip_v2.py \
   --flip-prob 1.0 \
   --timesteps 300000
 
+python stage_3_work_on_lower_intensity/train_stage3_flip_v2.py  --stage2-model ./models/flip_recovery_policy.zip  --flip-prob 1.0 --timesteps 250000
+
 To run default
 python train_stage3_flip_v2.py 
 

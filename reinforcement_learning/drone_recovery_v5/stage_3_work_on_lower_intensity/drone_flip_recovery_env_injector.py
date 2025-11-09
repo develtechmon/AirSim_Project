@@ -208,7 +208,7 @@ class DroneFlipRecoveryEnv(gym.Env):
         if self.will_have_disturbance and not self.disturbance_initiated:
             if self.episode_steps >= self.disturbance_trigger_step:
                 # Inject disturbance!
-                intensity = np.random.uniform(0.8, 1.5)  # High intensity
+                intensity = np.random.uniform(0.8, 1.1)  # High intensity
                 self.disturbance_info = self.disturbance_injector.inject_disturbance(
                     self.disturbance_type,
                     intensity=intensity
