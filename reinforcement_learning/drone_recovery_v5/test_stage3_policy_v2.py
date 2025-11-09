@@ -301,10 +301,10 @@ Examples:
     )
     
     parser.add_argument('--model', type=str,
-                        default='./models_v2/flip_recovery_policy.zip',
+                        default='./models/flip_recovery_policy.zip',
                         help='Path to trained Stage 3 model')
     parser.add_argument('--vecnormalize', type=str,
-                        default='./models_v2/flip_recovery_vecnormalize.pkl',
+                        default='./models/flip_recovery_vecnormalize.pkl',
                         help='Path to VecNormalize stats')
     parser.add_argument('--episodes', type=int, default=10,
                         help='Number of test episodes (default: 10)')

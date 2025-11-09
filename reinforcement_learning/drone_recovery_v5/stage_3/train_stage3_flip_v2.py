@@ -13,6 +13,16 @@ Usage:
     python train_stage3_flip_v2.py
 
 That's it! Just like the original!
+
+To retrain from your current checkpoint:
+python train_stage3_flip_v2.py \
+  --stage2-model ./models/flip_recovery_policy.zip \
+  --flip-prob 1.0 \
+  --timesteps 300000
+
+To run default
+python train_stage3_flip_v2.py 
+
 """
 
 import torch

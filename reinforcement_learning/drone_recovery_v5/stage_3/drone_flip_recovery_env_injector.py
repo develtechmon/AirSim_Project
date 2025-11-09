@@ -276,15 +276,28 @@ class DroneFlipRecoveryEnv(gym.Env):
         # DISTURBANCE RECOVERY REWARDS
         if self.disturbance_initiated and not self.disturbance_recovered:
             # During disturbance - reward for reducing angular velocity
-            reward -= ang_vel_magnitude * 10
+
+            # Original Reward
+            #reward -= ang_vel_magnitude * 10
+        
+            # if is_upright:
+            #     reward += 500
+            # else:
+            #     reward -= 50
             
+            # if ang_vel_magnitude < 1.0:
+            #     reward += 100
+
+            # Added more reward
+            reward -= ang_vel_magnitude * 20
+
             if is_upright:
-                reward += 500
+                reward += 1500
             else:
-                reward -= 50
+                reward -= 150
             
             if ang_vel_magnitude < 1.0:
-                reward += 100
+                reward += 300
             
             # Altitude maintenance
             if alt > 2.0:  # Still flying
