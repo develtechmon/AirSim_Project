@@ -19,8 +19,8 @@ python test_stage3_policy.py --flip-prob 0.85 --episodes 20
 python test_stage3_policy.py --flip-prob 0.0 --episodes 20
 
 python test_stage3_policy.py \
-  --model ./models/flip_recovery_policy_interrupted.zip \
-  --vecnorm ./models/flip_recovery_vecnormalize_interrupted.pkl \
+  --model ./models/stage3_lower_intensity_checkpoints/flip_recovery_policy_interrupted.zip \
+  --vecnorm ./models/stage3_lower_intensity_checkpoints/flip_recovery_vecnormalize_interrupted.pkl \
   --episodes 20 \
   --flip-prob 1.0
   
@@ -217,10 +217,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     
     parser.add_argument('--model', type=str,
-                        default='./models/flip_recovery_policy_interrupted.zip',
+                        default='./models/stage3_lower_intensity_checkpoints/flip_recovery_policy_interrupted.zip',
                         help='Path to trained model')
     parser.add_argument('--vecnorm', type=str,
-                        default='./models/flip_recovery_vecnormalize_interrupted.pkl',
+                        default='./models/stage3_lower_intensity_checkpoints/flip_recovery_vecnormalize_interrupted.pkl',
                         help='Path to VecNormalize stats')
     parser.add_argument('--episodes', type=int, default=20,
                         help='Number of test episodes')

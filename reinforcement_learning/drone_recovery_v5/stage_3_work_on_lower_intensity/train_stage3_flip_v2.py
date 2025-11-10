@@ -112,7 +112,7 @@ def main(args):
     print(f"Expected training time: 3 hours")
     print("="*70 + "\n")
     
-    # Create environment
+    # Create environment50
     print(f"[1/3] Creating flip recovery environment...")
     print(f"   Wind strength: 0-{args.wind_strength} m/s")
     print(f"   Flip probability: {args.flip_prob*100:.0f}%")
@@ -190,7 +190,7 @@ def main(args):
     
     checkpoint_callback = CheckpointCallback(
         save_freq=25000,
-        save_path="./models/stage3_checkpoints/",
+        save_path="./models/stage3_lower_intensity_checkpoints/",
         name_prefix="flip_recovery_policy",
         save_vecnormalize=True
     )
@@ -227,12 +227,12 @@ def main(args):
         print("="*70)
         
         # Save final model
-        model.save("./models/flip_recovery_policy")
-        env.save("./models/flip_recovery_vecnormalize.pkl")
+        model.save("./models/stage3_lower_intensity_checkpoints/flip_recovery_policy")
+        env.save("./models/stage3_lower_intensity_checkpoints/flip_recovery_vecnormalize.pkl")
         
         print(f"\n💾 Model saved:")
-        print(f"   - ./models/flip_recovery_policy.zip")
-        print(f"   - ./models/flip_recovery_vecnormalize.pkl")
+        print(f"   - ./models/stage3_lower_intensity_checkpoints/flip_recovery_policy.zip")
+        print(f"   - ./models/stage3_lower_intensity_checkpoints/flip_recovery_vecnormalize.pkl")
         
         print(f"\n📊 Training Statistics:")
         print(f"   Total episodes: {progress_callback.episode_count}")
@@ -247,8 +247,8 @@ def main(args):
         
     except KeyboardInterrupt:
         print("\n⚠️  Training interrupted by user")
-        model.save("./models/flip_recovery_policy_interrupted")
-        env.save("./models/flip_recovery_vecnormalize_interrupted.pkl")
+        model.save("./models/stage3_lower_intensity_checkpoints/flip_recovery_policy_interrupted")
+        env.save("./models/stage3_lower_intensity_checkpoints/flip_recovery_vecnormalize_interrupted.pkl")
         print("💾 Model saved at interruption point")
     
     finally:
@@ -265,7 +265,7 @@ if __name__ == "__main__":
                         help='Total training timesteps')
     parser.add_argument('--wind-strength', type=float, default=5.0,
                         help='Maximum wind strength (m/s)')
-    parser.add_argument('--flip-prob', type=float, default=0.5,
+    parser.add_argument('--flip-prob', type=float, default=1.0,
                         help='Probability of starting flipped (0.0-1.0)')
     parser.add_argument('--lr', type=float, default=1e-5,
                         help='Learning rate (lower than Stage 2 for fine-tuning)')
