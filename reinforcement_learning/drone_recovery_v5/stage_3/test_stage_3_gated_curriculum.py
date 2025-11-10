@@ -17,27 +17,12 @@ Usage:
     python test_gated_curriculum.py --test-level 1  # Medium only
     python test_gated_curriculum.py --test-level 2  # Hard only
     python test_gated_curriculum.py --test-level -1 # All levels (default)
-
-
-# Test Easy-level model
-python test_gated_curriculum.py \
-  --model ./models/curriculum_levels/level_0_EASY_mastered.zip \
-  --vecnorm ./models/curriculum_levels/level_0_EASY_mastered_vecnormalize.pkl
-
-# Test Medium-level model  
-python test_gated_curriculum.py \
-  --model ./models/curriculum_levels/level_1_MEDIUM_mastered.zip \
-  --vecnorm ./models/curriculum_levels/level_1_MEDIUM_mastered_vecnormalize.pkl
-
-# Test Final model
-python test_gated_curriculum.py \
-  --model ./models/gated_curriculum_policy.zip
-
 """
 
 import airsim
 import numpy as np
 import argparse
+from pathlib import Path
 from stable_baselines3 import PPO
 from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
 from drone_flip_recovery_env_injector_gated import DroneFlipRecoveryEnv
@@ -50,16 +35,46 @@ def test_gated_curriculum(model_path, vecnorm_path, num_episodes=60, test_level=
     
     Args:
         model_path: Path to trained model
-        vecnorm_path: Path to VecNormalize stats
+        vecnorm_path: Path to VecNormalize stats (auto-detected if None)
         num_episodes: Number of test episodes (20 per level if testing all)
         test_level: -1=all, 0=easy, 1=medium, 2=hard
     """
+    
+    # Auto-detect vecnorm path if not provided
+    if vecnorm_path is None:
+        # Try to find matching vecnormalize file
+        model_dir = Path(model_path).parent
+        model_name = Path(model_path).stem
+        
+        possible_vecnorm = model_dir / f"{model_name}_vecnormalize.pkl"
+        if possible_vecnorm.exists():
+            vecnorm_path = str(possible_vecnorm)
+            print(f"   Auto-detected VecNormalize: {vecnorm_path}")
+        else:
+            print(f"   ⚠️  Warning: No vecnormalize file found, using default")
+            vecnorm_path = "./models/gated_curriculum_vecnormalize.pkl"
     
     print("\n" + "="*70)
     print("🧪 TESTING GATED CURRICULUM MODEL")
     print("="*70)
     print(f"Model: {model_path}")
+    print(f"VecNormalize: {vecnorm_path}")
     print(f"Episodes: {num_episodes}")
+    
+    # Check if this is a level model and display info
+    model_name = Path(model_path).stem
+    if "level_" in model_name:
+        metadata_path = Path(model_path).parent / f"{model_name}_metadata.json"
+        if metadata_path.exists():
+            import json
+            with open(metadata_path, 'r') as f:
+                metadata = json.load(f)
+            print(f"\n📋 Model Info (from metadata):")
+            print(f"   Level: {metadata.get('level')} - {metadata.get('level_name')}")
+            print(f"   Recovery rate at save: {metadata.get('recovery_rate', 0)*100:.1f}%")
+            print(f"   Episode: {metadata.get('episode')}")
+            print(f"   Training time: {metadata.get('timestamp', 0)/3600:.1f}h")
+    
     if test_level == -1:
         print(f"Testing: ALL intensity levels")
     else:
@@ -383,19 +398,40 @@ def test_gated_curriculum(model_path, vecnorm_path, num_episodes=60, test_level=
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        description='Test gated curriculum models at different stages'
+    )
     
     parser.add_argument('--model', type=str,
                         default='./models/gated_curriculum_policy.zip',
                         help='Path to trained model')
     parser.add_argument('--vecnorm', type=str,
-                        default='./models/gated_curriculum_vecnormalize.pkl',
-                        help='Path to VecNormalize stats')
+                        default=None,
+                        help='Path to VecNormalize stats (auto-detected if not provided)')
     parser.add_argument('--episodes', type=int, default=60,
                         help='Number of test episodes (20 per level if testing all)')
     parser.add_argument('--test-level', type=int, default=-1,
                         help='Test specific level: -1=all, 0=easy, 1=medium, 2=hard')
     
     args = parser.parse_args()
+    
+    print("\n" + "="*70)
+    print("🧪 GATED CURRICULUM MODEL TESTING")
+    print("="*70)
+    
+    # Display available models if default is used
+    if args.model == './models/gated_curriculum_policy.zip':
+        print("\n📂 Available models:")
+        print("   Final model:")
+        print("      ./models/gated_curriculum_policy.zip")
+        
+        level_models_dir = Path("./models/curriculum_levels/")
+        if level_models_dir.exists():
+            level_models = sorted(level_models_dir.glob("*.zip"))
+            if level_models:
+                print("\n   Level models (auto-saved during training):")
+                for model in level_models:
+                    print(f"      {model}")
+        print()
     
     test_gated_curriculum(args.model, args.vecnorm, args.episodes, args.test_level)
