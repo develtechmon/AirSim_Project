@@ -212,15 +212,14 @@ def test_policy(model_path, vecnorm_path, num_episodes=20, flip_prob=1.0):
     
     env.close()
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     
     parser.add_argument('--model', type=str,
-                        default='./models/stage3_lower_intensity_checkpoints/flip_recovery_policy_interrupted.zip',
+                        default='./models/stage3_lower_intensity_checkpoints/flip_recovery_policy_300000_steps.zip',
                         help='Path to trained model')
     parser.add_argument('--vecnorm', type=str,
-                        default='./models/stage3_lower_intensity_checkpoints/flip_recovery_vecnormalize_interrupted.pkl',
+                        default='./models/stage3_lower_intensity_checkpoints/flip_recovery_policy_vecnormalize_300000_steps.pkl',
                         help='Path to VecNormalize stats')
     parser.add_argument('--episodes', type=int, default=20,
                         help='Number of test episodes')
