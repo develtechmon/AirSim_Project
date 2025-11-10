@@ -10,6 +10,20 @@ Only advances to next level when current level is MASTERED:
 
 Usage:
     python train_gated_curriculum.py
+
+    ## 📁 **FILE STRUCTURE:**
+```
+models/stage3_checkpoints/
+                ├── curriculum_levels/              ← NEW!
+                │   ├── level_0_EASY_mastered.zip          ← Episode 203
+                │   ├── level_0_EASY_mastered_vecnormalize.pkl
+                │   ├── level_0_EASY_mastered_metadata.json
+                │   ├── level_1_MEDIUM_mastered.zip        ← Episode 348
+                │   ├── level_1_MEDIUM_mastered_vecnormalize.pkl
+                │   └── level_1_MEDIUM_mastered_metadata.json
+                │
+                └── gated_curriculum_policy.zip     ← Final model
+
 """
 
 import torch
@@ -25,9 +39,9 @@ import time
 
 
 class GatedCurriculumCallback(BaseCallback):
-    """Enhanced callback tracking curriculum progression"""
+    """Enhanced callback tracking curriculum progression with AUTO-SAVE"""
     
-    def __init__(self, verbose=0):
+    def __init__(self, save_path="./models/stage3_checkpoints/curriculum_levels/", verbose=0):
         super().__init__(verbose)
         self.episode_rewards = []
         self.episode_lengths = []
@@ -40,6 +54,10 @@ class GatedCurriculumCallback(BaseCallback):
         
         # Track when levels were achieved
         self.level_achievements = {}
+        
+        # Auto-save setup
+        self.save_path = Path(save_path)
+        self.save_path.mkdir(parents=True, exist_ok=True)
     
     def _on_step(self) -> bool:
         if self.locals.get("dones"):
@@ -69,6 +87,16 @@ class GatedCurriculumCallback(BaseCallback):
                             'reached_at_episode': self.episode_count,
                             'elapsed_time': time.time() - self.start_time
                         }
+                    
+                    # CHECK FOR LEVEL ADVANCEMENT (AUTO-SAVE TRIGGER)
+                    env = self.training_env.envs[0]
+                    if hasattr(env, 'env') and hasattr(env.env, 'level_advanced'):
+                        if env.env.level_advanced:
+                            # LEVEL ADVANCED! AUTO-SAVE MODEL!
+                            advancement_info = env.env.advancement_info
+                            self._save_advancement_model(advancement_info)
+                            # Reset flag
+                            env.env.level_advanced = False
                     
                     if tumble_initiated:
                         self.recovery_successes.append(1 if tumble_recovered else 0)
@@ -120,6 +148,54 @@ class GatedCurriculumCallback(BaseCallback):
                         print(f"{'='*70}\n")
         
         return True
+    
+    def _save_advancement_model(self, advancement_info):
+        """Save model when curriculum level advances"""
+        old_level = advancement_info['old_level']
+        new_level = advancement_info['new_level']
+        recovery_rate = advancement_info['recovery_rate']
+        episode = advancement_info['episode']
+        
+        level_names = ["EASY", "MEDIUM", "HARD"]
+        
+        # Save model
+        model_filename = f"level_{old_level}_{level_names[old_level]}_mastered"
+        model_path = self.save_path / model_filename
+        
+        print("\n" + "="*70)
+        print("💾 AUTO-SAVING MODEL - LEVEL MASTERED!")
+        print("="*70)
+        print(f"   Level {old_level} ({level_names[old_level]}) completed")
+        print(f"   Recovery rate: {recovery_rate*100:.1f}%")
+        print(f"   Episode: {episode}")
+        print(f"   Saving to: {model_path}")
+        
+        # Save the model
+        self.model.save(str(model_path))
+        
+        # Save VecNormalize stats
+        vecnorm_path = self.save_path / f"{model_filename}_vecnormalize.pkl"
+        if hasattr(self.training_env, 'save'):
+            self.training_env.save(str(vecnorm_path))
+        
+        # Save metadata
+        metadata = {
+            'level': old_level,
+            'level_name': level_names[old_level],
+            'recovery_rate': float(recovery_rate),
+            'episode': episode,
+            'timestamp': time.time() - self.start_time
+        }
+        
+        import json
+        metadata_path = self.save_path / f"{model_filename}_metadata.json"
+        with open(metadata_path, 'w') as f:
+            json.dump(metadata, f, indent=2)
+        
+        print(f"   ✅ Model saved: {model_path}.zip")
+        print(f"   ✅ VecNormalize saved: {vecnorm_path}")
+        print(f"   ✅ Metadata saved: {metadata_path}")
+        print("="*70 + "\n")
 
 
 def main(args):
@@ -206,11 +282,14 @@ def main(args):
         )
     
     # Setup callbacks
-    progress_callback = GatedCurriculumCallback()
+    save_path = "./models/stage3_checkpoints/curriculum_levels/"
+    Path(save_path).mkdir(parents=True, exist_ok=True)
+    
+    progress_callback = GatedCurriculumCallback(save_path=save_path)
     
     checkpoint_callback = CheckpointCallback(
         save_freq=50000,
-        save_path="./models/gated_checkpoints/",
+        save_path="./models/stage3_checkpoints/gated_checkpoints/",
         name_prefix="gated_curriculum",
         save_vecnormalize=True
     )
@@ -218,20 +297,24 @@ def main(args):
     callbacks = [progress_callback, checkpoint_callback]
     
     # Create directories
-    Path("./models/gated_checkpoints/").mkdir(parents=True, exist_ok=True)
+    Path("./models/stage3_checkpoints/gated_checkpoints/").mkdir(parents=True, exist_ok=True)
     Path("./logs/gated_curriculum/").mkdir(parents=True, exist_ok=True)
     
     print("\n[3/3] Starting gated curriculum training...")
     print(f"   Total timesteps: {args.timesteps:,}")
     print(f"   Learning rate: {model.learning_rate}")
+    print(f"   💾 Auto-save enabled: {save_path}")
     print()
     print("="*70)
     print("🚀 GATED TRAINING STARTED")
     print("="*70)
     print("Watch for curriculum advancements:")
     print("  ✅ Level 0 → 1: When easy cases reach 80% recovery")
+    print("     💾 Auto-saves: level_0_EASY_mastered.zip")
     print("  ✅ Level 1 → 2: When medium cases reach 70% recovery")
+    print("     💾 Auto-saves: level_1_MEDIUM_mastered.zip")
     print("  🎯 Level 2:     Target 60% recovery on hard cases")
+    print("     💾 Final save: gated_curriculum_policy.zip")
     print("="*70 + "\n")
     
     try:
@@ -246,12 +329,25 @@ def main(args):
         print("="*70)
         
         # Save final model
-        model.save("./models/gated_curriculum_policy")
-        env.save("./models/gated_curriculum_vecnormalize.pkl")
+        model.save("./models/stage3_checkpoints/gated_curriculum_policy")
+        env.save("./models/stage3_checkpoints/gated_curriculum_vecnormalize.pkl")
         
-        print(f"\n💾 Model saved:")
-        print(f"   - ./models/gated_curriculum_policy.zip")
-        print(f"   - ./models/gated_curriculum_vecnormalize.pkl")
+        print(f"\n💾 Models saved:")
+        print(f"\n   📂 Curriculum Level Models (Auto-saved during training):")
+        if (Path(save_path) / "level_0_EASY_mastered.zip").exists():
+            print(f"      ✅ Level 0 (EASY):   {save_path}level_0_EASY_mastered.zip")
+        if (Path(save_path) / "level_1_MEDIUM_mastered.zip").exists():
+            print(f"      ✅ Level 1 (MEDIUM): {save_path}level_1_MEDIUM_mastered.zip")
+        
+        print(f"\n   📂 Final Model:")
+        print(f"      ✅ ./models/stage3_checkpoints/gated_curriculum_policy.zip")
+        print(f"      ✅ ./models/stage3_checkpoints/gated_curriculum_vecnormalize.pkl")
+        
+        print(f"\n   📂 Regular Checkpoints (every 50k steps):")
+        checkpoint_files = list(Path("./models/stage3_checkpoints/gated_checkpoints/").glob("*.zip"))
+        if checkpoint_files:
+            for i, ckpt in enumerate(sorted(checkpoint_files)[-3:]):  # Show last 3
+                print(f"      ✅ {ckpt}")
         
         print(f"\n📊 Training Statistics:")
         print(f"   Total episodes: {progress_callback.episode_count}")
@@ -266,13 +362,21 @@ def main(args):
             level_names = ["EASY (0.7-0.9)", "MEDIUM (0.9-1.1)", "HARD (1.1-1.5)"]
             print(f"   Level {level} ({level_names[level]}): Reached at episode {data['reached_at_episode']} ({data['elapsed_time']/3600:.1f}h)")
         
-        print("\n✅ Next: Test with test_stage3_policy.py")
+        print("\n✅ Next Steps:")
+        print("   1. Test overall performance:")
+        print("      python test_gated_curriculum.py --episodes 60")
+        print("\n   2. Test specific level model:")
+        print("      python test_gated_curriculum.py --model ./models/stage3_checkpoints/curriculum_levels/level_0_EASY_mastered.zip")
+        print("\n   3. Compare level performances:")
+        print("      - Easy model on all intensities")
+        print("      - Medium model on all intensities")
+        print("      - Final model on all intensities")
         print("="*70 + "\n")
         
     except KeyboardInterrupt:
         print("\n⚠️  Training interrupted")
-        model.save("./models/gated_curriculum_policy_interrupted")
-        env.save("./models/gated_curriculum_vecnormalize_interrupted.pkl")
+        model.save("./models/stage3_checkpoints/gated_curriculum_policy_interrupted")
+        env.save("./models/stage3_checkpoints/gated_curriculum_vecnormalize_interrupted.pkl")
         print("💾 Model saved at interruption")
     
     finally:

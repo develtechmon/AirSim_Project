@@ -84,6 +84,10 @@ class DroneFlipRecoveryEnvGated(gym.Env):
         self.min_episodes_per_level = 50
         self.episodes_at_current_level = 0
         
+        # Auto-save flag for curriculum advancement
+        self.level_advanced = False
+        self.advancement_info = {}
+        
         if self.debug:
             print(f"✓ PERFORMANCE-GATED Curriculum Environment")
             print(f"  - Starting level: {self.level_names[self.curriculum_level]}")
@@ -127,6 +131,16 @@ class DroneFlipRecoveryEnvGated(gym.Env):
             self.episodes_at_current_level = 0
             self.recent_recoveries.clear()
             
+            # SET FLAG TO TRIGGER MODEL SAVE
+            self.level_advanced = True
+            self.advancement_info = {
+                'old_level': old_level,
+                'new_level': self.curriculum_level,
+                'recovery_rate': recovery_rate,
+                'threshold': threshold,
+                'episode': self.episode_count
+            }
+            
             if self.debug:
                 print("\n" + "="*70)
                 print("🎓 CURRICULUM ADVANCEMENT!")
@@ -134,6 +148,7 @@ class DroneFlipRecoveryEnvGated(gym.Env):
                 print(f"   Level {old_level} ({self.level_names[old_level]}) MASTERED!")
                 print(f"   Recovery rate: {recovery_rate*100:.1f}% (needed {threshold*100:.0f}%)")
                 print(f"   Advancing to Level {self.curriculum_level} ({self.level_names[self.curriculum_level]})")
+                print(f"   💾 MODEL WILL BE AUTO-SAVED!")
                 print("="*70 + "\n")
     
     def _get_wind(self):

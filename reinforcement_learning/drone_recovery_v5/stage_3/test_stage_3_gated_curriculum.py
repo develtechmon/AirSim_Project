@@ -17,6 +17,22 @@ Usage:
     python test_gated_curriculum.py --test-level 1  # Medium only
     python test_gated_curriculum.py --test-level 2  # Hard only
     python test_gated_curriculum.py --test-level -1 # All levels (default)
+
+
+# Test Easy-level model
+python test_gated_curriculum.py \
+  --model ./models/curriculum_levels/level_0_EASY_mastered.zip \
+  --vecnorm ./models/curriculum_levels/level_0_EASY_mastered_vecnormalize.pkl
+
+# Test Medium-level model  
+python test_gated_curriculum.py \
+  --model ./models/curriculum_levels/level_1_MEDIUM_mastered.zip \
+  --vecnorm ./models/curriculum_levels/level_1_MEDIUM_mastered_vecnormalize.pkl
+
+# Test Final model
+python test_gated_curriculum.py \
+  --model ./models/gated_curriculum_policy.zip
+
 """
 
 import airsim
@@ -24,7 +40,7 @@ import numpy as np
 import argparse
 from stable_baselines3 import PPO
 from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
-from drone_flip_recovery_env_gated import DroneFlipRecoveryEnv
+from drone_flip_recovery_env_injector_gated import DroneFlipRecoveryEnv
 import time
 
 
