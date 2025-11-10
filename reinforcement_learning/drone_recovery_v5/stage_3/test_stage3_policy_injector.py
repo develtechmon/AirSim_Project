@@ -23,7 +23,23 @@ python test_stage3_policy.py \
   --vecnorm ./models/flip_recovery_vecnormalize_interrupted.pkl \
   --episodes 20 \
   --flip-prob 1.0
-  
+
+
+Bug fixes - 10/11/2025
+BEFORE (BROKEN):
+pythonenv = DroneFlipRecoveryEnv(
+    target_altitude=10.0,   # ← Overriding to 10m!
+    max_steps=500,          # ← Overriding to 500!
+    
+AFTER (FIXED):
+pythonenv = DroneFlipRecoveryEnv(
+    target_altitude=30.0,   # ← Using 30m!
+    max_steps=600,          # ← Using 600!
+Impact:
+
+❌ Before: Only 9.5m recovery space (crashed easily)
+✅ After: 29.5m recovery space (3x more!)
+
 """
 
 import airsim
@@ -59,11 +75,11 @@ def test_policy(model_path, vecnorm_path, num_episodes=20, flip_prob=1.0):
     
     def make_env():
         env = DroneFlipRecoveryEnv(
-            target_altitude=10.0,
-            max_steps=500,
+            target_altitude=30.0,  # ULTIMATE: 30m altitude!
+            max_steps=600,         # ULTIMATE: 600 steps!
             wind_strength=5.0,
-            flip_prob=flip_prob,  # Use specified probability
-            debug=True  # Show disturbance messages
+            flip_prob=flip_prob,
+            debug=True
         )
         return env
     

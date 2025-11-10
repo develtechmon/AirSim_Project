@@ -11,7 +11,17 @@ Changes from your current version:
 5. crash threshold: 1.0m → 0.5m (more space)
 6. too_high: 20m → 40m (matches 30m altitude)
 
-Just run your same command: python train_stage3_flip_v2.py
+Bug fixes - 10/11/2025
+BEFORE (BROKEN):
+pythonprogress = min(self.episode_steps / 500.0, 1.0)  # Resets every episode!
+
+AFTER (FIXED):
+pythonprogress = min(self.episode_count / 600.0, 1.0)  # Tracks total episodes!
+
+❌ Before: Always intensity 0.7-0.95 (never reached hard cases)
+✅ After: Progressive 0.7→0.95→1.15→1.5 across training
+
+
 """
 
 import airsim
@@ -203,15 +213,15 @@ class DroneFlipRecoveryEnv(gym.Env):
         # Trigger disturbance with CURRICULUM INTENSITY
         if self.will_have_disturbance and not self.disturbance_initiated:
             if self.episode_steps >= self.disturbance_trigger_step:
-                # CURRICULUM: Progressive difficulty
-                progress = min(self.episode_steps / 500.0, 1.0)
+                # CURRICULUM: Progressive difficulty based on EPISODE COUNT
+                progress = min(self.episode_count / 600.0, 1.0)  # Use episode_count!
                 
                 if progress < 0.3:
-                    intensity = np.random.uniform(0.7, 0.95)  # Easy
+                    intensity = np.random.uniform(0.7, 0.95)  # Easy (episodes 0-180)
                 elif progress < 0.6:
-                    intensity = np.random.uniform(0.85, 1.15)  # Medium
+                    intensity = np.random.uniform(0.85, 1.15)  # Medium (episodes 180-360)
                 else:
-                    intensity = np.random.uniform(1.0, 1.5)  # Hard
+                    intensity = np.random.uniform(1.0, 1.5)  # Hard (episodes 360+)
                 
                 self.disturbance_info = self.disturbance_injector.inject_disturbance(
                     self.disturbance_type,

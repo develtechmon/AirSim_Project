@@ -12,17 +12,32 @@ Key Features:
 Usage:
     python train_stage3_flip_v2.py
 
-That's it! Just like the original!
-
-To retrain from your current checkpoint:
+# Start fresh with BOTH fixes
 python train_stage3_flip_v2.py \
-  --stage2-model ./models/flip_recovery_policy.zip \
-  --flip-prob 1.0 \
-  --timesteps 300000
+  --stage2-model ./models/hover_disturbance_policy_interrupted.zip \
+  --timesteps 600000 \
+  --flip-prob 1.0
 
-To run default
-python train_stage3_flip_v2.py 
+Training progression:
+Episode 180:  intensity 0.9x  @ 30m altitude
+Episode 360:  intensity 1.1x  @ 30m altitude  
+Episode 540:  intensity 1.4x  @ 30m altitude ← PhD level!
+Episode 600:  intensity 1.5x  @ 30m altitude ← Maximum!
 
+Bug fixes - 10/11/2025
+BEFORE (BROKEN):
+pythonenv = DroneFlipRecoveryEnv(
+    target_altitude=10.0,   # ← Overriding to 10m!
+    max_steps=500,          # ← Overriding to 500!
+
+AFTER (FIXED):
+pythonenv = DroneFlipRecoveryEnv(
+    target_altitude=30.0,   # ← Using 30m!
+    max_steps=600,          # ← Using 600!
+Impact:
+
+❌ Before: Only 9.5m recovery space (crashed easily)
+✅ After: 29.5m recovery space (3x more!)
 """
 
 import torch
@@ -31,9 +46,7 @@ from stable_baselines3 import PPO
 from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
 from stable_baselines3.common.callbacks import BaseCallback, CheckpointCallback
 from stable_baselines3.common.monitor import Monitor
-# from drone_flip_recovery_env import DroneFlipRecoveryEnv
 from drone_flip_recovery_env_injector import DroneFlipRecoveryEnv
-
 import argparse
 from pathlib import Path
 
@@ -103,25 +116,29 @@ class ProgressCallback(BaseCallback):
 
 def main(args):
     print("\n" + "="*70)
-    print("🔄 STAGE 3: FLIP RECOVERY TRAINING")
+    print("🔄 STAGE 3: ULTIMATE FLIP RECOVERY TRAINING")
     print("="*70)
-    print("Training drone to recover from any orientation!")
+    print("Training drone to recover from ANY intensity (0.7x-1.5x)!")
     print(f"Starting from Stage 2 policy (90%+ hover + wind success)")
-    print(f"Expected training time: 3 hours")
+    print(f"Target altitude: 30m (3x more recovery space!)")
+    print(f"Expected training time: 6-8 hours for full spectrum")
     print("="*70 + "\n")
     
     # Create environment
-    print(f"[1/3] Creating flip recovery environment...")
+    print(f"[1/3] Creating ULTIMATE flip recovery environment...")
+    print(f"   Altitude: 30m (was 10m) - 3x recovery space!")
+    print(f"   Max steps: 600 (was 500) - more recovery time")
     print(f"   Wind strength: 0-{args.wind_strength} m/s")
     print(f"   Flip probability: {args.flip_prob*100:.0f}%")
+    print(f"   Curriculum: 0.7x-1.5x intensity (progressive)")
     
     def make_env():
         env = DroneFlipRecoveryEnv(
-            target_altitude=10.0,
-            max_steps=500,
+            target_altitude=30.0,  # ULTIMATE: 30m altitude!
+            max_steps=600,         # ULTIMATE: 600 steps!
             wind_strength=args.wind_strength,
             flip_prob=args.flip_prob,
-            debug=True  # Changed to True to see tumble messages!
+            debug=True  # See disturbance messages
         )
         env = Monitor(env)
         return env
@@ -137,7 +154,9 @@ def main(args):
         gamma=0.99
     )
     
-    print("   ✅ Environment created with flip scenarios")
+    print("   ✅ ULTIMATE Environment created!")
+    print("   📊 30m altitude + 600 steps + curriculum intensity")
+    print("   🎯 Ready to handle 0.7x-1.5x intensity range")
     
     # Load Stage 2 model
     print(f"\n[2/3] Loading Stage 2 trained model...")
@@ -257,17 +276,19 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     
     parser.add_argument('--stage2-model', type=str, 
-                    default='./models/hover_disturbance_policy_interrupted.zip',
-                    help='Path to Stage 2 trained policy')
+                        default='./models/hover_disturbance_policy_interrupted.zip',
+                        help='Path to Stage 2 trained policy (from wind training)')
     parser.add_argument('--timesteps', type=int, default=300000,
                         help='Total training timesteps')
     parser.add_argument('--wind-strength', type=float, default=5.0,
                         help='Maximum wind strength (m/s)')
-    parser.add_argument('--flip-prob', type=float, default=0.5,
-                        help='Probability of starting flipped (0.0-1.0)')
+    parser.add_argument('--flip-prob', type=float, default=0.8,
+                        help='Probability of disturbance (0.0-1.0)')
     parser.add_argument('--lr', type=float, default=1e-5,
                         help='Learning rate (lower than Stage 2 for fine-tuning)')
     
     args = parser.parse_args()
     
     main(args)
+
+    

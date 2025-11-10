@@ -39,7 +39,7 @@ class DroneFlipRecoveryEnv(gym.Env):
     """
     
     def __init__(self, target_altitude=10.0, max_steps=500, 
-                 wind_strength=5.0, flip_prob=0.9, debug=False):
+                 wind_strength=5.0, flip_prob=1.0, debug=False):
         super().__init__()
         
         self.target_altitude = target_altitude
@@ -334,7 +334,7 @@ class DroneFlipRecoveryEnv(gym.Env):
                 reward += 10
         
         # Termination conditions
-        if alt < 1.0:
+        if alt < 0.5:
             reward -= 1000
             done = True
             info['reason'] = 'crash'

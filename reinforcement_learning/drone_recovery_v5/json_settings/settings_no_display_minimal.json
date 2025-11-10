@@ -1,0 +1,21 @@
+{
+  "SettingsVersion": 1.2,
+  "SimMode": "Multirotor",
+  "ViewMode": "NoDisplay",
+  "RotorStateLogEnabled": true,
+  "Vehicles": {
+    "Drone1": {
+      "VehicleType": "SimpleFlight",
+      "DefaultVehicleState": "Armed",
+      "EnableTrace": false,
+      "AutoCreate": true,
+      "AllowAPIAlways": true,
+      "EnableCollisionPassthrough": false,
+      "RC": {
+        "RemoteControlID": 0,
+        "AllowAPIWhenDisconnected": true
+      },
+      "UseMotorPWMs": true
+    }
+  }
+}
