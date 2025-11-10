@@ -17,6 +17,19 @@ Usage:
     python test_gated_curriculum.py --test-level 1  # Medium only
     python test_gated_curriculum.py --test-level 2  # Hard only
     python test_gated_curriculum.py --test-level -1 # All levels (default)
+
+
+# Test Level 0 (Easy mastered)
+python test_gated_curriculum.py \
+  --model ./models/curriculum_levels/level_0_EASY_mastered.zip
+
+# Test Level 1 (Easy+Medium mastered)
+python test_gated_curriculum.py \
+  --model ./models/curriculum_levels/level_1_MEDIUM_mastered.zip
+
+# Test Final (All mastered)
+python test_gated_curriculum.py
+
 """
 
 import airsim
