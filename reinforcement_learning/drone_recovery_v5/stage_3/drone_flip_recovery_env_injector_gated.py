@@ -233,11 +233,18 @@ class DroneFlipRecoveryEnvGated(gym.Env):
                 DisturbanceType.FLIP,
                 DisturbanceType.SPIN,
             ])
-            if self.debug and self.episode_count % 10 == 0:  # Print less frequently
-                print(f"   Level {self.curriculum_level} ({self.level_names[self.curriculum_level]})")
-                print(f"   Episodes at level: {self.episodes_at_current_level}")
+            if self.debug:
+                print(f"   ⚠️  Disturbance scheduled: {self.disturbance_type.value} at step {self.disturbance_trigger_step}")
+                print(f"      Level {self.curriculum_level} ({self.level_names[self.curriculum_level]})")
+                print(f"      Episodes at level: {self.episodes_at_current_level}")
                 if len(self.recent_recoveries) >= 10:
-                    print(f"   Recent recovery: {np.mean(list(self.recent_recoveries))*100:.0f}%")
+                    print(f"      Recent recovery: {np.mean(list(self.recent_recoveries))*100:.0f}%")
+        else:
+            self.disturbance_trigger_step = -1
+            if self.debug:
+                print(f"   ✅ No disturbance this episode")
+                print(f"      Level {self.curriculum_level} ({self.level_names[self.curriculum_level]})")
+                print(f"      Episodes at level: {self.episodes_at_current_level}")
         
         self.episode_count += 1
         self.episodes_at_current_level += 1
@@ -262,8 +269,13 @@ class DroneFlipRecoveryEnvGated(gym.Env):
                 self.disturbance_initiated = True
                 self.disturbance_start_step = self.episode_steps
                 
-                if self.debug and self.episode_count % 10 == 0:
-                    print(f"      Disturbance: {self.disturbance_type.value} @ {intensity:.2f}x")
+                if self.debug:
+                    print(f"   🐦 DISTURBANCE APPLIED!")
+                    print(f"      Type: {self.disturbance_info['type']}")
+                    print(f"      Intensity: {intensity:.2f}")
+                    print(f"      Curriculum Level: {self.curriculum_level} ({self.level_names[self.curriculum_level]})")
+                    if 'angular_velocity' in self.disturbance_info:
+                        print(f"      Angular velocity: {self.disturbance_info['angular_velocity']:.1f} deg/s")
         
         # Execute action
         action = np.clip(action, -5.0, 5.0)
@@ -301,6 +313,10 @@ class DroneFlipRecoveryEnvGated(gym.Env):
             if ang_vel_magnitude < 0.8 and is_upright and dist_from_target_alt < 3.0:
                 self.disturbance_recovered = True
                 self.recovery_steps = self.episode_steps - self.disturbance_start_step
+                if self.debug:
+                    print(f"   ✅ RECOVERED! Took {self.recovery_steps} steps ({self.recovery_steps * 0.05:.1f}s)")
+                    print(f"      Level: {self.curriculum_level} ({self.level_names[self.curriculum_level]})")
+                    print(f"      Intensity: {self.disturbance_info.get('intensity', 1.0):.2f}x")
         
         # TWO-PHASE RECOVERY REWARDS (same as before)
         reward = 0.0
