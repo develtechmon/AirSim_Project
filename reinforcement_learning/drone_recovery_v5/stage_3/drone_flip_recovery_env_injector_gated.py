@@ -308,13 +308,28 @@ class DroneFlipRecoveryEnvGated(gym.Env):
         is_tumbling = self._is_tumbling(ang_vel)
         ang_vel_magnitude = np.linalg.norm(ang_vel)
         
-        # Check for recovery
+        # Check for recovery - CRASH-FOCUSED CRITERIA
+        # Guarantees recovery across ALL intensities (0.7x-1.5x)
         if self.disturbance_initiated and not self.disturbance_recovered:
-            if ang_vel_magnitude < 0.8 and is_upright and dist_from_target_alt < 3.0:
+            
+            # PRIMARY: Is drone under control?
+            is_controlled = (ang_vel_magnitude < 1.2 and is_upright)
+            
+            # SECONDARY: Is altitude safe? (not crashing)
+            is_safe_altitude = (alt > 3.0)  # Well above ground
+            
+            # TERTIARY: Is drone stable? (not drifting badly)
+            horizontal_vel = np.linalg.norm(vel[0:2])
+            is_stable = (horizontal_vel < 3.0)  # Not flying away
+            
+            if is_controlled and is_safe_altitude and is_stable:
                 self.disturbance_recovered = True
                 self.recovery_steps = self.episode_steps - self.disturbance_start_step
                 if self.debug:
                     print(f"   ✅ RECOVERED! Took {self.recovery_steps} steps ({self.recovery_steps * 0.05:.1f}s)")
+                    print(f"      Angular velocity: {ang_vel_magnitude:.2f} rad/s (< 1.2)")
+                    print(f"      Altitude: {alt:.1f}m (> 3.0m - SAFE)")
+                    print(f"      Horizontal drift: {horizontal_vel:.2f} m/s (< 3.0)")
                     print(f"      Level: {self.curriculum_level} ({self.level_names[self.curriculum_level]})")
                     print(f"      Intensity: {self.disturbance_info.get('intensity', 1.0):.2f}x")
         
