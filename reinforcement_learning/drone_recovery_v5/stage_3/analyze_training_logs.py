@@ -10,7 +10,11 @@ Generates:
     - Statistics tables for thesis
 
 Usage:
-    python analyze_training_logs.py --log logs/training_logs/gated_training_TIMESTAMP_episodes.csv
+    # Auto-detect latest log (recommended):
+    python analyze_training_logs.py --output-dir ./plots
+    
+    # Or specify exact file:
+    python analyze_training_logs.py --log logs/stage3/gated_training_TIMESTAMP_episodes.csv --output-dir ./plots
 """
 
 import pandas as pd

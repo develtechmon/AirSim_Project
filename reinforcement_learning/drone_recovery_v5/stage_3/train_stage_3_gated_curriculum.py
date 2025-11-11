@@ -46,27 +46,6 @@ Usage:
     python train_gated_curriculum_with_logging.py
 """
 
-"""
-PERFORMANCE-GATED CURRICULUM TRAINING - WITH COMPREHENSIVE LOGGING
-===================================================================
-Enhanced version with automatic CSV/JSON logging for PhD analysis!
-
-NEW FEATURES:
-✅ Per-episode CSV logs (for plotting learning curves)
-✅ JSON summary statistics (for thesis tables)
-✅ Curriculum progression tracking
-✅ Auto-save on level advancement
-✅ Training analytics export
-
-Generates:
-    logs/training_logs/gated_training_TIMESTAMP_episodes.csv
-    logs/training_logs/gated_training_TIMESTAMP_summary.json
-    logs/training_logs/gated_training_TIMESTAMP_curriculum.json
-
-Usage:
-    python train_gated_curriculum_with_logging.py
-"""
-
 import torch
 import numpy as np
 from stable_baselines3 import PPO

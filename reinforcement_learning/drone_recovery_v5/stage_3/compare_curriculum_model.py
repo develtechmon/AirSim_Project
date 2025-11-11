@@ -46,7 +46,7 @@ def main(args):
     models = []
     
     # Level models
-    level_dir = Path("./models/curriculum_levels/")
+    level_dir = Path("./models/stage3_all_intensity_checkpoints/curriculum_levels/")
     if level_dir.exists():
         level_0 = level_dir / "level_0_EASY_mastered.zip"
         level_1 = level_dir / "level_1_MEDIUM_mastered.zip"
@@ -60,9 +60,9 @@ def main(args):
             models.append(("Level 1 (MEDIUM)", level_1, vecnorm_1))
     
     # Final model
-    final_model = Path("./models/gated_curriculum_policy.zip")
+    final_model = Path("./models/stage3_all_intensity_checkpoints/gated_curriculum_policy.zip")
     if final_model.exists():
-        final_vecnorm = Path("./models/gated_curriculum_vecnormalize.pkl")
+        final_vecnorm = Path("./models/stage3_all_intensity_checkpoints/gated_curriculum_vecnormalize.pkl")
         models.append(("Final (HARD)", final_model, final_vecnorm))
     
     if not models:
