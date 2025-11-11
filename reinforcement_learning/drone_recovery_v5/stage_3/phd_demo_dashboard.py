@@ -24,7 +24,7 @@ Features:
 """
 PRODUCTION-READY REAL-TIME DASHBOARD WITH EMBEDDED SCROLLBAR
 =============================================================
-Professional dashboard for PhD demonstration - FIXED ALTITUDE
+Professional dashboard for PhD demonstration - FIXED ALTITUDE ISSUE
 """
 
 import airsim
