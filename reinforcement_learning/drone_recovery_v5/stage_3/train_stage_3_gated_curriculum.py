@@ -46,6 +46,27 @@ Usage:
     python train_gated_curriculum_with_logging.py
 """
 
+"""
+PERFORMANCE-GATED CURRICULUM TRAINING - WITH COMPREHENSIVE LOGGING
+===================================================================
+Enhanced version with automatic CSV/JSON logging for PhD analysis!
+
+NEW FEATURES:
+✅ Per-episode CSV logs (for plotting learning curves)
+✅ JSON summary statistics (for thesis tables)
+✅ Curriculum progression tracking
+✅ Auto-save on level advancement
+✅ Training analytics export
+
+Generates:
+    logs/training_logs/gated_training_TIMESTAMP_episodes.csv
+    logs/training_logs/gated_training_TIMESTAMP_summary.json
+    logs/training_logs/gated_training_TIMESTAMP_curriculum.json
+
+Usage:
+    python train_gated_curriculum_with_logging.py
+"""
+
 import torch
 import numpy as np
 from stable_baselines3 import PPO
@@ -86,7 +107,7 @@ class GatedCurriculumCallbackWithLogging(BaseCallback):
         self.save_path.mkdir(parents=True, exist_ok=True)
         
         # 🆕 LOGGING SETUP
-        self.log_dir = Path("./logs/training_logs/")
+        self.log_dir = Path("./logs/stage3/")
         self.log_dir.mkdir(parents=True, exist_ok=True)
         
         # Create timestamped log files
@@ -110,6 +131,7 @@ class GatedCurriculumCallbackWithLogging(BaseCallback):
         print(f"\n📝 LOGGING ENABLED:")
         print(f"   CSV Log: {self.csv_log_path}")
         print(f"   Summary will be saved to: {self.log_dir / f'{self.log_prefix}_summary.json'}")
+        print(f"   All logs saved to: ./logs/stage3/")
         print()
     
     def _on_step(self) -> bool:
@@ -458,7 +480,7 @@ def main(args):
     # Create directories
     Path("./models/stage3_checkpoints/gated_checkpoints/").mkdir(parents=True, exist_ok=True)
     Path("./logs/gated_curriculum/").mkdir(parents=True, exist_ok=True)
-    Path("./logs/training_logs/").mkdir(parents=True, exist_ok=True)
+    Path("./logs/stage3/").mkdir(parents=True, exist_ok=True)
     
     print("\n[3/3] Starting gated curriculum training...")
     print(f"   Total timesteps: {args.timesteps:,}")
@@ -528,11 +550,11 @@ def main(args):
         print("\n✅ Next Steps:")
         print("   1. Analyze training logs:")
         print(f"      - CSV: {progress_callback.csv_log_path}")
-        print(f"      - Summary: logs/training_logs/{progress_callback.log_prefix}_summary.json")
+        print(f"      - Summary: logs/stage3/{progress_callback.log_prefix}_summary.json")
         print("\n   2. Test overall performance:")
         print("      python test_gated_curriculum.py --episodes 60")
         print("\n   3. Create learning curves:")
-        print("      python plot_training_curves.py")
+        print("      python analyze_training_logs.py --log logs/stage3/gated_training_*_episodes.csv")
         print("="*70 + "\n")
         
     except KeyboardInterrupt:
