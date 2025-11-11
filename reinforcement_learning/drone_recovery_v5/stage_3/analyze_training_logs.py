@@ -144,30 +144,121 @@ def generate_statistics_table(df):
                 stats[f'level_{level}_{level_names[level]}_recovery_rate'] = recovery_rate
                 stats[f'level_{level}_{level_names[level]}_avg_intensity'] = df_level_disturbed['disturbance_intensity'].mean()
     
-    # Print table
-    print("\n" + "="*70)
-    print("TRAINING STATISTICS SUMMARY")
-    print("="*70)
+    # Find curriculum transitions
+    transitions = []
+    for i in range(1, len(df)):
+        if df.iloc[i]['curriculum_level'] != df.iloc[i-1]['curriculum_level']:
+            transitions.append({
+                'episode': int(df.iloc[i]['episode']),
+                'from_level': int(df.iloc[i-1]['curriculum_level']),
+                'to_level': int(df.iloc[i]['curriculum_level']),
+                'time_hours': df.iloc[i]['elapsed_time_s'] / 3600
+            })
     
-    print(f"\nOverall Performance:")
+    # Print table
+    print("\n" + "="*80)
+    print("📊 TRAINING STATISTICS SUMMARY - Table 5.1")
+    print("="*80)
+    
+    print(f"\n{'='*80}")
+    print("OVERALL PERFORMANCE")
+    print(f"{'='*80}")
     print(f"  Total Episodes:           {stats['total_episodes']}")
     print(f"  Total Training Time:      {stats['total_time_hours']:.1f} hours")
     print(f"  Final Recovery Rate:      {stats['final_recovery_rate_last_50']:.1f}% (last 50)")
     print(f"  Final Avg Reward:         {stats['final_reward_last_10']:.1f} (last 10)")
     
-    print(f"\nBy Curriculum Level:")
+    print(f"\n{'='*80}")
+    print("CURRICULUM PROGRESSION - Table 5.2")
+    print(f"{'='*80}")
+    
+    if transitions:
+        print(f"\n{'Level Transition':<25} {'Episode':<15} {'Time (hours)':<15} {'Episodes Trained':<20}")
+        print("-"*80)
+        
+        prev_episode = 1
+        for t in transitions:
+            level_names = ['EASY (0.7-0.9×)', 'MEDIUM (0.9-1.1×)', 'HARD (1.1-1.5×)']
+            transition_str = f"Level {t['from_level']} → {t['to_level']}"
+            episodes_trained = t['episode'] - prev_episode
+            
+            print(f"{transition_str:<25} {t['episode']:<15} {t['time_hours']:<15.1f} {episodes_trained:<20}")
+            prev_episode = t['episode']
+        
+        # Final level
+        final_episodes = stats['total_episodes'] - prev_episode + 1
+        print(f"{'Level 2 (Final)':<25} {prev_episode:<15} {stats['total_time_hours']:<15.1f} {final_episodes:<20}")
+    
+    print(f"\n{'='*80}")
+    print("BY CURRICULUM LEVEL - Table 5.4")
+    print(f"{'='*80}")
+    print(f"\n{'Level':<20} {'Episodes':<15} {'Recovery Rate':<20} {'Avg Intensity':<15}")
+    print("-"*80)
+    
     for level in [0, 1, 2]:
         level_names = ['EASY (0.7-0.9×)', 'MEDIUM (0.9-1.1×)', 'HARD (1.1-1.5×)']
         key_prefix = f'level_{level}_{["EASY", "MEDIUM", "HARD"][level]}'
         
         if f'{key_prefix}_episodes' in stats:
-            print(f"\n  Level {level} - {level_names[level]}:")
-            print(f"    Episodes Trained:     {stats[f'{key_prefix}_episodes']}")
-            if f'{key_prefix}_recovery_rate' in stats:
-                print(f"    Recovery Rate:        {stats[f'{key_prefix}_recovery_rate']:.1f}%")
-                print(f"    Avg Intensity:        {stats[f'{key_prefix}_avg_intensity']:.2f}×")
+            episodes = stats[f'{key_prefix}_episodes']
+            recovery = stats.get(f'{key_prefix}_recovery_rate', 0)
+            intensity = stats.get(f'{key_prefix}_avg_intensity', 0)
+            
+            print(f"{level_names[level]:<20} {episodes:<15} {recovery:<20.1f} {intensity:<15.2f}")
     
-    print("="*70 + "\n")
+    print("="*80 + "\n")
+    
+    # Generate LaTeX tables
+    output_dir = Path("./analysis_results")
+    output_dir.mkdir(exist_ok=True)
+    
+    # Table 5.1: Overall Training Statistics
+    with open(output_dir / "table_5_1_training_statistics.tex", 'w') as f:
+        f.write("% Table 5.1: Complete Training Progression\n")
+        f.write("\\begin{table}[htbp]\n")
+        f.write("\\centering\n")
+        f.write("\\caption{Complete Training Progression Across Three Stages}\n")
+        f.write("\\label{tab:training_progression}\n")
+        f.write("\\begin{tabular}{lc}\n")
+        f.write("\\toprule\n")
+        f.write("\\textbf{Metric} & \\textbf{Value} \\\\\n")
+        f.write("\\midrule\n")
+        f.write(f"Total Episodes & {stats['total_episodes']} \\\\\n")
+        f.write(f"Total Training Time & {stats['total_time_hours']:.1f} hours \\\\\n")
+        f.write(f"Final Recovery Rate (last 50) & {stats['final_recovery_rate_last_50']:.1f}\\% \\\\\n")
+        f.write(f"Final Avg Reward (last 10) & {stats['final_reward_last_10']:.1f} \\\\\n")
+        f.write("\\bottomrule\n")
+        f.write("\\end{tabular}\n")
+        f.write("\\end{table}\n")
+    
+    # Table 5.2: Curriculum Advancement
+    with open(output_dir / "table_5_2_curriculum_advancement.tex", 'w') as f:
+        f.write("% Table 5.2: Stage 3 Curriculum Advancement (Actual Results)\n")
+        f.write("\\begin{table}[htbp]\n")
+        f.write("\\centering\n")
+        f.write("\\caption{Performance-Gated Curriculum Advancement}\n")
+        f.write("\\label{tab:curriculum_advancement}\n")
+        f.write("\\begin{tabular}{lccc}\n")
+        f.write("\\toprule\n")
+        f.write("\\textbf{Transition} & \\textbf{Episode} & \\textbf{Time (hours)} & \\textbf{Episodes Trained} \\\\\n")
+        f.write("\\midrule\n")
+        
+        prev_episode = 1
+        for t in transitions:
+            episodes_trained = t['episode'] - prev_episode
+            f.write(f"Level {t['from_level']} $\\rightarrow$ {t['to_level']} & {t['episode']} & {t['time_hours']:.1f} & {episodes_trained} \\\\\n")
+            prev_episode = t['episode']
+        
+        final_episodes = stats['total_episodes'] - prev_episode + 1
+        f.write(f"Level 2 (Final) & {prev_episode} & {stats['total_time_hours']:.1f} & {final_episodes} \\\\\n")
+        
+        f.write("\\bottomrule\n")
+        f.write("\\end{tabular}\n")
+        f.write("\\end{table}\n")
+    
+    print(f"📄 LaTeX tables saved:")
+    print(f"   - analysis_results/table_5_1_training_statistics.tex")
+    print(f"   - analysis_results/table_5_2_curriculum_advancement.tex\n")
     
     return stats
 
