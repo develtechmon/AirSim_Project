@@ -25,6 +25,26 @@ models/stage3_checkpoints/
                 └── gated_curriculum_policy.zip     ← Final model
 
 """
+"""
+PERFORMANCE-GATED CURRICULUM TRAINING - WITH COMPREHENSIVE LOGGING
+===================================================================
+Enhanced version with automatic CSV/JSON logging for PhD analysis!
+
+NEW FEATURES:
+✅ Per-episode CSV logs (for plotting learning curves)
+✅ JSON summary statistics (for thesis tables)
+✅ Curriculum progression tracking
+✅ Auto-save on level advancement
+✅ Training analytics export
+
+Generates:
+    logs/training_logs/gated_training_TIMESTAMP_episodes.csv
+    logs/training_logs/gated_training_TIMESTAMP_summary.json
+    logs/training_logs/gated_training_TIMESTAMP_curriculum.json
+
+Usage:
+    python train_gated_curriculum_with_logging.py
+"""
 
 import torch
 import numpy as np
@@ -36,19 +56,25 @@ from drone_flip_recovery_env_injector_gated import DroneFlipRecoveryEnv
 import argparse
 from pathlib import Path
 import time
+import json
+import csv
+import datetime
 
 
-class GatedCurriculumCallback(BaseCallback):
-    """Enhanced callback tracking curriculum progression with AUTO-SAVE"""
+class GatedCurriculumCallbackWithLogging(BaseCallback):
+    """Enhanced callback with COMPREHENSIVE LOGGING for PhD analysis"""
     
     def __init__(self, save_path="./models/stage3_checkpoints/curriculum_levels/", verbose=0):
         super().__init__(verbose)
+        
+        # Training data
         self.episode_rewards = []
         self.episode_lengths = []
         self.recovery_successes = []
         self.recovery_times = []
         self.intensities = []
         self.curriculum_levels = []
+        self.episode_timestamps = []
         self.episode_count = 0
         self.start_time = time.time()
         
@@ -58,12 +84,41 @@ class GatedCurriculumCallback(BaseCallback):
         # Auto-save setup
         self.save_path = Path(save_path)
         self.save_path.mkdir(parents=True, exist_ok=True)
+        
+        # 🆕 LOGGING SETUP
+        self.log_dir = Path("./logs/training_logs/")
+        self.log_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Create timestamped log files
+        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        self.log_prefix = f"gated_training_{timestamp}"
+        
+        # CSV log file for per-episode data
+        self.csv_log_path = self.log_dir / f"{self.log_prefix}_episodes.csv"
+        self.csv_file = open(self.csv_log_path, 'w', newline='')
+        self.csv_writer = csv.writer(self.csv_file)
+        
+        # Write CSV headers
+        self.csv_writer.writerow([
+            'episode', 'timestamp', 'elapsed_time_s', 'curriculum_level',
+            'episode_reward', 'episode_length', 'tumble_initiated', 'tumble_recovered',
+            'recovery_steps', 'disturbance_intensity', 'disturbance_type',
+            'rolling_10_reward', 'rolling_10_recovery_rate', 'rolling_50_recovery_rate'
+        ])
+        self.csv_file.flush()
+        
+        print(f"\n📝 LOGGING ENABLED:")
+        print(f"   CSV Log: {self.csv_log_path}")
+        print(f"   Summary will be saved to: {self.log_dir / f'{self.log_prefix}_summary.json'}")
+        print()
     
     def _on_step(self) -> bool:
         if self.locals.get("dones"):
             for i, done in enumerate(self.locals["dones"]):
                 if done:
                     self.episode_count += 1
+                    current_time = time.time()
+                    elapsed_time = current_time - self.start_time
                     
                     info = self.locals["infos"][i]
                     ep_reward = info.get("episode", {}).get("r", 0)
@@ -71,12 +126,14 @@ class GatedCurriculumCallback(BaseCallback):
                     
                     self.episode_rewards.append(ep_reward)
                     self.episode_lengths.append(ep_length)
+                    self.episode_timestamps.append(elapsed_time)
                     
                     # Track recovery stats
                     tumble_initiated = info.get("tumble_initiated", False)
                     tumble_recovered = info.get("tumble_recovered", False)
                     recovery_steps = info.get("recovery_steps", 0)
                     intensity = info.get("disturbance_intensity", 1.0)
+                    disturbance_type = info.get("disturbance_type", "unknown")
                     curriculum_level = info.get("curriculum_level", 0)
                     
                     self.curriculum_levels.append(curriculum_level)
@@ -85,8 +142,42 @@ class GatedCurriculumCallback(BaseCallback):
                     if curriculum_level not in self.level_achievements:
                         self.level_achievements[curriculum_level] = {
                             'reached_at_episode': self.episode_count,
-                            'elapsed_time': time.time() - self.start_time
+                            'elapsed_time': elapsed_time,
+                            'timestamp': current_time
                         }
+                    
+                    # Track recovery success
+                    recovery_success = 0
+                    if tumble_initiated:
+                        recovery_success = 1 if tumble_recovered else 0
+                        self.recovery_successes.append(recovery_success)
+                        self.intensities.append(intensity)
+                        if tumble_recovered:
+                            self.recovery_times.append(recovery_steps)
+                    
+                    # Calculate rolling statistics
+                    rolling_10_reward = np.mean(self.episode_rewards[-10:]) if len(self.episode_rewards) >= 10 else np.mean(self.episode_rewards)
+                    rolling_10_recovery = np.mean(self.recovery_successes[-10:]) * 100 if len(self.recovery_successes) >= 10 else 0
+                    rolling_50_recovery = np.mean(self.recovery_successes[-50:]) * 100 if len(self.recovery_successes) >= 50 else 0
+                    
+                    # 🆕 WRITE TO CSV LOG
+                    self.csv_writer.writerow([
+                        self.episode_count,
+                        current_time,
+                        elapsed_time,
+                        curriculum_level,
+                        ep_reward,
+                        ep_length,
+                        1 if tumble_initiated else 0,
+                        1 if tumble_recovered else 0,
+                        recovery_steps,
+                        intensity,
+                        disturbance_type,
+                        rolling_10_reward,
+                        rolling_10_recovery,
+                        rolling_50_recovery
+                    ])
+                    self.csv_file.flush()  # Flush immediately so data isn't lost on crash
                     
                     # CHECK FOR LEVEL ADVANCEMENT (AUTO-SAVE TRIGGER)
                     env = self.training_env.envs[0]
@@ -98,18 +189,12 @@ class GatedCurriculumCallback(BaseCallback):
                             # Reset flag
                             env.env.level_advanced = False
                     
-                    if tumble_initiated:
-                        self.recovery_successes.append(1 if tumble_recovered else 0)
-                        self.intensities.append(intensity)
-                        if tumble_recovered:
-                            self.recovery_times.append(recovery_steps)
-                    
                     # Print every 10 episodes
                     if self.episode_count % 10 == 0:
                         recent_rewards = self.episode_rewards[-10:]
                         recent_lengths = self.episode_lengths[-10:]
-                        recent_recoveries = self.recovery_successes[-10:]
-                        recent_intensities = self.intensities[-10:]
+                        recent_recoveries = self.recovery_successes[-10:] if self.recovery_successes else []
+                        recent_intensities = self.intensities[-10:] if self.intensities else []
                         recent_levels = self.curriculum_levels[-10:]
                         
                         recovery_rate = np.mean(recent_recoveries) * 100 if recent_recoveries else 0
@@ -119,10 +204,8 @@ class GatedCurriculumCallback(BaseCallback):
                         
                         level_names = ["EASY (0.7-0.9)", "MEDIUM (0.9-1.1)", "HARD (1.1-1.5)"]
                         
-                        elapsed = time.time() - self.start_time
-                        
                         print(f"\n{'='*70}")
-                        print(f"📊 EPISODE {self.episode_count} | {elapsed/3600:.1f}h elapsed")
+                        print(f"📊 EPISODE {self.episode_count} | {elapsed_time/3600:.1f}h elapsed")
                         print(f"{'='*70}")
                         print(f"   🎓 Curriculum Level: {current_level} - {level_names[current_level]}")
                         print(f"   Last 10 Episodes:")
@@ -184,10 +267,10 @@ class GatedCurriculumCallback(BaseCallback):
             'level_name': level_names[old_level],
             'recovery_rate': float(recovery_rate),
             'episode': episode,
-            'timestamp': time.time() - self.start_time
+            'timestamp': time.time() - self.start_time,
+            'total_episodes': self.episode_count
         }
         
-        import json
         metadata_path = self.save_path / f"{model_filename}_metadata.json"
         with open(metadata_path, 'w') as f:
             json.dump(metadata, f, indent=2)
@@ -196,13 +279,88 @@ class GatedCurriculumCallback(BaseCallback):
         print(f"   ✅ VecNormalize saved: {vecnorm_path}")
         print(f"   ✅ Metadata saved: {metadata_path}")
         print("="*70 + "\n")
+    
+    def save_final_summary(self):
+        """Save comprehensive training summary at the end"""
+        summary = {
+            'training_info': {
+                'total_episodes': self.episode_count,
+                'total_time_seconds': time.time() - self.start_time,
+                'total_time_hours': (time.time() - self.start_time) / 3600,
+                'episodes_per_hour': self.episode_count / ((time.time() - self.start_time) / 3600),
+                'start_time': self.start_time,
+                'end_time': time.time()
+            },
+            'final_performance': {
+                'last_10_avg_reward': float(np.mean(self.episode_rewards[-10:])) if len(self.episode_rewards) >= 10 else 0,
+                'last_50_avg_reward': float(np.mean(self.episode_rewards[-50:])) if len(self.episode_rewards) >= 50 else 0,
+                'last_10_recovery_rate': float(np.mean(self.recovery_successes[-10:]) * 100) if len(self.recovery_successes) >= 10 else 0,
+                'last_50_recovery_rate': float(np.mean(self.recovery_successes[-50:]) * 100) if len(self.recovery_successes) >= 50 else 0,
+                'avg_recovery_time_steps': float(np.mean(self.recovery_times[-50:])) if len(self.recovery_times) >= 50 else 0,
+                'avg_recovery_time_seconds': float(np.mean(self.recovery_times[-50:]) * 0.05) if len(self.recovery_times) >= 50 else 0
+            },
+            'curriculum_progression': {},
+            'statistics_by_level': {}
+        }
+        
+        # Add curriculum progression
+        for level, data in sorted(self.level_achievements.items()):
+            level_names = ["EASY (0.7-0.9)", "MEDIUM (0.9-1.1)", "HARD (1.1-1.5)"]
+            summary['curriculum_progression'][f'level_{level}'] = {
+                'level_name': level_names[level],
+                'reached_at_episode': data['reached_at_episode'],
+                'elapsed_time_hours': data['elapsed_time'] / 3600
+            }
+        
+        # Calculate statistics per level
+        for level in range(3):
+            level_episodes = [i for i, l in enumerate(self.curriculum_levels) if l == level]
+            if level_episodes:
+                level_recoveries = [self.recovery_successes[i] for i in level_episodes if i < len(self.recovery_successes)]
+                level_rewards = [self.episode_rewards[i] for i in level_episodes]
+                level_intensities = [self.intensities[i] for i in level_episodes if i < len(self.intensities)]
+                
+                level_names = ["EASY", "MEDIUM", "HARD"]
+                summary['statistics_by_level'][f'level_{level}_{level_names[level]}'] = {
+                    'episodes_trained': len(level_episodes),
+                    'recovery_rate': float(np.mean(level_recoveries) * 100) if level_recoveries else 0,
+                    'avg_reward': float(np.mean(level_rewards)),
+                    'avg_intensity': float(np.mean(level_intensities)) if level_intensities else 0
+                }
+        
+        # Save summary JSON
+        summary_path = self.log_dir / f"{self.log_prefix}_summary.json"
+        with open(summary_path, 'w') as f:
+            json.dump(summary, f, indent=2)
+        
+        # Save curriculum progression JSON
+        curriculum_path = self.log_dir / f"{self.log_prefix}_curriculum.json"
+        with open(curriculum_path, 'w') as f:
+            json.dump({
+                'level_achievements': self.level_achievements,
+                'curriculum_levels_per_episode': self.curriculum_levels,
+                'recovery_successes_per_episode': self.recovery_successes,
+                'intensities_per_episode': self.intensities
+            }, f, indent=2)
+        
+        print(f"\n📊 TRAINING LOGS SAVED:")
+        print(f"   ✅ Episode log: {self.csv_log_path}")
+        print(f"   ✅ Summary: {summary_path}")
+        print(f"   ✅ Curriculum: {curriculum_path}")
+        
+        return summary
+    
+    def __del__(self):
+        """Ensure CSV file is closed properly"""
+        if hasattr(self, 'csv_file') and not self.csv_file.closed:
+            self.csv_file.close()
 
 
 def main(args):
     print("\n" + "="*70)
-    print("🎓 PERFORMANCE-GATED CURRICULUM TRAINING")
+    print("🎓 PERFORMANCE-GATED CURRICULUM TRAINING - WITH LOGGING")
     print("="*70)
-    print("Training with automatic difficulty advancement!")
+    print("Training with automatic difficulty advancement + comprehensive logging!")
     print("")
     print("Progression Rules:")
     print("  Level 0 (EASY):   0.7-0.9x intensity → Need 80% recovery")
@@ -210,6 +368,7 @@ def main(args):
     print("  Level 2 (HARD):   1.1-1.5x intensity → Target 60% recovery")
     print("")
     print("✅ Only advances when current level is MASTERED!")
+    print("✅ Saves CSV + JSON logs for PhD analysis!")
     print("="*70 + "\n")
     
     # Create environment
@@ -281,11 +440,11 @@ def main(args):
             )
         )
     
-    # Setup callbacks
+    # Setup callbacks with LOGGING
     save_path = "./models/stage3_checkpoints/curriculum_levels/"
     Path(save_path).mkdir(parents=True, exist_ok=True)
     
-    progress_callback = GatedCurriculumCallback(save_path=save_path)
+    progress_callback = GatedCurriculumCallbackWithLogging(save_path=save_path)
     
     checkpoint_callback = CheckpointCallback(
         save_freq=50000,
@@ -299,6 +458,7 @@ def main(args):
     # Create directories
     Path("./models/stage3_checkpoints/gated_checkpoints/").mkdir(parents=True, exist_ok=True)
     Path("./logs/gated_curriculum/").mkdir(parents=True, exist_ok=True)
+    Path("./logs/training_logs/").mkdir(parents=True, exist_ok=True)
     
     print("\n[3/3] Starting gated curriculum training...")
     print(f"   Total timesteps: {args.timesteps:,}")
@@ -327,6 +487,9 @@ def main(args):
         print("\n" + "="*70)
         print("✅ GATED TRAINING COMPLETE!")
         print("="*70)
+        
+        # 🆕 SAVE FINAL SUMMARY
+        summary = progress_callback.save_final_summary()
         
         # Save final model
         model.save("./models/stage3_checkpoints/gated_curriculum_policy")
@@ -363,24 +526,29 @@ def main(args):
             print(f"   Level {level} ({level_names[level]}): Reached at episode {data['reached_at_episode']} ({data['elapsed_time']/3600:.1f}h)")
         
         print("\n✅ Next Steps:")
-        print("   1. Test overall performance:")
+        print("   1. Analyze training logs:")
+        print(f"      - CSV: {progress_callback.csv_log_path}")
+        print(f"      - Summary: logs/training_logs/{progress_callback.log_prefix}_summary.json")
+        print("\n   2. Test overall performance:")
         print("      python test_gated_curriculum.py --episodes 60")
-        print("\n   2. Test specific level model:")
-        print("      python test_gated_curriculum.py --model ./models/stage3_checkpoints/curriculum_levels/level_0_EASY_mastered.zip")
-        print("\n   3. Compare level performances:")
-        print("      - Easy model on all intensities")
-        print("      - Medium model on all intensities")
-        print("      - Final model on all intensities")
+        print("\n   3. Create learning curves:")
+        print("      python plot_training_curves.py")
         print("="*70 + "\n")
         
     except KeyboardInterrupt:
         print("\n⚠️  Training interrupted")
+        
+        # Save on interruption
+        progress_callback.save_final_summary()
         model.save("./models/stage3_checkpoints/gated_curriculum_policy_interrupted")
         env.save("./models/stage3_checkpoints/gated_curriculum_vecnormalize_interrupted.pkl")
-        print("💾 Model saved at interruption")
+        print("💾 Model and logs saved at interruption")
     
     finally:
         env.close()
+        # Ensure CSV is closed
+        if hasattr(progress_callback, 'csv_file') and not progress_callback.csv_file.closed:
+            progress_callback.csv_file.close()
 
 
 if __name__ == "__main__":
