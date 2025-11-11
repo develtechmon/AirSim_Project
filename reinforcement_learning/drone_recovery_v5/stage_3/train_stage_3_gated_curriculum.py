@@ -36,14 +36,16 @@ NEW FEATURES:
 ✅ Curriculum progression tracking
 ✅ Auto-save on level advancement
 ✅ Training analytics export
+✅ FIXED: TensorBoard logging works even when loading existing models
 
 Generates:
-    logs/training_logs/gated_training_TIMESTAMP_episodes.csv
-    logs/training_logs/gated_training_TIMESTAMP_summary.json
-    logs/training_logs/gated_training_TIMESTAMP_curriculum.json
+    logs/stage3/gated_training_TIMESTAMP_episodes.csv
+    logs/stage3/gated_training_TIMESTAMP_summary.json
+    logs/stage3/gated_training_TIMESTAMP_curriculum.json
+    logs/gated_curriculum/PPO_1/events.out.tfevents.*
 
 Usage:
-    python train_gated_curriculum_with_logging.py
+    python train_stage_3_gated_curriculum.py
 """
 
 import torch
@@ -412,6 +414,10 @@ def main(args):
         )
         print("   ✅ Stage 2 policy loaded!")
         
+        # 🔧 FIX: Set TensorBoard logging after loading model
+        model.tensorboard_log = "./logs/gated_curriculum/"
+        print("   ✅ TensorBoard logging enabled!")
+        
         if args.lr < 3e-5:
             model.learning_rate = args.lr
             print(f"   📉 Learning rate: {args.lr}")
@@ -465,6 +471,7 @@ def main(args):
     print(f"   Total timesteps: {args.timesteps:,}")
     print(f"   Learning rate: {model.learning_rate}")
     print(f"   💾 Auto-save enabled: {save_path}")
+    print(f"   📊 TensorBoard log: {model.tensorboard_log}")
     print()
     print("="*70)
     print("🚀 GATED TRAINING STARTED")
