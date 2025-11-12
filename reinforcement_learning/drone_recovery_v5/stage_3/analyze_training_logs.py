@@ -15,6 +15,10 @@ Usage:
     
     # Or specify exact file:
     python analyze_training_logs.py --log logs/stage3/gated_training_TIMESTAMP_episodes.csv --output-dir ./plots
+
+
+    python analyze_training_logs.py --output-dir ./thesis_figures (i'm using this command to generate the figure)
+
 """
 
 import pandas as pd
