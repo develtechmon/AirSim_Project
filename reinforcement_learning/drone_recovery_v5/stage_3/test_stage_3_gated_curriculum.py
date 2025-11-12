@@ -10,25 +10,36 @@ Features:
 - PhD-ready metrics
 
 Usage:
-    python test_gated_curriculum.py --episodes 60
-    
-    # Test specific intensity range
-    python test_gated_curriculum.py --test-level 0  # Easy only
-    python test_gated_curriculum.py --test-level 1  # Medium only
-    python test_gated_curriculum.py --test-level 2  # Hard only
-    python test_gated_curriculum.py --test-level -1 # All levels (default)
-
-
-# Test Level 0 (Easy mastered)
-python test_gated_curriculum.py \
-  --model ./models/curriculum_levels/level_0_EASY_mastered.zip
-
-# Test Level 1 (Easy+Medium mastered)
-python test_gated_curriculum.py \
-  --model ./models/curriculum_levels/level_1_MEDIUM_mastered.zip
 
 # Test Final (All mastered)
-python test_gated_curriculum.py
+python test_stage_3_gated_curriculum.py
+
+# Test HARD level (60 episodes):
+python test_stage_3_gated_curriculum.py --test-level 2 --episodes 60
+
+# Test MEDIUM level:
+python test_stage_3_gated_curriculum.py --test-level 1 --episodes 60
+
+# Test EASY level:
+python test_stage_3_gated_curriculum.py --test-level 0 --episodes 60
+
+# Test ALL levels (20 each):
+python test_stage_3_gated_curriculum.py --test-level -1 --episodes 60
+
+# Test at multiple wind speeds:
+Test 1: Calm (Better than training)
+python test_stage_3_gated_curriculum.py --test-level 2 --episodes 60 --wind 0
+
+Test 2: Training Condition (Baseline)
+python test_stage_3_gated_curriculum.py --test-level 2 --episodes 60 --wind 5
+
+Test 3: Stronger than Training
+python test_stage_3_gated_curriculum.py --test-level 2 --episodes 60 --wind 10 
+
+Test 4: Stress Test
+python test_stage_3_gated_curriculum.py --test-level 2 --episodes 60 --wind 15
+
+
 
 """
 
@@ -42,7 +53,22 @@ from drone_flip_recovery_env_injector_gated import DroneFlipRecoveryEnv
 import time
 
 
-def test_gated_curriculum(model_path, vecnorm_path, num_episodes=60, test_level=-1):
+def get_base_env(vec_env):
+    """Safely get base environment through wrapper layers"""
+    env = vec_env.envs[0]
+    
+    # Unwrap Monitor if present
+    if hasattr(env, 'env'):
+        env = env.env
+    
+    # Unwrap any other wrappers
+    while hasattr(env, 'env') and not hasattr(env, 'curriculum_level'):
+        env = env.env
+    
+    return env
+
+
+def test_gated_curriculum(model_path, vecnorm_path, num_episodes=60, test_level=2, wind_strength=0.0):
     """
     Test the gated curriculum model
     
@@ -51,6 +77,7 @@ def test_gated_curriculum(model_path, vecnorm_path, num_episodes=60, test_level=
         vecnorm_path: Path to VecNormalize stats (auto-detected if None)
         num_episodes: Number of test episodes (20 per level if testing all)
         test_level: -1=all, 0=easy, 1=medium, 2=hard
+        wind_strength: Wind strength in m/s (0=no wind, 5=moderate, 10=strong)
     """
     
     # Auto-detect vecnorm path if not provided
@@ -65,7 +92,7 @@ def test_gated_curriculum(model_path, vecnorm_path, num_episodes=60, test_level=
             print(f"   Auto-detected VecNormalize: {vecnorm_path}")
         else:
             print(f"   ⚠️  Warning: No vecnormalize file found, using default")
-            vecnorm_path = "./models/gated_curriculum_vecnormalize.pkl"
+            vecnorm_path = "./models/stage3_checkpoints/gated_curriculum_vecnormalize.pkl"
     
     print("\n" + "="*70)
     print("🧪 TESTING GATED CURRICULUM MODEL")
@@ -73,6 +100,21 @@ def test_gated_curriculum(model_path, vecnorm_path, num_episodes=60, test_level=
     print(f"Model: {model_path}")
     print(f"VecNormalize: {vecnorm_path}")
     print(f"Episodes: {num_episodes}")
+    print(f"Wind Strength: {wind_strength} m/s")
+    
+    # Wind condition description
+    if wind_strength == 0:
+        wind_desc = "No wind (calm conditions)"
+    elif wind_strength <= 3:
+        wind_desc = "Light breeze (1-3 m/s)"
+    elif wind_strength <= 7:
+        wind_desc = "Moderate wind (4-7 m/s)"
+    elif wind_strength <= 12:
+        wind_desc = "Strong wind (8-12 m/s)"
+    else:
+        wind_desc = "Very strong wind (>12 m/s)"
+    
+    print(f"Wind Condition: {wind_desc}")
     
     # Check if this is a level model and display info
     model_name = Path(model_path).stem
@@ -102,7 +144,7 @@ def test_gated_curriculum(model_path, vecnorm_path, num_episodes=60, test_level=
         env = DroneFlipRecoveryEnv(
             target_altitude=30.0,
             max_steps=600,
-            wind_strength=5.0,
+            wind_strength=wind_strength,  # Use parameter
             flip_prob=1.0,  # Always have disturbance
             debug=True
         )
@@ -163,24 +205,23 @@ def test_gated_curriculum(model_path, vecnorm_path, num_episodes=60, test_level=
         for ep_in_level in range(episodes_per_level):
             episode_count += 1
             
-            # Manually set intensity for this test episode
-            if test_level_idx == 0:
-                test_intensity = np.random.uniform(0.7, 0.9)
-            elif test_level_idx == 1:
-                test_intensity = np.random.uniform(0.9, 1.1)
-            else:
-                test_intensity = np.random.uniform(1.1, 1.5)
+            # Get base environment and set curriculum level BEFORE reset
+            base_env = get_base_env(env)
             
+            # Set curriculum level
+            if hasattr(base_env, 'curriculum_level'):
+                base_env.curriculum_level = test_level_idx
+            else:
+                print(f"   ⚠️  Warning: Environment doesn't have curriculum_level attribute")
+                print(f"   Environment type: {type(base_env)}")
+            
+            print(f"Episode {episode_count} (Level {test_level_idx}, #{ep_in_level+1}):")
+            
+            # NOW reset with the correct level set
             obs = env.reset()
             done = False
             step = 0
             max_ang_vel = 0
-            
-            print(f"Episode {episode_count} (Level {test_level_idx}, #{ep_in_level+1}):")
-            print(f"   Target intensity: {test_intensity:.2f}x")
-            
-            # Override environment's intensity selection
-            # We'll manually inject disturbance at specific intensity
             
             while not done and step < 600:
                 action, _ = model.predict(obs, deterministic=True)
@@ -205,7 +246,7 @@ def test_gated_curriculum(model_path, vecnorm_path, num_episodes=60, test_level=
             disturbance_initiated = env_info.get('tumble_initiated', False)
             disturbance_recovered = env_info.get('tumble_recovered', False)
             recovery_steps = env_info.get('recovery_steps', 0)
-            actual_intensity = env_info.get('disturbance_intensity', test_intensity)
+            actual_intensity = env_info.get('disturbance_intensity', 1.0)
             
             # Store results
             all_results['successes'].append(success)
@@ -416,15 +457,17 @@ if __name__ == "__main__":
     )
     
     parser.add_argument('--model', type=str,
-                        default='./models/gated_curriculum_policy.zip',
+                        default='./models/stage3_checkpoints/gated_curriculum_policy.zip',
                         help='Path to trained model')
     parser.add_argument('--vecnorm', type=str,
                         default=None,
                         help='Path to VecNormalize stats (auto-detected if not provided)')
     parser.add_argument('--episodes', type=int, default=60,
                         help='Number of test episodes (20 per level if testing all)')
-    parser.add_argument('--test-level', type=int, default=-1,
+    parser.add_argument('--test-level', type=int, default=2,
                         help='Test specific level: -1=all, 0=easy, 1=medium, 2=hard')
+    parser.add_argument('--wind', type=float, default=0.0,
+                        help='Wind strength in m/s (0=none, 5=moderate, 10=strong, 15=extreme)')
     
     args = parser.parse_args()
     
@@ -433,12 +476,12 @@ if __name__ == "__main__":
     print("="*70)
     
     # Display available models if default is used
-    if args.model == './models/gated_curriculum_policy.zip':
+    if args.model == './models/stage3_checkpoints/gated_curriculum_policy.zip':
         print("\n📂 Available models:")
         print("   Final model:")
-        print("      ./models/gated_curriculum_policy.zip")
+        print("      ./models/stage3_checkpoints/gated_curriculum_policy.zip")
         
-        level_models_dir = Path("./models/curriculum_levels/")
+        level_models_dir = Path("./models/stage3_checkpoints/curriculum_levels/")
         if level_models_dir.exists():
             level_models = sorted(level_models_dir.glob("*.zip"))
             if level_models:
@@ -447,4 +490,4 @@ if __name__ == "__main__":
                     print(f"      {model}")
         print()
     
-    test_gated_curriculum(args.model, args.vecnorm, args.episodes, args.test_level)
+    test_gated_curriculum(args.model, args.vecnorm, args.episodes, args.test_level, args.wind)
