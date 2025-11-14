@@ -20,22 +20,6 @@ Features:
     - Impact intensity visualization
     - PhD research metrics
 """
-
-"""
-PRODUCTION-READY REAL-TIME DASHBOARD WITH EMBEDDED SCROLLBAR
-=============================================================
-Professional dashboard for PhD demonstration - FIXED ALTITUDE ISSUE
-"""
-
-"""
-PRODUCTION-READY REAL-TIME DASHBOARD WITH PPO ACTION VISUALIZATION
-==================================================================
-Shows HOW PPO actively counters disturbances for autonomous recovery
-
-STORY: "From Chaos to Control - PPO's Recovery Strategy"
-CORRECTED COORDINATE FRAME: AirSim NED
-"""
-
 import airsim
 import numpy as np
 import argparse
@@ -954,9 +938,9 @@ class ManualControlProduction:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--model', type=str,
-                        default='./models/stage3_checkpoints/gated_curriculum_policy.zip')
+                        default='./models/stage3_all_intensity_checkpoints/gated_curriculum_policy.zip')
     parser.add_argument('--vecnorm', type=str,
-                        default='./models/stage3_checkpoints/gated_curriculum_vecnormalize.pkl')
+                        default='./models/stage3_all_intensity_checkpoints/gated_curriculum_vecnormalize.pkl')
     args = parser.parse_args()
     
     if not KEYBOARD_AVAILABLE:
