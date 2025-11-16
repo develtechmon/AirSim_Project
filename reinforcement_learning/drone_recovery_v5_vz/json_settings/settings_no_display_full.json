@@ -1,0 +1,59 @@
+{
+  "SettingsVersion": 1.2,
+  "SimMode": "Multirotor",
+  
+  "ViewMode": "NoDisplay",
+  
+  "ClockSpeed": 1,
+  
+  "Vehicles": {
+    "SimpleFlight": {
+      "VehicleType": "SimpleFlight",
+      "DefaultVehicleState": "Armed",
+      "AutoCreate": true,
+      "PawnPath": "",
+      "EnableCollisionPassthrough": false,
+      "EnableCollisions": true,
+      "AllowAPIAlways": true,
+      
+      "Sensors": {
+        "Barometer": {
+          "SensorType": 1,
+          "Enabled": true
+        },
+        "Imu": {
+          "SensorType": 2,
+          "Enabled": true
+        },
+        "Gps": {
+          "SensorType": 3,
+          "Enabled": true
+        },
+        "Magnetometer": {
+          "SensorType": 4,
+          "Enabled": true
+        }
+      },
+      
+      "Cameras": {}
+    }
+  },
+  
+  "CameraDefaults": {
+    "CaptureSettings": [
+      {
+        "ImageType": 0,
+        "Width": 256,
+        "Height": 144,
+        "FOV_Degrees": 90
+      }
+    ]
+  },
+  
+  "Recording": {
+    "RecordOnMove": false,
+    "RecordInterval": 0.05
+  },
+  
+  "PhysicsEngineName": "FastPhysicsEngine"
+}

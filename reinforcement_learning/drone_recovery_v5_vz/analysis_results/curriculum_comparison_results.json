@@ -1,0 +1,88 @@
+{
+  "models_tested": [
+    "Level 0 (EASY)",
+    "Level 1 (MEDIUM)",
+    "Final Model"
+  ],
+  "test_episodes_per_intensity": 20,
+  "results": {
+    "Level 0 (EASY)": {
+      "EASY": {
+        "recovery_rate": 100.0,
+        "recoveries": 20,
+        "attempts": 20,
+        "avg_recovery_time": 12.05,
+        "avg_intensity": 0.8193142292157919,
+        "std_intensity": 0.05714892590341689
+      },
+      "MEDIUM": {
+        "recovery_rate": 100.0,
+        "recoveries": 20,
+        "attempts": 20,
+        "avg_recovery_time": 11.35,
+        "avg_intensity": 1.0149141719893673,
+        "std_intensity": 0.05142430677396226
+      },
+      "HARD": {
+        "recovery_rate": 100.0,
+        "recoveries": 20,
+        "attempts": 20,
+        "avg_recovery_time": 15.0,
+        "avg_intensity": 1.3380155837579095,
+        "std_intensity": 0.12320715086103999
+      }
+    },
+    "Level 1 (MEDIUM)": {
+      "EASY": {
+        "recovery_rate": 100.0,
+        "recoveries": 20,
+        "attempts": 20,
+        "avg_recovery_time": 15.45,
+        "avg_intensity": 0.7919344467475293,
+        "std_intensity": 0.06211322265979368
+      },
+      "MEDIUM": {
+        "recovery_rate": 100.0,
+        "recoveries": 20,
+        "attempts": 20,
+        "avg_recovery_time": 15.35,
+        "avg_intensity": 1.0009749549521636,
+        "std_intensity": 0.0603917816242011
+      },
+      "HARD": {
+        "recovery_rate": 100.0,
+        "recoveries": 20,
+        "attempts": 20,
+        "avg_recovery_time": 16.8,
+        "avg_intensity": 1.3271701609073605,
+        "std_intensity": 0.11294325331640015
+      }
+    },
+    "Final Model": {
+      "EASY": {
+        "recovery_rate": 100.0,
+        "recoveries": 20,
+        "attempts": 20,
+        "avg_recovery_time": 9.85,
+        "avg_intensity": 0.7792537411331394,
+        "std_intensity": 0.047596044401036534
+      },
+      "MEDIUM": {
+        "recovery_rate": 100.0,
+        "recoveries": 20,
+        "attempts": 20,
+        "avg_recovery_time": 14.75,
+        "avg_intensity": 1.0027098664965255,
+        "std_intensity": 0.04784907662977311
+      },
+      "HARD": {
+        "recovery_rate": 100.0,
+        "recoveries": 20,
+        "attempts": 20,
+        "avg_recovery_time": 17.9,
+        "avg_intensity": 1.314074971432705,
+        "std_intensity": 0.09935573997710408
+      }
+    }
+  }
+}

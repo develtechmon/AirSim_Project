@@ -1,0 +1,15 @@
+{
+  "total_episodes": 1024,
+  "total_time_hours": 14.702151933312416,
+  "final_recovery_rate_last_50": 98.0,
+  "final_reward_last_10": 12684.8674912,
+  "level_0_EASY_episodes": 50,
+  "level_0_EASY_recovery_rate": 100.0,
+  "level_0_EASY_avg_intensity": 0.7865575675251022,
+  "level_1_MEDIUM_episodes": 50,
+  "level_1_MEDIUM_recovery_rate": 98.0,
+  "level_1_MEDIUM_avg_intensity": 1.0082030315789643,
+  "level_2_HARD_episodes": 924,
+  "level_2_HARD_recovery_rate": 97.72727272727273,
+  "level_2_HARD_avg_intensity": 1.302574696321287
+}
