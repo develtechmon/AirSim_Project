@@ -93,6 +93,19 @@ class ScrollableDashboard:
         self.selected_disturbance = "bird_attack"
         self.selected_direction = "front"
         
+        # Recovery timer (NEW!)
+        self.recovery_start_time = None
+        self.current_recovery_time = 0.0
+        self.last_completed_recovery_time = 0.0
+        
+        # Last disturbance info (for display)
+        self.last_disturbance_type = "None"
+        self.last_disturbance_direction = "N/A"
+        self.last_disturbance_intensity = 0.0
+        self.last_disturbance_force = "N/A"
+        self.last_disturbance_angular_vel = "N/A"
+        self.last_disturbance_axis = "N/A"
+        
         # Statistics
         self.total_disturbances = 0
         self.successful_recoveries = 0
@@ -311,15 +324,53 @@ class ScrollableDashboard:
                     self._update_from_state(msg)
                 elif msg['type'] == 'disturbance':
                     self.record_disturbance()
+                    # Start recovery timer
+                    self.recovery_start_time = time.time()
+                    self.current_recovery_time = 0.0
                 elif msg['type'] == 'recovery':
                     self.record_recovery(msg['steps'])
+                    # Stop recovery timer and save the time
+                    if self.recovery_start_time is not None:
+                        self.last_completed_recovery_time = time.time() - self.recovery_start_time
+                        self.recovery_start_time = None
+                        self.current_recovery_time = 0.0
                 elif msg['type'] == 'disturbance_info':
                     # Update disturbance display info
                     self.selected_disturbance = msg.get('disturbance', 'unknown')
                     self.selected_direction = msg.get('direction', '')
+                elif msg['type'] == 'disturbance_details':
+                    # ✅ NEW: Capture detailed disturbance info
+                    self._update_disturbance_details(msg)
                     
         except queue.Empty:
             pass
+        
+        # Update current recovery time if actively recovering
+        if self.recovery_start_time is not None:
+            self.current_recovery_time = time.time() - self.recovery_start_time
+    
+    def _update_disturbance_details(self, msg):
+        """Update last disturbance details for display"""
+        self.last_disturbance_type = msg.get('disturbance_type', 'Unknown')
+        self.last_disturbance_direction = msg.get('direction', 'N/A')
+        self.last_disturbance_intensity = msg.get('intensity', 0.0)
+        
+        # Format force vector
+        force = msg.get('force', [0, 0, 0])
+        if isinstance(force, list) and len(force) == 3:
+            self.last_disturbance_force = f"[{force[0]:+6.1f}, {force[1]:+6.1f}, {force[2]:+6.1f}] N"
+        else:
+            self.last_disturbance_force = str(force)
+        
+        # Format angular velocity
+        ang_vel = msg.get('angular_velocity', None)
+        if ang_vel is not None:
+            self.last_disturbance_angular_vel = f"{ang_vel:+6.1f} deg/s"
+        else:
+            self.last_disturbance_angular_vel = "N/A"
+        
+        # Format axis
+        self.last_disturbance_axis = msg.get('axis', 'N/A')
     
     def _update_from_state(self, msg):
         """Update internal state from queue"""
@@ -385,30 +436,69 @@ class ScrollableDashboard:
         self.ax_action_vector.set_ylim(-1, 1)
         self.ax_action_vector.axis('off')
         
-        self.ax_action_vector.text(0.5, 0.95, 'PPO ACTION', fontsize=9, fontweight='bold',
+        self.ax_action_vector.text(0.5, 0.95, 'PPO ACTION\nVECTOR', fontsize=9, fontweight='bold',
                                   color='#ff00ff', ha='center', va='top',
                                   transform=self.ax_action_vector.transAxes)
         
+        # Draw drone circle
         drone_circle = Circle((0.5, 0.5), 0.08, color='#00ffff', alpha=0.8,
                              transform=self.ax_action_vector.transAxes)
         self.ax_action_vector.add_patch(drone_circle)
         
-        vz = self.current_action[2]
-        if vz < -0.1:
-            self.ax_action_vector.text(0.5, 0.70, '↑ CLIMBING', fontsize=11,
-                                      color='#00ff00', fontweight='bold',
-                                      ha='center', transform=self.ax_action_vector.transAxes)
-            self.ax_action_vector.text(0.5, 0.60, f'{vz:.2f} m/s', fontsize=9,
-                                      color='#00ff00', ha='center',
+        # ✅ HORIZONTAL MOVEMENT ARROWS (Vx, Vy)
+        scale = 0.06
+        vx_arrow = self.current_action[0] * scale  # Forward/backward
+        vy_arrow = self.current_action[1] * scale  # Right/left
+        
+        # Draw horizontal movement arrow if significant
+        if abs(vx_arrow) > 0.001 or abs(vy_arrow) > 0.001:
+            # Rotate 90° because Forward (Vx) should point UP in visualization
+            arrow = FancyArrow(0.5, 0.5, vy_arrow, vx_arrow,
+                              width=0.02, head_width=0.05, head_length=0.03,
+                              color='#ff0000', alpha=0.9,
+                              transform=self.ax_action_vector.transAxes)
+            self.ax_action_vector.add_patch(arrow)
+            
+            # Label the direction
+            if abs(vx_arrow) > abs(vy_arrow):
+                direction = 'Forward' if vx_arrow > 0 else 'Backward'
+            else:
+                direction = 'Right' if vy_arrow > 0 else 'Left'
+            
+            self.ax_action_vector.text(0.5 + vy_arrow, 0.5 + vx_arrow + 0.08, 
+                                      direction, fontsize=7,
+                                      color='#ff0000', ha='center', va='bottom',
                                       transform=self.ax_action_vector.transAxes)
-        elif vz > 0.1:
-            self.ax_action_vector.text(0.5, 0.30, '↓ DESCENDING', fontsize=11,
+        
+        # ✅ VERTICAL INDICATOR (Vz)
+        vz = self.current_action[2]
+        if vz < -0.1:  # Climbing (negative = up in NED)
+            self.ax_action_vector.text(0.5, 0.75, '↑ CLIMBING', fontsize=11,
+                                      color='#00ff00', fontweight='bold',
+                                      ha='center', va='center',
+                                      transform=self.ax_action_vector.transAxes)
+            self.ax_action_vector.text(0.5, 0.65, f'{vz:.2f} m/s', fontsize=9,
+                                      color='#00ff00', ha='center', va='center',
+                                      transform=self.ax_action_vector.transAxes)
+        elif vz > 0.1:  # Descending (positive = down in NED)
+            self.ax_action_vector.text(0.5, 0.25, '↓ DESCENDING', fontsize=11,
                                       color='#ffff00', fontweight='bold',
-                                      ha='center', transform=self.ax_action_vector.transAxes)
+                                      ha='center', va='center',
+                                      transform=self.ax_action_vector.transAxes)
+            self.ax_action_vector.text(0.5, 0.15, f'{vz:.2f} m/s', fontsize=9,
+                                      color='#ffff00', ha='center', va='center',
+                                      transform=self.ax_action_vector.transAxes)
         else:
-            self.ax_action_vector.text(0.5, 0.40, 'HOVERING', fontsize=11,
+            self.ax_action_vector.text(0.5, 0.35, 'HOVERING', fontsize=11,
                                       color='#ffffff', fontweight='bold',
-                                      ha='center', transform=self.ax_action_vector.transAxes)
+                                      ha='center', va='center',
+                                      transform=self.ax_action_vector.transAxes)
+        
+        # Action magnitude
+        action_mag = np.linalg.norm(self.current_action)
+        self.ax_action_vector.text(0.5, 0.08, f'|Action|: {action_mag:.2f} m/s',
+                              fontsize=8, color='white', ha='center', va='center',
+                              transform=self.ax_action_vector.transAxes)
         
         # Update recovery stats, intensity, status, strategy (same as original)
         self._update_recovery_panel()
@@ -478,7 +568,7 @@ class ScrollableDashboard:
                               ha='center', va='bottom', transform=self.ax_intensity.transAxes)
     
     def _update_status_panel(self):
-        """Update system status"""
+        """Update system status with recovery timer"""
         self.ax_status.clear()
         self.ax_status.axis('off')
         
@@ -493,15 +583,25 @@ class ScrollableDashboard:
             dist_text = self.selected_disturbance.upper()
             if self.selected_direction:
                 dist_text += f'\n{self.selected_direction.upper()}'
-            status_text = f'DISTURBANCE\n\n{dist_text}\n\nPPO\nRESPONDING'
+            
+            # Show recovery timer if recovering
+            if self.recovery_start_time is not None:
+                status_text = f'RECOVERING\n\n{dist_text}\n\nTime: {self.current_recovery_time:.1f}s'
+            else:
+                status_text = f'DISTURBANCE\n\n{dist_text}\n\nPPO\nRESPONDING'
         elif self.is_recovering:
             status_color = '#ff9900'
             bg_color = '#332200'
-            status_text = f'RECOVERING\n\nω: {self.current_ang_vel:.2f}\nrad/s'
+            # Show recovery progress
+            status_text = f'RECOVERING\n\nω: {self.current_ang_vel:.2f}\nrad/s\n\nTime: {self.current_recovery_time:.1f}s'
         else:
             status_color = '#00ff00'
             bg_color = '#003300'
-            status_text = 'STABLE\n\nHover\nReady'
+            # Show last recovery time if available
+            if self.last_completed_recovery_time > 0:
+                status_text = f'STABLE\n\nHover\nReady\n\nLast: {self.last_completed_recovery_time:.1f}s'
+            else:
+                status_text = 'STABLE\n\nHover\nReady'
         
         self.ax_status.set_facecolor(bg_color)
         self.ax_status.text(0.5, 0.5, status_text, fontsize=10, fontweight='bold',
@@ -534,6 +634,14 @@ class ScrollableDashboard:
                              ha='center', va='center',
                              transform=self.ax_strategy.transAxes)
     
+    def _format_recovery_status(self):
+        """Format current recovery status for display"""
+        if self.recovery_start_time is not None:
+            # Currently recovering
+            return f"⏱️  {self.current_recovery_time:5.2f}s (IN PROGRESS)"
+        else:
+            return "Idle (waiting for disturbance)"
+    
     def _update_info_panel(self):
         """Update info text - production-ready version"""
         elapsed_time = time.time() - self.start_time
@@ -545,26 +653,27 @@ class ScrollableDashboard:
 ║                                                                    ║
 ╠════════════════════════════════════════════════════════════════════╣
 ║                                                                    ║
-║  📊 DISTURBANCE TYPES (Same as Training!)                          ║
+║  📊 DISTURBANCE TYPES (Consistent & Realistic Physics!)            ║
 ║  ════════════════════════════════════════════════════════════════  ║
 ║                                                                    ║
-║  ALL disturbances use DisturbanceInjector.inject_disturbance()    ║
-║  (Exactly the same method used during training!)                   ║
-║                                                                    ║
-║  W/A/S/D - BIRD ATTACKS                                            ║
-║    • Violent directional impact (40-80N force)                     ║
-║    • Causes rapid rotation (360-540°/s)                            ║
-║    • SAME as training environment                                  ║
+║  W/A/S/D - BIRD ATTACKS (Drone rotates AWAY from impact!)         ║
+║    • W = Hit from FRONT → Pitches BACKWARD                        ║
+║    • S = Hit from BACK  → Pitches FORWARD                         ║
+║    • A = Hit from LEFT  → Rolls RIGHT (away from impact)          ║
+║    • D = Hit from RIGHT → Rolls LEFT (away from impact)           ║
+║    • Force: 30-80N (violent impact!)                               ║
+║    • Rotation: 270-450°/s (causes tumbling!)                       ║
 ║                                                                    ║
 ║  F - FLIP (Rapid Tumble)                                           ║
-║    • Violent angular rotation                                      ║
-║    • Hardest recovery challenge                                    ║
+║    • Random roll/pitch rotation                                    ║
+║    • Angular velocity: 360-540°/s                                  ║
 ║                                                                    ║
 ║  G - SPIN (Yaw Rotation)                                           ║
 ║    • Rotation around vertical axis                                 ║
+║    • Angular velocity: 450-630°/s                                  ║
 ║                                                                    ║
 ║  T - DROP (Altitude Loss)                                          ║
-║    • Sudden downward force                                         ║
+║    • Sudden downward force: 40-80N                                 ║
 ║                                                                    ║
 ╠════════════════════════════════════════════════════════════════════╣
 ║                                                                    ║
@@ -582,6 +691,29 @@ class ScrollableDashboard:
 ║                                                                    ║
 ╠════════════════════════════════════════════════════════════════════╣
 ║                                                                    ║
+║  ⏱️  RECOVERY TIMER                                                ║
+║  ════════════════════════════════════════════════════════════════  ║
+║                                                                    ║
+║  Current Recovery:  {self._format_recovery_status():<45}  ║
+║  Last Recovery:     {self.last_completed_recovery_time:5.2f}s                                     ║
+║  Average Recovery:  {self.avg_recovery_time:5.2f}s                                     ║
+║  Fastest Recovery:  {min(self.recovery_times) if self.recovery_times else 0:5.2f}s                                     ║
+║  Slowest Recovery:  {max(self.recovery_times) if self.recovery_times else 0:5.2f}s                                     ║
+║                                                                    ║
+╠════════════════════════════════════════════════════════════════════╣
+║                                                                    ║
+║  LAST DISTURBANCE INFO                                             ║
+║  ════════════════════════════════════════════════════════════════  ║
+║                                                                    ║
+║  Type:      {self.last_disturbance_type:<50}  ║
+║  Direction: {self.last_disturbance_direction:<50}  ║
+║  Intensity: {self.last_disturbance_intensity:.2f}x                                           ║
+║  Force:     {self.last_disturbance_force:<50}  ║
+║  Ang Vel:   {self.last_disturbance_angular_vel:<50}  ║
+║  Axis:      {self.last_disturbance_axis:<50}  ║
+║                                                                    ║
+╠════════════════════════════════════════════════════════════════════╣
+║                                                                    ║
 ║  STATISTICS                                                        ║
 ║  ════════════════════════════════════════════════════════════════  ║
 ║                                                                    ║
@@ -593,21 +725,28 @@ class ScrollableDashboard:
 ║                                                                    ║
 ╠════════════════════════════════════════════════════════════════════╣
 ║                                                                    ║
-║  ✅ MATCHES TRAINING ENVIRONMENT                                   ║
+║  ✅ REALISTIC PHYSICS: Rotation Away From Impact                   ║
 ║  ════════════════════════════════════════════════════════════════  ║
 ║                                                                    ║
-║  • Uses DisturbanceInjector for ALL disturbances                   ║
-║  • Same intensity ranges as training                               ║
-║  • Same bird attack behavior (violent impact!)                     ║
-║  • Multi-threaded: PPO @ 20Hz, Dashboard @ 10Hz                    ║
-║  • Continuous data logging (all phases)                            ║
-║  • Fast recovery: ~10 seconds                                      ║
+║  • Front impact → Backward pitch (natural physics!)                ║
+║  • Left impact → Right roll (pushed away from impact!)             ║
+║  • Each direction now produces DISTINCT rotation!                  ║
+║  • Same intensity = same impact severity                           ║
+║  • Uses DisturbanceInjector (matches training!)                    ║
 ║                                                                    ║
 ╚════════════════════════════════════════════════════════════════════╝
 """
         
+        # ✅ FIX: Don't reset scroll position! Let user control it
+        # Save current scroll position
+        current_position = self.info_text.yview()
+        
+        # Update text
         self.info_text.delete(1.0, tk.END)
         self.info_text.insert(tk.END, info_text)
+        
+        # ✅ RESTORE scroll position - prevents auto-jump to top!
+        self.info_text.yview_moveto(current_position[0])
     
     def record_disturbance(self):
         self.total_disturbances += 1
@@ -812,28 +951,47 @@ class PPOControlThread(threading.Thread):
     def _apply_disturbance(self):
         """
         EXACTLY MATCHES TRAINING ENVIRONMENT!
-        ALL disturbances use DisturbanceInjector.inject_disturbance() - same as training!
+        ✅ FIXED: Now passes direction for consistent bird attacks!
         """
         
-        # Send disturbance info to dashboard
+        # Send basic disturbance info to dashboard (for status panel)
         self.data_queue.put({
             'type': 'disturbance_info',
             'disturbance': self.selected_disturbance.value,
             'direction': self.selected_direction if self.selected_disturbance == DisturbanceType.BIRD_ATTACK else ''
         })
         
-        # ✅ USE EXACT SAME METHOD AS TRAINING ENVIRONMENT!
-        # All disturbances (including bird attacks) use the injector
-        disturbance_info = self.injector.inject_disturbance(
-            self.selected_disturbance,
-            intensity=self.intensity
-        )
+        # ✅ FIXED: Pass direction parameter for bird attacks!
+        if self.selected_disturbance == DisturbanceType.BIRD_ATTACK:
+            disturbance_info = self.injector.inject_disturbance(
+                self.selected_disturbance,
+                intensity=self.intensity,
+                direction=self.selected_direction  # ← PASS DIRECTION!
+            )
+            print(f"💥 Bird attack from {self.selected_direction.upper()} at {self.intensity:.1f}x")
+        else:
+            disturbance_info = self.injector.inject_disturbance(
+                self.selected_disturbance,
+                intensity=self.intensity
+            )
+            print(f"💥 {self.selected_disturbance.value} at {self.intensity:.1f}x")
         
-        print(f"💥 {self.selected_disturbance.value} at {self.intensity:.1f}x")
         if 'angular_velocity' in disturbance_info:
             print(f"   Angular velocity: {disturbance_info['angular_velocity']:.1f} deg/s")
+            print(f"   Rotation axis: {disturbance_info.get('axis', 'N/A')}")
         if 'force' in disturbance_info:
             print(f"   Force: {disturbance_info['force']}")
+        
+        # ✅ NEW: Send detailed disturbance info to dashboard
+        self.data_queue.put({
+            'type': 'disturbance_details',
+            'disturbance_type': self.selected_disturbance.value,
+            'direction': disturbance_info.get('direction', 'N/A'),
+            'intensity': disturbance_info.get('intensity', self.intensity),
+            'force': disturbance_info.get('force', [0, 0, 0]),
+            'angular_velocity': disturbance_info.get('angular_velocity', None),
+            'axis': disturbance_info.get('axis', 'N/A')
+        })
         
         self.data_queue.put({'type': 'disturbance'})
         self.currently_recovering = True

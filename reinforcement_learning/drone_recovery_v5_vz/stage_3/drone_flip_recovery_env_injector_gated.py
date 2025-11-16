@@ -456,7 +456,7 @@ class DroneFlipRecoveryEnvGated(gym.Env):
                 if alt < self.target_altitude - 2.0:
                     # Below target - CLIMB FAST!
                     if vz < -1.0:  # Climbing fast
-                        reward += abs(vz) * 300  # ← BIG reward for fast climb
+                        reward += abs(vz) * 300  # ← BIG reward for fast climb (This is crucial change that reward the drone for climbing quickly)
                     elif vz < -0.5:  # Climbing moderately
                         reward += abs(vz) * 150
                     elif vz < 0.0:  # Climbing slowly

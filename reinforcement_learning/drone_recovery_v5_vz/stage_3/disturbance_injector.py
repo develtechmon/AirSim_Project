@@ -1,5 +1,9 @@
 """
-Disturbance Injector for Impact Recovery Training
+Disturbance Injector for Impact Recovery Training - FIXED VERSION
+===================================================================
+✅ FIXED: Bird attacks now accept direction parameter (front/left/back/right)
+✅ Maintains backward compatibility (random if direction not specified)
+
 Simulates various real-world disturbances that cause drone instability
 """
 
@@ -22,6 +26,7 @@ class DisturbanceType(Enum):
 class DisturbanceInjector:
     """
     Injects various disturbances to simulate real-world impacts
+    ✅ FIXED: Now supports directional bird attacks!
     """
     
     def __init__(self, client):
@@ -36,18 +41,18 @@ class DisturbanceInjector:
             'bird_attack': {
                 'force_range': (30, 80),
                 'duration': 0.15,
-                'angular_impulse': (360, 540),   # degrees/sec - SEVERE IMPACT!
+                'angular_impulse': (360, 540),   # degrees/sec - SEVERE IMPACT
             },
             'wind_gust': {
                 'force_range': (20, 60),
                 'duration': 0.3,
             },
             'flip': {
-                'angular_velocity': (450, 720), # degrees/sec - EXTREME FLIP!
+                'angular_velocity': (450, 720), # degrees/sec - EXTREME FLIP
                 'axis': ['roll', 'pitch'],      # which axis to flip
             },
             'spin': {
-                'angular_velocity': (540, 900), # degrees/sec - EXTREME SPIN!
+                'angular_velocity': (540, 900), # degrees/sec - EXTREME SPIN
             },
             'drop': {
                 'force_range': (-80, -40),      # Downward force
@@ -55,13 +60,15 @@ class DisturbanceInjector:
             }
         }
     
-    def inject_disturbance(self, disturbance_type, intensity=1.0):
+    def inject_disturbance(self, disturbance_type, intensity=1.0, direction=None):
         """
         Inject a disturbance to the drone
         
         Args:
             disturbance_type: DisturbanceType enum
             intensity: 0.0 to 2.0 (multiplier for disturbance strength)
+            direction: (OPTIONAL) For BIRD_ATTACK only - 'front', 'back', 'left', 'right'
+                      If None, direction is random (backward compatible)
         
         Returns:
             dict: Information about the applied disturbance
@@ -70,7 +77,7 @@ class DisturbanceInjector:
         if disturbance_type == DisturbanceType.COLLISION:
             return self._apply_collision(intensity)
         elif disturbance_type == DisturbanceType.BIRD_ATTACK:
-            return self._apply_bird_attack(intensity)
+            return self._apply_bird_attack(intensity, direction=direction)
         elif disturbance_type == DisturbanceType.WIND_GUST:
             return self._apply_wind_gust(intensity)
         elif disturbance_type == DisturbanceType.FLIP:
@@ -103,23 +110,39 @@ class DisturbanceInjector:
             'intensity': intensity
         }
     
-    def _apply_bird_attack(self, intensity):
-        """Simulate bird strike (side impact with rotation)"""
+    def _apply_bird_attack(self, intensity, direction=None):
+        """
+        Simulate bird strike (side impact with rotation)
+        
+        ✅ FIXED: Now accepts direction parameter!
+        
+        Args:
+            intensity: Force multiplier
+            direction: 'front', 'back', 'left', 'right' or None (random)
+        """
         force_min, force_max = self.params['bird_attack']['force_range']
         force = np.random.uniform(force_min, force_max) * intensity
         
-        # Side impact
-        direction = np.random.choice(['left', 'right', 'front', 'back'])
+        # ✅ FIXED: Use specified direction or random if not provided
+        if direction is None:
+            direction = np.random.choice(['left', 'right', 'front', 'back'])
+        
+        # Validate direction
+        if direction not in ['left', 'right', 'front', 'back']:
+            print(f"⚠️ Invalid direction '{direction}', using random")
+            direction = np.random.choice(['left', 'right', 'front', 'back'])
+        
+        # Set force based on direction
         fx, fy, fz = 0, 0, 0
         
         if direction == 'left':
-            fy = -force
+            fy = -force  # Push from left (negative Y in NED)
         elif direction == 'right':
-            fy = force
+            fy = force   # Push from right (positive Y in NED)
         elif direction == 'front':
-            fx = force
+            fx = force   # Push from front (positive X in NED)
         else:  # back
-            fx = -force
+            fx = -force  # Push from back (negative X in NED)
         
         # Apply force
         self._apply_force(fx, fy, fz, duration=self.params['bird_attack']['duration'])
@@ -127,7 +150,26 @@ class DisturbanceInjector:
         # Add angular impulse (causes rotation) - THIS IS KEY!
         ang_min, ang_max = self.params['bird_attack']['angular_impulse']
         angular_vel = np.random.uniform(ang_min, ang_max) * intensity
-        axis = np.random.choice(['roll', 'pitch'])  # Random axis
+        
+        # ✅ FIXED: Choose rotation axis AND direction based on impact direction
+        # The drone should rotate AWAY from the impact
+        if direction == 'front':
+            # Hit from front → pitch backward (negative pitch in NED)
+            axis = 'pitch'
+            angular_vel = -angular_vel  # Negative = pitch back
+        elif direction == 'back':
+            # Hit from back → pitch forward (positive pitch in NED)
+            axis = 'pitch'
+            angular_vel = angular_vel  # Positive = pitch forward
+        elif direction == 'left':
+            # Hit from left → roll right (positive roll in NED)
+            axis = 'roll'
+            angular_vel = angular_vel  # Positive = roll right
+        else:  # right
+            # Hit from right → roll left (negative roll in NED)
+            axis = 'roll'
+            angular_vel = -angular_vel  # Negative = roll left
+        
         self._apply_angular_velocity(angular_vel, axis=axis)
         
         return {
