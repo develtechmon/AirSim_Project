@@ -1,0 +1,55 @@
+{
+  "training_info": {
+    "total_episodes": 335,
+    "total_time_seconds": 16947.127935886383,
+    "total_time_hours": 4.707535537746217,
+    "episodes_per_hour": 71.16250048754488,
+    "start_time": 1763269933.554964,
+    "end_time": 1763286880.6829
+  },
+  "final_performance": {
+    "last_10_avg_reward": 9933.0808306,
+    "last_50_avg_reward": 8130.96452516,
+    "last_10_recovery_rate": 100.0,
+    "last_50_recovery_rate": 100.0,
+    "avg_recovery_time_steps": 16.36,
+    "avg_recovery_time_seconds": 0.8180000000000001
+  },
+  "curriculum_progression": {
+    "level_0": {
+      "level_name": "EASY (0.7-0.9)",
+      "reached_at_episode": 1,
+      "elapsed_time_hours": 0.017103699048360187
+    },
+    "level_1": {
+      "level_name": "MEDIUM (0.9-1.1)",
+      "reached_at_episode": 51,
+      "elapsed_time_hours": 0.7218643759356604
+    },
+    "level_2": {
+      "level_name": "HARD (1.1-1.5)",
+      "reached_at_episode": 101,
+      "elapsed_time_hours": 1.429222258594301
+    }
+  },
+  "statistics_by_level": {
+    "level_0_EASY": {
+      "episodes_trained": 50,
+      "recovery_rate": 100.0,
+      "avg_reward": 12157.11587508,
+      "avg_intensity": 0.8127777174046897
+    },
+    "level_1_MEDIUM": {
+      "episodes_trained": 50,
+      "recovery_rate": 100.0,
+      "avg_reward": 10112.332550419998,
+      "avg_intensity": 1.0038450127898089
+    },
+    "level_2_HARD": {
+      "episodes_trained": 235,
+      "recovery_rate": 99.57446808510639,
+      "avg_reward": 9781.555052846808,
+      "avg_intensity": 1.300512088893368
+    }
+  }
+}
