@@ -643,7 +643,7 @@ class ScrollableDashboard:
             return "Idle (waiting for disturbance)"
     
     def _update_info_panel(self):
-        """Update info text - production-ready version"""
+        """Update info text - using replace to preserve scroll"""
         elapsed_time = time.time() - self.start_time
         
         info_text = f"""╔════════════════════════════════════════════════════════════════════╗
@@ -737,16 +737,9 @@ class ScrollableDashboard:
 ╚════════════════════════════════════════════════════════════════════╝
 """
         
-        # ✅ FIX: Don't reset scroll position! Let user control it
-        # Save current scroll position
-        current_position = self.info_text.yview()
-        
-        # Update text
-        self.info_text.delete(1.0, tk.END)
-        self.info_text.insert(tk.END, info_text)
-        
-        # ✅ RESTORE scroll position - prevents auto-jump to top!
-        self.info_text.yview_moveto(current_position[0])
+        # ✅ CORRECT FIX: Use replace() method which preserves scroll position
+        # replace() updates content without moving the insertion cursor or scroll
+        self.info_text.replace('1.0', tk.END, info_text)
     
     def record_disturbance(self):
         self.total_disturbances += 1
