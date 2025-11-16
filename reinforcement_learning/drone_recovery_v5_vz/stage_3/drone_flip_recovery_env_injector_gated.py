@@ -23,12 +23,7 @@ IMPROVEMENTS:
 This version makes the drone return to 30m altitude MUCH FASTER after recovery!
 
 
-Commands : 
-Option 2: Train new model from scratch with fixed rewards
-python train_stage_3_gated_curriculum.py --timesteps 600000
 
-Option 3: Continue training existing model (adapts to new rewards)
-python stage_3/train_stage_3_gated_curriculum.py --stage2-model ./models/stage3_checkpoints/gated_curriculum_policy.zip --timesteps 200000 --lr 1e-5 (i'm using this)
 """
 
 import airsim
