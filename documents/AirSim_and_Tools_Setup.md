@@ -7,6 +7,10 @@
 - [Microsoft AirSim](https://github.com/microsoft/AirSim)
 - [Unreal Engine 4.27.2](https://www.unrealengine.com/en-US/)
 - [Visual Studio 2022](https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=Community&channel=Release&version=VS2022&source=VSLandingPage&cid=2030&passive=false)
+- Currently it's hard to download VS2022 since 2026 rollout, you can use this link to download the older version
+  ```
+	https://gist.github.com/stormwild/3a7f803113329d36511160534f60eef6
+  ```
 
 Important Note : You have to downloand `Unreal Engine 4.27.2` using `Epic Launcher`
 
