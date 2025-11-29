@@ -103,8 +103,13 @@ pip install --no-build-isolation \
 # Use this if you encounter numpy error
 pip install airsim --no-build-isolation
 
+# Use this patch if you encounter module 'Collections' has no attribute 'MutableMapping' when using dronekit
+sed -i 's/collections.MutableMapping/collections.abc.MutableMapping/g' ~/airsim/airsimcode/lib/python3.11/site-packages/dronekit/__init__.py
+
+
 ## For GPU support --> pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu128
 ## To solve ssl match issue --> pip install backports.ssl_match_hostname
 ## To install airsim --> pip install --no-build-isolation airsim
+
 
 
