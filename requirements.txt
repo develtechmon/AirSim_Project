@@ -92,6 +92,7 @@ sudo apt install -y build-essential cmake pkg-config \
     libbz2-dev liblzma-dev
 
 pip install --upgrade pip setuptools setuptools_scm wheel build
+pip install swig
 
 pip install --no-build-isolation \
   "gymnasium[all]" \
@@ -102,3 +103,4 @@ pip install --no-build-isolation \
 ## For GPU support --> pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu128
 ## To solve ssl match issue --> pip install backports.ssl_match_hostname
 ## To install airsim --> pip install --no-build-isolation airsim
+
