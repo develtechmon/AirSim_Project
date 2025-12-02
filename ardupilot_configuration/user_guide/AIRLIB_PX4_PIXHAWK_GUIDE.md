@@ -235,7 +235,7 @@ import airsim
 import time
 
 # Connect to AirSim
-client = airsim.MultirotorClient()
+client = airsim.MultirotorClient(ip="172.23.128.1")
 client.confirmConnection()
 print("Connected to AirSim!")
 
