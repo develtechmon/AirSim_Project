@@ -119,6 +119,34 @@ On your **Windows** machine, edit or create `Documents\AirSim\settings.json`:
 }
 ```
 
+This is `settings.json` that i use
+```
+{
+  "SettingsVersion": 1.2,
+  "SimMode": "Multirotor",
+  "Vehicles": {
+    "PX4": {
+      "VehicleType": "PX4Multirotor",
+      "UseSerial": false,
+      "UseTcp": true,
+      "QgcHostIp": "",
+      "TcpPort": 4560,
+      "ControlIp": "172.23.143.43",  <--- this one refer to ubuntu wsl2  IPv4 Address. . . . . . . . . . . : 172.23.128.1
+      "ControlPort": 14550,
+      "LocalHostIp": "172.23.128.1", <--- this one refer to Ethernet adapter vEthernet (WSL (Hyper-V firewall)):  IPv4 Address. . . . . . . . . . . : 172.23.128.1 inside windows terminal
+      "Sensors": {
+        "Barometer": {
+          "SensorType": 1,
+          "Enabled": true,
+          "Pressure_factor_sigma": 0.0001825
+        }
+      }
+    }
+  }
+}
+
+```
+
 ### Step 1.4: Find Your WSL2 IP Addresses
 
 On **Windows PowerShell**:
