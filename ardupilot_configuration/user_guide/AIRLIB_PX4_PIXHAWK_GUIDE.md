@@ -171,7 +171,7 @@ Update your `settings.json`:
 In WSL2, before running PX4:
 ```bash
 # Set environment variable for remote AirSim connection
-export PX4_SIM_HOST_ADDR=172.23.128.1  # Your Windows WSL adapter IP
+export PX4_SIM_HOST_ADDR=172.23.128.1  # Your Windows WSL adapter IP. You can at this parameter inside ~/.bashrc script
 ```
 
 ### Step 1.6: Open Firewall Ports (Windows)
