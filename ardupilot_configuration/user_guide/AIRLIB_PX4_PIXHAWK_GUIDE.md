@@ -192,7 +192,7 @@ netsh advfirewall firewall add rule name="PX4 MAVLink UDP" dir=in action=allow p
 cd ~/PX4-Autopilot
 
 # Set remote host
-export PX4_SIM_HOST_ADDR=172.23.128.1
+export PX4_SIM_HOST_ADDR=172.23.128.1 <--- can add this in ~/.bashrc
 
 # Run PX4 SITL for AirSim
 make px4_sitl_default none_iris
@@ -213,7 +213,18 @@ INFO [simulator] Simulator connected on TCP port 4560
 INFO [mavlink] partner IP: 172.23.128.1
 INFO [ecl/EKF] EKF GPS checks passed
 ```
+You should se in AirSim (AirSimNH)
+```
+Got GPS Lock
+Ground Controll connected over UDP
+```
 
+To test PX4, you can try the following command in `WSL PX4` terminal
+```
+help <--- you'll see lot of command
+commander takeoff <--- Drone will takeoff
+commander land <--- Drone will land
+```
 ### Step 1.8: Test with Python API
 
 Create a test script on Windows:
