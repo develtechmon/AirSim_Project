@@ -344,11 +344,6 @@ land
 - Drone should land
 ---
  
-
-
-
-
- 
 ### Step 3: Connect DroneKit (WSL2)
 
 Test 1: Open a **second WSL2 terminal** and create your Python script:
@@ -460,6 +455,34 @@ print("=" * 60)
 ```bash
 python3 ~/dronekit_test_2.py
 ```
+**Expected output:**
+ 
+```
+============================================================
+Testing AirSim API with ArduPilot
+============================================================
+ 
+[1] Connecting to AirSim...
+✓ Connected to AirSim
+ 
+[2] Getting vehicle state...
+✓ Armed: False
+✓ Ready: True
+ 
+[3] Getting GPS data...
+✓ GPS Fix: 3
+✓ Latitude: -35.363261
+✓ Longitude: 149.165230
+ 
+[4] Getting position...
+✓ Position: Vector3r(x_val=0.0, y_val=0.0, z_val=-0.0)
+ 
+============================================================
+✅ AirSim API Test SUCCESSFUL!
+============================================================
+```
+ 
+---
 
 
 ## 🔧 Troubleshooting
