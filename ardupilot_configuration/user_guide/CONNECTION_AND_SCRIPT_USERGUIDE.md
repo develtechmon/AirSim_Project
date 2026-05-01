@@ -70,18 +70,28 @@ This guide explains how to connect DroneKit (Python) to ArduPilot SITL when usin
 
 Think of it like a building with two floors:
 
-- **Windows (172.23.128.1)** = Ground floor, where AirSim lives
-- **WSL2 Ubuntu (172.23.143.4)** = Basement floor, where ArduPilot lives
+- **Windows (172.28.0.1)** = Ground floor, where AirSim lives
+- **WSL2 Ubuntu (172.28.15.216)** = Basement floor, where ArduPilot lives
 - **Localhost (127.0.0.1)** = "My current floor" (wherever you are)
 
-### Your Current Setup
+### Getting Your IP Addresses
 
-```
-Windows WSL Adapter IP:  172.23.128.1
-WSL2 Ubuntu IP:          172.23.143.4
+**Windows WSL Adapter IP (usually stable):**
+```powershell
+# In PowerShell
+ipconfig
+# Look for: "Ethernet adapter vEthernet (WSL (Hyper-V firewall))"
+# IPv4 Address: 172.28.0.1
 ```
 
-**Important:** The WSL2 Ubuntu IP (172.23.143.4) can change after Windows reboot. The Windows adapter IP (172.23.128.1) is usually stable.
+**WSL2 Ubuntu IP (can change after reboot):**
+```bash
+# In WSL2
+ip addr show eth0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1
+# Output: 172.28.15.216
+```
+
+**Important:** The WSL2 Ubuntu IP (172.28.15.216) can change after Windows reboot. The Windows adapter IP (172.28.0.1) is usually stable.
 
 ### Port Mapping
 
@@ -100,9 +110,10 @@ WSL2 Ubuntu IP:          172.23.143.4
 ### 1. Software Installed
 
 **In Windows:**
-- AirSim (Unreal Engine environment)
+- AirSim (Unreal Engine environment) or
+- AirSim (Blocks, MSBuild2018, or custom environment)
 - Windows Subsystem for Linux 2 (WSL2)
-
+  
 **In WSL2 Ubuntu:**
 - ArduPilot (installed in `~/ardupilot/`)
 - MAVProxy (installed via pip)
@@ -110,10 +121,35 @@ WSL2 Ubuntu IP:          172.23.143.4
 - DroneKit (`pip install dronekit`)
 - PyMavlink (`pip install pymavlink`)
 
+```bash
+# ArduPilot
+cd ~
+git clone https://github.com/ArduPilot/ardupilot.git
+cd ardupilot
+git submodule update --init --recursive
+./waf configure --board sitl
+./waf copter
+ 
+# Python packages
+pip3 install airsim dronekit pymavlink
+```
+ 
+### Verify Installation
+ 
+```bash
+# Check ArduPilot SITL binary exists
+ls ~/ardupilot/build/sitl/bin/arducopter
+ 
+# Check Python packages
+python3 -c "import airsim; print('AirSim OK')"
+python3 -c "import dronekit; print('DroneKit OK')"
+```
+
 ### 2. AirSim Configuration
 
 Your `settings.json` at `C:\Users\YourUsername\Documents\AirSim\settings.json`:
 
+This is my old setup, but it's not working at the moment
 ```json
 {
   "SettingsVersion": 1.2,
@@ -133,25 +169,68 @@ Your `settings.json` at `C:\Users\YourUsername\Documents\AirSim\settings.json`:
 }
 ```
 
+Please use this `settings.json`. It should be working.
+```json
+{
+  "SettingsVersion": 1.2,
+  "SimMode": "Multirotor",
+  "Vehicles": {
+    "Copter": {
+      "VehicleType": "ArduCopter",
+      "UseSerial": false,
+      "LocalHostIp": "172.28.0.1",
+      "UdpIp": "172.28.15.216",
+      "UdpPort": 9003,
+      "ControlPort": 9002,
+      "AutoCreate": true
+    }
+  }
+}
+```
+
 **Key Settings:**
+This is for old `setting.json`
 - `UdpIp`: Must be your Windows WSL adapter IP (172.23.128.1)
 - `UdpPort`: 9003 (AirSim sends sensor data here)
 - `SitlPort`: 9002 (AirSim receives commands here)
-
 ---
+
+This is for new `setting.json`
+| Setting | Value | Explanation |
+|---------|-------|-------------|
+| `LocalHostIp` | `172.28.0.1` | **Windows WSL adapter IP** - where AirSim runs |
+| `UdpIp` | `172.28.15.216` | **Your WSL2 IP** - where ArduPilot runs |
+| `UdpPort` | `9003` | Port for sensor data FROM AirSim |
+| `ControlPort` | `9002` | Port for commands TO AirSim |
+ 
+**⚠️ IMPORTANT:** 
+- Replace `172.28.0.1` with YOUR Windows WSL adapter IP
+- Replace `172.28.15.216` with YOUR WSL2 Ubuntu IP
+- These IPs change after Windows reboot - check them each time!
+
 
 ## 🚀 Connection Setup
 
 ### Step 1: Start AirSim (Windows)
 
-1. Launch your AirSim environment (Unreal Engine)
-2. Wait until you see the drone spawned in the environment
-3. Leave AirSim running
+```cmd
+cd C:\AirSim\MSBuild2018
+MSBuild2018.exe -windowed
+```
+ 
+**Wait for:**
+- AirSim window opens
+- Drone appears in environment
+- Console shows "Press Play"
+**Leave this running!**
+ 
+---
 
 ### Step 2: Start ArduPilot SITL (WSL2)
 
 Open WSL2 terminal and run:
 
+This is for my old setup. 
 ```bash
 cd ~/ardupilot/ArduCopter
 
@@ -160,47 +239,123 @@ sim_vehicle.py -v ArduCopter -f airsim-copter --console --map \
   --out=127.0.0.1:14550
 ```
 
+Use this `command` which should be working
+```bash
+cd ~/ardupilot
+ 
+sim_vehicle.py -v ArduCopter -f airsim-copter --console --map \
+  --sim-address=172.28.0.1 \
+  --out=127.0.0.1:14550
+```
+
 **What Each Flag Does:**
 
-| Flag | Purpose |
-|------|---------|
+| Parameter | Purpose |
+|-----------|---------|
 | `-v ArduCopter` | Vehicle type (quadcopter) |
-| `-f airsim-copter` | Flight dynamics model for AirSim |
-| `--console` | Launch MAVProxy console |
+| `-f airsim-copter` | Use AirSim flight dynamics |
+| `--console` | Open MAVProxy console |
 | `--map` | Show map window |
-| `--sim-address=172.23.128.1` | Connect to AirSim on Windows |
-| `--out=127.0.0.1:14550` | Broadcast telemetry to WSL2 localhost |
-
+| `--sim-address=172.28.0.1` | **Windows IP where AirSim runs** |
+| `--out=127.0.0.1:14550` | Broadcast MAVLink to localhost |
+ 
 **Expected Output:**
-
+ 
 ```
-Starting SITL Airsim
-Bind SITL sensor input at 172.23.128.1:9003
-AirSim control interface set to 172.23.128.1:9002
+Starting SITL input
+Bind SITL sensor input at 172.28.0.1:9003
+AirSim control interface set to 172.28.0.1:9002
 Starting sketch 'ArduCopter'
 ...
 Connect tcp:127.0.0.1:5760 source_system=255
 Loaded module console
 Loaded module map
-Telemetry log: mav.tlog
-Waiting for heartbeat from tcp:127.0.0.1:5760
 MAV> Received 463 parameters (ftp)
 ```
 
-**Key Indicators of Success:**
-- ✅ `Bind SITL sensor input at 172.23.128.1:9003`
-- ✅ `AirSim control interface set to 172.23.128.1:9002`
+**Success indicators:**
+- ✅ `Bind SITL sensor input at 172.28.0.1:9003`
+- ✅ `AirSim control interface set to 172.28.0.1:9002`
 - ✅ `Received 463 parameters`
+- ✅ Console prompt shows `STABILIZE>` or similar
+**Leave this running!**
+---
 
-**Keep this terminal open!**
+### Terminal 3: Fix Loop Rate Issues (MAVProxy Console)
+ 
+**In the MAVProxy console window (where you see `STABILIZE>`), type:**
+ 
+```bash
+# Reduce loop rate to fix "Main loop slow" errors
+param set SCHED_LOOP_RATE 200
+ 
+# Verify it's set
+param show SCHED_LOOP_RATE
+ 
+# Disable arming checks for testing
+param set ARMING_CHECK 0
+ 
+# Wait 10 seconds for GPS to get fix
+ 
+# Try arming
+arm throttle
+```
+ 
+**Expected output:**
+ 
+```
+STABILIZE> param set SCHED_LOOP_RATE 200
+STABILIZE> SCHED_LOOP_RATE 200.000000
+ 
+STABILIZE> param set ARMING_CHECK 0
+STABILIZE> ARMING_CHECK 0.000000
+ 
+STABILIZE> arm throttle
+APM: Arming motors
+STABILIZE>
+```
+ 
+**If you see "Arming motors" - SUCCESS! ArduPilot is connected to AirSim!**
+ 
+---
+ 
+## 🧪 Testing Your Setup
+ 
+### Test 1: Basic Flight Commands (MAVProxy)
+ 
+**In MAVProxy console:**
+ 
+```bash
+# Change to GUIDED mode
+mode GUIDED
+ 
+# Takeoff to 5 meters
+takeoff 5
+ 
+# Wait for drone to reach altitude
+ 
+# Land
+land
+```
+ 
+**Watch in AirSim window:**
+- Drone propellers should spin
+- Drone should take off
+- Drone should land
+---
+ 
 
+
+
+
+ 
 ### Step 3: Connect DroneKit (WSL2)
 
 Open a **second WSL2 terminal** and create your Python script:
 
 ```bash
 cd ~/your_project_folder
-nano dronekit_test.py
+vi dronekit_test.py
 ```
 
 Paste this code:
