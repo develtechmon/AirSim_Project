@@ -606,15 +606,65 @@ Connect tcp:127.0.0.1:5760 source_system=255
 
 ---
 
+### Problem 6: "Main loop slow" and "Gyro rate" Errors
+**Symptoms:**
+ 
+```
+AP: Arm: Gyro 0 rate 334Hz < loop rate*1.8 540Hz
+AP: Arm: GPS 1: not healthy
+AP: Arm: Main loop slow (222Hz < 300Hz)
+AP: PreArm: Main loop slow (222Hz < 300Hz)
+```
+ 
+**Root cause:** ArduPilot SITL can't maintain 300Hz loop rate in WSL2.
+ 
+**Solution:**
+ 
+```bash
+# In MAVProxy console
+param set SCHED_LOOP_RATE 200
+param set ARMING_CHECK 0
+arm throttle
+```
+ 
+**If still failing, reduce further:**
+ 
+```bash
+param set SCHED_LOOP_RATE 100
+```
+ 
+---
+
+
 ## 📚 Quick Reference
 
 ### Start ArduPilot SITL (The Command You Need)
 
 ```bash
+# Step 1: Windows - Start AirSim
+cd C:\AirSim\MSBuild2018
+MSBuild2018.exe -windowed
+
+# Step 2: WSL2 Terminal 1 - Check IPs
+ipconfig  # In Windows PowerShell - get 172.28.0.1
+ip addr show eth0  # In WSL2 - get 172.28.15.216
+
+# Step 3: Update settings.json if IPs changed
+
+# Step 4: WSL2 Terminal 1 - Start ArduPilot
 cd ~/ardupilot/ArduCopter
 sim_vehicle.py -v ArduCopter -f airsim-copter --console --map \
-  --sim-address=172.23.128.1 \
+  --sim-address=172.28.0.1 \
   --out=127.0.0.1:14550
+
+# Step 5: MAVProxy Console - Fix loop rate
+param set SCHED_LOOP_RATE 200
+param set ARMING_CHECK 0
+arm throttle
+
+# Step 6: WSL2 Terminal 2 - Run your Python script
+python3 your_script.py
+
 ```
 
 ### DroneKit Connection String (The Address You Need)
