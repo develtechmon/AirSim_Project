@@ -351,7 +351,7 @@ land
  
 ### Step 3: Connect DroneKit (WSL2)
 
-Open a **second WSL2 terminal** and create your Python script:
+Test 1: Open a **second WSL2 terminal** and create your Python script:
 
 ```bash
 cd ~/your_project_folder
@@ -408,6 +408,59 @@ Connection closed.
 ```
 
 ---
+
+Test 2: Create and paste this script python AirSim API (WSL2)
+
+```bash
+cd ~/your_project_folder
+vi dronekit_test_2.py
+```
+Paste this code
+
+```python
+#!/usr/bin/env python3
+import airsim
+import time
+ 
+print("=" * 60)
+print("Testing AirSim API with ArduPilot")
+print("=" * 60)
+ 
+# Connect to AirSim on Windows
+print("\n[1] Connecting to AirSim...")
+client = airsim.MultirotorClient(ip="172.28.0.1")  # Use YOUR Windows WSL adapter IP
+client.confirmConnection()
+print("✓ Connected to AirSim")
+ 
+# Get vehicle state
+print("\n[2] Getting vehicle state...")
+state = client.getMultirotorState()
+print(f"✓ Armed: {state.armed}")
+print(f"✓ Ready: {state.ready}")
+ 
+# Get GPS data
+print("\n[3] Getting GPS data...")
+gps = client.getGpsData()
+print(f"✓ GPS Fix: {gps.fix_type}")
+print(f"✓ Latitude: {gps.gnss.geo_point.latitude if gps.gnss else 'N/A'}")
+print(f"✓ Longitude: {gps.gnss.geo_point.longitude if gps.gnss else 'N/A'}")
+ 
+# Get position
+print("\n[4] Getting position...")
+position = client.simGetVehiclePose()
+print(f"✓ Position: {position.position}")
+ 
+print("\n" + "=" * 60)
+print("✅ AirSim API Test SUCCESSFUL!")
+print("=" * 60)
+```
+ 
+**Run it:**
+ 
+```bash
+python3 ~/dronekit_test_2.py
+```
+
 
 ## 🔧 Troubleshooting
 
