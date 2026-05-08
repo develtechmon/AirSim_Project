@@ -2,9 +2,23 @@
 
 ## Quick Start
 
-### 1. Install AirSim Python Package
+For this setup i'm using `ubuntu local fossa` and `ros noetic`.
+
+### 1. Create virtual environment
+```
+python3.11 -m venv airsimcode
+source airsimcode/bin/activate
+```
+
+### 2. Install AirSim Python Package
 ```bash
+pip install --upgrade pip setuptools setuptools_scm wheel build
+pip install msgpack==0.6.2 msgpack-python==0.5.6 msgpack-rpc-python==0.4.1
+pip install --upgrade numpy
 pip install airsim
+
+or
+pip install airsim --no-build-isolation
 ```
 
 ### 2. Update settings.json
