@@ -21,7 +21,17 @@ or
 pip install airsim --no-build-isolation
 ```
 
-### 2. Update settings.json
+Alternatively if you're working on `PPO reinforcement learning`. Please install this too
+```
+pip install swig
+
+pip install --no-build-isolation   "gymnasium[all]"   "stable-baselines3[extra]"   tensorboard   ale-py
+
+or
+
+pip install --no-build-isolation --force-reinstall   "gymnasium[all]"   "stable-baselines3[extra]"   tensorboard   ale-py
+```
+### 3. Update settings.json
 Make sure API control is allowed:
 
 ```json
@@ -47,7 +57,7 @@ Make sure API control is allowed:
 - `"AllowAPIAlways": true` - Allows Python to control even without RC connected
 - `"AllowAPIWhenDisconnected": true` - Keeps API active if RC disconnects
 
-### 3. Run Your Script
+### 4. Run Your Script
 ```bash
 # Make sure AirSim/Unreal is running first!
 python drone_control.py
