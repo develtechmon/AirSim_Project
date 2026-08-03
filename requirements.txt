@@ -43,7 +43,7 @@ pip install swig "gymnasium[all]" stable-baselines3[extra] tensorboard ale-py
 pip install torch==2.4.1+cu121 torchvision==0.19.1+cu121 torchaudio==2.4.1+cu121 --index-url https://download.pytorch.org/whl/cu121
 
 ### Step 2 — AirSim (run as administrator)
-pip install msgpack-rpc-python
+pip install msgpack==0.6.2
 pip install airsim==1.8.1
 
 ### Step 3 — RL stack (DO NOT use [all] or [extra] flags)
