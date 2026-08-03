@@ -65,6 +65,35 @@ pip install rich==13.7.0
 pip install cloudpickle==3.0.0
 pip install typing-extensions==4.9.0
 
+# Run the verification
+python -c "
+import torch
+print('torch:', torch.__version__, '| CUDA:', torch.cuda.is_available())
+import numpy
+print('numpy:', numpy.__version__)
+import stable_baselines3
+print('sb3:', stable_baselines3.__version__)
+import gymnasium
+print('gymnasium:', gymnasium.__version__)
+import airsim
+print('airsim: ok')
+import tensorboard
+print('tensorboard: ok')
+import matplotlib
+print('matplotlib:', matplotlib.__version__)
+print('ALL OK')
+"
+
+you will see this output
+torch: 2.4.1+cu121 | CUDA: True
+numpy: 1.26.4
+sb3: 2.3.2
+gymnasium: 0.29.1
+airsim: ok
+tensorboard: ok
+matplotlib: 3.8.0
+ALL OK
+
 ### IMPORTANT NOTES
 # - Never use gymnasium[all] — it overwrites CUDA torch with CPU version
 # - Never use stable-baselines3[extra] — conflicts with torch 2.4.1
