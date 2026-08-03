@@ -39,11 +39,11 @@ ale-py==0.11.2
 ## To interpret the result of training using tensorboard for airsim_ppo_resilience_impact_v7 : tensorboard --logdir=logs/recovery  
 
 ### Windows ### 
-python 3.11 (Recommended due to latest GPRC support for AirSim)
+# python 3.11 (Recommended due to latest GPRC support for AirSim)
 
-pip install torch==2.4.1+cu121 torchvision==0.19.1+cu121 torchaudio==2.4.1+cu121 --index-url https://download.pytorch.org/whl/cu121
-pip install sympy==1.14.0
-pip install swig "gymnasium[all]" stable-baselines3[extra] tensorboard ale-py
+# pip install torch==2.4.1+cu121 torchvision==0.19.1+cu121 torchaudio==2.4.1+cu121 --index-url https://download.pytorch.org/whl/cu121
+# pip install sympy==1.14.0
+# pip install swig "gymnasium[all]" stable-baselines3[extra] tensorboard ale-py
 
 
 
