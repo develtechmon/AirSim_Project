@@ -1,0 +1,105 @@
+## STEP 1 ##
+
+(airsimcode) PS C:\Users\lukas\Desktop\My_Project\AirSim_Project\reinforcement_learning\drone_recovery_v7> py .\stage_1\collect_demonstration.py --episodes 600 --steps 200
+
+======================================================================
+📊 COLLECTING EXPERT DEMONSTRATIONS
+======================================================================
+Target episodes: 600
+Steps per episode: 200
+Total data points: ~120,000
+Save directory: ./demonstrations
+======================================================================
+
+Connected!
+Client Ver:1 (Min Req: 1), Server Ver:1 (Min Req: 1)
+
+✓ PID Expert Controller Initialized (13 observations)
+  Target: Hover at 30.0m
+  Control frequency: 20 Hz
+  Observation space: 13 (includes angular velocity)
+Starting collection...
+
+Drone at 30m. Starting episodes...
+
+Episode   10/600 | Avg Reward:  5853.1 | Speed: 4.1 eps/min | ETA: 143 min
+Episode   20/600 | Avg Reward:  5863.8 | Speed: 4.3 eps/min | ETA: 134 min
+Episode   30/600 | Avg Reward:  5848.6 | Speed: 4.4 eps/min | ETA: 130 min
+Episode   40/600 | Avg Reward:  5862.9 | Speed: 4.4 eps/min | ETA: 126 min
+Episode   50/600 | Avg Reward:  5857.6 | Speed: 4.5 eps/min | ETA: 124 min
+Episode   60/600 | Avg Reward:  5845.8 | Speed: 4.5 eps/min | ETA: 121 min
+Episode   70/600 | Avg Reward:  5845.4 | Speed: 4.5 eps/min | ETA: 118 min
+Episode   80/600 | Avg Reward:  5849.7 | Speed: 4.5 eps/min | ETA: 116 min
+Episode   90/600 | Avg Reward:  5844.0 | Speed: 4.5 eps/min | ETA: 114 min
+Episode  100/600 | Avg Reward:  5848.0 | Speed: 4.5 eps/min | ETA: 111 min
+Episode  110/600 | Avg Reward:  5842.8 | Speed: 4.5 eps/min | ETA: 109 min
+Episode  120/600 | Avg Reward:  5865.3 | Speed: 4.5 eps/min | ETA: 107 min
+Episode  130/600 | Avg Reward:  5859.3 | Speed: 4.5 eps/min | ETA: 104 min
+Episode  140/600 | Avg Reward:  5869.4 | Speed: 4.5 eps/min | ETA: 102 min
+Episode  150/600 | Avg Reward:  5845.5 | Speed: 4.5 eps/min | ETA: 100 min
+Episode  160/600 | Avg Reward:  5856.1 | Speed: 4.5 eps/min | ETA: 98 min
+Episode  170/600 | Avg Reward:  5854.9 | Speed: 4.5 eps/min | ETA: 95 min
+Episode  180/600 | Avg Reward:  5839.4 | Speed: 4.5 eps/min | ETA: 93 min
+Episode  190/600 | Avg Reward:  5834.9 | Speed: 4.5 eps/min | ETA: 91 min
+Episode  200/600 | Avg Reward:  5846.6 | Speed: 4.5 eps/min | ETA: 89 min
+Episode  210/600 | Avg Reward:  5842.6 | Speed: 4.5 eps/min | ETA: 86 min
+Episode  220/600 | Avg Reward:  5859.0 | Speed: 4.5 eps/min | ETA: 84 min
+Episode  230/600 | Avg Reward:  5839.5 | Speed: 4.5 eps/min | ETA: 82 min
+Episode  240/600 | Avg Reward:  5854.2 | Speed: 4.5 eps/min | ETA: 80 min
+Episode  250/600 | Avg Reward:  5839.7 | Speed: 4.5 eps/min | ETA: 77 min
+Episode  260/600 | Avg Reward:  5836.4 | Speed: 4.5 eps/min | ETA: 75 min
+Episode  270/600 | Avg Reward:  5857.0 | Speed: 4.5 eps/min | ETA: 73 min
+Episode  280/600 | Avg Reward:  5859.8 | Speed: 4.5 eps/min | ETA: 71 min
+Episode  290/600 | Avg Reward:  5832.0 | Speed: 4.5 eps/min | ETA: 69 min
+Episode  300/600 | Avg Reward:  5847.7 | Speed: 4.5 eps/min | ETA: 66 min
+Episode  310/600 | Avg Reward:  5848.6 | Speed: 4.5 eps/min | ETA: 64 min
+Episode  320/600 | Avg Reward:  5861.0 | Speed: 4.5 eps/min | ETA: 62 min
+Episode  330/600 | Avg Reward:  5835.5 | Speed: 4.5 eps/min | ETA: 60 min
+Episode  340/600 | Avg Reward:  5850.2 | Speed: 4.5 eps/min | ETA: 57 min
+Episode  350/600 | Avg Reward:  5853.6 | Speed: 4.5 eps/min | ETA: 55 min
+Episode  360/600 | Avg Reward:  5855.6 | Speed: 4.5 eps/min | ETA: 53 min
+Episode  370/600 | Avg Reward:  5840.4 | Speed: 4.5 eps/min | ETA: 51 min
+Episode  380/600 | Avg Reward:  5845.2 | Speed: 4.5 eps/min | ETA: 49 min
+Episode  390/600 | Avg Reward:  5865.5 | Speed: 4.5 eps/min | ETA: 46 min
+Episode  400/600 | Avg Reward:  5854.5 | Speed: 4.5 eps/min | ETA: 44 min
+Episode  410/600 | Avg Reward:  5843.3 | Speed: 4.5 eps/min | ETA: 42 min
+Episode  420/600 | Avg Reward:  5849.1 | Speed: 4.5 eps/min | ETA: 40 min
+Episode  430/600 | Avg Reward:  5840.3 | Speed: 4.5 eps/min | ETA: 38 min
+Episode  440/600 | Avg Reward:  5828.9 | Speed: 4.5 eps/min | ETA: 35 min
+Episode  450/600 | Avg Reward:  5845.8 | Speed: 4.5 eps/min | ETA: 33 min
+Episode  460/600 | Avg Reward:  5837.9 | Speed: 4.5 eps/min | ETA: 31 min
+Episode  470/600 | Avg Reward:  5841.8 | Speed: 4.5 eps/min | ETA: 29 min
+Episode  480/600 | Avg Reward:  5851.0 | Speed: 4.5 eps/min | ETA: 26 min
+Episode  490/600 | Avg Reward:  5845.9 | Speed: 4.5 eps/min | ETA: 24 min
+Episode  500/600 | Avg Reward:  5847.7 | Speed: 4.5 eps/min | ETA: 22 min
+  💾 Checkpoint saved: ./demonstrations/checkpoint_500.pkl
+Episode  510/600 | Avg Reward:  5859.8 | Speed: 4.5 eps/min | ETA: 20 min
+Episode  520/600 | Avg Reward:  5856.7 | Speed: 4.5 eps/min | ETA: 18 min
+Episode  530/600 | Avg Reward:  5852.4 | Speed: 4.5 eps/min | ETA: 15 min
+Episode  540/600 | Avg Reward:  5836.6 | Speed: 4.5 eps/min | ETA: 13 min
+Episode  550/600 | Avg Reward:  5863.2 | Speed: 4.5 eps/min | ETA: 11 min
+Episode  560/600 | Avg Reward:  5867.3 | Speed: 4.5 eps/min | ETA: 9 min
+Episode  570/600 | Avg Reward:  5848.1 | Speed: 4.5 eps/min | ETA: 7 min
+Episode  580/600 | Avg Reward:  5854.9 | Speed: 4.5 eps/min | ETA: 4 min
+Episode  590/600 | Avg Reward:  5849.8 | Speed: 4.5 eps/min | ETA: 2 min
+Episode  600/600 | Avg Reward:  5855.4 | Speed: 4.5 eps/min | ETA: 0 min
+
+======================================================================
+💾 SAVING FINAL DATASET
+======================================================================
+
+📊 Dataset Statistics:
+   Total samples: 120,000
+   State dimension: 13
+   Action dimension: 3
+   Mean episode reward: 5849.8
+   Std episode reward: 32.9
+   Collection time: 132.4 minutes
+
+💾 Saved to: ./demonstrations/expert_demonstrations.pkl
+   File size: 13.9 MB
+======================================================================
+
+
+✅ Collection complete!
+Next step: Run train_imitation_v2.py to train the policy

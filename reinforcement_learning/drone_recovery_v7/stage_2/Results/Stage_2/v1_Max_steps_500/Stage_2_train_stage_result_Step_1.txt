@@ -1,0 +1,120 @@
+
+-------------------------------------------
+| rollout/                |               |
+|    ep_len_mean          | 500           |
+|    ep_rew_mean          | 2.56e+04      |
+| time/                   |               |
+|    fps                  | 11            |
+|    iterations           | 242           |
+|    time_elapsed         | 42857         |
+|    total_timesteps      | 495616        |
+| train/                  |               |
+|    approx_kl            | 0.0046040304  |
+|    clip_fraction        | 0.027         |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -4.18         |
+|    explained_variance   | 1.1920929e-07 |
+|    learning_rate        | 3e-05         |
+|    loss                 | 8.27e+05      |
+|    n_updates            | 2410          |
+|    policy_gradient_loss | -0.00627      |
+|    std                  | 0.975         |
+|    value_loss           | 1.59e+06      |
+-------------------------------------------
+------------------------------------------
+| rollout/                |              |
+|    ep_len_mean          | 500          |
+|    ep_rew_mean          | 2.62e+04     |
+| time/                   |              |
+|    fps                  | 11           |
+|    iterations           | 243          |
+|    time_elapsed         | 43033        |
+|    total_timesteps      | 497664       |
+| train/                  |              |
+|    approx_kl            | 0.0025579087 |
+|    clip_fraction        | 0.00991      |
+|    clip_range           | 0.2          |
+|    entropy_loss         | -4.18        |
+|    explained_variance   | 0.0          |
+|    learning_rate        | 3e-05        |
+|    loss                 | 8.48e+05     |
+|    n_updates            | 2420         |
+|    policy_gradient_loss | -0.00289     |
+|    std                  | 0.975        |
+|    value_loss           | 1.65e+06     |
+------------------------------------------
+-------------------------------------------
+| rollout/                |               |
+|    ep_len_mean          | 500           |
+|    ep_rew_mean          | 2.65e+04      |
+| time/                   |               |
+|    fps                  | 11            |
+|    iterations           | 244           |
+|    time_elapsed         | 43208         |
+|    total_timesteps      | 499712        |
+| train/                  |               |
+|    approx_kl            | 0.002158319   |
+|    clip_fraction        | 0.00352       |
+|    clip_range           | 0.2           |
+|    entropy_loss         | -4.18         |
+|    explained_variance   | 5.9604645e-08 |
+|    learning_rate        | 3e-05         |
+|    loss                 | 8.56e+05      |
+|    n_updates            | 2430          |
+|    policy_gradient_loss | -0.00308      |
+|    std                  | 0.976         |
+|    value_loss           | 1.63e+06      |
+-------------------------------------------
+
+======================================================================
+📊 EPISODE 1000
+======================================================================
+   Last 10 Episodes:
+      Avg Return: 32245.8
+      Avg Length: 500.0 steps
+      Success Rate: 100% (reached timeout)
+      Avg Wind: 1.25 m/s
+======================================================================
+
+--------------------------------------------
+| rollout/                |                |
+|    ep_len_mean          | 500            |
+|    ep_rew_mean          | 2.71e+04       |
+| time/                   |                |
+|    fps                  | 11             |
+|    iterations           | 245            |
+|    time_elapsed         | 43384          |
+|    total_timesteps      | 501760         |
+| train/                  |                |
+|    approx_kl            | 0.002746826    |
+|    clip_fraction        | 0.00962        |
+|    clip_range           | 0.2            |
+|    entropy_loss         | -4.18          |
+|    explained_variance   | -1.1920929e-07 |
+|    learning_rate        | 3e-05          |
+|    loss                 | 5.25e+05       |
+|    n_updates            | 2440           |
+|    policy_gradient_loss | -0.00377       |
+|    std                  | 0.975          |
+|    value_loss           | 1.35e+06       |
+--------------------------------------------
+ 100% ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 501,760/500,000  [ 12:00:28 < 0:00:00 , 15 it/s ]
+
+======================================================================
+✅ TRAINING COMPLETE!
+======================================================================
+
+💾 Model saved:
+   - ./models/hover_disturbance_policy.zip
+   - ./models/hover_disturbance_vecnormalize.pkl
+
+📊 Training Statistics:
+   Total episodes: 1003
+   Last 50 episodes:
+      Avg return: 30970.9
+      Avg length: 500.0 steps
+      Success rate: 100%
+
+✅ Next step: Test the model!
+   python test_stage2_policy.py
+======================================================================

@@ -1,0 +1,105 @@
+## STEP 3 ##
+
+(airsimcode) PS C:\Users\lukas\Desktop\My_Project\AirSim_Project\reinforcement_learning\drone_recovery_v7> py .\stage_1\collect_stage1_statistics.py
+
+======================================================================
+STAGE 1 STATISTICS COLLECTION (AirSim)
+======================================================================
+Target altitude : 30.0 m
+Episodes        : 10 per controller
+Steps/episode   : 500
+Output          : ./results/statistics_summary.pkl
+======================================================================
+
+✅ BC policy loaded
+
+✓ PID Expert Controller Initialized (13 observations)
+  Target: Hover at 30.0m
+  Control frequency: 20 Hz
+  Observation space: 13 (includes angular velocity)
+Connecting to AirSim...
+Connected!
+Client Ver:1 (Min Req: 1), Server Ver:1 (Min Req: 1)
+
+✅ Connected
+
+✅ Drone at 30.0m. Starting collection...
+
+======================================================================
+PART 1: PID Expert (baseline)
+======================================================================
+  Episode  1/10  start=(-0.5,1.8)... mean_alt=29.980m  rmse=0.3043m  max_drift=1.414m
+  Episode  2/10  start=(0.9,0.4)... mean_alt=29.972m  rmse=0.3876m  max_drift=1.008m
+  Episode  3/10  start=(-1.4,-1.4)... mean_alt=29.971m  rmse=0.3824m  max_drift=1.947m
+  Episode  4/10  start=(-1.8,1.5)... mean_alt=29.970m  rmse=0.3890m  max_drift=2.295m
+  Episode  5/10  start=(0.4,0.8)... mean_alt=29.971m  rmse=0.3774m  max_drift=0.925m
+  Episode  6/10  start=(-1.9,1.9)... mean_alt=29.970m  rmse=0.4051m  max_drift=2.685m
+  Episode  7/10  start=(1.3,-1.2)... mean_alt=29.971m  rmse=0.3936m  max_drift=1.761m
+  Episode  8/10  start=(-1.3,-1.3)... mean_alt=29.968m  rmse=0.3988m  max_drift=1.796m
+  Episode  9/10  start=(-0.8,0.1)... mean_alt=29.970m  rmse=0.3858m  max_drift=0.788m
+  Episode 10/10  start=(-0.3,-0.8)... mean_alt=29.969m  rmse=0.4046m  max_drift=0.878m
+
+======================================================================
+PART 2: BC Policy
+======================================================================
+  Episode  1/10  start=(-0.5,1.8)... mean_alt=30.035m  rmse=0.4404m  max_drift=1.872m
+  Episode  2/10  start=(0.9,0.4)... mean_alt=30.023m  rmse=0.4078m  max_drift=1.009m
+  Episode  3/10  start=(-1.4,-1.4)... mean_alt=30.028m  rmse=0.4118m  max_drift=1.946m
+  Episode  4/10  start=(-1.8,1.5)... mean_alt=30.041m  rmse=0.4262m  max_drift=2.295m
+  Episode  5/10  start=(0.4,0.8)... mean_alt=30.030m  rmse=0.4181m  max_drift=0.926m
+  Episode  6/10  start=(-1.9,1.9)... mean_alt=30.054m  rmse=0.4268m  max_drift=2.685m
+  Episode  7/10  start=(1.3,-1.2)... mean_alt=29.999m  rmse=0.4168m  max_drift=1.759m
+  Episode  8/10  start=(-1.3,-1.3)... mean_alt=30.026m  rmse=0.4013m  max_drift=1.796m
+  Episode  9/10  start=(-0.8,0.1)... mean_alt=30.038m  rmse=0.3931m  max_drift=0.788m
+  Episode 10/10  start=(-0.3,-0.8)... mean_alt=30.031m  rmse=0.3958m  max_drift=0.878m
+
+✅ statistics_summary.pkl → ./results\statistics_summary.pkl
+✅ statistics_report.txt → ./results\statistics_report.txt
+
+========================================================================
+STAGE 1 STATISTICS REPORT
+Behavioural Cloning: PID Expert vs BC Policy (AirSim SimpleFlight)
+Target: 30.0m | Episodes: 10 | Steps: 500
+========================================================================
+
+TABLE 1 — MAIN COMPARISON
+------------------------------------------------------------------------
+Metric                                   PID Expert    BC Policy        Gap
+------------------------------------------------------------------------
+  Mean altitude (m)                         29.9712      30.0305    +0.0593
+  Mean altitude error (m)                    0.2687       0.3195    +0.0508
+  RMSE from target (m)                       0.3828       0.4138    +0.0310
+  Altitude std (m)                           0.3818       0.4125    +0.0307
+  Mean horiz. drift (m)                      0.3684       0.3335    -0.0350
+  Max horiz. drift (m)                       1.5498       1.5954    +0.0456
+------------------------------------------------------------------------
+  RMSE ratio (policy/baseline)                            1.0809
+  Transfer efficiency (%)                                  91.91
+
+TABLE 2 — PER-EPISODE RMSE
+----------------------------------------------------------------------------------
+Ep     BL alt  BL std  BL RMSE   BC alt  BC std  BC RMSE
+----------------------------------------------------------------------------------
+1      29.980  0.3036   0.3043   30.035  0.4390   0.4404
+2      29.972  0.3866   0.3876   30.023  0.4072   0.4078
+3      29.971  0.3813   0.3824   30.028  0.4108   0.4118
+4      29.970  0.3879   0.3890   30.041  0.4243   0.4262
+5      29.971  0.3763   0.3774   30.030  0.4171   0.4181
+6      29.970  0.4041   0.4051   30.054  0.4234   0.4268
+7      29.971  0.3925   0.3936   29.999  0.4168   0.4168
+8      29.968  0.3975   0.3988   30.026  0.4005   0.4013
+9      29.970  0.3846   0.3858   30.038  0.3913   0.3931
+10     29.969  0.4033   0.4046   30.031  0.3946   0.3958
+----------------------------------------------------------------------------------
+Mean   29.971  0.3818   0.3828   30.031  0.4125   0.4138
+
+RMSE ratio: 1.08×
+Transfer efficiency: 91.91%
+
+ACTION DISTRIBUTION — BC Policy
+------------------------------------------------------------------------
+  vn (north): mean=+0.0140  std=0.2997  median=+0.0014
+  ve (east): mean=-0.0044  std=0.2947  median=-0.0005
+  vd (down): mean=-0.0472  std=0.7228  median=-0.0751
+
+========================================================================

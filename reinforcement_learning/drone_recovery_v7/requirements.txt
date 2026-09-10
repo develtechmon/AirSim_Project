@@ -1,0 +1,4 @@
+## python 3.9.0 
+## i'm using this python version to train all the model stage 1,2,3
+pip install stable-baselines3==2.3.2
+pip install gymnasium==0.29.1

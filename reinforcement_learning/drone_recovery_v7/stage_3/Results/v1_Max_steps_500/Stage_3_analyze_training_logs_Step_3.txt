@@ -1,0 +1,68 @@
+py .\stage_3\analyze_training_logs.py --log .\logs\stage3\gated_training_20260808_111241_episodes.csv
+
+(airsimcode) PS C:\Users\lukas\Desktop\My_Project\AirSim_Project\reinforcement_learning\drone_recovery_v7> py .\stage_3\analyze_training_logs.py --log .\logs\stage3\gated_training_20260808_111241_episodes.csv
+
+📂 Loading training data from: .\logs\stage3\gated_training_20260808_111241_episodes.csv
+   ✅ Loaded 1002 episodes
+   📊 Columns: episode, timestamp, elapsed_time_s, curriculum_level, episode_reward, episode_length, tumble_initiated, tumble_recovered, recovery_steps, disturbance_intensity, disturbance_type, rolling_10_reward, rolling_10_recovery_rate, rolling_50_recovery_rate
+
+📈 Generating learning curves...
+   ✅ Saved: plots\training_learning_curves.png
+   ✅ Saved: plots\training_learning_curves.pdf
+
+📊 Generating curriculum transition plot...
+
+📈 Curriculum Transitions:
+   Level 0 (EASY) → Level 1 (MEDIUM)
+      At episode 51 (0.7h)
+   Level 1 (MEDIUM) → Level 2 (HARD)
+      At episode 101 (1.4h)
+   ✅ Saved: plots\curriculum_progression.png
+   ✅ Saved: plots\curriculum_progression.pdf
+
+📊 Generating statistics table...
+
+================================================================================
+📊 TRAINING STATISTICS SUMMARY - Table 5.1
+================================================================================
+
+================================================================================
+OVERALL PERFORMANCE
+================================================================================
+  Total Episodes:           1002
+  Total Training Time:      14.0 hours
+  Final Recovery Rate:      100.0% (last 50)
+  Final Avg Reward:         33191.7 (last 10)
+
+================================================================================
+CURRICULUM PROGRESSION - Table 5.2
+================================================================================
+
+Level Transition          Episode         Time (hours)    Episodes Trained
+--------------------------------------------------------------------------------
+Level 0 → 1               51              0.7             50
+Level 1 → 2               101             1.4             50
+Level 2 (Final)           101             14.0            902
+
+================================================================================
+BY CURRICULUM LEVEL - Table 5.4
+================================================================================
+
+Level                Episodes        Recovery Rate        Avg Intensity
+--------------------------------------------------------------------------------
+EASY (0.7-0.9×)      50              100.0                0.79
+MEDIUM (0.9-1.1×)    50              100.0                1.02
+HARD (1.1-1.5×)      902             99.7                 1.30
+================================================================================
+
+📄 LaTeX tables saved:
+   - analysis_results/table_5_1_training_statistics.tex
+   - analysis_results/table_5_2_curriculum_advancement.tex
+
+✅ Statistics saved to: plots\training_statistics.json
+
+🎉 Analysis complete! Plots saved to: ./plots/
+
+📊 Use these plots in your thesis:
+   - training_learning_curves.pdf
+   - curriculum_progression.pdf
