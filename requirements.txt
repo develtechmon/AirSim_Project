@@ -29,17 +29,78 @@ ale-py==0.11.2
 
 ### Windows ####
 ## python 3.9
-## --> pip install PyWavelets
+pip install PyWavelets
 
-## ---> !pip install swig "gymnasium[all]" stable-baselines3[extra] tensorboard ale-py
+pip install swig "gymnasium[all]" stable-baselines3[extra] tensorboard ale-py
 ## For GPu support --> pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
-
 ## To interpret the result of training using tensorboard for drone_follow_object_v8 : tensorboard --logdir=logs/single
-
 ## To interpret the result of training using tensorboard for airsim_ppo_resilience_impact_v7 : tensorboard --logdir=logs/recovery  
 
-### Ubuntu ####
+### Windows ###
+### Python 3.11 (Recommended for AirSim 1.8.1 + CUDA 12.1)
 
+### Step 1 — PyTorch CUDA
+pip install torch==2.4.1+cu121 torchvision==0.19.1+cu121 torchaudio==2.4.1+cu121 --index-url https://download.pytorch.org/whl/cu121
+
+### Step 2 — AirSim (run as administrator)
+pip install msgpack==0.6.2
+pip install airsim==1.8.1
+
+### Step 3 — RL stack (DO NOT use [all] or [extra] flags)
+pip install numpy==1.26.4
+pip install gymnasium==0.29.1
+pip install stable-baselines3==2.3.2
+pip install shimmy>=0.2.0
+
+### Step 4 — Supporting tools
+pip install tensorboard==2.14.0
+pip install matplotlib==3.8.0
+pip install scipy==1.11.4
+pip install pandas==2.1.4
+pip install sympy==1.12
+pip install pillow==10.2.0
+pip install opencv-python==4.8.1.78
+pip install tqdm==4.66.1
+pip install rich==13.7.0
+pip install cloudpickle==3.0.0
+pip install typing-extensions==4.9.0
+
+# Run the verification
+python -c "
+import torch
+print('torch:', torch.__version__, '| CUDA:', torch.cuda.is_available())
+import numpy
+print('numpy:', numpy.__version__)
+import stable_baselines3
+print('sb3:', stable_baselines3.__version__)
+import gymnasium
+print('gymnasium:', gymnasium.__version__)
+import airsim
+print('airsim: ok')
+import tensorboard
+print('tensorboard: ok')
+import matplotlib
+print('matplotlib:', matplotlib.__version__)
+print('ALL OK')
+"
+
+you will see this output
+torch: 2.4.1+cu121 | CUDA: True
+numpy: 1.26.4
+sb3: 2.3.2
+gymnasium: 0.29.1
+airsim: ok
+tensorboard: ok
+matplotlib: 3.8.0
+ALL OK
+
+### IMPORTANT NOTES
+# - Never use gymnasium[all] — it overwrites CUDA torch with CPU version
+# - Never use stable-baselines3[extra] — conflicts with torch 2.4.1
+# - numpy must stay at 1.26.4 — AirSim 1.8.1 breaks with numpy 2.x
+# - JAX conflict warnings can be ignored — JAX not used in this project
+
+### Ubuntu ####
 ## python3.12.3
 ## --> To install in ubuntu virtual environment
 
