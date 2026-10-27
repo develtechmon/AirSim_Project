@@ -21,7 +21,7 @@ Important Note : You have to downloand `Unreal Engine 4.27.2` using `Epic Launch
 - ✅ .NET Framework 4.8.1 SDK
 - ✅ Windows 10 SDK 10.0.19041 
 
-2. Start Developer Command Prompt for VS 2022 by invoking the `terminal`
+2. Start `Developer Command Prompt` for VS 2022 by invoking the `terminal` under `Admin` mode
 3. Clone the repo: `git clone https://github.com/Microsoft/AirSim.git`, and go the AirSim directory by cd AirSim.
 4. Run `build.cmd` from the command line. This will create ready to use plugin bits in the `Unreal\Plugins` folder that can be dropped into any Unreal project.
 
