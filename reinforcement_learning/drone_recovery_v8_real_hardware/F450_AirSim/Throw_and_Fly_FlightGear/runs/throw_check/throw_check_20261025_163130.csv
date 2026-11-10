@@ -1,0 +1,4 @@
+n,type,mode,released,detected,release_s,motors_on_s,upright_s,caught_s,recovered,recovered_s,apex_m,low_m,peak_rate_rads,drift_m,crashed,impact_speed_ms,hold_mode,hold_s,hold_max_m,hold_end_m,hold_dz_m,brake_s,brake_m,wander_m,note
+1,roll,ppo-policy,True,True,0.58,0.23,0.6,0.77,True,1.13,6.23,6.23,11.92,0.63,False,,LOITER,4.2,0.98,0.96,0.05,1.46,0.79,0.25,mode changed to LAND during the hold
+2,roll,ppo-policy,True,True,0.57,0.32,0.65,0.82,True,1.16,6.28,6.28,9.01,0.93,False,,LOITER,4.2,1.15,1.15,0.05,1.28,0.63,0.64,mode changed to LAND during the hold
+3,roll,ppo-policy,True,True,0.55,0.31,0.66,0.8,True,1.16,6.14,6.14,8.62,0.37,False,,LOITER,4.1,1.29,1.29,0.04,1.34,0.66,0.65,mode changed to LAND during the hold

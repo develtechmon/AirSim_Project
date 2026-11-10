@@ -1,0 +1,19 @@
+# SITL indoor setup: optical flow + rangefinder, NO GPS (like the real drone with MTF-01)
+# Names for ArduCopter 4.4.  Load in MAVProxy:  param load sitl_optflow.parm   then: reboot
+#
+# Simulated sensors
+SIM_FLOW_ENABLE  1
+FLOW_TYPE        10
+RNGFND1_TYPE     100
+RNGFND1_ORIENT   25
+RNGFND1_MIN_CM   20
+RNGFND1_MAX_CM   1000
+# No GPS
+GPS_TYPE         0
+# EKF sources: flow for horizontal speed, rangefinder for height, compass for heading
+EK3_SRC1_POSXY   0
+EK3_SRC1_VELXY   5
+EK3_SRC1_POSZ    2
+EK3_SRC1_VELZ    0
+EK3_SRC1_YAW     1
+EK3_SRC_OPTIONS  0

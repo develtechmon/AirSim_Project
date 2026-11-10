@@ -1,0 +1,873 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stage 1 Final Guide</title>
+<style>
+/* =====================================================================
+   THEME TOKENS  (edit colours here only)
+   ===================================================================== */
+:root{
+  color-scheme:light;
+  --bg:#f6f6f4; --surface:#fcfcfb; --surface-2:#f0efec; --border:#dcdad3;
+  --text:#1a1a19; --text-2:#52514e; --muted:#7a7972;
+  --accent:#2a78d6; --accent-soft:#e3eefb;
+  --good:#1b7f3b; --good-soft:#e2f3e7; --warn:#a96a00; --warn-soft:#fdf1d8; --bad:#c23a39; --bad-soft:#fbe5e4;
+  --code-bg:#f0efec;
+  /* controller colours: one colour per controller, same everywhere */
+  --c-ppo:#2a78d6; --c-bc:#eb6834; --c-rule:#1baf7a; --c-ssf:#eda100; --c-ap:#e87ba4;
+  --s1:#2f5ea8; --s2:#2e7d4f; --s3:#b83232;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#121211; --surface:#1a1a19; --surface-2:#242422; --border:#3a3936;
+    --text:#f0efec; --text-2:#c3c2b7; --muted:#9a998f;
+    --accent:#3987e5; --accent-soft:#1d2a3b;
+    --good:#5cc97f; --good-soft:#16281c; --warn:#e3a53a; --warn-soft:#2c2414; --bad:#ef7473; --bad-soft:#2e1717;
+    --code-bg:#242422;
+    --c-ppo:#3987e5; --c-bc:#d95926; --c-rule:#199e70; --c-ssf:#c98500; --c-ap:#d55181;
+    --s1:#6d9be0; --s2:#5fb383; --s3:#e06a6a;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#121211; --surface:#1a1a19; --surface-2:#242422; --border:#3a3936;
+  --text:#f0efec; --text-2:#c3c2b7; --muted:#9a998f;
+  --accent:#3987e5; --accent-soft:#1d2a3b;
+  --good:#5cc97f; --good-soft:#16281c; --warn:#e3a53a; --warn-soft:#2c2414; --bad:#ef7473; --bad-soft:#2e1717;
+  --code-bg:#242422;
+  --c-ppo:#3987e5; --c-bc:#d95926; --c-rule:#199e70; --c-ssf:#c98500; --c-ap:#d55181;
+  --s1:#6d9be0; --s2:#5fb383; --s3:#e06a6a;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 "Segoe UI",Calibri,system-ui,-apple-system,Arial,sans-serif}
+a{color:var(--accent)}
+code,pre{font-family:Consolas,"Cascadia Mono",Menlo,monospace}
+code{background:var(--code-bg);padding:1px 5px;border-radius:4px;font-size:13px;word-break:break-word}
+/* layout */
+.layout{display:grid;grid-template-columns:270px minmax(0,1fr);min-height:100vh}
+nav.side{position:sticky;top:0;height:100vh;overflow:auto;background:var(--surface);border-right:1px solid var(--border);padding:16px 12px 40px}
+nav.side .brand{font-weight:700;font-size:15px;margin:0 6px 2px}
+nav.side .sub{font-size:12px;color:var(--muted);margin:0 6px 12px}
+nav.side a{display:block;text-decoration:none;color:var(--text-2);padding:4px 8px;border-radius:6px;font-size:13.5px}
+nav.side a.l2{padding-left:22px;font-size:12.5px}
+nav.side a:hover{background:var(--surface-2)}
+nav.side a.active{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav.side .grp{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:14px 8px 4px}
+main{padding:24px 40px 80px;max-width:1180px}
+.topbar{display:flex;gap:10px;align-items:center;justify-content:flex-end;margin-bottom:6px}
+button,.btn{font:inherit;font-size:13px;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:7px;padding:5px 11px;cursor:pointer}
+button:hover{background:var(--surface-2)}
+button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+h1{font-size:28px;margin:4px 0 2px;line-height:1.2}
+h2{font-size:22px;margin:46px 0 10px;padding-top:10px;border-top:2px solid var(--border)}
+h3{font-size:17px;margin:28px 0 8px}
+h4{font-size:15px;margin:18px 0 6px}
+.lead{color:var(--text-2);font-size:15.5px;margin:4px 0 16px}
+.stage-tag{display:inline-block;color:#fff;border-radius:5px;padding:1px 8px;font-size:13px;font-weight:700;margin-right:8px;vertical-align:2px}
+.t1{background:var(--s1)}.t2{background:var(--s2)}.t3{background:var(--s3)}.thw{background:#5b5b66}
+/* tables */
+.tw{overflow-x:auto;margin:8px 0 14px}
+table{border-collapse:collapse;width:100%;font-size:13.5px;background:var(--surface)}
+th,td{border:1px solid var(--border);padding:5px 8px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.hl td{background:var(--accent-soft);font-weight:600}
+/* callouts */
+.note,.warn,.ok,.bad{border-left:4px solid;border-radius:6px;padding:9px 13px;margin:12px 0;font-size:14px}
+.note{border-color:var(--accent);background:var(--accent-soft)}
+.ok{border-color:var(--good);background:var(--good-soft)}
+.warn{border-color:var(--warn);background:var(--warn-soft)}
+.bad{border-color:var(--bad);background:var(--bad-soft)}
+.note b:first-child,.warn b:first-child,.ok b:first-child,.bad b:first-child{display:inline}
+.analogy{border:1px dashed var(--border);border-radius:8px;padding:9px 13px;margin:12px 0;font-size:14px;background:var(--surface)}
+.analogy::before{content:"Analogy  ";font-weight:700;color:var(--accent)}
+/* status chips */
+.chip{display:inline-block;font-size:11.5px;font-weight:700;border-radius:10px;padding:1px 8px;white-space:nowrap}
+.done{background:var(--good-soft);color:var(--good)}.run{background:var(--warn-soft);color:var(--warn)}.todo{background:var(--surface-2);color:var(--muted)}.fail{background:var(--bad-soft);color:var(--bad)}
+/* steps */
+.step{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin:12px 0}
+.step>.sh{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.step>.sh .num{background:var(--s3);color:#fff;border-radius:6px;font-weight:700;font-size:12.5px;padding:1px 8px}
+.step.s1 .num{background:var(--s1)}.step.s2 .num{background:var(--s2)}.step.hw .num{background:#5b5b66}
+.step>.sh .tt{font-weight:700;font-size:15.5px}
+.step>.sh .meta{margin-left:auto;font-size:12.5px;color:var(--muted)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:900px){.cols{grid-template-columns:1fr}}
+/* command block */
+.cmdbox{position:relative;margin:8px 0}
+pre.cmd{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:10px 70px 10px 12px;margin:0;font-size:13px;white-space:pre-wrap;word-break:break-all}
+.cmdbox button{position:absolute;top:6px;right:6px;font-size:12px;padding:2px 9px}
+details{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;margin:10px 0}
+details>summary{cursor:pointer;font-weight:600;font-size:14px}
+details[open]>summary{margin-bottom:6px}
+/* diagrams */
+.dgwrap{background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px;overflow:hidden;margin:10px 0}
+.dgwrap .dg{transform-origin:0 0}
+.dgwrap table{background:#fff;width:auto}.dgwrap th,.dgwrap td{color:#1d2433}
+.figure{background:#fff;border:1px solid var(--border);border-radius:10px;padding:8px;margin:10px 0;text-align:center}
+.figure img{max-width:100%;height:auto}
+.cap{font-size:12.5px;color:var(--muted);margin:4px 2px 12px}
+/* charts */
+.chart{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin:10px 0}
+.chart .ct{font-weight:700;font-size:14.5px}
+.chart .cs{font-size:12.5px;color:var(--muted);margin-bottom:6px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12.5px;color:var(--text-2);margin:4px 0 2px}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+.tip{position:fixed;pointer-events:none;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:7px;padding:6px 9px;font-size:12.5px;box-shadow:0 4px 14px rgba(0,0,0,.15);z-index:50;display:none;max-width:280px}
+svg text{fill:var(--text-2);font-size:11.5px}
+svg .axis{stroke:var(--border)}
+svg .grid{stroke:var(--border);stroke-dasharray:2 3}
+.charttable{display:none}
+.charttable.show{display:block}
+/* replay */
+.replay{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;margin:14px 0}
+.rp-controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+.rp-controls select{font:inherit;font-size:13px;padding:4px 6px;border-radius:7px;border:1px solid var(--border);background:var(--surface);color:var(--text);max-width:100%}
+.rp-controls input[type=range]{flex:1;min-width:160px}
+.rp-time{font-variant-numeric:tabular-nums;font-size:13px;color:var(--text-2);min-width:120px}
+#rpStage{width:100%;height:auto;display:block;background:linear-gradient(var(--surface-2),var(--surface));border-radius:10px}
+.rp-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:10px}
+.rp-card{border:1px solid var(--border);border-radius:8px;padding:6px 9px;font-size:12.5px;border-top:4px solid}
+.rp-card b{font-size:13px}
+/* timeline (who flies) */
+.tl{position:relative;height:56px;border-radius:9px;overflow:hidden;display:flex;margin:8px 0 4px;border:1px solid var(--border)}
+.tl div{display:flex;align-items:center;justify-content:center;color:#fff;font-size:12.5px;font-weight:700;text-align:center;padding:0 4px}
+.tl .cursor{position:absolute;top:0;bottom:0;width:3px;background:var(--text);left:0;transition:left .1s linear;padding:0}
+.tl-cap{min-height:44px;font-size:14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 12px}
+/* stat tiles */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:12px 0}
+.tile{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+.tile .v{font-size:24px;font-weight:700;line-height:1.1}
+.tile .k{font-size:12.5px;color:var(--muted)}
+/* explorer */
+.explorer{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin:10px 0}
+.explorer label{font-size:13px;color:var(--text-2)}
+.explorer input[type=range]{width:100%}
+.ex-out{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:8px}
+.ex-out div{background:var(--surface-2);border-radius:8px;padding:6px 10px;font-size:13px}
+.ex-out b{display:block;font-size:18px}
+.bar-h{height:14px;border-radius:4px;display:inline-block;vertical-align:middle}
+/* hardware block diagram (editable HTML) */
+.hw{background:#fff;color:#1d2433;border:1px solid var(--border);border-radius:10px;padding:14px;margin:10px 0;overflow-x:auto}
+.hw-grid{display:grid;grid-template-columns:1fr 46px 1.25fr 46px 1fr;gap:0;min-width:860px;align-items:center}
+.hw-col{display:flex;flex-direction:column;gap:12px}
+.hwb{border:2px solid #5b5b66;border-radius:10px;padding:8px 10px;background:#f7f7f9;font-size:13px;line-height:1.35}
+.hwb h5{margin:0 0 3px;font-size:14px;color:#2c2c38}
+.hwb.fc{border-color:#b83232;background:#fbeeee}.hwb.fc h5{color:#b83232}
+.hwb.pi{border-color:#2f5ea8;background:#eef3fb}.hwb.pi h5{color:#2f5ea8}
+.hwb.sens{border-color:#2e7d4f;background:#edf7f0}.hwb.sens h5{color:#2e7d4f}
+.hwb.pwr{border-color:#a96a00;background:#fdf6e6}.hwb.pwr h5{color:#a96a00}
+.hwb .lbl{display:inline-block;background:#fff;border:1px solid #c9ced8;border-radius:4px;padding:0 5px;font-size:11.5px;font-family:Consolas,monospace;margin:1px 0}
+.hw-arrow{text-align:center;font-size:22px;color:#555}
+.hw-bottom{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:14px;min-width:860px}
+/* flow */
+.flow{display:flex;flex-direction:column;align-items:center;gap:0;margin:10px 0}
+.fb{background:var(--surface);border:2px solid var(--border);border-radius:10px;padding:8px 14px;max-width:640px;width:100%;text-align:center;font-size:13.5px}
+.fb.pilot{border-color:var(--c-ssf)}.fb.pi{border-color:var(--c-ppo)}.fb.ap{border-color:var(--c-rule)}.fb.dec{border-color:var(--c-ap);border-style:dashed}
+.fb b{display:block}
+.fa{font-size:18px;color:var(--muted);line-height:1.3}
+.flow-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;justify-content:center;margin-bottom:8px}
+.flow-legend span{border:2px solid;border-radius:6px;padding:0 6px}
+footer{margin-top:60px;font-size:12px;color:var(--muted)}
+@media (max-width:860px){.layout{grid-template-columns:1fr}nav.side{position:relative;height:auto}main{padding:16px}}
+</style>
+
+<style>
+:root{--k-pid:#eda100;--k-s1:#1baf7a;--k-ap:#eb6834;--k-ppo:#2a78d6}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--k-pid:#c98500;--k-s1:#199e70;--k-ap:#d95926;--k-ppo:#3987e5}}
+:root[data-theme="dark"]{--k-pid:#c98500;--k-s1:#199e70;--k-ap:#d95926;--k-ppo:#3987e5}
+button.tbl{margin-top:6px}
+main{min-width:0}
+@media (max-width:860px){.cols{grid-template-columns:minmax(0,1fr)}}
+#rpStage{background:var(--surface-2)}
+.figure svg text{fill:var(--text-2)}
+</style>
+</head>
+<body>
+<div class="tip" id="tip"></div>
+<div class="layout">
+<nav class="side" id="nav">
+  <div class="brand">Stage 1 · Final guide</div>
+  <div class="sub">Hover by imitation (behavioural cloning) · ArduPilot SITL + AirSim · run1</div>
+  <div class="grp">Start here</div>
+  <a href="#glance">0. At a glance</a>
+  <a href="#method">1. How Stage 1 works</a>
+  <a class="l2" href="#pipe">Pipeline</a>
+  <a class="l2" href="#s12">Stage 1 and Stage 2</a>
+  <a href="#setup">2. Folders, files, glossary</a>
+  <div class="grp">Run in order</div>
+  <a href="#r0">3.0 Start the simulator</a>
+  <a href="#r1">3.1 Collect teacher data</a>
+  <a href="#r2">3.2 Train the network</a>
+  <a href="#r3">3.3 Test: network alone</a>
+  <a href="#r4">3.4 Statistics: PID vs BC</a>
+  <a href="#r5">3.5 RMSE, commands, summary</a>
+  <div class="grp">Results</div>
+  <a href="#res-coll">4.1 Teacher data</a>
+  <a href="#res-loss">4.2 Training</a>
+  <a href="#res-test">4.3 Network alone</a>
+  <a href="#res-cmp">4.4 PID vs BC</a>
+  <a href="#replay">4.5 Same target, side by side</a>
+  <a href="#res-cmd">4.6 Commands copied</a>
+  <a href="#res-rep">4.7 Reproducibility</a>
+  <div class="grp">Discussion</div>
+  <a href="#disc">5. Findings &amp; discussion</a>
+  <a class="l2" href="#limits">Limitations</a>
+  <a class="l2" href="#airsim">AirSim vs ArduPilot numbers</a>
+  <a href="#thesis">6. Thesis figures: which file</a>
+  <div class="grp">Reference</div>
+  <a href="#hw">7. Next: Stage 2 and real drone</a>
+  <a href="#trouble">8. Troubleshooting</a>
+  <a href="#repro">9. Reproducibility checklist</a>
+</nav>
+<main>
+<div class="topbar">
+  <span style="font-size:12px;color:var(--muted)">Built 23 Oct 2026 from your result files</span>
+  <button id="themeBtn" title="Switch light / dark">◐ Theme</button>
+</div>
+<h1><span class="stage-tag t1">STAGE 1</span>Hover by imitation: final guide<br><span style="font-size:19px;color:var(--text-2);font-weight:500">P teacher flies → network copies it (behavioural cloning) → network flies alone → ready for Stage 2</span></h1>
+<p class="lead">How Stage 1 was run, the exact commands, what every step produced in your run, and what the results mean. All numbers come from your files: <code>model_info.json</code>, <code>training_20261017_180044.csv</code>, <code>expert_demonstrations_gps_20261017_170846.csv</code>, <code>test_hover_20261023_095037</code> and <code>statistics_summary_20261023_100128</code> (with <code>…20261017_191030</code> as the repeat).</p>
+
+<!-- ================================================================ -->
+<h2 id="glance">0. At a glance</h2>
+<div class="tiles">
+  <div class="tile"><div class="k">Transfer efficiency (how well the copy matches the teacher)</div><div class="v">98.9%</div><div class="k">position · 97.1% altitude · rule ≥ 90%</div></div>
+  <div class="tile"><div class="k">Network flies alone, 10 targets</div><div class="v">10 / 10</div><div class="k">all settled · mean end error 0.038 m</div></div>
+  <div class="tile"><div class="k">Teacher data</div><div class="v">60,000</div><div class="k">samples · 200 episodes · teacher settled 100%</div></div>
+  <div class="tile"><div class="k">Hand-over to Stage 2 PPO</div><div class="v">PASS</div><div class="k">max action difference 0.0</div></div>
+</div>
+<div class="ok"><b>Verdict.</b> The network learned to hover by copying the teacher. On the same 10 targets, its position error is statistically indistinguishable from the teacher's (0.348 vs 0.344 m, p = 0.30), and it flies every target alone. The only measurable difference is a slightly larger final offset (0.036 vs 0.013 m), which is still eight times inside the 0.3 m "settled" limit. Stage 1 is a solid starting point for Stage 2.</div>
+
+<!-- ================================================================ -->
+<h2 id="method">1. How Stage 1 works</h2>
+<p>Reinforcement learning from scratch crashes the drone within the first few steps, because a random network has no idea how to fly. That's the <b>cold start problem</b>. Stage 1 avoids it: a simple teacher flies the drone, and a neural network learns to copy the teacher's commands. This is <b>behavioural cloning</b>, and the result is a network that can already hover before reinforcement learning starts in Stage 2.</p>
+<div class="analogy">A learner driver sits next to an instructor and writes down, at every moment, where the car was and what the instructor did with the wheel. After 60,000 notes, the learner can drive the same road alone. Stage 2 then takes this learner onto a windy road.</div>
+
+<div class="figure" style="background:var(--surface)">
+<svg viewBox="0 0 860 300" width="100%" role="img" aria-label="Teacher and network both map the drone's offset to a velocity command" style="max-width:860px">
+  <defs>
+    <marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker>
+    <marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--k-pid)"/></marker>
+  </defs>
+  <line x1="20" y1="270" x2="400" y2="270" stroke="var(--border)" stroke-width="2"/>
+  <text x="24" y="290" font-size="12">ground (hover band 1–3 m)</text>
+  <circle cx="200" cy="120" r="44" fill="none" stroke="var(--good)" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <path d="M190,120 h20 M200,110 v20" stroke="var(--text)" stroke-width="2"/>
+  <text x="200" y="60" text-anchor="middle" font-size="12" style="fill:var(--good)">target (random each episode)</text>
+  <g transform="translate(320,175)">
+    <rect x="-24" y="-6" width="48" height="12" rx="5" fill="var(--k-s1)"/>
+    <rect x="-36" y="-12" width="20" height="4" rx="2" fill="var(--text-2)"/><rect x="16" y="-12" width="20" height="4" rx="2" fill="var(--text-2)"/>
+  </g>
+  <text x="320" y="205" text-anchor="middle" font-size="12" style="fill:var(--text)">drone starts up to ±1 m away</text>
+  <path d="M296,170 C270,160 240,145 214,128" stroke="var(--k-pid)" stroke-width="2.5" fill="none" marker-end="url(#a2)"/>
+  <text x="262" y="140" font-size="12" style="fill:var(--k-pid)">v = gain × offset</text>
+  <!-- right: learning -->
+  <rect x="440" y="40" width="190" height="96" rx="10" fill="var(--surface-2)" stroke="var(--k-pid)"/>
+  <text x="535" y="64" text-anchor="middle" font-size="13" font-weight="700" style="fill:var(--text)">P teacher</text>
+  <text x="452" y="86" font-size="12">sideways: 0.8 × offset, max 1.0 m/s</text>
+  <text x="452" y="104" font-size="12">up/down: 1.0 × offset, max 0.5 m/s</text>
+  <text x="452" y="122" font-size="12">("PID expert" in the scripts)</text>
+  <rect x="440" y="176" width="190" height="96" rx="10" fill="var(--surface-2)" stroke="var(--k-s1)"/>
+  <text x="535" y="200" text-anchor="middle" font-size="13" font-weight="700" style="fill:var(--text)">Network (student)</text>
+  <text x="452" y="222" font-size="12">IN 13: offset, velocity,</text>
+  <text x="452" y="240" font-size="12">quaternion, turn rates</text>
+  <text x="452" y="258" font-size="12">OUT 3: velocity N, E, D</text>
+  <path d="M535,136 L535,172" stroke="var(--muted)" stroke-width="2" fill="none" marker-end="url(#a1)"/>
+  <text x="545" y="158" font-size="12">copy (60,000 examples)</text>
+  <rect x="670" y="100" width="170" height="110" rx="10" fill="none" stroke="var(--border)" stroke-dasharray="4 3"/>
+  <text x="755" y="124" text-anchor="middle" font-size="13" font-weight="700" style="fill:var(--text)">Loss = error</text>
+  <text x="682" y="148" font-size="12">between the teacher's</text>
+  <text x="682" y="166" font-size="12">command and the</text>
+  <text x="682" y="184" font-size="12">network's command</text>
+  <path d="M630,224 C660,224 690,214 700,212" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="4 3" fill="none" marker-end="url(#a1)"/>
+</svg>
+<div class="cap">Stage 1 in one picture. The teacher looks at how far the drone is from the target and commands a velocity back towards it. The network sees the same 13 numbers and learns to output the same command.</div>
+</div>
+
+<h3 id="pipe">1a. The pipeline</h3>
+<div class="flow">
+  <div class="fb ap"><b>1. Collect</b> (<code>collect_demonstration.py</code>) the P teacher flies 200 episodes × 15 s at 20 Hz → <b>60,000</b> (input, command) pairs</div><div class="fa">▼</div>
+  <div class="fb pi"><b>2. Train</b> (<code>train_imitation.py</code>) the network copies the teacher · 150 epochs · checked: loads into PPO with the same output → <b>PASS</b></div><div class="fa">▼</div>
+  <div class="fb"><b>3. Test alone</b> (<code>test_hover_policy.py</code>) the network flies 10 targets by itself → <b>10/10</b></div><div class="fa">▼</div>
+  <div class="fb dec"><b>4. Compare</b> (<code>collect_stage1_statistics.py</code>) teacher and network fly the <b>same</b> 10 targets → transfer efficiency <b>98.9%</b></div><div class="fa">▼</div>
+  <div class="fb" style="border-color:var(--s2)"><b>Hand-over</b> <code>stage1_ppo_init.zip</code> + <code>obs_norm.npz</code> → Stage 2 PPO starts from here</div>
+</div>
+
+<h4>One episode (15 s)</h4>
+<div class="tw"><table>
+<tr><th>Step</th><th>What happens</th><th>Why</th></tr>
+<tr><td>1. New target</td><td>A random target near the drone: up to ±1 m sideways and ±0.5 m in height, within a 1–3 m hover band. There's no reset; the drone just gets a new goal.</td><td>The teacher must show <b>correction</b> from many directions, not just holding still.</td></tr>
+<tr><td>2. Fly</td><td>300 steps at 20 Hz. Each step: read 13 inputs → command velocity N/E/D in ArduPilot GUIDED mode.</td><td>The same interface Stage 2 uses, so the weights fit exactly.</td></tr>
+<tr><td>3. Record</td><td>Each step saves the inputs and the teacher's command.</td><td>That's the training data.</td></tr>
+<tr><td>4. Check</td><td>Settled = end error &lt; 0.3 m; success = no safety stop and end error &lt; 0.5 m.</td><td>Same rules for teacher, network and tests.</td></tr>
+</table></div>
+
+<details><summary>Network and training settings</summary>
+<div class="cols"><div class="tw"><table>
+<tr><th>Setting</th><th>Value</th></tr>
+<tr><td>Network</td><td>13 → 256 → 256 → 128 → 3, ReLU, linear output</td></tr>
+<tr><td>Parameters</td><td>102,659</td></tr>
+<tr><td>Loss / optimiser</td><td>MSE / Adam, lr 1×10⁻³</td></tr>
+<tr><td>Epochs / batch</td><td>150 / 256</td></tr>
+<tr><td>Split</td><td>by <b>episode</b> 90/10: 54,000 train / 6,000 validation</td></tr>
+<tr><td>Seed</td><td>0</td></tr>
+<tr><td>Saved model</td><td>best validation epoch (148)</td></tr>
+</table></div>
+<div class="tw"><table>
+<tr><th>Built-in fix</th><th>Why it matters</th></tr>
+<tr><td>Layer names and ReLU identical to SB3 PPO</td><td>Stage 2 can load the weights directly (checked: difference 0.0)</td></tr>
+<tr><td>Input scaling saved (<code>obs_norm.npz</code>)</td><td>Stage 2 and the Pi use the same numbers</td></tr>
+<tr><td>Validation split by episode, not by step</td><td>An honest score: neighbouring steps are nearly identical, so a step split would leak answers</td></tr>
+<tr><td>Simulator in <b>GPS mode</b></td><td>Optical-flow SITL drifted into obstacles during long collection; the real drone still uses MTF-01 optical flow</td></tr>
+</table></div></div>
+</details>
+
+<h3 id="s12">1b. Stage 1 and Stage 2</h3>
+<div class="note"><b>Stage 1 → Stage 2 is a real weight transfer.</b> Stage 2 PPO is born as an exact copy of this network (the check prints a maximum action difference of 0.0) and then improves it in wind. That's why every Stage 2 training episode survived from the very start. Stage 3 is different: it's trained on its own and combined with Stage 2 at flight time (see the Stage 2 guide, section 1b).</div>
+
+<!-- ================================================================ -->
+<h2 id="setup">2. Folders, files, glossary</h2>
+<div class="cols">
+<div>
+<h4>Stage_1 folder (PC)</h4>
+<pre class="cmd" style="padding-right:12px">Stage_1\
+   collect_demonstration.py        3.1  teacher flies, data saved
+   train_imitation.py              3.2  network copies the teacher
+   test_hover_policy.py            3.3  network flies alone
+   collect_stage1_statistics.py    3.4  teacher vs network, same targets
+   rmse_baseline.py                3.5  per-episode RMSE table
+   vd_distribution.py              3.5  command histograms
+   make_stage1_summary.py          3.5  report card
+   pid_expert.py · ap_link.py      teacher · MAVLink link
+   flow_diagnostic.py              one-off: GPS vs optical-flow drift
+   runs\run1\
+      demonstrations\              expert_demonstrations_gps_*.pkl/.csv/.json
+      models\                      hover_policy_best.pth, obs_norm.npz,
+                                   stage1_ppo_init.zip, model_info.json
+      logs\stage1\                 training_*.csv, loss_curve_*.png, tb_*\
+      results\
+         bc_test\                  test_hover_*.csv/.json/.pkl
+         statistics\               statistics_summary_*.pkl/.json, statistics_report_*.txt
+         rmse\                     rmse_baseline_*.txt
+         vd_distribution\          vd/vn/ve_distribution_*.png
+         summary\                  STAGE1_SUMMARY_run1.md</pre>
+<p style="font-size:13px;color:var(--muted)">The scripts now save straight into these folders. No more sorting by hand.</p>
+</div>
+<div>
+<h4>Glossary (same names as the printouts)</h4>
+<div class="tw"><table>
+<tr><th>Name</th><th>Meaning</th></tr>
+<tr><td><b>PID teacher / PID expert</b></td><td>The teacher in <code>pid_expert.py</code>. Strictly, it's <b>P-only</b>: velocity = gain × offset, capped. Call it "P teacher" in the thesis</td></tr>
+<tr><td><b>Stage 1 (BC)</b></td><td>The network trained by behavioural cloning</td></tr>
+<tr><td><b>Position RMSE</b></td><td>root-mean-square <b>3D</b> distance to the target over the episode (m). It includes the approach from the start point</td></tr>
+<tr><td><b>Altitude RMSE</b></td><td>the same, height only</td></tr>
+<tr><td><b>End error</b></td><td>mean distance over the last 1 s (20 steps): where it finally settles</td></tr>
+<tr><td><b>Success / Settled</b></td><td>no safety stop and end error &lt; 0.5 m / end error &lt; 0.3 m</td></tr>
+<tr><td><b>Transfer efficiency</b></td><td>(1 − (BC RMSE − teacher RMSE) / teacher RMSE) × 100%. 100% means "as good as the teacher"</td></tr>
+<tr><td><b>Transfer check</b></td><td>the network loaded into PPO gives the same output: max difference &lt; 1e-5</td></tr>
+</table></div>
+</div></div>
+
+<!-- ================================================================ -->
+<h2 id="r0">3. How to run (in order)</h2>
+<div class="note"><b>Before any flying script:</b> start AirSim, then ArduPilot SITL in <b>GPS mode</b> (your usual launch), wait until it's ready, then run the script from the <code>Stage_1\</code> folder. Steps 3.2 and 3.5 need no simulator.</div>
+
+<div class="step s1" id="sitl"><div class="sh"><span class="num">3.0</span><span class="tt">Start AirSim + ArduPilot SITL (WSL)</span><span class="meta">≈ 2 min · before every flying script</span></div>
+<p><b>Order:</b> AirSim (Windows) → SITL (WSL) → script (PowerShell). Keep both windows open while the script runs.</p>
+<p><b>1. Windows:</b> start AirSim (your <code>WindowsNoEditor</code> build) and wait until the drone is shown.</p>
+<p><b>2. WSL (Ubuntu terminal):</b> start SITL from the <b>GPS folder</b> <code>~/sitl_gps</code>, not from <code>~/ardupilot</code>.</p>
+<div class="warn"><b>Why the folder matters:</b> SITL saves its parameters (<code>eeprom.bin</code>) in the folder you start it from. <code>~/ardupilot</code> holds the <b>optical-flow</b> setup; <code>~/sitl_gps</code> holds the <b>GPS</b> setup used for Stages 1–3. Like two save files in a game: the folder decides which drone you load.</div>
+<p>First time only (creates the GPS folder; SITL starts there with default parameters):</p>
+<div class="cmdbox"><pre class="cmd">mkdir ~/sitl_gps</pre><button class="copy">Copy</button></div>
+<p>Every time:</p>
+<div class="cmdbox"><pre class="cmd">cd ~/sitl_gps</pre><button class="copy">Copy</button></div>
+<div class="cmdbox"><pre class="cmd">sim_vehicle.py -v ArduCopter -f airsim-copter --console --map --sim-address=172.28.0.1 --out=127.0.0.1:14550</pre><button class="copy">Copy</button></div>
+<p><b>3. Wait until you see:</b></p>
+<div class="tw"><table><tr><th>Line in the WSL terminal / console</th><th>Means</th></tr>
+<tr><td><code>Bind SITL sensor input at 172.28.0.1:9003</code></td><td>SITL found AirSim's sensor port</td></tr>
+<tr><td><code>AirSim control interface set to 172.28.0.1:9002</code></td><td>motor commands go to AirSim</td></tr>
+<tr><td><code>Received 463 parameters</code></td><td>MAVProxy is talking to ArduPilot</td></tr>
+<tr><td><code>STABILIZE&gt;</code> prompt</td><td>SITL is running</td></tr>
+<tr><td><code>EKF3 IMU0 is using GPS</code></td><td>GPS ready: now you can run the script</td></tr></table></div>
+<p><b>4. First time only</b> in <code>~/sitl_gps</code> (typed at the <code>STABILIZE&gt;</code> prompt; saved in that folder afterwards):</p>
+<div class="cmdbox"><pre class="cmd">param set SCHED_LOOP_RATE 200</pre><button class="copy">Copy</button></div>
+<div class="cmdbox"><pre class="cmd">param set ARMING_CHECK 0</pre><button class="copy">Copy</button></div>
+<p><b>5. PowerShell:</b> open it in the <code>Stage_1\</code> folder and run the step's script (scripts connect on <code>tcp:127.0.0.1:5762</code>).</p>
+<div class="warn"><b>If SITL waits forever / no "Bind SITL" line:</b> the Windows IP changed (it can change after a reboot). Windows IP: <code>ipconfig</code> → adapter <b>vEthernet (WSL)</b> → IPv4 (e.g. 172.28.0.1). WSL IP: <code>ip addr show eth0</code> (e.g. 172.28.15.216). Put the Windows IP in <code>--sim-address=</code> and in AirSim <code>settings.json</code> <code>LocalHostIp</code>; put the WSL IP in <code>UdpIp</code> (<code>UdpPort</code> 9003, <code>ControlPort</code> 9002). Restart AirSim after editing <code>settings.json</code>.</div></div>
+
+<div class="step s1" id="r1"><div class="sh"><span class="num">3.1</span><span class="tt">Collect teacher data</span><span class="meta">≈ 1 h · simulator</span></div>
+<p>Quick practice first (5 episodes, separate <code>practice</code> folder):</p>
+<div class="cmdbox"><pre class="cmd">py .\collect_demonstration.py --episodes 5 --run practice</pre><button class="copy">Copy</button></div>
+<p>Full run (200 episodes × 300 steps; creates a new <code>runs\run&lt;N&gt;</code>):</p>
+<div class="cmdbox"><pre class="cmd">py .\collect_demonstration.py</pre><button class="copy">Copy</button></div>
+<div class="tw"><table><tr><th>Check</th><th>Pass rule</th><th>Your run1</th></tr>
+<tr><td>Samples / episodes</td><td>60,000 / 200</td><td class="n">60,000 / 200</td></tr>
+<tr><td>Loop time</td><td>within 5% of 50 ms, overruns ≤ 1%</td><td class="n">50.0 ms (max 65.9), 0 overruns</td></tr>
+<tr><td>Teacher settled</td><td>≥ 80%</td><td class="n"><span class="chip done">PASS</span> 100%, mean end error 0.011 m</td></tr></table></div>
+<p><b>Output:</b> <code>runs\run1\demonstrations\expert_demonstrations_gps_20261017_170846.pkl / .csv / .json</code></p></div>
+
+<div class="step s1" id="r2"><div class="sh"><span class="num">3.2</span><span class="tt">Train the network (behavioural cloning)</span><span class="meta">minutes · no simulator</span></div>
+<div class="cmdbox"><pre class="cmd">py .\train_imitation.py</pre><button class="copy">Copy</button></div>
+<p>Watch live (optional):</p>
+<div class="cmdbox"><pre class="cmd">tensorboard --logdir runs\run1\logs\stage1</pre><button class="copy">Copy</button></div>
+<div class="tw"><table><tr><th>Check</th><th>Pass rule</th><th>Your run1</th></tr>
+<tr><td>Best validation loss</td><td>falls and flattens</td><td class="n">0.0002 at epoch 148</td></tr>
+<tr><td>Validation RMSE per axis</td><td>small vs commands of up to 1 m/s</td><td class="n">vx 0.023 · vy 0.006 · vz 0.005 m/s</td></tr>
+<tr><td>Transfer check into PPO</td><td>max difference &lt; 1e-5</td><td class="n"><span class="chip done">PASS</span> 0.0</td></tr></table></div>
+<p><b>Output:</b> <code>runs\run1\models\</code> (<code>hover_policy_best.pth</code>, <code>obs_norm.npz</code>, <code>stage1_ppo_init.zip</code>, <code>model_info.json</code>) and <code>logs\stage1\training_20261017_180044.csv</code>.</p></div>
+
+<div class="step s1" id="r3"><div class="sh"><span class="num">3.3</span><span class="tt">Test: the network flies alone</span><span class="meta">≈ 5 min · simulator</span></div>
+<div class="cmdbox"><pre class="cmd">py .\test_hover_policy.py</pre><button class="copy">Copy</button></div>
+<div class="tw"><table><tr><th>Check</th><th>Pass rule</th><th>Your run1 (23 Oct)</th></tr>
+<tr><td>Success</td><td>≥ 90%</td><td class="n"><span class="chip done">PASS</span> 100% (10/10)</td></tr>
+<tr><td>Settled</td><td>≥ 90%</td><td class="n">100%</td></tr>
+<tr><td>Mean end error</td><td>&lt; 0.1 m</td><td class="n">0.038 m</td></tr></table></div>
+<p><b>Output:</b> <code>results\bc_test\test_hover_20261023_095037.csv / .json / .pkl</code></p></div>
+
+<div class="step s1" id="r4"><div class="sh"><span class="num">3.4</span><span class="tt">Statistics: teacher vs network on the same targets (THE thesis table)</span><span class="meta">≈ 10 min · simulator</span></div>
+<div class="cmdbox"><pre class="cmd">py .\collect_stage1_statistics.py</pre><button class="copy">Copy</button></div>
+<p>Both fly the same 10 targets (seed 42), back to back, in one session.</p>
+<div class="tw"><table><tr><th>Check</th><th>Pass rule</th><th>Your run1 (23 Oct)</th></tr>
+<tr><td>Transfer efficiency, position</td><td>≥ 90%</td><td class="n"><span class="chip done">PASS</span> 98.9%</td></tr>
+<tr><td>Transfer efficiency, altitude</td><td>≥ 90%</td><td class="n">97.1%</td></tr>
+<tr><td>Success teacher / network</td><td>100%</td><td class="n">100% / 100%</td></tr></table></div>
+<p><b>Output:</b> <code>results\statistics\statistics_summary_20261023_100128.pkl / .json</code> + <code>statistics_report_20261023_100128.txt</code></p></div>
+
+<div class="step s1" id="r5"><div class="sh"><span class="num">3.5</span><span class="tt">RMSE table, command histograms, summary</span><span class="meta">seconds · no simulator</span></div>
+<div class="cmdbox"><pre class="cmd">py .\rmse_baseline.py
+
+py .\vd_distribution.py
+
+py .\vd_distribution.py --axis vn
+
+py .\vd_distribution.py --axis ve
+
+py .\make_stage1_summary.py</pre><button class="copy">Copy</button></div>
+<div class="tw"><table><tr><th>Script</th><th>Saved to</th><th>Expected</th></tr>
+<tr><td><code>rmse_baseline.py</code></td><td><code>results\rmse\</code></td><td>per-episode RMSE; 98.9% / 97.1%</td></tr>
+<tr><td><code>vd_distribution.py</code></td><td><code>results\vd_distribution\</code></td><td>teacher and network histograms almost on top of each other</td></tr>
+<tr><td><code>make_stage1_summary.py</code></td><td><code>results\summary\STAGE1_SUMMARY_run1.md</code></td><td>all four steps <b>PASS</b></td></tr></table></div></div>
+
+<!-- ================================================================ -->
+<h2 id="res-coll">4. Results</h2>
+<h3>4.1 Teacher data: what the network learned from</h3>
+<div class="chart"><div class="ct">Every collection episode: how far the drone started vs how well the teacher flew it</div>
+<div class="cs">200 episodes · x = start distance from the target · y = episode RMSE · source: <code>expert_demonstrations_gps_20261017_170846.csv</code></div>
+<div id="chColl"></div></div>
+<div class="tw"><table><tr><th>Teacher data</th><th class="n">Value</th></tr>
+<tr><td>Start distance from target</td><td class="n">0.11 – 2.41 m</td></tr>
+<tr><td>Settled (end error &lt; 0.3 m)</td><td class="n">200 / 200</td></tr>
+<tr><td>Mean end error</td><td class="n">0.011 m</td></tr>
+<tr><td>Episodes that reached the 1.0 m/s speed cap</td><td class="n">51 / 200</td></tr></table></div>
+<p>The straight line in the chart is the teacher's signature: a P controller returns at a speed proportional to the distance, so a bigger start gap gives a proportionally bigger episode RMSE. The data covers short and long corrections, so the network sees both gentle and capped commands.</p>
+
+<h3 id="res-loss">4.2 Training: the network learns the teacher's commands</h3>
+<div class="chart"><div class="ct">Training and validation loss (MSE, log scale)</div>
+<div class="cs">150 epochs · source: <code>logs\stage1\training_20261017_180044.csv</code></div>
+<div class="legend" id="lgLoss"></div><div id="chLoss"></div>
+<button class="tbl" data-t="tLoss">Show table</button><div class="charttable" id="tLoss"></div></div>
+<div class="note"><b>Reading the curve.</b> Validation loss falls in the first ~10 epochs and then flattens around 2×10⁻⁴, the best being epoch 148. Training loss keeps falling (to 6×10⁻⁶), so there is a gap, but validation never rises, so the network isn't getting worse on unseen episodes. The test flights (4.3–4.4) are the real proof.</div>
+
+<h3 id="res-test">4.3 The network flies alone</h3>
+<div class="chart"><div class="ct">Distance to target over time, network alone, 10 targets</div>
+<div class="cs">each line = one episode (15 s) · green band = within 0.3 m (settled) · source: <code>results\bc_test\test_hover_20261023_095037.pkl</code></div>
+<div id="chTest"></div></div>
+<div class="tw"><table><tr><th>Episode</th><th class="n">1</th><th class="n">2</th><th class="n">3</th><th class="n">4</th><th class="n">5</th><th class="n">6</th><th class="n">7</th><th class="n">8</th><th class="n">9</th><th class="n">10</th></tr>
+<tr><td>Start (m)</td><td class="n">1.02</td><td class="n">1.94</td><td class="n">1.80</td><td class="n">1.93</td><td class="n">1.63</td><td class="n">0.96</td><td class="n">0.32</td><td class="n">0.56</td><td class="n">1.11</td><td class="n">0.47</td></tr>
+<tr><td>End (m)</td><td class="n">0.036</td><td class="n">0.050</td><td class="n">0.032</td><td class="n">0.063</td><td class="n">0.029</td><td class="n">0.038</td><td class="n">0.034</td><td class="n">0.030</td><td class="n">0.029</td><td class="n">0.042</td></tr></table></div>
+<p>Every target was reached: start errors of up to 1.94 m were reduced to 0.03–0.06 m, with no help from the teacher.</p>
+
+<h3 id="res-cmp">4.4 Teacher vs network on the same 10 targets</h3>
+<div class="chart"><div class="ct">Position RMSE per episode (m)</div><div class="cs">same targets, seed 42 · lower is better · the two lines almost overlap</div>
+<div class="legend" id="lgCmp"></div><div id="chCmp"></div>
+<button class="tbl" data-t="tCmp">Show table</button><div class="charttable" id="tCmp"></div></div>
+<div class="tw"><table><tr><th>Metric</th><th class="n">PID teacher</th><th class="n">Stage 1 (BC)</th><th class="n">Gap</th><th>Paired episodes (Wilcoxon)</th></tr>
+<tr><td>Position RMSE (m)</td><td class="n">0.344</td><td class="n">0.348</td><td class="n">+0.004</td><td>BC higher in 7/10, p = 0.30 → <b>no real difference</b></td></tr>
+<tr><td>Altitude RMSE (m)</td><td class="n">0.083</td><td class="n">0.086</td><td class="n">+0.002</td><td></td></tr>
+<tr><td>Mean horizontal distance (m)</td><td class="n">0.160</td><td class="n">0.166</td><td class="n">+0.006</td><td></td></tr>
+<tr><td>Max horizontal distance (m)</td><td class="n">1.102</td><td class="n">1.103</td><td class="n">+0.001</td><td></td></tr>
+<tr class="hl"><td>End error, last 1 s (m)</td><td class="n">0.013</td><td class="n">0.036</td><td class="n">+0.023</td><td>BC higher in 10/10, p = 0.002 → small but consistent</td></tr>
+<tr><td>Success / settled</td><td class="n">100% / 100%</td><td class="n">100% / 100%</td><td class="n">0</td><td></td></tr>
+<tr class="hl"><td>Transfer efficiency</td><td class="n" colspan="3">98.9% position · 97.1% altitude</td><td>rule ≥ 90%: PASS</td></tr></table></div>
+<p class="cap">Source: <code>results\statistics\statistics_report_20261023_100128.txt</code>; paired tests computed from the <code>.pkl</code>.</p>
+
+<h3 id="replay">4.5 Same target, side by side</h3>
+<p>Pick an episode and press play. The teacher and the network flew the <b>same target</b>; the lanes show how far each drone is from it, and the chart shows the whole 15 s.</p>
+<div class="replay">
+  <div class="rp-controls">
+    <select id="rpEp"></select>
+    <button id="rpPlay">▶ Play</button>
+    <select id="rpSpeed"><option value="1">1×</option><option value="2" selected>2×</option><option value="4">4×</option></select>
+    <input type="range" id="rpSlider" min="0" max="149" value="0">
+    <span class="rp-time" id="rpTime">t = 0.0 s</span>
+  </div>
+  <svg id="rpStage" viewBox="0 0 900 140"></svg>
+  <div id="chTrace"></div>
+  <div class="legend" id="lgTrace"></div>
+</div>
+<div class="analogy">Two drivers parking in the same space. They take the same path and arrive at the same time; the student just stops a few centimetres short of the line every time. That's the 0.036 vs 0.013 m end error.</div>
+
+<h3 id="res-cmd">4.6 Did it copy the teacher's commands?</h3>
+<div class="chart"><div class="ct">Velocity commands sent, teacher vs network</div><div class="cs">same 10 targets · 3,000 steps each · square-root scale so the correction tails are visible · pick an axis</div>
+<div class="rp-controls" style="margin:6px 0"><select id="axSel"><option value="vd">vd (vertical)</option><option value="vn">vn (north)</option><option value="ve">ve (east)</option></select></div>
+<div class="legend" id="lgCmd"></div><div id="chCmd"></div></div>
+<div class="tw"><table><tr><th>Command spread (std, m/s)</th><th class="n">PID teacher</th><th class="n">Stage 1 (BC)</th></tr>
+<tr><td>vn (north)</td><td class="n">0.214</td><td class="n">0.196</td></tr><tr><td>ve (east)</td><td class="n">0.180</td><td class="n">0.171</td></tr><tr><td>vd (vertical)</td><td class="n">0.091</td><td class="n">0.091</td></tr></table></div>
+<p>The two histograms sit on top of each other, peaked at zero (hovering) with tails for the corrections. The network's sideways commands are slightly less spread out (it smooths a little), and the vertical commands are identical.</p>
+
+<h3 id="res-rep">4.7 Reproducibility: same numbers six days apart</h3>
+<div class="chart"><div class="ct">Position RMSE per episode: 17 Oct vs 23 Oct (m)</div><div class="cs">same model, same seed-42 targets, two separate simulator sessions</div>
+<div class="legend" id="lgRep"></div><div id="chRep"></div></div>
+<div class="tw"><table><tr><th>Statistics session</th><th class="n">Teacher RMSE</th><th class="n">BC RMSE</th><th class="n">Teacher end</th><th class="n">BC end</th><th class="n">Transfer eff. pos / alt</th></tr>
+<tr><td>17 Oct (<code>…191030</code>)</td><td class="n">0.344</td><td class="n">0.348</td><td class="n">0.011</td><td class="n">0.036</td><td class="n">98.9% / 97.3%</td></tr>
+<tr class="hl"><td>23 Oct (<code>…100128</code>)</td><td class="n">0.344</td><td class="n">0.348</td><td class="n">0.013</td><td class="n">0.036</td><td class="n">98.9% / 97.1%</td></tr></table></div>
+<div class="ok"><b>Reproducible.</b> Every episode repeated within 0.007 m and the headline numbers are identical. Use the 23 Oct file in the thesis, because it's in the same session as the network-alone test, and quote 17 Oct as the repeat.</div>
+
+<!-- ================================================================ -->
+<h2 id="disc">5. Findings and discussion</h2>
+<div class="tw"><table><tr><th>#</th><th>Finding</th><th>Evidence</th></tr>
+<tr><td>F1</td><td><b>Behavioural cloning solves the cold start.</b> The network flies every target alone, with no reward signal at all.</td><td>10/10 success and settled, end error 0.038 m</td></tr>
+<tr><td>F2</td><td><b>The copy matches the teacher's position control.</b></td><td>RMSE 0.348 vs 0.344 m; 98.9% transfer efficiency; no significant difference (p = 0.30)</td></tr>
+<tr><td>F3</td><td><b>The one consistent difference is a small final offset.</b></td><td>end error 0.036 vs 0.013 m, 10/10 episodes (p = 0.002), still 8× inside the 0.3 m limit</td></tr>
+<tr><td>F4</td><td><b>The network copied the teacher's behaviour, not just its score.</b></td><td>command histograms overlap; vd spread identical (0.091 m/s)</td></tr>
+<tr><td>F5</td><td><b>Hand-over to reinforcement learning is exact.</b></td><td>max action difference 0.0 inside PPO; Stage 2 had zero crashes in training</td></tr>
+<tr><td>F6</td><td><b>Results are reproducible across sessions.</b></td><td>17 vs 23 Oct within 0.007 m per episode</td></tr></table></div>
+
+<h4>Why the small final offset (F3)?</h4>
+<ul>
+<li>Near the target, the teacher's commands are tiny (gain × a few centimetres). The network learns a <b>regression</b> of all commands, and a small, nearly constant bias of a few mm/s matters most where the commands are smallest. So the copy stops a few centimetres early. Larger, faster corrections are copied almost perfectly, which is why the RMSE is the same.</li>
+<li>This is a known limit of pure imitation: a student can't be more precise than the examples, and small errors aren't corrected because no reward pushes it closer. <b>That's exactly what Stage 2 adds.</b> PPO is rewarded for distance at every step, and Stage 2 then improved the hover to 0.11 m average horizontal distance even in gusts.</li>
+</ul>
+
+<h4>What this means for the project</h4>
+<div class="tw"><table><tr><th>For</th><th>Meaning</th></tr>
+<tr><td>Thesis claim</td><td>"Behavioural cloning from a simple P teacher produces a hover policy that matches the teacher's position accuracy (98.9% transfer efficiency) and flies unaided, giving reinforcement learning a crash-free starting point."</td></tr>
+<tr><td>Stage 2</td><td>Starts from this exact network (difference 0.0); its zero-crash training is a direct consequence.</td></tr>
+<tr><td>Real drone</td><td>The Stage 1 network is the "before Stage 2" baseline in the fan test (<code>export_onnx.py --model stage1</code> in Stage 2).</td></tr></table></div>
+
+<h3 id="limits">Limitations (state these in the thesis)</h3>
+<div class="tw"><table><tr><th>Limitation</th><th>Why it matters</th><th>How handled / next</th></tr>
+<tr><td>Teacher is P-only (called "PID" in the scripts)</td><td>An examiner will check the term</td><td>Name it "P teacher (proportional velocity controller)" in the thesis</td></tr>
+<tr><td>The network can't beat its teacher</td><td>Imitation copies the teacher's limits</td><td>By design: Stage 2 PPO improves on it</td></tr>
+<tr><td>Small final offset (≈ 4 cm)</td><td>Slightly less precise at rest</td><td>Well inside the limits; reduced by Stage 2</td></tr>
+<tr><td>Calm air, GPS mode, 1–3 m band</td><td>Narrow conditions</td><td>Wind in Stage 2; optical flow on the real drone</td></tr>
+<tr><td>10 test targets</td><td>Small sample</td><td>Paired design, same targets, repeated in a second session</td></tr>
+<tr><td>Train vs validation loss gap</td><td>Possible overfitting</td><td>Validation never rose; flight tests confirm generalisation</td></tr></table></div>
+
+<h3 id="airsim">AirSim (colloquium) vs ArduPilot (this guide): don't mix them</h3>
+<div class="tw"><table><tr><th></th><th>AirSim SimpleFlight (ICAEE paper, colloquium)</th><th>ArduPilot SITL + AirSim (this guide)</th></tr>
+<tr><td>Purpose</td><td>first proof of the 3-stage pipeline</td><td>the version that runs on the real drone</td></tr>
+<tr><td>Hover height</td><td>30 m</td><td>1–3 m band</td></tr>
+<tr><td>Teacher data</td><td>120,000 samples</td><td>60,000 samples</td></tr>
+<tr><td>Transfer efficiency</td><td>91.91% (altitude RMSE)</td><td>98.9% position · 97.1% altitude</td></tr>
+<tr><td>Network-alone test</td><td>10/10</td><td>10/10</td></tr></table></div>
+<p style="font-size:13.5px">Report them as two separate experiments. The ArduPilot numbers are higher partly because the teacher is simpler and the hover band smaller, so the two percentages measure different setups and can't be compared directly.</p>
+
+<!-- ================================================================ -->
+<h2 id="thesis">6. Thesis figures and tables: which file</h2>
+<div class="tw"><table><tr><th>#</th><th>Figure / table</th><th>Data file</th><th>Made by</th></tr>
+<tr><td>F1.1</td><td>Stage 1 concept + pipeline (section 1)</td><td>this guide</td><td>diagram</td></tr>
+<tr><td>T1.1</td><td>Collection settings + network/training settings</td><td><code>models\model_info.json</code></td><td><code>train_imitation.py</code></td></tr>
+<tr><td>F1.2</td><td>Teacher data: start distance vs RMSE (section 4.1)</td><td><code>demonstrations\expert_demonstrations_gps_20261017_170846.csv</code></td><td><code>collect_demonstration.py</code></td></tr>
+<tr><td>F1.3</td><td><b>Training and validation loss</b></td><td><code>logs\stage1\training_20261017_180044.csv</code></td><td><code>train_imitation.py</code> → <code>loss_curve_*.png</code></td></tr>
+<tr><td>F1.4</td><td>Network alone: distance vs time, 10 targets</td><td><code>results\bc_test\test_hover_20261023_095037.pkl</code></td><td><code>test_hover_policy.py</code></td></tr>
+<tr><td>T1.2</td><td><b>Main table: teacher vs network</b></td><td><code>results\statistics\statistics_report_20261023_100128.txt</code></td><td><code>collect_stage1_statistics.py</code></td></tr>
+<tr><td>F1.5</td><td><b>Per-episode RMSE, teacher vs network</b></td><td><code>results\rmse\rmse_baseline_20261023_100128.txt</code> (or the <code>.json</code> <code>ep_pos_rmse</code>)</td><td><code>rmse_baseline.py</code></td></tr>
+<tr><td>F1.6</td><td>Same target side by side (section 4.5)</td><td><code>statistics_summary_20261023_100128.pkl</code> → <code>episodes</code> → <code>pos_err</code></td><td>this guide</td></tr>
+<tr><td>F1.7</td><td>Command histograms vn / ve / vd</td><td><code>results\vd_distribution\*_distribution_20261023_100128.png</code></td><td><code>vd_distribution.py</code></td></tr>
+<tr><td>T1.3</td><td>Reproducibility (17 vs 23 Oct)</td><td>both <code>statistics_summary_*.json</code></td><td>section 4.7</td></tr>
+<tr><td>T1.4</td><td>Report card</td><td><code>results\summary\STAGE1_SUMMARY_run1.md</code></td><td><code>make_stage1_summary.py</code></td></tr></table></div>
+
+<!-- ================================================================ -->
+<h2 id="hw">7. Next: Stage 2 and the real drone</h2>
+<div class="flow">
+  <div class="fb ap"><b>Stage 1 output</b> <code>Stage_1\runs\run1\models\stage1_ppo_init.zip</code> + <code>obs_norm.npz</code></div><div class="fa">▼ found automatically by Stage 2 (newest <code>..\Stage_1\runs\run&lt;N&gt;</code>)</div>
+  <div class="fb pi"><b>Stage 2</b> <code>py .\train_stage2_disturbance.py --init warm</code> → prints the warm start PASS line</div><div class="fa">▼</div>
+  <div class="fb"><b>Real drone</b> the Stage 1 network is the baseline in the fan test: <code>py .\export_onnx.py --model stage1</code> (in <code>Stage_2\</code>), then see <code>Stage_2\Hardware\README.txt</code></div>
+</div>
+
+<!-- ================================================================ -->
+<h2 id="trouble">8. Troubleshooting</h2>
+<div class="tw"><table><tr><th>Symptom</th><th>Cause</th><th>Fix</th></tr>
+<tr><td>Summary shows "Test … NOT RUN"</td><td>No <code>test_hover_*.json</code> in <code>results\bc_test\</code></td><td>Run 3.3, then the summary again</td></tr>
+<tr><td><code>No statistics_summary in …</code></td><td>3.4 not run, or the file is elsewhere</td><td>Run 3.4, or move the file into <code>results\statistics\</code></td></tr>
+<tr><td>Drone drifts into obstacles during collection</td><td>SITL in optical-flow mode</td><td>Use GPS mode for SITL (<code>flow_diagnostic.py</code> shows why)</td></tr>
+<tr><td>Loop time far above 50 ms / overruns</td><td>PC busy</td><td>Close other programs and re-run; overruns must be ≤ 1%</td></tr>
+<tr><td>Transfer check FAIL</td><td>Changed network layout</td><td>Keep 13-256-256-128-3, ReLU; re-run 3.2</td></tr>
+<tr><td>Different numbers on another day</td><td>Session-to-session simulator variation</td><td>Compare teacher and network in one run of 3.4</td></tr></table></div>
+
+<!-- ================================================================ -->
+<h2 id="repro">9. Reproducibility checklist</h2>
+<div class="tw"><table><tr><th>Item</th><th>Value</th></tr>
+<tr><td>Simulator / firmware</td><td>ArduPilot SITL 4.4.0-dev (ArduCopter, GPS mode) + AirSim, <code>tcp:127.0.0.1:5762</code></td></tr>
+<tr><td>Software</td><td>Python 3.9, PyTorch, Stable-Baselines3 2.3.2</td></tr>
+<tr><td>Teacher</td><td>P: 0.8 × offset (cap 1.0 m/s) sideways, 1.0 × offset (cap 0.5 m/s) vertical</td></tr>
+<tr><td>Data</td><td>200 episodes × 300 steps at 20 Hz = 60,000 samples, targets ±1 m xy / ±0.5 m z, 1–3 m band</td></tr>
+<tr><td>Training</td><td>150 epochs, batch 256, Adam lr 1e-3, seed 0, split 90/10 by episode</td></tr>
+<tr><td>Tests</td><td>network alone: 10 targets (fixed seed); teacher vs network: 10 targets, seed 42</td></tr>
+<tr><td>Main result</td><td><code>statistics_summary_20261023_100128</code> + <code>test_hover_20261023_095037</code></td></tr>
+<tr><td>Repeat</td><td><code>statistics_summary_20261017_191030</code></td></tr>
+<tr><td>Statistics</td><td>paired per target; exact two-sided Wilcoxon signed-rank</td></tr></table></div>
+
+<footer>Stage 1 final guide · ArduPilot SITL + AirSim · data: run1, 17–23 Oct 2026</footer>
+</main></div>
+<script>
+const DATA = {"loss":{"ep":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150],"train":[0.000995,0.000214,0.000177,0.000129,0.000114,0.000104,8.5e-05,7.4e-05,7.7e-05,7.6e-05,6.5e-05,5.7e-05,6.1e-05,6.2e-05,5.3e-05,5.2e-05,5e-05,4.9e-05,4.6e-05,4.9e-05,4e-05,3.8e-05,3.8e-05,3.2e-05,3.3e-05,4.5e-05,4.1e-05,3.8e-05,3.1e-05,3e-05,3.1e-05,3e-05,3.2e-05,3.6e-05,2.7e-05,2.5e-05,3.1e-05,3.7e-05,2.1e-05,2.6e-05,2.2e-05,4.7e-05,2.4e-05,1.7e-05,2.6e-05,2.2e-05,1.9e-05,2.5e-05,1.7e-05,2.1e-05,2.2e-05,1.8e-05,1.9e-05,2.5e-05,1.7e-05,1.5e-05,1.6e-05,2.3e-05,1.7e-05,2e-05,1.9e-05,1.3e-05,1.4e-05,1.6e-05,2e-05,2.4e-05,2.3e-05,9e-06,1.7e-05,1.1e-05,2.2e-05,2.1e-05,1.8e-05,1.2e-05,1.2e-05,1.2e-05,1.1e-05,1.5e-05,2.4e-05,1.8e-05,1e-05,9e-06,1.5e-05,1.4e-05,1.1e-05,1.4e-05,1.2e-05,1.3e-05,1.2e-05,1.4e-05,1e-05,1.2e-05,1.5e-05,1.2e-05,1.7e-05,1.5e-05,1.1e-05,7e-06,8e-06,1e-05,1.5e-05,1.5e-05,1e-05,6e-06,2.1e-05,1.4e-05,1e-05,9e-06,7e-06,1.1e-05,1.9e-05,1e-05,8e-06,1.1e-05,9e-06,1e-05,8e-06,1.6e-05,1.8e-05,8e-06,1.1e-05,7e-06,6e-06,7e-06,9e-06,1.5e-05,8e-06,1.5e-05,8e-06,7e-06,1.4e-05,8e-06,7e-06,8e-06,7e-06,8e-06,9e-06,1.1e-05,1e-05,1.1e-05,1.7e-05,1.3e-05,6e-06,5e-06,5e-06,8e-06,1.6e-05,1.2e-05,1.1e-05,6e-06],"val":[0.00054,0.000436,0.0004,0.000375,0.000394,0.000322,0.000404,0.000368,0.000389,0.000326,0.000341,0.000329,0.000309,0.000301,0.000345,0.000318,0.000358,0.000252,0.000335,0.000322,0.000243,0.000353,0.000309,0.000302,0.000287,0.000371,0.000283,0.000257,0.000279,0.00028,0.000292,0.000304,0.000295,0.000242,0.0003,0.000265,0.000264,0.000285,0.000296,0.000329,0.000285,0.000288,0.000284,0.000312,0.000223,0.000273,0.000239,0.00028,0.000269,0.000267,0.000232,0.000252,0.000267,0.000288,0.000271,0.000264,0.000293,0.000267,0.000287,0.000214,0.000279,0.000255,0.000264,0.000332,0.000272,0.000314,0.000264,0.0003,0.000264,0.000224,0.000282,0.000245,0.000292,0.000272,0.000256,0.000299,0.000256,0.000294,0.00029,0.000262,0.000258,0.000258,0.000256,0.000279,0.00027,0.000263,0.000319,0.000285,0.000247,0.000264,0.000296,0.000251,0.000267,0.000245,0.000286,0.000247,0.000245,0.000213,0.000254,0.000243,0.000291,0.000279,0.000247,0.000259,0.000268,0.000291,0.00026,0.000231,0.000246,0.000218,0.000276,0.000227,0.000253,0.000239,0.000239,0.000231,0.000221,0.000269,0.000261,0.000245,0.000239,0.000255,0.000221,0.000277,0.000275,0.00026,0.000211,0.000256,0.000258,0.000249,0.000196,0.000227,0.000216,0.00024,0.000205,0.000296,0.000221,0.000264,0.000243,0.000222,0.000262,0.000224,0.000236,0.000214,0.000266,0.000218,0.000277,0.000194,0.000204,0.000215]},"coll":{"start_err_m":[2.019,0.581,1.135,0.892,0.972,2.409,1.858,0.898,1.486,1.016,0.852,1.572,1.361,1.132,0.75,1.121,1.001,1.563,1.992,1.024,1.088,0.602,1.179,2.024,1.274,1.683,0.57,0.77,0.543,1.127,1.615,0.857,1.404,1.815,0.934,0.989,0.839,0.854,1.323,1.071,0.924,0.728,0.679,0.834,0.714,0.731,0.555,0.285,1.736,1.795,1.869,2.077,1.266,0.791,1.278,2.095,0.465,1.205,0.985,1.14,1.341,0.626,0.783,1.131,1.529,1.755,0.608,0.702,1.353,1.119,0.955,0.848,0.803,0.912,1.521,0.72,0.111,0.968,0.728,0.579,0.532,1.424,1.258,1.634,0.837,1.004,1.232,1.719,2.086,1.498,1.698,1.762,1.294,1.105,1.176,2.01,0.802,0.626,1.265,2.303,1.312,1.121,1.209,1.84,1.719,0.712,1.04,1.517,1.107,0.815,1.312,1.537,0.993,0.777,1.384,1.414,1.211,1.212,0.846,1.519,1.309,0.328,1.349,1.286,0.231,1.593,0.548,0.922,0.607,1.205,0.513,1.787,2.045,1.841,1.096,1.806,0.753,0.505,0.486,1.038,2.037,1.083,1.531,0.812,0.899,0.538,0.421,1.206,2.001,1.457,1.478,0.208,2.135,0.837,1.125,0.641,0.887,1.076,0.409,0.695,1.771,1.028,1.705,1.461,0.441,0.699,0.216,0.883,0.832,1.598,0.62,0.811,0.733,1.113,1.069,1.896,1.84,0.717,1.19,1.417,0.98,1.455,1.025,0.894,1.307,0.89,1.488,0.743,0.763,0.962,2.249,1.925,0.395,1.705,0.507,1.292,2.199,1.043,0.939,1.755],"end_err_m":[0.01,0.009,0.01,0.009,0.009,0.029,0.014,0.011,0.017,0.004,0.004,0.016,0.012,0.011,0.008,0.014,0.009,0.022,0.023,0.014,0.011,0.007,0.013,0.016,0.01,0.013,0.009,0.008,0.005,0.007,0.015,0.005,0.009,0.014,0.005,0.006,0.005,0.009,0.016,0.009,0.011,0.004,0.01,0.007,0.007,0.011,0.007,0.009,0.01,0.026,0.013,0.024,0.011,0.005,0.009,0.019,0.007,0.009,0.017,0.009,0.013,0.007,0.007,0.021,0.008,0.014,0.017,0.005,0.01,0.014,0.011,0.005,0.006,0.008,0.014,0.005,0.007,0.01,0.009,0.011,0.004,0.014,0.012,0.019,0.008,0.009,0.01,0.01,0.017,0.016,0.013,0.01,0.017,0.007,0.013,0.024,0.006,0.009,0.012,0.018,0.008,0.005,0.013,0.013,0.011,0.011,0.01,0.009,0.011,0.013,0.016,0.012,0.012,0.011,0.012,0.018,0.01,0.013,0.008,0.013,0.012,0.013,0.01,0.008,0.006,0.012,0.008,0.014,0.011,0.01,0.005,0.012,0.025,0.021,0.006,0.019,0.008,0.004,0.008,0.009,0.021,0.009,0.013,0.003,0.007,0.011,0.004,0.014,0.02,0.016,0.016,0.005,0.015,0.009,0.008,0.004,0.007,0.009,0.012,0.008,0.017,0.014,0.023,0.015,0.007,0.003,0.012,0.009,0.008,0.014,0.009,0.006,0.007,0.008,0.004,0.019,0.016,0.009,0.013,0.011,0.004,0.01,0.008,0.013,0.014,0.015,0.014,0.005,0.008,0.012,0.023,0.017,0.01,0.011,0.006,0.018,0.017,0.008,0.006,0.021],"rmse_m":[0.713,0.164,0.329,0.255,0.282,0.745,0.548,0.254,0.43,0.281,0.234,0.471,0.392,0.328,0.219,0.326,0.284,0.464,0.599,0.291,0.314,0.169,0.331,0.618,0.361,0.489,0.158,0.222,0.151,0.323,0.486,0.239,0.412,0.533,0.263,0.285,0.235,0.232,0.386,0.307,0.262,0.206,0.181,0.235,0.202,0.201,0.159,0.072,0.517,0.554,0.559,0.617,0.362,0.218,0.363,0.638,0.127,0.344,0.271,0.335,0.383,0.179,0.215,0.33,0.444,0.519,0.16,0.187,0.39,0.319,0.26,0.235,0.232,0.251,0.447,0.192,0.03,0.269,0.209,0.163,0.145,0.412,0.356,0.495,0.237,0.281,0.354,0.503,0.618,0.444,0.505,0.521,0.376,0.317,0.345,0.623,0.218,0.17,0.367,0.703,0.378,0.319,0.353,0.547,0.508,0.198,0.292,0.441,0.318,0.221,0.376,0.448,0.284,0.225,0.405,0.409,0.345,0.344,0.231,0.448,0.38,0.087,0.389,0.375,0.066,0.467,0.15,0.266,0.163,0.342,0.148,0.521,0.633,0.566,0.324,0.532,0.22,0.142,0.135,0.299,0.616,0.302,0.443,0.221,0.26,0.15,0.115,0.351,0.599,0.417,0.43,0.054,0.649,0.235,0.324,0.178,0.242,0.312,0.114,0.203,0.519,0.291,0.512,0.421,0.115,0.187,0.061,0.254,0.241,0.47,0.174,0.222,0.199,0.312,0.304,0.586,0.566,0.197,0.345,0.407,0.272,0.419,0.293,0.253,0.381,0.252,0.426,0.204,0.211,0.268,0.69,0.59,0.106,0.497,0.133,0.377,0.675,0.29,0.259,0.518],"max_cmd_mps":[0.5,0.46,0.74,0.69,0.74,1.0,1.0,0.65,1.0,0.5,0.5,1.0,0.96,0.81,0.48,0.86,0.71,1.0,1.0,0.66,0.66,0.46,0.75,1.0,0.59,0.99,0.31,0.6,0.32,0.65,1.0,0.6,1.0,1.0,0.5,0.59,0.58,0.5,0.93,0.78,0.6,0.56,0.5,0.51,0.51,0.45,0.38,0.28,1.0,1.0,1.0,1.0,0.72,0.5,0.83,1.0,0.26,0.8,0.52,0.76,0.87,0.49,0.55,0.83,0.89,1.0,0.43,0.5,0.8,0.75,0.51,0.5,0.58,0.5,1.0,0.5,0.07,0.5,0.56,0.35,0.4,0.96,0.86,1.0,0.63,0.51,0.55,1.0,1.0,1.0,1.0,1.0,0.9,0.81,0.8,1.0,0.55,0.36,0.96,1.0,1.0,0.58,0.78,1.0,1.0,0.52,0.5,1.0,0.63,0.48,0.82,1.0,0.65,0.62,0.96,0.78,0.7,0.84,0.5,1.0,0.82,0.27,0.78,0.91,0.15,1.0,0.33,0.58,0.38,0.67,0.34,1.0,1.0,1.0,0.87,1.0,0.47,0.37,0.29,0.78,1.0,0.56,0.92,0.5,0.68,0.37,0.28,0.82,1.0,0.99,1.0,0.19,1.0,0.56,0.77,0.47,0.5,0.62,0.27,0.4,1.0,0.73,1.0,0.99,0.35,0.5,0.15,0.7,0.64,1.0,0.47,0.5,0.47,0.63,0.5,1.0,1.0,0.41,0.81,0.88,0.55,0.94,0.78,0.65,0.95,0.47,1.0,0.49,0.53,0.68,1.0,1.0,0.24,1.0,0.47,1.0,1.0,0.5,0.52,0.99],"target_alt_m":[2.05,2.04,1.94,1.88,2.07,1.59,2.28,2.3,1.62,2.44,1.76,2.07,2.11,2.18,2.2,2.17,1.82,1.94,1.71,1.75,1.66,1.64,2.32,1.6,2.48,1.54,1.8,1.91,2.07,1.59,1.82,2.22,2.09,1.5,2.24,2.08,1.72,2.35,2.31,2.08,2.23,2.14,1.52,1.79,1.64,2.09,2.15,1.87,2.31,2.42,1.65,2.12,2.31,1.57,2.22,2.36,2.23,1.55,2.29,2.43,1.66,1.74,2.04,1.81,1.69,1.99,1.56,2.2,1.52,1.95,2.49,1.76,1.82,2.33,1.77,2.45,2.45,1.71,1.71,1.96,2.36,1.63,2.07,1.99,2.27,1.58,2.46,1.6,2.17,2.09,2.48,2.46,2.44,2.37,2.12,1.65,2.0,1.64,2.01,2.36,2.41,1.58,1.63,1.51,1.58,1.75,2.36,1.63,1.76,2.2,1.68,2.2,1.76,1.77,1.96,1.58,2.08,1.54,2.04,1.63,1.69,1.96,2.22,2.19,2.26,1.66,1.96,1.96,2.32,1.66,1.56,2.35,1.86,1.69,1.6,1.95,2.11,1.93,1.72,1.51,2.47,1.66,2.49,1.79,1.75,1.92,2.21,2.33,1.73,2.49,1.8,1.61,2.19,2.38,1.87,1.67,2.34,2.44,2.44,2.47,1.57,1.92,1.88,2.05,2.4,1.77,1.75,1.87,1.83,1.55,1.6,2.18,1.7,2.38,1.53,1.87,1.59,1.84,1.71,2.2,1.5,2.09,2.2,1.83,1.94,1.59,2.12,1.63,2.0,2.42,2.42,1.89,1.66,2.41,1.94,1.75,1.56,2.4,1.8,1.97],"sat":0},"test":{"start_err_m":[1.022,1.938,1.801,1.931,1.631,0.958,0.32,0.563,1.114,0.466],"end_err_m":[0.036,0.05,0.032,0.063,0.029,0.038,0.034,0.03,0.029,0.042],"rmse_m":[0.307,0.582,0.541,0.572,0.484,0.269,0.095,0.165,0.328,0.135],"max_err_m":[1.022,1.938,1.801,1.931,1.631,0.958,0.32,0.564,1.114,0.466],"trace":[[1.022,1.021,1.019,1.015,1.003,0.986,0.963,0.935,0.904,0.87,0.832,0.791,0.748,0.701,0.653,0.605,0.552,0.503,0.454,0.406,0.359,0.314,0.268,0.227,0.187,0.15,0.117,0.089,0.065,0.048,0.04,0.042,0.048,0.054,0.06,0.062,0.064,0.061,0.058,0.052,0.045,0.037,0.028,0.021,0.014,0.016,0.025,0.036,0.046,0.057,0.067,0.077,0.085,0.091,0.097,0.101,0.105,0.106,0.108,0.107,0.105,0.102,0.098,0.094,0.088,0.082,0.076,0.069,0.063,0.056,0.048,0.042,0.036,0.032,0.028,0.026,0.025,0.025,0.026,0.027,0.028,0.028,0.028,0.027,0.026,0.023,0.021,0.018,0.015,0.011,0.009,0.009,0.012,0.016,0.02,0.024,0.029,0.033,0.037,0.041,0.045,0.049,0.053,0.056,0.059,0.061,0.063,0.064,0.065,0.065,0.065,0.065,0.065,0.064,0.063,0.061,0.06,0.059,0.057,0.055,0.054,0.052,0.05,0.048,0.046,0.044,0.042,0.04,0.038,0.036,0.034,0.032,0.03,0.03,0.029,0.028,0.028,0.028,0.028,0.029,0.029,0.03,0.031,0.032,0.034,0.035,0.038,0.04,0.042,0.044],[1.938,1.936,1.934,1.925,1.909,1.885,1.841,1.789,1.732,1.668,1.592,1.533,1.428,1.356,1.247,1.151,1.072,0.955,0.857,0.756,0.684,0.571,0.483,0.401,0.32,0.246,0.177,0.117,0.072,0.036,0.056,0.09,0.121,0.145,0.166,0.181,0.192,0.196,0.197,0.192,0.185,0.175,0.162,0.15,0.131,0.115,0.098,0.086,0.068,0.057,0.046,0.041,0.041,0.044,0.049,0.054,0.056,0.058,0.058,0.058,0.055,0.051,0.047,0.043,0.037,0.034,0.032,0.034,0.039,0.047,0.054,0.064,0.072,0.083,0.089,0.099,0.105,0.113,0.119,0.122,0.126,0.128,0.129,0.129,0.128,0.126,0.123,0.12,0.115,0.111,0.105,0.101,0.093,0.089,0.081,0.075,0.069,0.062,0.056,0.05,0.044,0.04,0.034,0.03,0.026,0.024,0.021,0.02,0.018,0.017,0.017,0.017,0.017,0.017,0.019,0.019,0.021,0.022,0.024,0.026,0.028,0.03,0.031,0.033,0.035,0.036,0.038,0.038,0.04,0.04,0.041,0.042,0.044,0.045,0.046,0.047,0.048,0.049,0.05,0.05,0.051,0.051,0.051,0.051,0.051,0.051,0.05,0.05,0.049,0.049],[1.801,1.8,1.798,1.792,1.773,1.755,1.706,1.662,1.617,1.547,1.49,1.402,1.321,1.233,1.145,1.071,0.963,0.889,0.784,0.71,0.608,0.541,0.447,0.39,0.309,0.251,0.208,0.157,0.133,0.113,0.112,0.123,0.134,0.151,0.159,0.167,0.171,0.171,0.167,0.162,0.149,0.14,0.124,0.104,0.089,0.067,0.049,0.039,0.035,0.043,0.061,0.078,0.09,0.107,0.117,0.131,0.138,0.145,0.148,0.151,0.15,0.148,0.141,0.136,0.127,0.118,0.108,0.099,0.087,0.072,0.062,0.048,0.037,0.027,0.021,0.02,0.023,0.028,0.036,0.041,0.047,0.05,0.053,0.055,0.056,0.056,0.055,0.052,0.049,0.044,0.04,0.035,0.029,0.025,0.019,0.016,0.016,0.019,0.027,0.033,0.039,0.047,0.052,0.059,0.063,0.068,0.072,0.074,0.077,0.079,0.08,0.08,0.08,0.08,0.079,0.076,0.075,0.071,0.068,0.066,0.061,0.058,0.053,0.049,0.043,0.039,0.034,0.031,0.027,0.023,0.021,0.019,0.018,0.017,0.016,0.015,0.016,0.017,0.018,0.019,0.021,0.023,0.026,0.028,0.03,0.033,0.035,0.038,0.039,0.042],[1.931,1.93,1.928,1.922,1.902,1.875,1.827,1.771,1.722,1.634,1.57,1.469,1.396,1.283,1.204,1.084,0.985,0.903,0.781,0.704,0.594,0.505,0.435,0.339,0.28,0.195,0.141,0.083,0.028,0.037,0.081,0.109,0.147,0.166,0.19,0.201,0.21,0.214,0.214,0.209,0.201,0.19,0.176,0.163,0.146,0.13,0.107,0.094,0.078,0.064,0.057,0.053,0.055,0.061,0.068,0.075,0.08,0.083,0.088,0.087,0.089,0.087,0.085,0.079,0.074,0.067,0.061,0.052,0.044,0.037,0.034,0.034,0.039,0.047,0.056,0.067,0.079,0.087,0.099,0.106,0.115,0.12,0.127,0.13,0.133,0.135,0.135,0.134,0.133,0.129,0.126,0.121,0.116,0.109,0.101,0.095,0.085,0.078,0.069,0.062,0.052,0.046,0.039,0.035,0.032,0.03,0.03,0.03,0.031,0.031,0.032,0.031,0.032,0.031,0.03,0.028,0.026,0.024,0.021,0.02,0.019,0.019,0.019,0.022,0.025,0.03,0.032,0.037,0.041,0.044,0.048,0.051,0.054,0.056,0.059,0.061,0.063,0.064,0.065,0.066,0.067,0.067,0.067,0.066,0.065,0.064,0.062,0.06,0.057,0.055],[1.631,1.63,1.627,1.622,1.608,1.576,1.545,1.494,1.453,1.395,1.317,1.26,1.186,1.103,1.007,0.939,0.839,0.769,0.668,0.6,0.499,0.44,0.36,0.289,0.223,0.151,0.108,0.062,0.047,0.065,0.092,0.122,0.146,0.161,0.175,0.186,0.187,0.188,0.185,0.177,0.169,0.156,0.145,0.127,0.115,0.095,0.082,0.064,0.054,0.042,0.037,0.036,0.041,0.047,0.054,0.061,0.066,0.07,0.071,0.072,0.071,0.07,0.067,0.065,0.061,0.058,0.055,0.052,0.052,0.053,0.055,0.059,0.063,0.069,0.074,0.08,0.086,0.09,0.094,0.097,0.099,0.101,0.101,0.101,0.099,0.097,0.094,0.091,0.087,0.083,0.077,0.072,0.067,0.062,0.056,0.051,0.044,0.04,0.035,0.031,0.027,0.025,0.023,0.023,0.024,0.025,0.027,0.029,0.031,0.032,0.034,0.036,0.037,0.039,0.042,0.044,0.046,0.049,0.05,0.052,0.054,0.055,0.056,0.057,0.058,0.058,0.058,0.058,0.058,0.057,0.056,0.055,0.053,0.052,0.051,0.049,0.047,0.046,0.044,0.041,0.039,0.036,0.034,0.032,0.029,0.027,0.025,0.024,0.023,0.022],[0.958,0.957,0.955,0.951,0.937,0.917,0.888,0.852,0.811,0.757,0.715,0.66,0.605,0.536,0.489,0.434,0.379,0.33,0.287,0.249,0.218,0.192,0.168,0.155,0.143,0.132,0.122,0.115,0.107,0.1,0.092,0.084,0.079,0.075,0.071,0.069,0.068,0.068,0.068,0.067,0.065,0.063,0.06,0.056,0.052,0.049,0.047,0.047,0.048,0.052,0.056,0.061,0.066,0.07,0.074,0.077,0.079,0.08,0.081,0.08,0.078,0.075,0.073,0.069,0.065,0.061,0.057,0.052,0.048,0.045,0.041,0.038,0.037,0.036,0.035,0.036,0.036,0.037,0.038,0.039,0.04,0.04,0.041,0.041,0.041,0.041,0.041,0.041,0.04,0.04,0.039,0.039,0.039,0.039,0.039,0.039,0.039,0.039,0.039,0.04,0.04,0.041,0.041,0.042,0.042,0.042,0.042,0.042,0.042,0.042,0.042,0.042,0.042,0.042,0.041,0.041,0.041,0.04,0.04,0.04,0.039,0.038,0.038,0.038,0.037,0.037,0.037,0.037,0.037,0.038,0.037,0.038,0.038,0.038,0.038,0.038,0.038,0.038,0.038,0.038,0.038,0.038,0.038,0.039,0.038,0.039,0.038,0.038,0.038,0.038],[0.32,0.32,0.32,0.317,0.311,0.3,0.292,0.278,0.262,0.245,0.228,0.208,0.189,0.171,0.154,0.134,0.123,0.109,0.098,0.088,0.079,0.071,0.064,0.058,0.052,0.047,0.042,0.038,0.036,0.035,0.036,0.039,0.041,0.044,0.047,0.049,0.051,0.052,0.053,0.053,0.052,0.052,0.051,0.05,0.049,0.048,0.047,0.046,0.045,0.044,0.044,0.043,0.043,0.043,0.043,0.043,0.042,0.042,0.042,0.042,0.042,0.042,0.042,0.042,0.042,0.042,0.042,0.041,0.041,0.041,0.04,0.04,0.039,0.038,0.037,0.036,0.036,0.035,0.034,0.033,0.033,0.032,0.032,0.032,0.032,0.033,0.033,0.034,0.035,0.036,0.037,0.038,0.039,0.04,0.041,0.042,0.042,0.043,0.043,0.044,0.044,0.045,0.045,0.046,0.046,0.046,0.046,0.046,0.046,0.046,0.046,0.046,0.046,0.046,0.046,0.045,0.045,0.045,0.044,0.044,0.043,0.042,0.041,0.041,0.04,0.039,0.039,0.039,0.038,0.037,0.037,0.036,0.036,0.035,0.035,0.035,0.034,0.034,0.034,0.033,0.033,0.033,0.033,0.033,0.034,0.034,0.034,0.034,0.036,0.036],[0.563,0.564,0.564,0.56,0.551,0.539,0.524,0.505,0.484,0.46,0.434,0.405,0.376,0.346,0.315,0.285,0.257,0.229,0.203,0.177,0.154,0.132,0.113,0.095,0.081,0.068,0.059,0.055,0.054,0.055,0.058,0.062,0.066,0.069,0.07,0.071,0.07,0.069,0.066,0.063,0.059,0.054,0.049,0.043,0.038,0.034,0.03,0.028,0.027,0.028,0.03,0.032,0.034,0.036,0.039,0.04,0.042,0.043,0.044,0.045,0.045,0.045,0.046,0.046,0.046,0.046,0.046,0.047,0.048,0.048,0.049,0.05,0.051,0.052,0.053,0.054,0.055,0.057,0.059,0.059,0.059,0.059,0.058,0.057,0.056,0.055,0.054,0.052,0.05,0.049,0.047,0.045,0.044,0.042,0.04,0.039,0.037,0.036,0.035,0.034,0.033,0.033,0.032,0.032,0.032,0.032,0.033,0.033,0.033,0.033,0.034,0.034,0.035,0.036,0.037,0.038,0.039,0.039,0.04,0.041,0.042,0.043,0.043,0.044,0.044,0.045,0.044,0.044,0.044,0.043,0.043,0.042,0.041,0.039,0.038,0.037,0.036,0.035,0.034,0.033,0.033,0.031,0.03,0.03,0.029,0.029,0.029,0.029,0.029,0.03],[1.114,1.114,1.114,1.109,1.096,1.075,1.048,1.015,0.977,0.935,0.89,0.841,0.79,0.737,0.68,0.624,0.566,0.521,0.451,0.396,0.343,0.293,0.245,0.198,0.155,0.119,0.088,0.048,0.02,0.015,0.035,0.054,0.07,0.081,0.091,0.098,0.101,0.101,0.1,0.095,0.09,0.081,0.072,0.062,0.051,0.041,0.034,0.031,0.033,0.039,0.049,0.058,0.067,0.076,0.082,0.088,0.093,0.096,0.099,0.099,0.098,0.095,0.093,0.088,0.083,0.078,0.072,0.066,0.06,0.053,0.047,0.042,0.036,0.033,0.03,0.03,0.031,0.033,0.035,0.038,0.04,0.041,0.043,0.043,0.043,0.042,0.042,0.04,0.038,0.035,0.032,0.03,0.028,0.025,0.025,0.024,0.025,0.027,0.03,0.033,0.036,0.04,0.042,0.045,0.048,0.051,0.054,0.056,0.058,0.059,0.059,0.06,0.059,0.059,0.057,0.056,0.054,0.053,0.051,0.049,0.047,0.046,0.044,0.042,0.041,0.04,0.038,0.037,0.035,0.033,0.032,0.03,0.029,0.028,0.027,0.027,0.026,0.025,0.025,0.025,0.025,0.025,0.025,0.026,0.027,0.029,0.03,0.032,0.035,0.037],[0.466,0.464,0.461,0.455,0.446,0.434,0.42,0.404,0.386,0.366,0.345,0.323,0.304,0.274,0.249,0.224,0.199,0.173,0.147,0.123,0.099,0.08,0.054,0.035,0.02,0.016,0.026,0.038,0.05,0.06,0.069,0.076,0.081,0.085,0.088,0.089,0.088,0.087,0.085,0.081,0.078,0.074,0.068,0.064,0.058,0.053,0.047,0.042,0.036,0.032,0.027,0.024,0.023,0.021,0.02,0.02,0.02,0.02,0.021,0.021,0.022,0.023,0.024,0.026,0.027,0.03,0.032,0.035,0.037,0.04,0.044,0.047,0.051,0.053,0.057,0.059,0.062,0.064,0.066,0.068,0.069,0.071,0.071,0.072,0.072,0.071,0.07,0.068,0.066,0.064,0.062,0.059,0.057,0.052,0.049,0.045,0.041,0.036,0.033,0.029,0.026,0.023,0.021,0.018,0.017,0.015,0.015,0.015,0.016,0.017,0.018,0.019,0.021,0.022,0.024,0.026,0.028,0.03,0.031,0.033,0.035,0.037,0.039,0.041,0.043,0.044,0.045,0.046,0.047,0.048,0.049,0.049,0.05,0.05,0.05,0.05,0.049,0.049,0.048,0.047,0.047,0.045,0.045,0.044,0.043,0.042,0.041,0.04,0.038,0.037]]},"stats":{"pid":{"pos":[0.297,0.601,0.515,0.582,0.489,0.264,0.081,0.157,0.317,0.137],"alt":[0.03,0.057,0.139,0.172,0.031,0.173,0.062,0.073,0.08,0.013],"end":[0.014,0.023,0.017,0.011,0.02,0.015,0.004,0.006,0.008,0.01],"max":[1.016,1.961,1.677,1.837,1.617,0.711,0.178,0.487,1.044,0.488],"trace":[[1.023,1.023,1.022,1.017,1.002,0.989,0.957,0.933,0.886,0.846,0.809,0.752,0.709,0.644,0.598,0.528,0.479,0.405,0.358,0.29,0.245,0.182,0.141,0.085,0.051,0.022,0.037,0.074,0.095,0.123,0.138,0.156,0.164,0.172,0.174,0.173,0.169,0.161,0.154,0.141,0.131,0.113,0.098,0.08,0.068,0.046,0.032,0.015,0.012,0.024,0.035,0.05,0.058,0.07,0.076,0.081,0.085,0.087,0.087,0.085,0.082,0.079,0.071,0.066,0.056,0.049,0.039,0.031,0.021,0.009,0.003,0.012,0.02,0.03,0.036,0.044,0.05,0.056,0.061,0.065,0.067,0.069,0.069,0.069,0.068,0.066,0.062,0.059,0.055,0.05,0.044,0.039,0.032,0.027,0.02,0.016,0.01,0.007,0.005,0.009,0.012,0.018,0.021,0.026,0.029,0.032,0.033,0.035,0.035,0.036,0.035,0.034,0.033,0.031,0.029,0.027,0.024,0.021,0.017,0.015,0.011,0.009,0.006,0.005,0.005,0.007,0.01,0.011,0.013,0.014,0.017,0.018,0.02,0.021,0.022,0.023,0.023,0.023,0.023,0.023,0.022,0.021,0.019,0.018,0.015,0.014,0.011,0.009,0.007,0.005],[1.974,1.973,1.969,1.965,1.95,1.93,1.891,1.853,1.787,1.731,1.645,1.584,1.478,1.402,1.308,1.188,1.103,0.975,0.889,0.784,0.679,0.555,0.474,0.382,0.289,0.191,0.136,0.08,0.081,0.126,0.162,0.206,0.235,0.266,0.283,0.296,0.301,0.3,0.295,0.279,0.267,0.243,0.22,0.199,0.165,0.142,0.113,0.085,0.055,0.042,0.044,0.055,0.08,0.093,0.115,0.126,0.141,0.149,0.157,0.159,0.16,0.157,0.152,0.141,0.133,0.115,0.104,0.087,0.068,0.055,0.035,0.026,0.024,0.032,0.046,0.062,0.077,0.092,0.102,0.113,0.12,0.128,0.133,0.136,0.137,0.136,0.133,0.128,0.12,0.114,0.103,0.095,0.081,0.072,0.06,0.047,0.034,0.02,0.011,0.008,0.018,0.028,0.039,0.048,0.057,0.063,0.07,0.073,0.076,0.078,0.079,0.078,0.075,0.072,0.068,0.064,0.058,0.052,0.045,0.038,0.029,0.022,0.012,0.006,0.002,0.008,0.014,0.02,0.025,0.03,0.034,0.038,0.041,0.044,0.045,0.046,0.046,0.045,0.044,0.042,0.039,0.037,0.034,0.031,0.027,0.024,0.02,0.015,0.011,0.007],[1.762,1.758,1.753,1.743,1.726,1.696,1.654,1.604,1.543,1.478,1.403,1.322,1.232,1.14,1.045,0.942,0.844,0.764,0.651,0.558,0.469,0.381,0.302,0.23,0.163,0.114,0.09,0.1,0.126,0.162,0.192,0.221,0.241,0.261,0.271,0.277,0.278,0.275,0.266,0.253,0.235,0.215,0.19,0.17,0.137,0.109,0.081,0.054,0.029,0.019,0.034,0.058,0.076,0.095,0.109,0.122,0.132,0.138,0.141,0.141,0.137,0.132,0.123,0.115,0.105,0.09,0.076,0.061,0.047,0.033,0.022,0.017,0.025,0.035,0.05,0.062,0.071,0.083,0.092,0.1,0.104,0.11,0.112,0.113,0.112,0.111,0.106,0.102,0.096,0.091,0.081,0.072,0.064,0.053,0.044,0.032,0.022,0.012,0.008,0.013,0.019,0.029,0.035,0.044,0.048,0.055,0.058,0.062,0.064,0.065,0.065,0.064,0.061,0.058,0.054,0.05,0.046,0.039,0.035,0.027,0.021,0.014,0.008,0.003,0.007,0.012,0.019,0.023,0.028,0.032,0.035,0.037,0.039,0.041,0.041,0.042,0.041,0.04,0.039,0.037,0.034,0.03,0.027,0.024,0.019,0.014,0.01,0.006,0.003,0.005],[1.949,1.946,1.943,1.937,1.915,1.892,1.843,1.801,1.73,1.664,1.603,1.502,1.431,1.322,1.227,1.127,1.022,0.942,0.818,0.736,0.615,0.539,0.434,0.365,0.273,0.202,0.144,0.105,0.096,0.107,0.139,0.176,0.199,0.225,0.243,0.252,0.258,0.257,0.254,0.243,0.226,0.211,0.186,0.167,0.136,0.109,0.08,0.053,0.033,0.019,0.035,0.056,0.076,0.093,0.107,0.117,0.128,0.133,0.138,0.137,0.135,0.129,0.124,0.112,0.103,0.088,0.077,0.06,0.045,0.032,0.021,0.019,0.029,0.039,0.056,0.068,0.078,0.09,0.098,0.106,0.113,0.116,0.12,0.12,0.12,0.118,0.115,0.11,0.104,0.096,0.09,0.081,0.071,0.057,0.046,0.036,0.023,0.014,0.005,0.011,0.02,0.027,0.035,0.043,0.048,0.054,0.057,0.06,0.061,0.062,0.061,0.06,0.058,0.055,0.051,0.047,0.043,0.037,0.032,0.027,0.021,0.015,0.009,0.004,0.005,0.009,0.014,0.018,0.022,0.025,0.028,0.029,0.031,0.032,0.032,0.032,0.032,0.03,0.029,0.027,0.024,0.022,0.018,0.015,0.011,0.007,0.004,0.003,0.006,0.009],[1.622,1.621,1.618,1.613,1.6,1.576,1.538,1.505,1.459,1.406,1.35,1.269,1.211,1.135,1.054,0.966,0.879,0.793,0.688,0.617,0.531,0.444,0.361,0.283,0.205,0.125,0.074,0.021,0.047,0.1,0.132,0.165,0.194,0.216,0.232,0.241,0.245,0.244,0.237,0.227,0.213,0.196,0.175,0.153,0.129,0.1,0.079,0.054,0.03,0.013,0.024,0.045,0.063,0.08,0.097,0.107,0.115,0.124,0.128,0.131,0.129,0.127,0.122,0.115,0.107,0.095,0.08,0.07,0.055,0.041,0.027,0.018,0.019,0.029,0.042,0.057,0.066,0.077,0.087,0.095,0.101,0.106,0.109,0.111,0.111,0.11,0.108,0.103,0.098,0.092,0.085,0.075,0.068,0.059,0.05,0.04,0.031,0.025,0.021,0.022,0.028,0.033,0.039,0.046,0.051,0.056,0.058,0.062,0.064,0.065,0.064,0.063,0.061,0.059,0.054,0.05,0.045,0.04,0.036,0.03,0.025,0.021,0.018,0.017,0.018,0.021,0.026,0.029,0.032,0.036,0.038,0.041,0.043,0.043,0.044,0.043,0.042,0.04,0.038,0.036,0.033,0.029,0.026,0.023,0.02,0.016,0.014,0.013,0.014,0.016],[0.963,0.961,0.957,0.949,0.933,0.912,0.875,0.847,0.806,0.758,0.706,0.641,0.592,0.531,0.469,0.406,0.346,0.288,0.234,0.186,0.148,0.118,0.099,0.093,0.095,0.101,0.106,0.112,0.114,0.117,0.116,0.116,0.116,0.114,0.114,0.114,0.113,0.112,0.11,0.108,0.104,0.098,0.091,0.083,0.074,0.063,0.054,0.045,0.037,0.034,0.035,0.039,0.044,0.05,0.056,0.06,0.063,0.065,0.065,0.065,0.062,0.058,0.053,0.047,0.04,0.033,0.025,0.018,0.011,0.005,0.007,0.013,0.02,0.025,0.029,0.034,0.037,0.041,0.043,0.046,0.047,0.048,0.048,0.048,0.047,0.046,0.045,0.042,0.039,0.037,0.033,0.029,0.026,0.022,0.017,0.013,0.008,0.003,0.003,0.006,0.01,0.014,0.017,0.02,0.022,0.024,0.026,0.027,0.027,0.027,0.027,0.027,0.026,0.024,0.023,0.021,0.019,0.017,0.015,0.013,0.01,0.008,0.006,0.005,0.004,0.004,0.006,0.008,0.01,0.011,0.013,0.015,0.016,0.017,0.018,0.018,0.019,0.019,0.019,0.018,0.019,0.018,0.018,0.017,0.017,0.015,0.014,0.013,0.012,0.01],[0.305,0.305,0.305,0.302,0.296,0.287,0.276,0.262,0.246,0.228,0.208,0.187,0.166,0.145,0.124,0.106,0.089,0.074,0.062,0.053,0.047,0.043,0.04,0.038,0.037,0.035,0.033,0.032,0.03,0.029,0.029,0.029,0.03,0.031,0.033,0.034,0.035,0.035,0.034,0.033,0.031,0.029,0.026,0.023,0.02,0.017,0.014,0.012,0.011,0.013,0.014,0.016,0.018,0.02,0.02,0.021,0.02,0.02,0.019,0.018,0.016,0.014,0.012,0.011,0.009,0.008,0.007,0.007,0.008,0.009,0.01,0.011,0.012,0.013,0.013,0.013,0.015,0.014,0.015,0.015,0.015,0.015,0.014,0.014,0.014,0.013,0.012,0.011,0.011,0.01,0.01,0.009,0.008,0.007,0.007,0.007,0.006,0.007,0.006,0.007,0.007,0.008,0.008,0.009,0.009,0.01,0.01,0.011,0.01,0.011,0.01,0.01,0.01,0.01,0.009,0.008,0.007,0.007,0.006,0.006,0.005,0.005,0.006,0.006,0.007,0.007,0.008,0.009,0.009,0.009,0.01,0.009,0.009,0.009,0.009,0.008,0.008,0.007,0.007,0.006,0.005,0.004,0.004,0.004,0.003,0.003,0.003,0.003,0.004,0.004],[0.568,0.568,0.566,0.561,0.55,0.536,0.517,0.495,0.469,0.443,0.412,0.381,0.349,0.314,0.281,0.248,0.215,0.185,0.156,0.131,0.108,0.089,0.072,0.06,0.054,0.052,0.055,0.059,0.065,0.071,0.075,0.079,0.082,0.084,0.085,0.084,0.083,0.08,0.076,0.072,0.066,0.059,0.052,0.044,0.037,0.03,0.022,0.017,0.016,0.019,0.023,0.029,0.033,0.038,0.04,0.043,0.045,0.046,0.045,0.044,0.042,0.04,0.036,0.033,0.028,0.025,0.019,0.016,0.01,0.008,0.009,0.012,0.017,0.021,0.024,0.029,0.031,0.035,0.037,0.039,0.04,0.041,0.041,0.04,0.038,0.036,0.034,0.032,0.029,0.027,0.024,0.021,0.019,0.015,0.013,0.01,0.008,0.007,0.006,0.007,0.009,0.011,0.012,0.014,0.015,0.017,0.018,0.019,0.02,0.02,0.019,0.019,0.018,0.018,0.016,0.015,0.014,0.012,0.011,0.009,0.007,0.005,0.003,0.003,0.005,0.007,0.009,0.01,0.012,0.013,0.014,0.014,0.015,0.015,0.015,0.015,0.014,0.013,0.013,0.011,0.01,0.008,0.007,0.006,0.004,0.004,0.005,0.006,0.007,0.008],[1.091,1.091,1.09,1.082,1.069,1.048,1.018,0.982,0.941,0.892,0.843,0.809,0.764,0.704,0.645,0.58,0.519,0.457,0.393,0.334,0.278,0.225,0.165,0.13,0.082,0.058,0.051,0.064,0.087,0.108,0.129,0.148,0.159,0.169,0.174,0.176,0.175,0.17,0.163,0.152,0.139,0.125,0.105,0.091,0.068,0.053,0.035,0.017,0.006,0.023,0.034,0.051,0.062,0.072,0.08,0.088,0.093,0.095,0.096,0.095,0.092,0.088,0.082,0.074,0.065,0.057,0.045,0.037,0.024,0.015,0.009,0.013,0.023,0.032,0.041,0.049,0.057,0.064,0.069,0.074,0.077,0.079,0.08,0.08,0.079,0.077,0.074,0.069,0.064,0.059,0.052,0.047,0.038,0.031,0.024,0.017,0.01,0.005,0.007,0.012,0.018,0.024,0.029,0.033,0.036,0.039,0.04,0.042,0.042,0.041,0.04,0.037,0.035,0.032,0.029,0.026,0.022,0.019,0.015,0.011,0.008,0.004,0.001,0.002,0.005,0.008,0.011,0.014,0.016,0.018,0.019,0.02,0.021,0.022,0.022,0.021,0.021,0.021,0.02,0.018,0.016,0.014,0.012,0.009,0.008,0.005,0.003,0.002,0.003,0.006],[0.491,0.49,0.488,0.482,0.472,0.461,0.446,0.43,0.41,0.39,0.367,0.343,0.317,0.296,0.262,0.234,0.207,0.179,0.152,0.125,0.1,0.075,0.052,0.03,0.013,0.011,0.024,0.038,0.05,0.06,0.066,0.073,0.076,0.078,0.077,0.075,0.072,0.069,0.063,0.056,0.049,0.044,0.035,0.028,0.02,0.013,0.007,0.002,0.008,0.014,0.02,0.025,0.029,0.033,0.035,0.037,0.038,0.038,0.037,0.037,0.034,0.032,0.028,0.025,0.021,0.018,0.013,0.01,0.006,0.002,0.004,0.008,0.011,0.015,0.018,0.02,0.022,0.025,0.026,0.027,0.028,0.029,0.029,0.028,0.028,0.027,0.025,0.023,0.021,0.019,0.017,0.015,0.012,0.009,0.007,0.004,0.002,0.002,0.004,0.006,0.009,0.011,0.013,0.014,0.016,0.017,0.017,0.018,0.018,0.018,0.018,0.018,0.017,0.017,0.015,0.014,0.013,0.011,0.01,0.008,0.006,0.005,0.003,0.002,0.002,0.003,0.004,0.005,0.006,0.007,0.008,0.008,0.009,0.01,0.011,0.012,0.012,0.013,0.013,0.013,0.013,0.013,0.012,0.012,0.011,0.01,0.01,0.009,0.008,0.007]],"alt_tr":[[1.998,1.998,1.997,1.994,1.99,1.986,1.978,1.972,1.962,1.953,1.945,1.933,1.925,1.912,1.905,1.893,1.886,1.876,1.871,1.864,1.86,1.856,1.854,1.853,1.853,1.853,1.855,1.857,1.859,1.862,1.865,1.869,1.872,1.876,1.878,1.882,1.884,1.886,1.887,1.889,1.889,1.89,1.89,1.889,1.888,1.887,1.886,1.884,1.882,1.88,1.879,1.877,1.875,1.873,1.873,1.872,1.871,1.87,1.87,1.869,1.869,1.869,1.87,1.87,1.871,1.871,1.872,1.873,1.873,1.874,1.875,1.876,1.877,1.877,1.878,1.878,1.878,1.878,1.878,1.878,1.878,1.878,1.878,1.878,1.877,1.877,1.877,1.876,1.876,1.875,1.874,1.874,1.873,1.873,1.872,1.872,1.871,1.871,1.871,1.87,1.87,1.87,1.87,1.871,1.871,1.871,1.872,1.872,1.872,1.873,1.874,1.874,1.875,1.875,1.876,1.876,1.877,1.878,1.878,1.878,1.879,1.879,1.879,1.879,1.879,1.878,1.878,1.878,1.877,1.877,1.877,1.877,1.877,1.877,1.876,1.876,1.876,1.875,1.875,1.875,1.874,1.874,1.874,1.874,1.874,1.874,1.874,1.874,1.874,1.874],[1.874,1.874,1.874,1.875,1.88,1.886,1.896,1.906,1.923,1.937,1.959,1.973,1.998,2.014,2.033,2.055,2.069,2.087,2.098,2.11,2.119,2.127,2.131,2.133,2.134,2.132,2.13,2.124,2.12,2.113,2.108,2.101,2.096,2.09,2.086,2.082,2.079,2.077,2.077,2.077,2.078,2.08,2.082,2.084,2.088,2.091,2.094,2.097,2.101,2.103,2.106,2.107,2.108,2.109,2.109,2.109,2.109,2.108,2.107,2.106,2.104,2.103,2.101,2.099,2.098,2.096,2.095,2.094,2.092,2.092,2.091,2.091,2.091,2.091,2.092,2.092,2.093,2.094,2.095,2.096,2.097,2.098,2.098,2.099,2.099,2.1,2.101,2.101,2.101,2.102,2.102,2.102,2.102,2.102,2.103,2.102,2.102,2.102,2.102,2.101,2.101,2.101,2.1,2.1,2.099,2.099,2.098,2.098,2.097,2.097,2.097,2.097,2.096,2.096,2.096,2.096,2.096,2.097,2.097,2.097,2.098,2.098,2.099,2.099,2.1,2.1,2.101,2.101,2.101,2.102,2.102,2.102,2.102,2.102,2.102,2.102,2.102,2.102,2.102,2.102,2.101,2.101,2.101,2.101,2.101,2.101,2.101,2.1,2.1,2.1],[2.099,2.099,2.098,2.093,2.083,2.067,2.045,2.018,1.986,1.951,1.911,1.868,1.822,1.777,1.732,1.686,1.645,1.613,1.573,1.542,1.517,1.496,1.482,1.471,1.467,1.466,1.47,1.476,1.487,1.498,1.513,1.527,1.542,1.558,1.572,1.585,1.596,1.605,1.612,1.618,1.62,1.621,1.619,1.617,1.611,1.605,1.598,1.59,1.582,1.573,1.565,1.557,1.55,1.544,1.539,1.535,1.532,1.53,1.53,1.531,1.533,1.535,1.538,1.542,1.545,1.55,1.554,1.558,1.562,1.565,1.567,1.57,1.571,1.572,1.573,1.573,1.573,1.572,1.57,1.568,1.567,1.564,1.562,1.559,1.557,1.556,1.553,1.552,1.551,1.55,1.55,1.55,1.55,1.551,1.551,1.552,1.553,1.554,1.555,1.556,1.557,1.558,1.559,1.56,1.561,1.562,1.562,1.562,1.562,1.562,1.562,1.561,1.561,1.561,1.56,1.56,1.56,1.559,1.559,1.558,1.558,1.558,1.558,1.557,1.557,1.557,1.557,1.557,1.557,1.557,1.558,1.558,1.558,1.558,1.558,1.558,1.558,1.558,1.558,1.558,1.558,1.558,1.558,1.558,1.558,1.558,1.558,1.559,1.559,1.559],[1.559,1.559,1.56,1.563,1.575,1.586,1.611,1.633,1.671,1.708,1.742,1.799,1.838,1.898,1.948,1.998,2.047,2.084,2.135,2.166,2.207,2.229,2.255,2.269,2.283,2.288,2.289,2.286,2.279,2.271,2.259,2.243,2.231,2.214,2.201,2.188,2.177,2.168,2.162,2.157,2.155,2.155,2.158,2.162,2.168,2.175,2.183,2.191,2.197,2.207,2.214,2.221,2.227,2.231,2.235,2.236,2.237,2.236,2.234,2.232,2.228,2.223,2.22,2.214,2.21,2.205,2.201,2.197,2.194,2.192,2.19,2.189,2.189,2.19,2.191,2.193,2.195,2.198,2.2,2.203,2.206,2.208,2.21,2.212,2.214,2.214,2.215,2.216,2.216,2.215,2.215,2.214,2.213,2.212,2.21,2.209,2.208,2.207,2.206,2.205,2.204,2.204,2.203,2.203,2.203,2.203,2.203,2.204,2.204,2.205,2.205,2.206,2.206,2.207,2.208,2.208,2.208,2.208,2.208,2.208,2.208,2.208,2.208,2.208,2.207,2.207,2.207,2.207,2.206,2.206,2.206,2.205,2.205,2.205,2.205,2.205,2.205,2.205,2.206,2.206,2.206,2.206,2.206,2.207,2.207,2.207,2.207,2.207,2.207,2.208],[2.208,2.208,2.209,2.21,2.213,2.218,2.225,2.231,2.24,2.25,2.259,2.272,2.281,2.292,2.302,2.312,2.321,2.329,2.337,2.341,2.345,2.349,2.351,2.351,2.351,2.349,2.348,2.345,2.343,2.339,2.337,2.334,2.331,2.329,2.327,2.325,2.324,2.323,2.323,2.323,2.324,2.324,2.325,2.326,2.327,2.329,2.33,2.331,2.332,2.333,2.334,2.335,2.335,2.336,2.336,2.336,2.337,2.337,2.337,2.337,2.337,2.337,2.336,2.336,2.336,2.336,2.335,2.335,2.334,2.334,2.333,2.333,2.333,2.333,2.333,2.332,2.332,2.332,2.332,2.332,2.332,2.332,2.332,2.332,2.332,2.332,2.331,2.331,2.331,2.331,2.331,2.33,2.33,2.33,2.33,2.33,2.33,2.33,2.33,2.33,2.331,2.331,2.332,2.332,2.333,2.333,2.334,2.334,2.335,2.335,2.336,2.336,2.336,2.337,2.337,2.337,2.337,2.338,2.338,2.338,2.338,2.338,2.337,2.337,2.337,2.336,2.336,2.336,2.335,2.335,2.334,2.334,2.334,2.333,2.333,2.333,2.333,2.333,2.333,2.333,2.333,2.333,2.334,2.334,2.334,2.334,2.334,2.334,2.333,2.333],[2.333,2.333,2.332,2.328,2.317,2.304,2.277,2.256,2.224,2.187,2.145,2.092,2.052,2.002,1.95,1.898,1.848,1.8,1.754,1.713,1.678,1.648,1.624,1.604,1.591,1.584,1.583,1.585,1.593,1.602,1.618,1.63,1.646,1.664,1.68,1.696,1.712,1.725,1.735,1.743,1.749,1.753,1.753,1.752,1.748,1.743,1.736,1.728,1.717,1.71,1.701,1.692,1.683,1.676,1.669,1.663,1.659,1.656,1.654,1.654,1.654,1.656,1.659,1.662,1.666,1.67,1.674,1.679,1.683,1.687,1.69,1.693,1.695,1.696,1.697,1.697,1.697,1.696,1.695,1.693,1.691,1.689,1.687,1.685,1.683,1.681,1.68,1.679,1.677,1.677,1.677,1.677,1.677,1.677,1.678,1.679,1.68,1.682,1.683,1.684,1.685,1.686,1.686,1.687,1.687,1.688,1.688,1.688,1.687,1.687,1.686,1.685,1.685,1.684,1.683,1.682,1.681,1.681,1.68,1.68,1.68,1.68,1.68,1.68,1.68,1.681,1.681,1.681,1.682,1.682,1.682,1.683,1.683,1.683,1.683,1.683,1.683,1.683,1.683,1.683,1.683,1.683,1.683,1.683,1.684,1.684,1.684,1.684,1.684,1.684],[1.684,1.684,1.685,1.688,1.693,1.702,1.713,1.727,1.743,1.761,1.781,1.801,1.822,1.844,1.865,1.884,1.902,1.918,1.932,1.944,1.953,1.96,1.965,1.966,1.967,1.966,1.963,1.959,1.954,1.948,1.942,1.936,1.93,1.925,1.92,1.916,1.913,1.911,1.909,1.909,1.909,1.911,1.912,1.915,1.918,1.921,1.925,1.928,1.932,1.936,1.939,1.941,1.943,1.945,1.946,1.946,1.946,1.945,1.944,1.943,1.941,1.94,1.938,1.936,1.934,1.933,1.931,1.93,1.929,1.928,1.927,1.927,1.927,1.927,1.927,1.928,1.928,1.929,1.93,1.93,1.931,1.931,1.932,1.932,1.933,1.933,1.933,1.934,1.934,1.934,1.934,1.934,1.934,1.933,1.933,1.933,1.932,1.932,1.931,1.931,1.931,1.931,1.93,1.93,1.93,1.929,1.929,1.929,1.929,1.929,1.929,1.93,1.93,1.93,1.93,1.93,1.93,1.93,1.931,1.931,1.931,1.931,1.931,1.932,1.932,1.932,1.932,1.932,1.932,1.932,1.932,1.932,1.932,1.933,1.933,1.933,1.933,1.934,1.934,1.934,1.934,1.934,1.934,1.934,1.934,1.934,1.933,1.933,1.933,1.933],[1.933,1.933,1.932,1.928,1.92,1.91,1.896,1.879,1.86,1.839,1.816,1.792,1.767,1.741,1.717,1.693,1.67,1.65,1.633,1.618,1.606,1.597,1.591,1.588,1.586,1.588,1.592,1.596,1.602,1.609,1.617,1.625,1.633,1.642,1.648,1.656,1.662,1.667,1.67,1.673,1.674,1.674,1.673,1.671,1.668,1.665,1.66,1.656,1.652,1.647,1.643,1.64,1.636,1.633,1.631,1.629,1.628,1.627,1.626,1.626,1.627,1.627,1.629,1.63,1.631,1.633,1.635,1.636,1.639,1.641,1.642,1.644,1.645,1.646,1.646,1.647,1.647,1.648,1.648,1.647,1.647,1.646,1.646,1.645,1.644,1.644,1.643,1.642,1.642,1.641,1.641,1.64,1.64,1.64,1.64,1.639,1.639,1.639,1.639,1.639,1.639,1.638,1.638,1.638,1.638,1.637,1.637,1.637,1.637,1.636,1.636,1.636,1.636,1.637,1.637,1.638,1.639,1.64,1.64,1.641,1.642,1.642,1.642,1.643,1.643,1.643,1.643,1.643,1.643,1.643,1.643,1.643,1.643,1.643,1.642,1.642,1.641,1.641,1.641,1.64,1.64,1.64,1.64,1.64,1.64,1.64,1.64,1.64,1.639,1.639],[1.639,1.639,1.64,1.645,1.651,1.661,1.675,1.693,1.713,1.737,1.762,1.778,1.8,1.827,1.854,1.881,1.905,1.928,1.95,1.967,1.981,1.992,2.002,2.005,2.007,2.006,2.002,1.998,1.991,1.983,1.975,1.964,1.957,1.948,1.941,1.935,1.93,1.926,1.923,1.922,1.922,1.924,1.927,1.93,1.935,1.938,1.943,1.948,1.953,1.959,1.962,1.967,1.969,1.972,1.974,1.975,1.975,1.974,1.973,1.971,1.968,1.966,1.963,1.96,1.957,1.955,1.953,1.951,1.949,1.948,1.948,1.947,1.947,1.948,1.949,1.95,1.951,1.953,1.954,1.956,1.957,1.958,1.96,1.96,1.961,1.961,1.961,1.961,1.96,1.959,1.959,1.958,1.956,1.955,1.954,1.953,1.953,1.952,1.952,1.952,1.952,1.952,1.953,1.953,1.954,1.954,1.955,1.955,1.956,1.956,1.957,1.957,1.958,1.958,1.958,1.958,1.958,1.958,1.958,1.958,1.957,1.957,1.957,1.956,1.956,1.956,1.955,1.954,1.954,1.953,1.953,1.952,1.952,1.951,1.951,1.951,1.951,1.952,1.952,1.953,1.954,1.954,1.955,1.955,1.956,1.957,1.957,1.958,1.958,1.959],[1.959,1.96,1.96,1.961,1.963,1.965,1.968,1.972,1.976,1.98,1.985,1.989,1.994,1.998,2.003,2.007,2.011,2.014,2.017,2.019,2.02,2.021,2.022,2.022,2.021,2.02,2.019,2.018,2.017,2.015,2.014,2.013,2.012,2.011,2.01,2.01,2.009,2.009,2.009,2.009,2.01,2.01,2.011,2.012,2.013,2.014,2.015,2.016,2.017,2.018,2.018,2.019,2.019,2.019,2.018,2.018,2.017,2.017,2.016,2.015,2.014,2.014,2.013,2.012,2.012,2.012,2.012,2.012,2.012,2.013,2.013,2.013,2.014,2.014,2.015,2.015,2.016,2.016,2.016,2.016,2.016,2.016,2.015,2.015,2.015,2.014,2.014,2.014,2.014,2.014,2.014,2.014,2.014,2.014,2.014,2.014,2.014,2.014,2.014,2.014,2.014,2.014,2.014,2.014,2.014,2.014,2.014,2.014,2.013,2.013,2.013,2.013,2.013,2.013,2.013,2.013,2.014,2.014,2.014,2.015,2.015,2.015,2.015,2.015,2.015,2.015,2.015,2.015,2.014,2.014,2.014,2.014,2.014,2.013,2.013,2.013,2.013,2.013,2.013,2.013,2.013,2.013,2.013,2.013,2.013,2.012,2.012,2.012,2.012,2.012]]},"bc":{"pos":[0.311,0.59,0.532,0.571,0.484,0.267,0.094,0.162,0.326,0.14],"alt":[0.034,0.062,0.136,0.175,0.038,0.164,0.067,0.072,0.085,0.022],"end":[0.031,0.054,0.036,0.048,0.034,0.039,0.027,0.023,0.024,0.041],"max":[1.025,1.929,1.712,1.809,1.624,0.726,0.184,0.49,1.055,0.472],"trace":[[1.029,1.032,1.033,1.028,1.021,1.0,0.983,0.949,0.919,0.89,0.844,0.81,0.756,0.718,0.67,0.618,0.558,0.508,0.466,0.406,0.367,0.311,0.273,0.231,0.181,0.152,0.114,0.088,0.072,0.06,0.059,0.065,0.072,0.079,0.084,0.087,0.088,0.087,0.083,0.078,0.069,0.062,0.051,0.039,0.027,0.012,0.005,0.018,0.028,0.044,0.053,0.064,0.075,0.082,0.09,0.095,0.1,0.103,0.105,0.105,0.104,0.101,0.098,0.092,0.088,0.081,0.076,0.067,0.062,0.054,0.048,0.041,0.033,0.029,0.024,0.023,0.022,0.023,0.025,0.026,0.028,0.029,0.029,0.028,0.028,0.027,0.025,0.022,0.019,0.017,0.013,0.011,0.008,0.008,0.011,0.015,0.02,0.026,0.03,0.035,0.039,0.043,0.046,0.049,0.052,0.054,0.056,0.057,0.058,0.058,0.058,0.058,0.057,0.056,0.055,0.054,0.053,0.052,0.05,0.048,0.047,0.045,0.043,0.041,0.04,0.038,0.036,0.035,0.033,0.033,0.032,0.031,0.03,0.029,0.029,0.028,0.028,0.027,0.027,0.027,0.027,0.028,0.028,0.029,0.03,0.031,0.032,0.033,0.034,0.034],[1.943,1.943,1.941,1.937,1.924,1.893,1.86,1.816,1.76,1.697,1.614,1.552,1.453,1.381,1.269,1.195,1.095,0.996,0.873,0.793,0.699,0.603,0.515,0.409,0.347,0.268,0.199,0.134,0.078,0.046,0.064,0.092,0.122,0.15,0.171,0.188,0.199,0.206,0.204,0.201,0.192,0.183,0.166,0.153,0.137,0.118,0.095,0.08,0.064,0.048,0.04,0.038,0.041,0.05,0.059,0.07,0.074,0.079,0.082,0.083,0.08,0.077,0.07,0.064,0.053,0.043,0.031,0.018,0.007,0.011,0.022,0.036,0.05,0.064,0.077,0.088,0.099,0.109,0.117,0.124,0.13,0.135,0.138,0.14,0.141,0.141,0.139,0.137,0.133,0.129,0.124,0.116,0.111,0.102,0.095,0.087,0.079,0.07,0.062,0.055,0.048,0.042,0.037,0.033,0.03,0.029,0.028,0.027,0.027,0.028,0.027,0.027,0.026,0.024,0.022,0.019,0.017,0.015,0.014,0.015,0.018,0.02,0.024,0.028,0.032,0.036,0.04,0.044,0.047,0.05,0.053,0.055,0.058,0.06,0.062,0.063,0.064,0.064,0.064,0.064,0.063,0.062,0.061,0.059,0.057,0.054,0.052,0.049,0.046,0.042],[1.791,1.787,1.783,1.774,1.754,1.725,1.687,1.639,1.584,1.522,1.452,1.378,1.299,1.211,1.125,1.038,0.95,0.863,0.776,0.689,0.607,0.529,0.451,0.383,0.319,0.262,0.207,0.163,0.125,0.102,0.093,0.096,0.112,0.126,0.139,0.147,0.155,0.155,0.156,0.151,0.143,0.134,0.118,0.103,0.087,0.07,0.054,0.042,0.038,0.044,0.058,0.072,0.084,0.099,0.112,0.122,0.131,0.136,0.14,0.142,0.143,0.14,0.137,0.131,0.124,0.116,0.108,0.098,0.087,0.079,0.067,0.056,0.047,0.039,0.035,0.033,0.034,0.038,0.042,0.047,0.051,0.054,0.056,0.057,0.058,0.057,0.055,0.053,0.049,0.044,0.039,0.033,0.027,0.02,0.014,0.009,0.009,0.014,0.021,0.028,0.034,0.039,0.046,0.05,0.055,0.058,0.062,0.064,0.066,0.068,0.069,0.069,0.069,0.068,0.067,0.066,0.064,0.062,0.059,0.058,0.054,0.051,0.047,0.044,0.041,0.037,0.034,0.031,0.028,0.026,0.025,0.024,0.022,0.022,0.022,0.022,0.022,0.023,0.023,0.025,0.025,0.027,0.029,0.032,0.034,0.037,0.039,0.042,0.045,0.048],[1.925,1.925,1.923,1.916,1.9,1.872,1.829,1.779,1.718,1.644,1.564,1.481,1.393,1.299,1.202,1.084,1.003,0.905,0.802,0.707,0.614,0.51,0.442,0.345,0.283,0.211,0.146,0.082,0.035,0.037,0.081,0.11,0.146,0.167,0.187,0.201,0.21,0.213,0.212,0.209,0.2,0.188,0.171,0.157,0.139,0.118,0.095,0.08,0.062,0.045,0.034,0.03,0.034,0.043,0.052,0.063,0.069,0.075,0.077,0.082,0.083,0.083,0.08,0.078,0.071,0.067,0.059,0.054,0.046,0.042,0.038,0.038,0.041,0.048,0.054,0.064,0.071,0.081,0.087,0.096,0.101,0.107,0.111,0.114,0.117,0.117,0.117,0.116,0.115,0.113,0.11,0.106,0.101,0.095,0.089,0.081,0.075,0.068,0.061,0.054,0.048,0.041,0.036,0.031,0.027,0.024,0.022,0.021,0.021,0.021,0.021,0.022,0.022,0.023,0.023,0.023,0.023,0.024,0.025,0.025,0.027,0.028,0.03,0.032,0.034,0.036,0.038,0.04,0.042,0.043,0.045,0.046,0.047,0.048,0.049,0.049,0.049,0.05,0.05,0.051,0.051,0.051,0.051,0.05,0.05,0.049,0.047,0.045,0.043,0.041],[1.63,1.629,1.627,1.62,1.605,1.581,1.544,1.502,1.45,1.391,1.327,1.258,1.179,1.099,1.018,0.933,0.848,0.763,0.676,0.591,0.51,0.425,0.351,0.279,0.212,0.151,0.098,0.056,0.049,0.075,0.104,0.133,0.154,0.171,0.185,0.192,0.195,0.194,0.191,0.184,0.172,0.16,0.145,0.128,0.111,0.094,0.077,0.062,0.049,0.041,0.04,0.044,0.052,0.059,0.068,0.076,0.08,0.084,0.087,0.087,0.086,0.084,0.081,0.077,0.072,0.068,0.064,0.06,0.057,0.056,0.057,0.06,0.064,0.07,0.074,0.08,0.086,0.09,0.095,0.098,0.101,0.103,0.104,0.104,0.104,0.102,0.1,0.097,0.093,0.089,0.084,0.079,0.074,0.068,0.062,0.056,0.05,0.044,0.039,0.034,0.029,0.026,0.023,0.022,0.022,0.023,0.025,0.027,0.029,0.031,0.033,0.035,0.038,0.04,0.043,0.045,0.047,0.048,0.049,0.05,0.05,0.05,0.05,0.051,0.051,0.051,0.051,0.051,0.051,0.05,0.05,0.049,0.049,0.048,0.047,0.046,0.045,0.045,0.044,0.043,0.042,0.04,0.038,0.037,0.035,0.033,0.032,0.031,0.03,0.029],[0.964,0.963,0.961,0.954,0.939,0.915,0.886,0.846,0.803,0.754,0.702,0.645,0.589,0.528,0.471,0.416,0.36,0.324,0.271,0.235,0.205,0.181,0.163,0.149,0.139,0.128,0.12,0.112,0.104,0.096,0.088,0.081,0.075,0.071,0.068,0.066,0.066,0.066,0.066,0.065,0.063,0.061,0.057,0.053,0.049,0.045,0.043,0.043,0.044,0.048,0.052,0.058,0.063,0.067,0.071,0.074,0.076,0.077,0.078,0.077,0.075,0.072,0.069,0.065,0.06,0.056,0.051,0.046,0.042,0.038,0.035,0.033,0.032,0.032,0.032,0.034,0.036,0.038,0.039,0.04,0.041,0.042,0.042,0.042,0.043,0.042,0.042,0.042,0.041,0.041,0.041,0.041,0.041,0.04,0.041,0.041,0.042,0.042,0.043,0.044,0.045,0.046,0.047,0.048,0.049,0.05,0.05,0.05,0.049,0.049,0.048,0.048,0.047,0.046,0.045,0.045,0.044,0.043,0.042,0.041,0.041,0.04,0.039,0.038,0.038,0.037,0.037,0.037,0.037,0.037,0.037,0.037,0.037,0.037,0.037,0.037,0.037,0.037,0.037,0.037,0.038,0.038,0.038,0.038,0.038,0.038,0.039,0.039,0.04,0.04],[0.317,0.318,0.318,0.314,0.308,0.301,0.287,0.276,0.257,0.244,0.222,0.208,0.185,0.171,0.154,0.136,0.124,0.109,0.1,0.088,0.081,0.072,0.066,0.059,0.052,0.047,0.04,0.037,0.033,0.031,0.031,0.032,0.035,0.037,0.039,0.042,0.043,0.045,0.045,0.046,0.046,0.046,0.045,0.045,0.044,0.044,0.044,0.043,0.044,0.044,0.044,0.045,0.045,0.046,0.046,0.046,0.046,0.046,0.046,0.046,0.046,0.045,0.045,0.045,0.045,0.045,0.045,0.044,0.044,0.044,0.043,0.042,0.042,0.041,0.04,0.039,0.039,0.038,0.036,0.035,0.034,0.033,0.033,0.032,0.031,0.03,0.03,0.029,0.029,0.028,0.028,0.027,0.028,0.028,0.028,0.029,0.029,0.03,0.031,0.031,0.032,0.033,0.035,0.036,0.038,0.039,0.04,0.041,0.042,0.043,0.044,0.046,0.047,0.047,0.048,0.049,0.049,0.049,0.05,0.051,0.052,0.053,0.053,0.054,0.054,0.054,0.053,0.052,0.05,0.048,0.046,0.044,0.042,0.041,0.039,0.037,0.036,0.034,0.033,0.032,0.03,0.029,0.028,0.027,0.026,0.025,0.025,0.025,0.026,0.026],[0.567,0.566,0.565,0.558,0.55,0.533,0.518,0.498,0.475,0.45,0.423,0.395,0.359,0.334,0.304,0.274,0.24,0.218,0.189,0.17,0.143,0.128,0.106,0.095,0.08,0.07,0.062,0.058,0.055,0.055,0.056,0.057,0.059,0.059,0.061,0.06,0.059,0.058,0.056,0.052,0.049,0.044,0.039,0.034,0.03,0.025,0.022,0.021,0.022,0.025,0.027,0.031,0.034,0.037,0.039,0.041,0.043,0.044,0.046,0.046,0.047,0.047,0.048,0.048,0.048,0.049,0.049,0.05,0.051,0.052,0.054,0.055,0.057,0.058,0.06,0.06,0.061,0.061,0.061,0.061,0.059,0.058,0.055,0.053,0.05,0.048,0.045,0.043,0.041,0.039,0.037,0.035,0.033,0.031,0.03,0.028,0.027,0.026,0.025,0.025,0.025,0.025,0.025,0.026,0.026,0.027,0.028,0.03,0.031,0.033,0.035,0.037,0.039,0.041,0.042,0.044,0.046,0.047,0.048,0.049,0.05,0.052,0.053,0.054,0.055,0.056,0.057,0.057,0.057,0.057,0.055,0.053,0.051,0.048,0.045,0.042,0.039,0.037,0.034,0.031,0.029,0.027,0.025,0.023,0.022,0.021,0.021,0.021,0.02,0.021],[1.104,1.105,1.105,1.1,1.088,1.068,1.04,1.008,0.972,0.93,0.883,0.835,0.785,0.732,0.678,0.624,0.568,0.514,0.46,0.404,0.354,0.305,0.258,0.213,0.173,0.132,0.096,0.062,0.032,0.008,0.021,0.04,0.057,0.07,0.082,0.089,0.093,0.096,0.096,0.094,0.089,0.083,0.074,0.065,0.056,0.047,0.037,0.03,0.027,0.028,0.033,0.039,0.046,0.054,0.06,0.066,0.069,0.074,0.076,0.078,0.078,0.078,0.077,0.076,0.074,0.07,0.066,0.062,0.057,0.052,0.047,0.042,0.038,0.034,0.031,0.029,0.028,0.027,0.027,0.028,0.029,0.031,0.031,0.033,0.033,0.033,0.032,0.032,0.03,0.029,0.027,0.026,0.025,0.025,0.025,0.025,0.027,0.029,0.032,0.035,0.038,0.041,0.046,0.049,0.052,0.055,0.057,0.06,0.062,0.063,0.064,0.065,0.066,0.066,0.065,0.064,0.063,0.061,0.059,0.057,0.054,0.051,0.049,0.046,0.044,0.041,0.038,0.036,0.034,0.032,0.031,0.029,0.028,0.027,0.026,0.024,0.023,0.022,0.022,0.021,0.021,0.021,0.021,0.022,0.022,0.023,0.025,0.026,0.028,0.029],[0.478,0.477,0.475,0.47,0.462,0.451,0.437,0.421,0.403,0.379,0.361,0.333,0.312,0.287,0.26,0.231,0.204,0.177,0.15,0.125,0.099,0.074,0.052,0.03,0.012,0.015,0.03,0.047,0.058,0.069,0.079,0.086,0.091,0.095,0.097,0.097,0.095,0.092,0.089,0.084,0.08,0.074,0.069,0.063,0.058,0.053,0.048,0.043,0.039,0.035,0.032,0.03,0.028,0.026,0.026,0.025,0.025,0.025,0.025,0.026,0.026,0.026,0.027,0.028,0.029,0.03,0.032,0.034,0.036,0.039,0.043,0.046,0.048,0.052,0.055,0.059,0.062,0.064,0.067,0.068,0.069,0.069,0.069,0.069,0.067,0.066,0.064,0.062,0.06,0.057,0.055,0.052,0.05,0.048,0.044,0.041,0.038,0.035,0.033,0.03,0.028,0.027,0.025,0.024,0.022,0.022,0.021,0.021,0.021,0.021,0.021,0.022,0.023,0.024,0.025,0.026,0.028,0.03,0.031,0.033,0.035,0.037,0.039,0.041,0.044,0.047,0.05,0.052,0.054,0.056,0.057,0.058,0.059,0.059,0.058,0.057,0.056,0.055,0.053,0.052,0.05,0.049,0.047,0.046,0.043,0.041,0.039,0.036,0.033,0.031]],"alt_tr":[[2.001,2.001,2.001,1.997,1.993,1.985,1.978,1.966,1.955,1.944,1.928,1.917,1.901,1.89,1.877,1.864,1.851,1.841,1.834,1.826,1.822,1.818,1.816,1.816,1.817,1.819,1.823,1.828,1.832,1.839,1.843,1.851,1.855,1.862,1.867,1.872,1.876,1.879,1.882,1.883,1.884,1.885,1.884,1.883,1.881,1.879,1.877,1.873,1.871,1.867,1.864,1.862,1.859,1.857,1.854,1.853,1.851,1.851,1.85,1.85,1.849,1.849,1.85,1.85,1.851,1.852,1.853,1.854,1.855,1.856,1.857,1.858,1.859,1.86,1.861,1.862,1.862,1.863,1.864,1.864,1.865,1.866,1.866,1.867,1.867,1.868,1.868,1.868,1.868,1.868,1.868,1.868,1.868,1.868,1.868,1.868,1.868,1.867,1.867,1.866,1.866,1.865,1.865,1.865,1.864,1.863,1.863,1.863,1.862,1.862,1.862,1.861,1.861,1.86,1.86,1.86,1.859,1.859,1.859,1.859,1.86,1.86,1.86,1.861,1.861,1.862,1.862,1.863,1.863,1.863,1.864,1.864,1.864,1.865,1.865,1.865,1.866,1.866,1.866,1.866,1.867,1.867,1.867,1.867,1.867,1.867,1.866,1.866,1.866,1.866],[1.865,1.865,1.866,1.868,1.872,1.88,1.888,1.898,1.912,1.927,1.946,1.96,1.981,1.996,2.017,2.03,2.046,2.061,2.077,2.086,2.095,2.103,2.108,2.113,2.115,2.116,2.115,2.113,2.11,2.106,2.101,2.097,2.093,2.088,2.083,2.079,2.075,2.07,2.068,2.065,2.063,2.062,2.062,2.062,2.062,2.063,2.064,2.066,2.068,2.07,2.072,2.075,2.077,2.08,2.083,2.086,2.088,2.091,2.093,2.095,2.097,2.098,2.099,2.1,2.1,2.1,2.099,2.098,2.097,2.096,2.094,2.093,2.091,2.089,2.087,2.085,2.084,2.082,2.081,2.079,2.078,2.077,2.076,2.075,2.074,2.073,2.073,2.072,2.072,2.071,2.071,2.07,2.07,2.07,2.07,2.071,2.072,2.073,2.074,2.075,2.076,2.078,2.079,2.08,2.082,2.084,2.085,2.087,2.088,2.089,2.09,2.091,2.091,2.092,2.092,2.093,2.093,2.093,2.093,2.093,2.093,2.092,2.092,2.091,2.091,2.09,2.089,2.089,2.088,2.087,2.087,2.086,2.085,2.085,2.085,2.084,2.084,2.083,2.083,2.083,2.082,2.082,2.082,2.082,2.082,2.082,2.083,2.083,2.084,2.085],[2.085,2.086,2.085,2.082,2.071,2.054,2.033,2.006,1.974,1.938,1.898,1.856,1.813,1.766,1.722,1.679,1.638,1.601,1.566,1.536,1.51,1.489,1.473,1.462,1.456,1.455,1.456,1.463,1.47,1.481,1.494,1.505,1.522,1.536,1.549,1.562,1.573,1.583,1.591,1.597,1.601,1.602,1.603,1.601,1.598,1.593,1.588,1.581,1.575,1.567,1.56,1.553,1.548,1.54,1.535,1.53,1.526,1.523,1.521,1.519,1.519,1.519,1.52,1.521,1.523,1.525,1.527,1.53,1.532,1.534,1.537,1.539,1.542,1.544,1.546,1.547,1.549,1.55,1.551,1.551,1.552,1.552,1.552,1.552,1.552,1.552,1.552,1.551,1.551,1.551,1.551,1.551,1.551,1.551,1.55,1.55,1.55,1.549,1.549,1.549,1.548,1.548,1.547,1.547,1.546,1.546,1.545,1.545,1.544,1.544,1.544,1.543,1.543,1.543,1.543,1.542,1.542,1.542,1.542,1.542,1.542,1.542,1.542,1.542,1.542,1.543,1.543,1.544,1.544,1.545,1.545,1.546,1.546,1.547,1.547,1.547,1.547,1.547,1.547,1.547,1.547,1.547,1.548,1.548,1.548,1.548,1.548,1.548,1.548,1.548],[1.549,1.549,1.549,1.553,1.562,1.576,1.597,1.623,1.656,1.696,1.739,1.784,1.831,1.879,1.927,1.984,2.02,2.062,2.101,2.135,2.164,2.191,2.205,2.222,2.229,2.234,2.234,2.232,2.226,2.22,2.21,2.203,2.192,2.185,2.178,2.172,2.167,2.163,2.162,2.162,2.163,2.166,2.17,2.173,2.178,2.183,2.188,2.192,2.197,2.2,2.204,2.207,2.208,2.209,2.208,2.207,2.206,2.204,2.201,2.198,2.195,2.192,2.189,2.186,2.183,2.181,2.179,2.178,2.177,2.177,2.177,2.177,2.178,2.179,2.181,2.182,2.184,2.186,2.188,2.19,2.192,2.194,2.196,2.197,2.199,2.2,2.201,2.202,2.203,2.203,2.203,2.204,2.204,2.204,2.204,2.203,2.203,2.203,2.202,2.201,2.201,2.2,2.199,2.199,2.198,2.197,2.197,2.196,2.195,2.195,2.194,2.194,2.193,2.193,2.193,2.193,2.193,2.193,2.194,2.194,2.194,2.195,2.195,2.195,2.196,2.196,2.196,2.196,2.195,2.195,2.195,2.194,2.194,2.194,2.194,2.194,2.195,2.195,2.195,2.195,2.195,2.196,2.196,2.196,2.197,2.197,2.198,2.198,2.198,2.199],[2.199,2.2,2.2,2.202,2.205,2.208,2.214,2.22,2.229,2.238,2.248,2.259,2.271,2.281,2.291,2.301,2.309,2.316,2.323,2.327,2.331,2.333,2.334,2.335,2.334,2.333,2.332,2.331,2.329,2.327,2.325,2.323,2.321,2.318,2.316,2.313,2.31,2.307,2.305,2.302,2.3,2.297,2.296,2.294,2.293,2.292,2.292,2.292,2.292,2.293,2.295,2.297,2.299,2.301,2.304,2.308,2.31,2.313,2.316,2.319,2.322,2.325,2.328,2.33,2.332,2.334,2.335,2.336,2.336,2.336,2.336,2.335,2.334,2.332,2.33,2.328,2.326,2.324,2.322,2.319,2.317,2.315,2.313,2.311,2.31,2.308,2.307,2.306,2.305,2.304,2.304,2.304,2.304,2.304,2.305,2.306,2.307,2.308,2.309,2.31,2.311,2.313,2.314,2.315,2.317,2.318,2.319,2.32,2.321,2.322,2.323,2.323,2.324,2.324,2.324,2.324,2.325,2.325,2.325,2.325,2.326,2.326,2.327,2.327,2.327,2.327,2.326,2.326,2.326,2.325,2.325,2.324,2.324,2.323,2.322,2.321,2.321,2.32,2.32,2.319,2.319,2.318,2.318,2.318,2.318,2.317,2.317,2.318,2.318,2.318],[2.318,2.318,2.318,2.313,2.302,2.283,2.26,2.225,2.188,2.145,2.099,2.048,1.996,1.94,1.887,1.836,1.784,1.75,1.699,1.664,1.633,1.61,1.59,1.579,1.57,1.57,1.571,1.578,1.587,1.599,1.612,1.627,1.643,1.658,1.674,1.688,1.701,1.711,1.72,1.726,1.73,1.732,1.732,1.729,1.726,1.72,1.714,1.707,1.699,1.692,1.684,1.677,1.67,1.664,1.659,1.655,1.652,1.65,1.648,1.648,1.648,1.649,1.65,1.652,1.655,1.657,1.66,1.663,1.665,1.667,1.67,1.671,1.673,1.674,1.675,1.676,1.677,1.678,1.678,1.678,1.678,1.678,1.677,1.677,1.676,1.676,1.676,1.675,1.675,1.675,1.675,1.676,1.676,1.676,1.676,1.676,1.677,1.677,1.677,1.676,1.676,1.676,1.675,1.675,1.675,1.674,1.674,1.673,1.672,1.672,1.671,1.671,1.67,1.67,1.669,1.669,1.669,1.668,1.668,1.668,1.668,1.669,1.669,1.67,1.67,1.671,1.672,1.672,1.673,1.673,1.673,1.674,1.674,1.674,1.674,1.674,1.674,1.674,1.674,1.674,1.674,1.674,1.674,1.674,1.674,1.673,1.673,1.673,1.673,1.673],[1.672,1.672,1.673,1.677,1.682,1.69,1.704,1.714,1.734,1.748,1.77,1.785,1.809,1.824,1.842,1.863,1.875,1.891,1.901,1.913,1.918,1.925,1.928,1.93,1.931,1.93,1.928,1.926,1.922,1.919,1.914,1.911,1.906,1.903,1.901,1.898,1.897,1.897,1.897,1.898,1.899,1.901,1.903,1.905,1.908,1.91,1.913,1.915,1.918,1.92,1.922,1.924,1.925,1.926,1.926,1.927,1.926,1.926,1.925,1.924,1.922,1.921,1.92,1.918,1.917,1.915,1.915,1.914,1.913,1.913,1.913,1.913,1.913,1.913,1.914,1.915,1.916,1.917,1.918,1.918,1.919,1.921,1.921,1.922,1.923,1.923,1.923,1.923,1.923,1.923,1.923,1.923,1.922,1.922,1.921,1.921,1.921,1.92,1.92,1.92,1.92,1.92,1.92,1.92,1.92,1.92,1.92,1.921,1.921,1.921,1.921,1.921,1.921,1.921,1.921,1.921,1.921,1.921,1.921,1.921,1.921,1.92,1.92,1.92,1.919,1.919,1.919,1.919,1.918,1.918,1.917,1.917,1.916,1.916,1.916,1.916,1.916,1.917,1.917,1.918,1.918,1.919,1.92,1.921,1.922,1.922,1.923,1.924,1.924,1.924],[1.925,1.925,1.924,1.92,1.914,1.902,1.892,1.877,1.86,1.841,1.821,1.799,1.773,1.755,1.734,1.713,1.692,1.678,1.661,1.652,1.639,1.633,1.626,1.623,1.621,1.622,1.623,1.626,1.629,1.633,1.638,1.641,1.645,1.648,1.651,1.653,1.654,1.655,1.654,1.653,1.651,1.649,1.645,1.642,1.639,1.635,1.631,1.628,1.625,1.621,1.619,1.617,1.615,1.614,1.614,1.614,1.614,1.615,1.616,1.617,1.619,1.621,1.623,1.625,1.627,1.629,1.631,1.633,1.634,1.635,1.636,1.636,1.637,1.636,1.636,1.636,1.635,1.634,1.633,1.632,1.631,1.63,1.629,1.628,1.627,1.626,1.625,1.624,1.623,1.622,1.621,1.621,1.62,1.62,1.62,1.62,1.62,1.62,1.62,1.62,1.621,1.621,1.622,1.623,1.624,1.624,1.625,1.626,1.627,1.628,1.628,1.629,1.629,1.63,1.63,1.631,1.632,1.632,1.632,1.632,1.633,1.633,1.632,1.632,1.632,1.632,1.631,1.631,1.631,1.63,1.63,1.63,1.63,1.629,1.629,1.628,1.628,1.628,1.627,1.627,1.627,1.627,1.626,1.626,1.626,1.626,1.626,1.626,1.626,1.626],[1.626,1.626,1.626,1.63,1.637,1.648,1.662,1.679,1.699,1.721,1.747,1.772,1.798,1.824,1.849,1.873,1.896,1.917,1.935,1.951,1.963,1.972,1.979,1.983,1.984,1.984,1.981,1.976,1.969,1.963,1.956,1.949,1.942,1.935,1.929,1.924,1.919,1.916,1.914,1.913,1.913,1.914,1.916,1.918,1.921,1.924,1.928,1.932,1.936,1.939,1.943,1.946,1.949,1.951,1.953,1.954,1.955,1.955,1.955,1.955,1.954,1.953,1.951,1.95,1.949,1.947,1.946,1.945,1.944,1.943,1.942,1.942,1.941,1.941,1.941,1.941,1.941,1.941,1.941,1.942,1.942,1.942,1.942,1.942,1.942,1.942,1.942,1.941,1.941,1.941,1.941,1.94,1.94,1.94,1.94,1.94,1.94,1.94,1.94,1.94,1.94,1.941,1.941,1.942,1.942,1.943,1.943,1.944,1.944,1.944,1.945,1.945,1.945,1.946,1.946,1.946,1.946,1.946,1.945,1.945,1.945,1.945,1.945,1.945,1.945,1.945,1.946,1.946,1.946,1.946,1.946,1.946,1.946,1.946,1.946,1.946,1.945,1.945,1.945,1.944,1.944,1.944,1.943,1.943,1.943,1.942,1.942,1.942,1.942,1.941],[1.941,1.941,1.941,1.942,1.943,1.945,1.949,1.952,1.956,1.962,1.966,1.973,1.977,1.983,1.989,1.995,2.0,2.005,2.009,2.012,2.015,2.017,2.019,2.02,2.02,2.02,2.019,2.018,2.016,2.015,2.013,2.011,2.009,2.006,2.004,2.002,2.0,1.998,1.996,1.994,1.992,1.991,1.99,1.99,1.989,1.989,1.989,1.99,1.99,1.991,1.992,1.993,1.994,1.995,1.997,1.998,1.999,2.0,2.001,2.002,2.003,2.004,2.005,2.005,2.006,2.006,2.006,2.007,2.007,2.007,2.007,2.007,2.007,2.007,2.007,2.007,2.007,2.007,2.006,2.006,2.005,2.005,2.004,2.003,2.003,2.002,2.002,2.001,2.001,2.0,2.0,2.0,1.999,1.999,1.999,2.0,1.999,1.999,1.999,1.999,2.0,2.0,2.0,2.0,2.001,2.001,2.002,2.002,2.003,2.003,2.004,2.004,2.005,2.005,2.005,2.005,2.005,2.005,2.005,2.005,2.005,2.004,2.004,2.004,2.004,2.004,2.004,2.004,2.004,2.004,2.004,2.004,2.004,2.004,2.004,2.005,2.005,2.005,2.004,2.004,2.004,2.004,2.003,2.003,2.003,2.003,2.003,2.003,2.003,2.003]]},"target_alt":[1.875,2.099,1.558,2.208,2.332,1.683,1.932,1.639,1.956,2.014]},"paired":{"pos_bc_higher":7,"pos_p":0.296875,"end_bc_higher":10,"end_p":0.001953125,"pos_diff_max":0.017},"hist":{"vn":{"edges":[-1.2,-1.15,-1.1,-1.05,-1.0,-0.95,-0.9,-0.85,-0.8,-0.75,-0.7,-0.65,-0.6,-0.55,-0.5,-0.45,-0.4,-0.35,-0.3,-0.25,-0.2,-0.15,-0.1,-0.05,0.0,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65,0.7,0.75,0.8,0.85,0.9,0.95,1.0,1.05,1.1,1.15,1.2],"pid":[0,0,0,0,53,2,4,2,4,4,2,3,3,3,2,3,3,7,15,11,27,68,155,1110,1086,174,47,62,14,25,6,6,5,7,6,9,8,10,16,13,1,3,1,3,17,0,0,0],"bc":[0,12,3,7,10,10,5,5,4,3,4,4,3,3,5,4,3,5,16,15,12,27,120,1194,1187,121,53,14,13,15,19,8,10,10,13,16,6,6,9,6,4,9,7,0,0,0,0,0],"pid_std":0.214,"bc_std":0.196},"ve":{"edges":[-1.2,-1.15,-1.1,-1.05,-1.0,-0.95,-0.9,-0.85,-0.8,-0.75,-0.7,-0.65,-0.6,-0.55,-0.5,-0.45,-0.4,-0.35,-0.3,-0.25,-0.2,-0.15,-0.1,-0.05,0.0,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65,0.7,0.75,0.8,0.85,0.9,0.95,1.0,1.05,1.1,1.15,1.2],"pid":[0,0,0,0,24,13,5,5,5,3,4,4,2,4,4,3,18,9,23,37,23,51,154,1111,1102,150,69,35,14,13,17,22,10,11,20,17,4,6,8,0,0,0,0,0,0,0,0,0],"bc":[9,3,3,2,2,3,2,7,9,9,4,4,4,5,3,4,3,20,11,40,33,35,123,1105,1245,117,43,11,13,15,20,19,10,15,21,13,10,5,0,0,0,0,0,0,0,0,0,0],"pid_std":0.18,"bc_std":0.171},"vd":{"edges":[-0.6,-0.575,-0.55,-0.525,-0.5,-0.475,-0.45,-0.425,-0.4,-0.375,-0.35,-0.325,-0.3,-0.275,-0.25,-0.225,-0.2,-0.175,-0.15,-0.125,-0.1,-0.075,-0.05,-0.025,0.0,0.025,0.05,0.075,0.1,0.125,0.15,0.175,0.2,0.225,0.25,0.275,0.3,0.325,0.35,0.375,0.4,0.425,0.45,0.475,0.5,0.525,0.55,0.575,0.6],"pid":[0,0,0,0,20,1,1,1,1,1,1,11,4,4,18,16,11,9,8,25,36,51,97,1201,1198,105,56,16,18,5,4,5,4,5,5,12,2,2,2,3,2,3,3,2,31,0,0,0],"bc":[0,0,1,12,3,1,2,1,1,1,1,5,9,4,12,9,15,14,10,21,31,54,91,1278,1188,95,20,9,10,12,9,9,6,8,8,2,2,1,4,3,4,3,4,3,5,5,2,12],"pid_std":0.091,"bc_std":0.091}},"rep":{"old_pid":[0.294,0.595,0.518,0.589,0.488,0.263,0.08,0.158,0.312,0.138],"old_bc":[0.313,0.59,0.533,0.571,0.486,0.265,0.092,0.161,0.329,0.136],"old":{"pid_pos":0.344,"bc_pos":0.348,"pid_alt":0.083,"bc_alt":0.085,"pid_end":0.011,"bc_end":0.036},"old_te":[98.85,97.315]}};
+const NS = "http://www.w3.org/2000/svg";
+const $ = s => document.querySelector(s);
+const CTRL = [{id:"pid", name:"PID teacher", key:"--k-pid"}, {id:"bc", name:"Stage 1 (BC)", key:"--k-s1"}];
+const css = k => getComputedStyle(document.documentElement).getPropertyValue(k).trim();
+const tip = $("#tip");
+function showTip(e, html){ tip.innerHTML = html; tip.style.display = "block";
+  const x = Math.min(e.clientX + 14, innerWidth - tip.offsetWidth - 8), y = Math.min(e.clientY + 14, innerHeight - tip.offsetHeight - 8);
+  tip.style.left = x + "px"; tip.style.top = y + "px"; }
+function hideTip(){ tip.style.display = "none"; }
+function el(tag, attrs, parent){ const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+function txt(parent, x, y, s, attrs){ const t = el("text", Object.assign({x, y}, attrs || {}), parent); t.textContent = s; return t; }
+function niceTicks(lo, hi, n){ const span = hi - lo, raw = span / n, p = Math.pow(10, Math.floor(Math.log10(raw))), m = raw / p;
+  const step = (m <= 1 ? 1 : m <= 2 ? 2 : m <= 2.5 ? 2.5 : m <= 5 ? 5 : 10) * p; const out = [];
+  for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-9; v += step) out.push(+v.toFixed(10)); return out; }
+function legend(id, list){ const d = document.getElementById(id); if (!d) return;
+  d.innerHTML = list.map(c => `<span><i style="background:var(${c.key})"></i>${c.name}</span>`).join(""); }
+
+/* ---------------- theme, copy, tables, nav ---------------- */
+$("#themeBtn").onclick = () => {
+  const cur = document.documentElement.getAttribute("data-theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  document.documentElement.setAttribute("data-theme", cur === "dark" ? "light" : "dark");
+  try { localStorage.setItem("guideTheme", document.documentElement.getAttribute("data-theme")); } catch(e){}
+  drawAll();
+};
+try { const t = localStorage.getItem("guideTheme"); if (t) document.documentElement.setAttribute("data-theme", t); } catch(e){}
+document.querySelectorAll(".cmdbox button.copy").forEach(b => b.onclick = () => {
+  const t = b.parentElement.querySelector("pre").innerText;
+  const done = () => { b.textContent = "Copied"; setTimeout(() => b.textContent = "Copy", 1200); };
+  if (navigator.clipboard) navigator.clipboard.writeText(t).then(done, () => fallback()); else fallback();
+  function fallback(){ const a = document.createElement("textarea"); a.value = t; document.body.appendChild(a); a.select(); try { document.execCommand("copy"); } catch(e){} a.remove(); done(); }
+});
+document.querySelectorAll("button.tbl").forEach(b => b.onclick = () => {
+  const t = document.getElementById(b.dataset.t); t.classList.toggle("show"); b.textContent = t.classList.contains("show") ? "Hide table" : "Show table"; });
+(function(){ const links = [...document.querySelectorAll("nav.side a")];
+  const secs = links.map(a => document.querySelector(a.getAttribute("href"))).filter(Boolean);
+  addEventListener("scroll", () => { let cur = secs[0];
+    for (const s of secs) if (s.getBoundingClientRect().top < 120) cur = s;
+    links.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + cur.id)); }, {passive:true}); })();
+
+/* ---------------- line chart ---------------- */
+function lineChart(id, o){
+  const box = document.getElementById(id); if (!box) return; box.innerHTML = "";
+  const W = Math.max(320, box.clientWidth), H = o.height || 260, m = {l:52, r:o.right || 16, t:12, b:40};
+  const svg = el("svg", {viewBox:`0 0 ${W} ${H}`, width:"100%", role:"img", "aria-label":o.aria || ""}, box);
+  const xs = o.xdom, ys = o.ydom;
+  const X = v => m.l + (v - xs[0]) / (xs[1] - xs[0]) * (W - m.l - m.r);
+  const Y = v => H - m.b - (v - ys[0]) / (ys[1] - ys[0]) * (H - m.t - m.b);
+  niceTicks(ys[0], ys[1], 5).forEach(v => { el("line", {x1:m.l, x2:W - m.r, y1:Y(v), y2:Y(v), class:"grid"}, svg);
+    txt(svg, m.l - 6, Y(v) + 4, o.yfmt ? o.yfmt(v) : v, {"text-anchor":"end"}); });
+  (o.xticks || niceTicks(xs[0], xs[1], Math.max(3, Math.floor(W / 110)))).forEach(v => {
+    txt(svg, X(v), H - m.b + 16, o.xfmt ? o.xfmt(v) : v, {"text-anchor":"middle"}); });
+  el("line", {x1:m.l, x2:W - m.r, y1:H - m.b, y2:H - m.b, class:"axis"}, svg);
+  txt(svg, (m.l + W - m.r) / 2, H - 6, o.xlabel || "", {"text-anchor":"middle"});
+  const yl = txt(svg, 12, (m.t + H - m.b) / 2, o.ylabel || "", {"text-anchor":"middle", transform:`rotate(-90 12 ${(m.t + H - m.b) / 2})`});
+  (o.bands || []).forEach(b => el("rect", {x:m.l, width:W - m.l - m.r, y:Y(b.y1), height:Y(b.y0) - Y(b.y1), fill:css(b.key), opacity:.12}, svg));
+  (o.hlines || []).forEach(h => { el("line", {x1:m.l, x2:W - m.r, y1:Y(h.y), y2:Y(h.y), stroke:css(h.key || "--muted"), "stroke-dasharray":"5 4", "stroke-width":1.5}, svg);
+    txt(svg, W - m.r - 4, Y(h.y) - 5, h.label, {"text-anchor":"end"}); });
+  const surf = css("--surface");
+  o.series.forEach(s => { const col = css(s.key);
+    if (s.dots){ s.x.forEach((x, i) => el("circle", {cx:X(x), cy:Y(s.y[i]), r:s.r || 2, fill:col, opacity:s.opacity || .25}, svg)); return; }
+    if (s.line !== false){ let d = ""; s.x.forEach((x, i) => { d += (i ? "L" : "M") + X(x).toFixed(1) + "," + Y(s.y[i]).toFixed(1); });
+      el("path", {d, fill:"none", stroke:col, "stroke-width":s.width || 2, "stroke-linejoin":"round", opacity:s.opacity || 1}, svg); }
+    if (s.markers) s.x.forEach((x, i) => el("circle", {cx:X(x), cy:Y(s.y[i]), r:s.markers, fill:col, stroke:surf, "stroke-width":2}, svg));
+  });
+  (o.labels || []).forEach(L => txt(svg, X(L.x) + (L.dx || 6), Y(L.y) + (L.dy || 4), L.text, {"font-weight":600, style:"fill:var(--text)"}));
+  // hover crosshair
+  const hov = o.series.filter(s => !s.dots && !s.nohover);
+  const cross = el("line", {y1:m.t, y2:H - m.b, stroke:css("--muted"), "stroke-width":1, opacity:0}, svg);
+  const cursor = o.cursor ? el("line", {y1:m.t, y2:H - m.b, stroke:css("--text"), "stroke-width":2}, svg) : null;
+  const hit = el("rect", {x:m.l, y:m.t, width:W - m.l - m.r, height:H - m.t - m.b, fill:"transparent"}, svg);
+  hit.addEventListener("mousemove", e => { const r = svg.getBoundingClientRect(); const px = (e.clientX - r.left) * W / r.width;
+    const xv = xs[0] + (px - m.l) / (W - m.l - m.r) * (xs[1] - xs[0]);
+    const s0 = hov[0]; let i = 0, best = 1e18; s0.x.forEach((x, k) => { const d = Math.abs(x - xv); if (d < best){ best = d; i = k; } });
+    cross.setAttribute("x1", X(s0.x[i])); cross.setAttribute("x2", X(s0.x[i])); cross.setAttribute("opacity", 1);
+    showTip(e, `<b>${o.xfmtTip ? o.xfmtTip(s0.x[i]) : s0.x[i]}</b><br>` + hov.map(s => `<span style="color:var(${s.key})">■</span> ${s.name}: ${o.tipfmt ? o.tipfmt(s.y[i]) : s.y[i]}`).join("<br>"));
+    if (o.onhover) o.onhover(s0.x[i]); });
+  hit.addEventListener("mouseleave", () => { cross.setAttribute("opacity", 0); hideTip(); });
+  if (o.onclick) hit.addEventListener("click", e => { const r = svg.getBoundingClientRect(); const px = (e.clientX - r.left) * W / r.width;
+    o.onclick(xs[0] + (px - m.l) / (W - m.l - m.r) * (xs[1] - xs[0])); });
+  return {setCursor: v => { if (cursor){ cursor.setAttribute("x1", X(v)); cursor.setAttribute("x2", X(v)); } }};
+}
+
+/* ---------------- horizontal bars ---------------- */
+function hBars(id, o){
+  const box = document.getElementById(id); if (!box) return; box.innerHTML = "";
+  const W = Math.max(300, box.clientWidth), rowH = 38, m = {l:118, r:64, t:6, b:24}, H = m.t + m.b + rowH * o.items.length;
+  const svg = el("svg", {viewBox:`0 0 ${W} ${H}`, width:"100%"}, box);
+  const X = v => m.l + (v - o.min) / (o.max - o.min) * (W - m.l - m.r);
+  niceTicks(o.min, o.max, 4).forEach(v => { el("line", {x1:X(v), x2:X(v), y1:m.t, y2:H - m.b, class:"grid"}, svg);
+    txt(svg, X(v), H - 6, o.fmt(v), {"text-anchor":"middle"}); });
+  o.items.forEach((it, i) => { const y = m.t + i * rowH + 8, h = rowH - 16;
+    txt(svg, m.l - 8, y + h / 2 + 4, it.name, {"text-anchor":"end", style:"fill:var(--text)"});
+    const r = el("rect", {x:X(o.min), y, width:Math.max(2, X(it.value) - X(o.min)), height:h, rx:4, fill:css(it.key)}, svg);
+    txt(svg, X(it.value) + 6, y + h / 2 + 4, o.fmt(it.value) + (o.unit || ""), {"font-weight":700, style:"fill:var(--text)"});
+    const hit = el("rect", {x:m.l, y:y - 6, width:W - m.l - m.r, height:h + 12, fill:"transparent"}, svg);
+    hit.addEventListener("mousemove", e => showTip(e, `<b>${it.name}</b><br>${o.label}: ${o.fmt(it.value)}${o.unit || ""}${it.extra ? "<br>" + it.extra : ""}`));
+    hit.addEventListener("mouseleave", hideTip); });
+}
+
+/* ---------------- grouped vertical bars ---------------- */
+function groupBars(id, o){
+  const box = document.getElementById(id); if (!box) return; box.innerHTML = "";
+  const W = Math.max(320, box.clientWidth), H = 260, m = {l:48, r:12, t:12, b:40};
+  const svg = el("svg", {viewBox:`0 0 ${W} ${H}`, width:"100%"}, box);
+  const Y = v => H - m.b - v / o.max * (H - m.t - m.b);
+  niceTicks(0, o.max, 5).forEach(v => { el("line", {x1:m.l, x2:W - m.r, y1:Y(v), y2:Y(v), class:"grid"}, svg); txt(svg, m.l - 6, Y(v) + 4, (o.yfmt ? o.yfmt(v) : v.toFixed(2)), {"text-anchor":"end"}); });
+  el("line", {x1:m.l, x2:W - m.r, y1:Y(0), y2:Y(0), class:"axis"}, svg);
+  const gw = (W - m.l - m.r) / o.groups.length, n = o.series.length, bw = Math.min(30, (gw - 18) / n - 2);
+  o.groups.forEach((g, gi) => { const x0 = m.l + gi * gw + (gw - n * (bw + 2)) / 2;
+    txt(svg, m.l + gi * gw + gw / 2, H - m.b + 16, g, {"text-anchor":"middle", style:"fill:var(--text)"});
+    o.series.forEach((s, si) => { const v = s.values[gi], x = x0 + si * (bw + 2);
+      el("rect", {x, y:Y(v), width:bw, height:Y(0) - Y(v), rx:3, fill:css(s.key)}, svg);
+      const hit = el("rect", {x:x - 1, y:m.t, width:bw + 2, height:Y(0) - m.t, fill:"transparent"}, svg);
+      hit.addEventListener("mousemove", e => showTip(e, `<b>${s.name}</b> · ${g}<br>${o.tipLabel || "RMSE"} ${v.toFixed(3)} ${o.unit || "m"}`)); hit.addEventListener("mouseleave", hideTip); }); });
+  txt(svg, (m.l + W - m.r) / 2, H - 4, o.xlabel || "", {"text-anchor":"middle"});
+}
+
+
+/* ================= Stage 1 charts ================= */
+function scatter(id, o){
+  const box = document.getElementById(id); if (!box) return; box.innerHTML = "";
+  const W = Math.max(320, box.clientWidth), H = 260, m = {l:52, r:16, t:12, b:40};
+  const svg = el("svg", {viewBox:`0 0 ${W} ${H}`, width:"100%"}, box);
+  const X = v => m.l + (v - o.xdom[0]) / (o.xdom[1] - o.xdom[0]) * (W - m.l - m.r);
+  const Y = v => H - m.b - (v - o.ydom[0]) / (o.ydom[1] - o.ydom[0]) * (H - m.t - m.b);
+  niceTicks(o.ydom[0], o.ydom[1], 5).forEach(v => { el("line", {x1:m.l, x2:W - m.r, y1:Y(v), y2:Y(v), class:"grid"}, svg); txt(svg, m.l - 6, Y(v) + 4, v.toFixed(1), {"text-anchor":"end"}); });
+  niceTicks(o.xdom[0], o.xdom[1], 6).forEach(v => txt(svg, X(v), H - m.b + 16, v.toFixed(1), {"text-anchor":"middle"}));
+  el("line", {x1:m.l, x2:W - m.r, y1:H - m.b, y2:H - m.b, class:"axis"}, svg);
+  txt(svg, (m.l + W - m.r) / 2, H - 6, o.xlabel, {"text-anchor":"middle"});
+  txt(svg, 12, (m.t + H - m.b) / 2, o.ylabel, {"text-anchor":"middle", transform:`rotate(-90 12 ${(m.t + H - m.b) / 2})`});
+  const col = css(o.key), surf = css("--surface");
+  o.x.forEach((x, i) => { const c = el("circle", {cx:X(x), cy:Y(o.y[i]), r:4, fill:col, opacity:.75, stroke:surf, "stroke-width":1}, svg);
+    c.addEventListener("mousemove", e => showTip(e, o.tip(i))); c.addEventListener("mouseleave", hideTip); });
+}
+
+function histPair(id, h){
+  const box = document.getElementById(id); if (!box) return; box.innerHTML = "";
+  const W = Math.max(320, box.clientWidth), H = 250, m = {l:56, r:12, t:12, b:40};
+  const svg = el("svg", {viewBox:`0 0 ${W} ${H}`, width:"100%"}, box);
+  const n = h.pid.length, lo = h.edges[0], hi = h.edges[n];
+  const maxc = Math.max(...h.pid, ...h.bc), top = Math.sqrt(maxc * 1.08);
+  const X = v => m.l + (v - lo) / (hi - lo) * (W - m.l - m.r), Y = v => H - m.b - Math.sqrt(v) / top * (H - m.t - m.b);
+  [0, 10, 100, 500, 1000, 2000].filter(v => v <= maxc * 1.08).forEach(v => { el("line", {x1:m.l, x2:W - m.r, y1:Y(v), y2:Y(v), class:"grid"}, svg); txt(svg, m.l - 6, Y(v) + 4, v.toLocaleString(), {"text-anchor":"end"}); });
+  txt(svg, 12, (m.t + H - m.b) / 2, "steps (√ scale)", {"text-anchor":"middle", transform:`rotate(-90 12 ${(m.t + H - m.b) / 2})`});
+  niceTicks(lo, hi, 6).forEach(v => txt(svg, X(v), H - m.b + 16, v.toFixed(1), {"text-anchor":"middle"}));
+  el("line", {x1:m.l, x2:W - m.r, y1:Y(0), y2:Y(0), class:"axis"}, svg);
+  txt(svg, (m.l + W - m.r) / 2, H - 6, "command (m/s) · ends include everything beyond", {"text-anchor":"middle"});
+  const bw = (X(h.edges[1]) - X(h.edges[0])), half = Math.max(1, bw / 2 - 1);
+  for (let i = 0; i < n; i++){
+    const x0 = X(h.edges[i]);
+    el("rect", {x:x0 + 0.5, y:Y(h.pid[i]), width:half, height:Y(0) - Y(h.pid[i]), fill:css("--k-pid")}, svg);
+    el("rect", {x:x0 + half + 1.5, y:Y(h.bc[i]), width:half, height:Y(0) - Y(h.bc[i]), fill:css("--k-s1")}, svg);
+    const hit = el("rect", {x:x0, y:m.t, width:bw, height:Y(0) - m.t, fill:"transparent"}, svg);
+    hit.addEventListener("mousemove", e => showTip(e, `<b>${h.edges[i].toFixed(2)} to ${h.edges[i + 1].toFixed(2)} m/s</b><br>PID teacher: ${h.pid[i]} steps<br>Stage 1 (BC): ${h.bc[i]} steps`));
+    hit.addEventListener("mouseleave", hideTip);
+  }
+}
+
+function drawStatic(){
+  const C = DATA.coll;
+  scatter("chColl", {x:C.start_err_m, y:C.rmse_m, xdom:[0, 2.5], ydom:[0, 0.8], key:"--k-pid",
+    xlabel:"start distance from target (m)", ylabel:"episode RMSE (m)",
+    tip:i => `<b>Episode ${i + 1}</b><br>start ${C.start_err_m[i].toFixed(2)} m · RMSE ${C.rmse_m[i].toFixed(3)} m<br>end ${C.end_err_m[i].toFixed(3)} m · max command ${C.max_cmd_mps[i].toFixed(2)} m/s`});
+
+  const L = DATA.loss, lg = v => Math.log10(v);
+  legend("lgLoss", [{name:"training", key:"--k-pid"}, {name:"validation", key:"--k-s1"}]);
+  lineChart("chLoss", {xdom:[1, 150], ydom:[-5.5, -2.5], xticks:[1, 25, 50, 75, 100, 125, 150], xlabel:"epoch", ylabel:"MSE loss",
+    yfmt:v => "1e" + v, xfmtTip:v => "Epoch " + v, tipfmt:v => Math.pow(10, v).toExponential(1),
+    series:[{name:"training", key:"--k-pid", x:L.ep, y:L.train.map(lg)}, {name:"validation", key:"--k-s1", x:L.ep, y:L.val.map(lg), width:2.4}],
+    labels:[{x:148, y:lg(L.val[147]), text:"best: epoch 148", dx:-120, dy:-10}]});
+  document.getElementById("tLoss").innerHTML = `<div class="tw"><table><tr><th>Epoch</th><th class="n">Train loss</th><th class="n">Val loss</th></tr>` +
+    [1, 5, 10, 25, 50, 75, 100, 125, 148, 150].map(e => `<tr><td>${e}</td><td class="n">${L.train[e - 1].toExponential(2)}</td><td class="n">${L.val[e - 1].toExponential(2)}</td></tr>`).join("") + "</table></div>";
+
+  const T = DATA.test.trace, tt = T[0].map((_, i) => +(i * 0.1).toFixed(1));
+  lineChart("chTest", {xdom:[0, 15], ydom:[0, 2], xlabel:"time in episode (s)", ylabel:"distance to target (m)", height:240,
+    bands:[{y0:0, y1:0.3, key:"--good"}], xfmtTip:v => "t = " + v + " s", tipfmt:v => v.toFixed(2) + " m",
+    series:T.map((y, k) => ({name:"Episode " + (k + 1), key:"--k-s1", x:tt, y, width:1.4, opacity:.8}))});
+
+  const S = DATA.stats, ep = [1,2,3,4,5,6,7,8,9,10];
+  legend("lgCmp", CTRL);
+  lineChart("chCmp", {xdom:[0.5, 10.5], ydom:[0, 0.7], xticks:ep, xlabel:"target (episode)", ylabel:"position RMSE (m)", yfmt:v => v.toFixed(1),
+    xfmtTip:v => "Episode " + v + " · target height " + S.target_alt[v - 1].toFixed(2) + " m", tipfmt:v => v.toFixed(3) + " m",
+    series:[{name:"PID teacher", key:"--k-pid", x:ep, y:S.pid.pos, markers:5, width:2}, {name:"Stage 1 (BC)", key:"--k-s1", x:ep, y:S.bc.pos, markers:4, width:1.6}]});
+  document.getElementById("tCmp").innerHTML = `<div class="tw"><table><tr><th>Episode</th><th class="n">Teacher RMSE</th><th class="n">BC RMSE</th><th class="n">Teacher end</th><th class="n">BC end</th></tr>` +
+    ep.map(i => `<tr><td>${i}</td><td class="n">${S.pid.pos[i-1].toFixed(3)}</td><td class="n">${S.bc.pos[i-1].toFixed(3)}</td><td class="n">${S.pid.end[i-1].toFixed(3)}</td><td class="n">${S.bc.end[i-1].toFixed(3)}</td></tr>`).join("") + "</table></div>";
+
+  legend("lgCmd", CTRL);
+  histPair("chCmd", DATA.hist[$("#axSel").value]);
+
+  const R = DATA.rep;
+  legend("lgRep", [{name:"PID teacher 23 Oct (solid) / 17 Oct (faded)", key:"--k-pid"}, {name:"Stage 1 (BC) 23 Oct (solid) / 17 Oct (faded)", key:"--k-s1"}]);
+  lineChart("chRep", {xdom:[0.5, 10.5], ydom:[0, 0.7], xticks:ep, xlabel:"target (episode)", ylabel:"position RMSE (m)", yfmt:v => v.toFixed(1),
+    xfmtTip:v => "Episode " + v, tipfmt:v => v.toFixed(3) + " m",
+    series:[{name:"Teacher 17 Oct", key:"--k-pid", x:ep, y:R.old_pid, markers:4, width:1.2, opacity:.45},
+            {name:"BC 17 Oct", key:"--k-s1", x:ep, y:R.old_bc, markers:4, width:1.2, opacity:.45},
+            {name:"Teacher 23 Oct", key:"--k-pid", x:ep, y:S.pid.pos, markers:5, width:2},
+            {name:"BC 23 Oct", key:"--k-s1", x:ep, y:S.bc.pos, markers:4, width:1.6}]});
+}
+$("#axSel").onchange = drawStatic;
+
+/* ---------- replay: teacher vs BC, same target ---------- */
+const RP = {ep:1, t:0, playing:false, last:0, speed:2, chart:null};
+function rpInit(){
+  const s = $("#rpEp");
+  s.innerHTML = DATA.stats.target_alt.map((a, i) => `<option value="${i}">Target ${i + 1} · height ${a.toFixed(2)} m · start ${DATA.stats.pid.trace[i][0].toFixed(2)} m away</option>`).join("");
+  s.value = RP.ep;
+  s.onchange = () => { RP.ep = +s.value; RP.t = 0; rpDrawChart(); rpRender(); };
+  $("#rpPlay").onclick = () => { RP.playing = !RP.playing; $("#rpPlay").textContent = RP.playing ? "❚❚ Pause" : "▶ Play";
+    if (RP.playing){ if (RP.t >= 14.9) RP.t = 0; RP.last = performance.now(); requestAnimationFrame(rpTick); } };
+  $("#rpSpeed").onchange = e => RP.speed = +e.target.value;
+  $("#rpSlider").oninput = e => { RP.t = +e.target.value / 10; rpRender(); };
+  legend("lgTrace", CTRL);
+}
+function rpTick(now){ if (!RP.playing) return; RP.t += (now - RP.last) / 1000 * RP.speed; RP.last = now;
+  if (RP.t >= 14.9){ RP.t = 14.9; RP.playing = false; $("#rpPlay").textContent = "▶ Play"; }
+  rpRender(); if (RP.playing) requestAnimationFrame(rpTick); }
+function rpDrawChart(){
+  const S = DATA.stats, a = S.pid.trace[RP.ep], b = S.bc.trace[RP.ep], t = a.map((_, i) => +(i * 0.1).toFixed(1));
+  RP.chart = lineChart("chTrace", {xdom:[0, 15], ydom:[0, Math.max(0.6, Math.ceil(Math.max(...a, ...b) * 5) / 5)], xlabel:"time (s)", ylabel:"distance to target (m)", height:220,
+    bands:[{y0:0, y1:0.3, key:"--good"}], cursor:true, xfmtTip:v => "t = " + v.toFixed(1) + " s", tipfmt:v => v.toFixed(3) + " m",
+    series:[{name:"PID teacher", key:"--k-pid", x:t, y:a, width:2.4}, {name:"Stage 1 (BC)", key:"--k-s1", x:t, y:b, width:1.8}],
+    onclick:v => { RP.t = Math.max(0, Math.min(14.9, v)); rpRender(); }});
+}
+function drone(g, x, y, col){
+  el("rect", {x:x - 18, y:y - 5, width:36, height:10, rx:4, fill:col}, g);
+  el("rect", {x:x - 28, y:y - 10, width:16, height:3, rx:1.5, fill:css("--text-2")}, g);
+  el("rect", {x:x + 12, y:y - 10, width:16, height:3, rx:1.5, fill:css("--text-2")}, g);
+}
+function rpRender(){
+  const svg = $("#rpStage"); svg.innerHTML = "";
+  const S = DATA.stats, i = Math.min(149, Math.round(RP.t * 10)), x0 = 210, sc = 300, lane = 56, top = 14;
+  el("rect", {x:x0, y:6, width:0.3 * sc, height:top + lane * 2 - 4, fill:css("--good"), opacity:.12}, svg);
+  txt(svg, x0 + 0.3 * sc + 4, 18, "0.3 m (settled)", {style:"fill:var(--good)"});
+  [1.0, 2.0].forEach(v => { if (x0 + v * sc < 890){ el("line", {x1:x0 + v * sc, x2:x0 + v * sc, y1:6, y2:top + lane * 2, class:"grid"}, svg); txt(svg, x0 + v * sc + 4, 18, v + " m"); } });
+  CTRL.forEach((c, k) => { const y = top + k * lane + 30, d = S[c.id].trace[RP.ep][i];
+    txt(svg, 8, y + 4, c.name, {style:"fill:var(--text)", "font-weight":700});
+    el("line", {x1:x0, x2:890, y1:y + 14, y2:y + 14, stroke:css("--border")}, svg);
+    el("path", {d:`M${x0 - 7},${y} h14 M${x0},${y - 7} v14`, stroke:css("--text"), "stroke-width":2}, svg);
+    drone(el("g", {}, svg), Math.min(880, x0 + d * sc), y, css(c.key));
+    txt(svg, Math.min(850, x0 + d * sc) + 32, y + 4, d.toFixed(3) + " m", {style:"fill:var(--text)"}); });
+  $("#rpTime").textContent = "t = " + RP.t.toFixed(1) + " s";
+  $("#rpSlider").value = i;
+  if (RP.chart) RP.chart.setCursor(RP.t);
+}
+
+function drawAll(){ drawStatic(); rpDrawChart(); rpRender(); }
+let rz; addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(drawAll, 150); });
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", drawAll);
+rpInit(); drawAll();
+</script>
+
+</body>
+</html>

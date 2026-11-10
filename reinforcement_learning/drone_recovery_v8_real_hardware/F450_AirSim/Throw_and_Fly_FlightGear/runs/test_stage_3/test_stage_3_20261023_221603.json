@@ -1,0 +1,186 @@
+{
+  "date": "20261023_221603",
+  "settings": {
+    "types": [
+      "flip"
+    ],
+    "levels": [
+      "hard"
+    ],
+    "repeats": 3,
+    "seed": 1,
+    "keep_limits": false,
+    "compare_recovery": true,
+    "modes": [
+      "ppo-policy"
+    ],
+    "conn": "tcp:127.0.0.1:5762"
+  },
+  "disturbances_rads": {
+    "flip": [
+      16.0,
+      0.0,
+      0.0
+    ],
+    "spin": [
+      0.0,
+      0.0,
+      10.0
+    ],
+    "bird": [
+      10.0,
+      10.0,
+      6.0
+    ]
+  },
+  "turns": {
+    "flip": {
+      "easy": "1.4-1.8",
+      "medium": "1.8-2.2",
+      "hard": "2.2-3"
+    },
+    "spin": {
+      "easy": "1.4-1.8",
+      "medium": "1.8-2.2",
+      "hard": "2.2-3"
+    },
+    "bird": {
+      "easy": "0.7-0.9",
+      "medium": "0.9-1.1",
+      "hard": "1.1-1.5"
+    }
+  },
+  "limits_original": {
+    "ATC_ACCEL_R_MAX": 110000.0,
+    "ATC_ACCEL_P_MAX": 110000.0,
+    "ATC_ACCEL_Y_MAX": 27000.0
+  },
+  "limit_off_original": {},
+  "limit_off_values": {},
+  "climb_mps": 5.0,
+  "rate_rule": {
+    "version": 3,
+    "k": 6.0,
+    "max_rate": 15.0,
+    "thr_inv_x_hover": 1.0,
+    "alpha": 30.0,
+    "up_min": 0.3,
+    "brake": 0.25,
+    "side_k": 0.15,
+    "side_max": 0.45
+  },
+  "impact_mode": true,
+  "hover_alt_m": 30.0,
+  "virtual_ground_m": 5.0,
+  "cut_margin_m": 2.0,
+  "hit": "lead",
+  "lead_deg": 30.0,
+  "lead_ff_off": true,
+  "brake_mss": 8.0,
+  "yaw_brake_t": 0.5,
+  "criterion": {
+    "rate_rads": 1.2,
+    "tilt_deg": 30.0,
+    "alt_m": 3.0,
+    "hspeed_ms": 3.0,
+    "held_s": 0.5,
+    "max_s": 15.0
+  },
+  "summary": {
+    "flip/hard/ppo-policy": {
+      "below_5m": 0,
+      "mean_spin_stop_s": 0.38000000000000006,
+      "mean_lowest_m": 16.156666666666666,
+      "impacts": 3,
+      "recovered_pct": 100.0,
+      "mean_turns": 2.41,
+      "mean_peak_rate_rads": 16.726666666666663,
+      "mean_recovery_s": 1.0033333333333332,
+      "mean_alt_loss_m": 13.829999999999998,
+      "lowest_m": 13.52
+    }
+  },
+  "impacts": [
+    {
+      "n": 1,
+      "type": "flip",
+      "level": "hard",
+      "recovery": "ppo-policy",
+      "cmd_rates": [
+        0.0,
+        16.0,
+        0.0
+      ],
+      "planned_turns": 2.32,
+      "turns": 2.34,
+      "impact_s": 1.04,
+      "peak_tilt_deg": 178.8,
+      "peak_rate_rads": 16.28,
+      "recovered": true,
+      "recovery_time_s": 1.17,
+      "alt_loss_m": 16.49,
+      "min_alt_m": 13.52,
+      "virtual_ground": false,
+      "drift_m": 16.9,
+      "impact_cut_low": false,
+      "spin_stopped_s": 0.73,
+      "alt_end_impact_m": 26.26,
+      "rule_handover_s": null,
+      "rescued": false
+    },
+    {
+      "n": 2,
+      "type": "flip",
+      "level": "hard",
+      "recovery": "ppo-policy",
+      "cmd_rates": [
+        0.0,
+        16.0,
+        0.0
+      ],
+      "planned_turns": 2.63,
+      "turns": 2.67,
+      "impact_s": 1.15,
+      "peak_tilt_deg": 178.7,
+      "peak_rate_rads": 16.88,
+      "recovered": true,
+      "recovery_time_s": 0.41,
+      "alt_loss_m": 10.3,
+      "min_alt_m": 19.68,
+      "virtual_ground": false,
+      "drift_m": 10.36,
+      "impact_cut_low": false,
+      "spin_stopped_s": 0.27,
+      "alt_end_impact_m": 25.44,
+      "rule_handover_s": null,
+      "rescued": false
+    },
+    {
+      "n": 3,
+      "type": "flip",
+      "level": "hard",
+      "recovery": "ppo-policy",
+      "cmd_rates": [
+        0.0,
+        16.0,
+        0.0
+      ],
+      "planned_turns": 2.22,
+      "turns": 2.22,
+      "impact_s": 0.97,
+      "peak_tilt_deg": 178.7,
+      "peak_rate_rads": 17.02,
+      "recovered": true,
+      "recovery_time_s": 1.43,
+      "alt_loss_m": 14.7,
+      "min_alt_m": 15.27,
+      "virtual_ground": false,
+      "drift_m": 16.11,
+      "impact_cut_low": false,
+      "spin_stopped_s": 0.14,
+      "alt_end_impact_m": 26.71,
+      "rule_handover_s": 1.6,
+      "rescued": false
+    }
+  ]
+}

@@ -1,0 +1,127 @@
+{
+  "date": "2026-10-25T15:03:51",
+  "position_source": "optical flow (relative position only)",
+  "hover": 0.349283367395401,
+  "modes": [
+    "attitude-rule"
+  ],
+  "types": [
+    "up",
+    "roll",
+    "pitch"
+  ],
+  "repeats": 1,
+  "throws": {
+    "up": {
+      "shove": [
+        0.0,
+        0.0,
+        -30.0
+      ],
+      "twist": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "ms": 300
+    },
+    "roll": {
+      "shove": [
+        0.0,
+        0.0,
+        -45.0
+      ],
+      "twist": [
+        40.0,
+        0.0,
+        0.0
+      ],
+      "ms": 300
+    },
+    "pitch": {
+      "shove": [
+        0.0,
+        0.0,
+        -45.0
+      ],
+      "twist": [
+        0.0,
+        40.0,
+        0.0
+      ],
+      "ms": 300
+    }
+  },
+  "freefall_g": 0.35,
+  "freefall_n": 3,
+  "model": null,
+  "after_recovery": "loiter",
+  "loiter_s": 10.0,
+  "stopped": null,
+  "summary": {
+    "attitude-rule/up": {
+      "recovered": "0/1",
+      "mean_recovered_s": null,
+      "mean_low_m": null,
+      "mean_drift_m": null,
+      "mean_brake_m": null,
+      "mean_wander_m": null
+    },
+    "attitude-rule/roll": {
+      "recovered": "1/1",
+      "mean_recovered_s": 2.48,
+      "mean_low_m": 2.38,
+      "mean_drift_m": 14.8,
+      "mean_brake_m": 2.09,
+      "mean_wander_m": 0.24
+    }
+  },
+  "results": [
+    {
+      "n": 1,
+      "type": "up",
+      "mode": "attitude-rule",
+      "released": true,
+      "detected": true,
+      "release_s": 0.55,
+      "motors_on_s": 1.05,
+      "upright_s": 0.0,
+      "caught_s": null,
+      "recovered": false,
+      "recovered_s": null,
+      "apex_m": 2.44,
+      "low_m": 0.09,
+      "peak_rate_rads": 0.0,
+      "drift_m": null,
+      "crashed": true,
+      "impact_speed_ms": 6.59
+    },
+    {
+      "n": 2,
+      "type": "roll",
+      "mode": "attitude-rule",
+      "released": true,
+      "detected": true,
+      "release_s": 0.57,
+      "motors_on_s": 1.0,
+      "upright_s": 1.31,
+      "caught_s": 1.62,
+      "recovered": true,
+      "recovered_s": 2.48,
+      "apex_m": 4.53,
+      "low_m": 2.38,
+      "peak_rate_rads": 8.38,
+      "drift_m": 14.8,
+      "crashed": false,
+      "impact_speed_ms": null,
+      "hold_mode": "LOITER",
+      "hold_s": 10.0,
+      "hold_max_m": 2.2,
+      "hold_end_m": 2.09,
+      "hold_dz_m": 0.04,
+      "brake_s": 1.72,
+      "brake_m": 2.09,
+      "wander_m": 0.24
+    }
+  ]
+}

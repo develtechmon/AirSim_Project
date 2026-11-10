@@ -1,0 +1,252 @@
+{
+  "date": "2026-10-25T14:22:12",
+  "position_source": "optical flow (relative position only)",
+  "hover": 0.349283367395401,
+  "modes": [
+    "attitude-rule"
+  ],
+  "types": [
+    "up",
+    "roll",
+    "pitch"
+  ],
+  "repeats": 3,
+  "throws": {
+    "up": {
+      "shove": [
+        0.0,
+        0.0,
+        -30.0
+      ],
+      "twist": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "ms": 300
+    },
+    "roll": {
+      "shove": [
+        0.0,
+        0.0,
+        -45.0
+      ],
+      "twist": [
+        40.0,
+        0.0,
+        0.0
+      ],
+      "ms": 300
+    },
+    "pitch": {
+      "shove": [
+        0.0,
+        0.0,
+        -45.0
+      ],
+      "twist": [
+        0.0,
+        40.0,
+        0.0
+      ],
+      "ms": 300
+    }
+  },
+  "freefall_g": 0.35,
+  "freefall_n": 3,
+  "model": null,
+  "stopped": null,
+  "summary": {
+    "attitude-rule/up": {
+      "recovered": "3/3",
+      "mean_recovered_s": 0.49,
+      "mean_low_m": 2.75,
+      "mean_drift_m": 0.06
+    },
+    "attitude-rule/roll": {
+      "recovered": "3/3",
+      "mean_recovered_s": 1.19,
+      "mean_low_m": 6.41,
+      "mean_drift_m": 1.15
+    },
+    "attitude-rule/pitch": {
+      "recovered": "3/3",
+      "mean_recovered_s": 1.19,
+      "mean_low_m": 6.33,
+      "mean_drift_m": 0.81
+    }
+  },
+  "results": [
+    {
+      "n": 1,
+      "type": "up",
+      "mode": "attitude-rule",
+      "released": true,
+      "detected": true,
+      "release_s": 0.55,
+      "motors_on_s": 0.31,
+      "upright_s": 0.0,
+      "caught_s": 0.31,
+      "recovered": true,
+      "recovered_s": 0.49,
+      "apex_m": 2.75,
+      "low_m": 2.75,
+      "peak_rate_rads": 0.01,
+      "drift_m": 0.01,
+      "crashed": false,
+      "impact_speed_ms": null
+    },
+    {
+      "n": 2,
+      "type": "up",
+      "mode": "attitude-rule",
+      "released": true,
+      "detected": true,
+      "release_s": 0.55,
+      "motors_on_s": 0.29,
+      "upright_s": 0.0,
+      "caught_s": 0.29,
+      "recovered": true,
+      "recovered_s": 0.51,
+      "apex_m": 2.78,
+      "low_m": 2.78,
+      "peak_rate_rads": 0.01,
+      "drift_m": 0.15,
+      "crashed": false,
+      "impact_speed_ms": null
+    },
+    {
+      "n": 3,
+      "type": "up",
+      "mode": "attitude-rule",
+      "released": true,
+      "detected": true,
+      "release_s": 0.56,
+      "motors_on_s": 0.32,
+      "upright_s": 0.0,
+      "caught_s": 0.32,
+      "recovered": true,
+      "recovered_s": 0.46,
+      "apex_m": 2.72,
+      "low_m": 2.72,
+      "peak_rate_rads": 0.0,
+      "drift_m": 0.03,
+      "crashed": false,
+      "impact_speed_ms": null
+    },
+    {
+      "n": 4,
+      "type": "roll",
+      "mode": "attitude-rule",
+      "released": true,
+      "detected": true,
+      "release_s": 0.57,
+      "motors_on_s": 0.3,
+      "upright_s": 0.63,
+      "caught_s": 0.88,
+      "recovered": true,
+      "recovered_s": 1.19,
+      "apex_m": 6.46,
+      "low_m": 6.46,
+      "peak_rate_rads": 9.3,
+      "drift_m": 1.05,
+      "crashed": false,
+      "impact_speed_ms": null
+    },
+    {
+      "n": 5,
+      "type": "roll",
+      "mode": "attitude-rule",
+      "released": true,
+      "detected": true,
+      "release_s": 0.57,
+      "motors_on_s": 0.31,
+      "upright_s": 0.65,
+      "caught_s": 0.87,
+      "recovered": true,
+      "recovered_s": 1.18,
+      "apex_m": 6.31,
+      "low_m": 6.31,
+      "peak_rate_rads": 8.49,
+      "drift_m": 1.56,
+      "crashed": false,
+      "impact_speed_ms": null
+    },
+    {
+      "n": 6,
+      "type": "roll",
+      "mode": "attitude-rule",
+      "released": true,
+      "detected": true,
+      "release_s": 0.57,
+      "motors_on_s": 0.29,
+      "upright_s": 0.61,
+      "caught_s": 0.86,
+      "recovered": true,
+      "recovered_s": 1.21,
+      "apex_m": 6.47,
+      "low_m": 6.47,
+      "peak_rate_rads": 8.46,
+      "drift_m": 0.83,
+      "crashed": false,
+      "impact_speed_ms": null
+    },
+    {
+      "n": 7,
+      "type": "pitch",
+      "mode": "attitude-rule",
+      "released": true,
+      "detected": true,
+      "release_s": 0.58,
+      "motors_on_s": 0.29,
+      "upright_s": 0.63,
+      "caught_s": 0.86,
+      "recovered": true,
+      "recovered_s": 1.19,
+      "apex_m": 6.36,
+      "low_m": 6.36,
+      "peak_rate_rads": 9.96,
+      "drift_m": 0.98,
+      "crashed": false,
+      "impact_speed_ms": null
+    },
+    {
+      "n": 8,
+      "type": "pitch",
+      "mode": "attitude-rule",
+      "released": true,
+      "detected": true,
+      "release_s": 0.55,
+      "motors_on_s": 0.32,
+      "upright_s": 0.68,
+      "caught_s": 0.9,
+      "recovered": true,
+      "recovered_s": 1.19,
+      "apex_m": 6.3,
+      "low_m": 6.3,
+      "peak_rate_rads": 9.33,
+      "drift_m": 0.66,
+      "crashed": false,
+      "impact_speed_ms": null
+    },
+    {
+      "n": 9,
+      "type": "pitch",
+      "mode": "attitude-rule",
+      "released": true,
+      "detected": true,
+      "release_s": 0.54,
+      "motors_on_s": 0.27,
+      "upright_s": 0.63,
+      "caught_s": 0.88,
+      "recovered": true,
+      "recovered_s": 1.19,
+      "apex_m": 6.34,
+      "low_m": 6.34,
+      "peak_rate_rads": 10.41,
+      "drift_m": 0.79,
+      "crashed": false,
+      "impact_speed_ms": null
+    }
+  ]
+}

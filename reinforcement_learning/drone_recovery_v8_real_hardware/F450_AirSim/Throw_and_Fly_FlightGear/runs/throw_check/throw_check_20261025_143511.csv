@@ -1,0 +1,4 @@
+n,type,mode,released,detected,release_s,motors_on_s,upright_s,caught_s,recovered,recovered_s,apex_m,low_m,peak_rate_rads,drift_m,crashed,impact_speed_ms
+1,up,ppo-policy,True,True,0.55,1.05,0.0,,False,,2.46,-0.07,0.0,,True,6.59
+2,roll,ppo-policy,True,True,0.54,0.99,1.38,1.6,True,3.08,4.53,2.48,8.38,17.65,False,
+3,pitch,ppo-policy,True,True,0.57,0.99,1.35,1.63,True,3.08,4.53,2.48,8.41,17.6,False,

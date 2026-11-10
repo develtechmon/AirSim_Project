@@ -1,0 +1,128 @@
+####################################### OUTDOOR #######################################
+cd ~/sitl_throw
+
+## Manual Throw Mode Ardupilot with GPS
+sim_vehicle.py -v ArduCopter -f quad --console --map 
+param set EK3_SRC1_POSXY 3
+param set EK3_SRC1_VELXY 3
+param set EK3_SRC1_POSZ 1
+param set EK3_SRC1_VELZ 3
+reboot
+
+mode THROW
+arm throttle
+param set SIM_SHOVE_Z -30
+param set SIM_SHOVE_TIME 300
+
+####################################### INDOOR #######################################
+## Trigger with Script Attitude-Rule and PPO with Optical Flow with FlighGear
+
+## Change Rangefinder parameter. Only do this once only
+sed -i 's/        return INFINITY;/        return 99.0f;/' ~/ardupilot/libraries/SITL/SIM_Aircraft.cpp
+cd ~/ardupilot
+./waf copter
+
+## Run FlightGear 1st inside WSL
+LIBGL_ALWAYS_SOFTWARE=1 ~/ardupilot/Tools/autotest/fg_quad_view.sh --airport=KSFO
+or 
+LIBGL_ALWAYS_SOFTWARE=1 ~/ardupilot/Tools/autotest/fg_quad_view.sh --enable-terrasync --airport=WBGG
+
+## In new terminal
+cd ~/sitl_throw
+sim_vehicle.py -v ArduCopter -f quad --console --map --custom-location=37.6188,-122.3754,5,0
+
+## Set below Optical Flow Parameter once only
+param show EK3_SRC1_*
+param set EK3_SRC1_POSXY 0 (No GPS)
+param set EK3_SRC1_VELXY 5 (Horizontal Speed from Optical Flow)
+param set EK3_SRC1_POSZ 1 (Barometer)
+param set EK3_SRC1_POSZ 2 (Rangefinder)
+param set EK3_SRC1_VELZ 0 (None)
+param set ARMING_CHECK 0 
+param set EK3_SRC1_YAW 1 (Compass)
+param set FLOW_TYPE 10
+param set SIM_FLOW_ENABLE 1
+param set RNGFND1_TYPE 100
+param set RNGFND1_ORIENT 25
+param set RNGFND1_MAX_CM 700
+reboot
+
+## In Windows Terminal Run the following
+## PPO
+py .\throw_check.py --modes ppo-policy --model .\models\round1_final.zip --repeats 1 --types up roll pitch
+py .\throw_check.py --modes ppo-policy --model .\models\round1_final.zip --repeats 3 --types roll
+
+## Attitude-rule
+py .\throw_check.py --modes attitude-rule --repeats 3 --types up roll pitch
+
+## Combine Both
+py .\throw_check.py --modes attitude-rule ppo-policy --model .\models\round1_final.zip --repeats 5 --types up roll pitch
+
+disarm force (to force the drone to go to next stage)
+
+################################### NEW If you're using FlightGear from Windows ############################
+
+1. Download FlightGear for Windows 10/11
+2. Copy ArduPilot Quad Model to Windows
+   cp -r ~/ardupilot/Tools/autotest/aircraft /mnt/c/Users/lukas/fg_aircraft
+   
+3. You can copy and past this content and save it as FlightGear_quad.bat in Your directory project
+   When Windows Firewall asks, allow FlightGear.
+   @echo off
+	title FlightGear quad view (ArduPilot SITL)
+
+	rem ---- 1. Paths (change FG_EXE if your FlightGear is somewhere else) ----
+	set "FG_EXE=C:\Program Files\FlightGear 2024.1\bin\fgfs.exe"
+	set "FG_AIRCRAFT=%USERPROFILE%\fg_aircraft"
+
+	rem ---- 2. Check FlightGear is there ----
+	if not exist "%FG_EXE%" (
+		echo [ERROR] fgfs.exe not found here:
+		echo         %FG_EXE%
+		echo FlightGear folders in Program Files:
+		dir /b "C:\Program Files\FlightGear*"
+		echo Fix the FG_EXE line at the top of this file.
+		pause
+		exit /b 1
+	)
+
+	rem ---- 3. Check the ArduPilot quad model is there ----
+	if not exist "%FG_AIRCRAFT%\arducopter\arducopter-set.xml" (
+		echo [ERROR] ArduPilot quad model not found here:
+		echo         %FG_AIRCRAFT%\arducopter
+		echo Run this ONCE in WSL, then try again:
+		echo   cp -r ~/ardupilot/Tools/autotest/aircraft /mnt/c/Users/lukas/fg_aircraft
+		pause
+		exit /b 1
+	)
+
+	rem ---- 4. Start FlightGear: listens on UDP 5503 for ArduPilot SITL ----
+	echo Starting FlightGear (KSFO, noon, quad) ...
+	"%FG_EXE%" --native-fdm=socket,in,10,,5503,udp --fdm=external --aircraft=arducopter "--fg-aircraft=%FG_AIRCRAFT%" --airport=KSFO --timeofday=noon --geometry=1400x900 --disable-sound --disable-ai-models --disable-random-objects --wind=0@0 --log-level=info
+
+	echo.
+	echo FlightGear closed (exit code %ERRORLEVEL%). Read any error above.
+	pause
+	
+4. Start the simulator ardupilot using this command
+   cd ~/sitl_throw
+      
+   Sometime the WSL IP adress change, you can inspect it in WSL Ubunut as follow:
+   ip route | grep default --> Expect default 172.28.0.1
+   
+   sim_vehicle.py -v ArduCopter -f quad --console --custom-location=37.6188,-122.3754,5,0 -A "--fg 172.28.0.1"
+
+5. Inside Windows, run the script below as before:
+   
+   ## In Windows Terminal Run the following
+	## PPO
+	py .\throw_check.py --modes ppo-policy --model .\models\round1_final.zip --repeats 1 --types up roll pitch
+	py .\throw_check.py --modes ppo-policy --model .\models\round1_final.zip --repeats 3 --types roll
+
+	## Attitude-rule
+	py .\throw_check.py --modes attitude-rule --repeats 3 --types up roll pitch
+
+	## Combine Both
+	py .\throw_check.py --modes attitude-rule ppo-policy --model .\models\round1_final.zip --repeats 1 --types up roll pitch
+
+	disarm force (to force the drone to go to next stage)

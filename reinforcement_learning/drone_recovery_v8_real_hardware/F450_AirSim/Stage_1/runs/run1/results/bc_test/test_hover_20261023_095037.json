@@ -1,0 +1,28 @@
+{
+  "firmware": "4.4.0-dev",
+  "model_dir": "runs\\run1\\models",
+  "run": "run1",
+  "settings": {
+    "connect": "tcp:127.0.0.1:5762",
+    "episodes": 10,
+    "steps": 300,
+    "hz": 20.0,
+    "alt_min": 1.0,
+    "alt_max": 3.0,
+    "xy_offset": 1.0,
+    "z_offset": 0.5,
+    "run": null
+  },
+  "episodes": 10,
+  "success_rate_pct": 100.0,
+  "success_definition": "no safety stop and end error < 0.5 m",
+  "settled_rate_pct": 100.0,
+  "settled_threshold_m": 0.3,
+  "end_err_mean_m": 0.0383,
+  "timing": {
+    "dt_mean": 0.05000388216072024,
+    "dt_std": 0.006406223285278621,
+    "dt_max": 0.06409130000000118,
+    "overruns": 0
+  }
+}

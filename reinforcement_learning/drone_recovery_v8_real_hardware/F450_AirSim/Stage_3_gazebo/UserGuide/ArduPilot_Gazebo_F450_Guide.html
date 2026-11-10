@@ -1,0 +1,851 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ArduPilot Gazebo F450</title>
+<style>
+/* =====================================================================
+   THEME TOKENS  (edit colours here only)
+   ===================================================================== */
+:root{
+  color-scheme:light;
+  --bg:#f6f6f4; --surface:#fcfcfb; --surface-2:#f0efec; --border:#dcdad3;
+  --text:#1a1a19; --text-2:#52514e; --muted:#7a7972;
+  --accent:#2a78d6; --accent-soft:#e3eefb;
+  --good:#1b7f3b; --good-soft:#e2f3e7; --warn:#a96a00; --warn-soft:#fdf1d8; --bad:#c23a39; --bad-soft:#fbe5e4;
+  --code-bg:#f0efec;
+  /* controller colours: one colour per controller, same everywhere */
+  --c-ppo:#2a78d6; --c-bc:#eb6834; --c-rule:#1baf7a; --c-ssf:#eda100; --c-ap:#e87ba4;
+  --s1:#2f5ea8; --s2:#2e7d4f; --s3:#b83232;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#121211; --surface:#1a1a19; --surface-2:#242422; --border:#3a3936;
+    --text:#f0efec; --text-2:#c3c2b7; --muted:#9a998f;
+    --accent:#3987e5; --accent-soft:#1d2a3b;
+    --good:#5cc97f; --good-soft:#16281c; --warn:#e3a53a; --warn-soft:#2c2414; --bad:#ef7473; --bad-soft:#2e1717;
+    --code-bg:#242422;
+    --c-ppo:#3987e5; --c-bc:#d95926; --c-rule:#199e70; --c-ssf:#c98500; --c-ap:#d55181;
+    --s1:#6d9be0; --s2:#5fb383; --s3:#e06a6a;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#121211; --surface:#1a1a19; --surface-2:#242422; --border:#3a3936;
+  --text:#f0efec; --text-2:#c3c2b7; --muted:#9a998f;
+  --accent:#3987e5; --accent-soft:#1d2a3b;
+  --good:#5cc97f; --good-soft:#16281c; --warn:#e3a53a; --warn-soft:#2c2414; --bad:#ef7473; --bad-soft:#2e1717;
+  --code-bg:#242422;
+  --c-ppo:#3987e5; --c-bc:#d95926; --c-rule:#199e70; --c-ssf:#c98500; --c-ap:#d55181;
+  --s1:#6d9be0; --s2:#5fb383; --s3:#e06a6a;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 "Segoe UI",Calibri,system-ui,-apple-system,Arial,sans-serif}
+a{color:var(--accent)}
+code,pre{font-family:Consolas,"Cascadia Mono",Menlo,monospace}
+code{background:var(--code-bg);padding:1px 5px;border-radius:4px;font-size:13px;word-break:break-word}
+/* layout */
+.layout{display:grid;grid-template-columns:270px minmax(0,1fr);min-height:100vh}
+nav.side{position:sticky;top:0;height:100vh;overflow:auto;background:var(--surface);border-right:1px solid var(--border);padding:16px 12px 40px}
+nav.side .brand{font-weight:700;font-size:15px;margin:0 6px 2px}
+nav.side .sub{font-size:12px;color:var(--muted);margin:0 6px 12px}
+nav.side a{display:block;text-decoration:none;color:var(--text-2);padding:4px 8px;border-radius:6px;font-size:13.5px}
+nav.side a.l2{padding-left:22px;font-size:12.5px}
+nav.side a:hover{background:var(--surface-2)}
+nav.side a.active{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav.side .grp{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:14px 8px 4px}
+main{padding:24px 40px 80px;max-width:1180px}
+.topbar{display:flex;gap:10px;align-items:center;justify-content:flex-end;margin-bottom:6px}
+button,.btn{font:inherit;font-size:13px;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:7px;padding:5px 11px;cursor:pointer}
+button:hover{background:var(--surface-2)}
+button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+h1{font-size:28px;margin:4px 0 2px;line-height:1.2}
+h2{font-size:22px;margin:46px 0 10px;padding-top:10px;border-top:2px solid var(--border)}
+h3{font-size:17px;margin:28px 0 8px}
+h4{font-size:15px;margin:18px 0 6px}
+.lead{color:var(--text-2);font-size:15.5px;margin:4px 0 16px}
+.stage-tag{display:inline-block;color:#fff;border-radius:5px;padding:1px 8px;font-size:13px;font-weight:700;margin-right:8px;vertical-align:2px}
+.t1{background:var(--s1)}.t2{background:var(--s2)}.t3{background:var(--s3)}.thw{background:#5b5b66}
+/* tables */
+.tw{overflow-x:auto;margin:8px 0 14px}
+table{border-collapse:collapse;width:100%;font-size:13.5px;background:var(--surface)}
+th,td{border:1px solid var(--border);padding:5px 8px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.hl td{background:var(--accent-soft);font-weight:600}
+/* callouts */
+.note,.warn,.ok,.bad{border-left:4px solid;border-radius:6px;padding:9px 13px;margin:12px 0;font-size:14px}
+.note{border-color:var(--accent);background:var(--accent-soft)}
+.ok{border-color:var(--good);background:var(--good-soft)}
+.warn{border-color:var(--warn);background:var(--warn-soft)}
+.bad{border-color:var(--bad);background:var(--bad-soft)}
+.note b:first-child,.warn b:first-child,.ok b:first-child,.bad b:first-child{display:inline}
+.analogy{border:1px dashed var(--border);border-radius:8px;padding:9px 13px;margin:12px 0;font-size:14px;background:var(--surface)}
+.analogy::before{content:"Analogy  ";font-weight:700;color:var(--accent)}
+/* status chips */
+.chip{display:inline-block;font-size:11.5px;font-weight:700;border-radius:10px;padding:1px 8px;white-space:nowrap}
+.done{background:var(--good-soft);color:var(--good)}.run{background:var(--warn-soft);color:var(--warn)}.todo{background:var(--surface-2);color:var(--muted)}.fail{background:var(--bad-soft);color:var(--bad)}
+/* steps */
+.step{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin:12px 0}
+.step>.sh{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.step>.sh .num{background:var(--s3);color:#fff;border-radius:6px;font-weight:700;font-size:12.5px;padding:1px 8px}
+.step.s1 .num{background:var(--s1)}.step.s2 .num{background:var(--s2)}.step.hw .num{background:#5b5b66}
+.step>.sh .tt{font-weight:700;font-size:15.5px}
+.step>.sh .meta{margin-left:auto;font-size:12.5px;color:var(--muted)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:900px){.cols{grid-template-columns:1fr}}
+/* command block */
+.cmdbox{position:relative;margin:8px 0}
+pre.cmd{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:10px 70px 10px 12px;margin:0;font-size:13px;white-space:pre-wrap;word-break:break-all}
+.cmdbox button{position:absolute;top:6px;right:6px;font-size:12px;padding:2px 9px}
+details{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;margin:10px 0}
+details>summary{cursor:pointer;font-weight:600;font-size:14px}
+details[open]>summary{margin-bottom:6px}
+/* diagrams */
+.dgwrap{background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px;overflow:hidden;margin:10px 0}
+.dgwrap .dg{transform-origin:0 0}
+.dgwrap table{background:#fff;width:auto}.dgwrap th,.dgwrap td{color:#1d2433}
+.figure{background:#fff;border:1px solid var(--border);border-radius:10px;padding:8px;margin:10px 0;text-align:center}
+.figure img{max-width:100%;height:auto}
+.cap{font-size:12.5px;color:var(--muted);margin:4px 2px 12px}
+/* charts */
+.chart{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin:10px 0}
+.chart .ct{font-weight:700;font-size:14.5px}
+.chart .cs{font-size:12.5px;color:var(--muted);margin-bottom:6px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12.5px;color:var(--text-2);margin:4px 0 2px}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+.tip{position:fixed;pointer-events:none;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:7px;padding:6px 9px;font-size:12.5px;box-shadow:0 4px 14px rgba(0,0,0,.15);z-index:50;display:none;max-width:280px}
+svg text{fill:var(--text-2);font-size:11.5px}
+svg .axis{stroke:var(--border)}
+svg .grid{stroke:var(--border);stroke-dasharray:2 3}
+.charttable{display:none}
+.charttable.show{display:block}
+/* replay */
+.replay{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;margin:14px 0}
+.rp-controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+.rp-controls select{font:inherit;font-size:13px;padding:4px 6px;border-radius:7px;border:1px solid var(--border);background:var(--surface);color:var(--text);max-width:100%}
+.rp-controls input[type=range]{flex:1;min-width:160px}
+.rp-time{font-variant-numeric:tabular-nums;font-size:13px;color:var(--text-2);min-width:120px}
+#rpStage{width:100%;height:auto;display:block;background:linear-gradient(var(--surface-2),var(--surface));border-radius:10px}
+.rp-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:10px}
+.rp-card{border:1px solid var(--border);border-radius:8px;padding:6px 9px;font-size:12.5px;border-top:4px solid}
+.rp-card b{font-size:13px}
+/* timeline (who flies) */
+.tl{position:relative;height:56px;border-radius:9px;overflow:hidden;display:flex;margin:8px 0 4px;border:1px solid var(--border)}
+.tl div{display:flex;align-items:center;justify-content:center;color:#fff;font-size:12.5px;font-weight:700;text-align:center;padding:0 4px}
+.tl .cursor{position:absolute;top:0;bottom:0;width:3px;background:var(--text);left:0;transition:left .1s linear;padding:0}
+.tl-cap{min-height:44px;font-size:14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 12px}
+/* stat tiles */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:12px 0}
+.tile{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+.tile .v{font-size:24px;font-weight:700;line-height:1.1}
+.tile .k{font-size:12.5px;color:var(--muted)}
+/* explorer */
+.explorer{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin:10px 0}
+.explorer label{font-size:13px;color:var(--text-2)}
+.explorer input[type=range]{width:100%}
+.ex-out{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:8px}
+.ex-out div{background:var(--surface-2);border-radius:8px;padding:6px 10px;font-size:13px}
+.ex-out b{display:block;font-size:18px}
+.bar-h{height:14px;border-radius:4px;display:inline-block;vertical-align:middle}
+/* hardware block diagram (editable HTML) */
+.hw{background:#fff;color:#1d2433;border:1px solid var(--border);border-radius:10px;padding:14px;margin:10px 0;overflow-x:auto}
+.hw-grid{display:grid;grid-template-columns:1fr 46px 1.25fr 46px 1fr;gap:0;min-width:860px;align-items:center}
+.hw-col{display:flex;flex-direction:column;gap:12px}
+.hwb{border:2px solid #5b5b66;border-radius:10px;padding:8px 10px;background:#f7f7f9;font-size:13px;line-height:1.35}
+.hwb h5{margin:0 0 3px;font-size:14px;color:#2c2c38}
+.hwb.fc{border-color:#b83232;background:#fbeeee}.hwb.fc h5{color:#b83232}
+.hwb.pi{border-color:#2f5ea8;background:#eef3fb}.hwb.pi h5{color:#2f5ea8}
+.hwb.sens{border-color:#2e7d4f;background:#edf7f0}.hwb.sens h5{color:#2e7d4f}
+.hwb.pwr{border-color:#a96a00;background:#fdf6e6}.hwb.pwr h5{color:#a96a00}
+.hwb .lbl{display:inline-block;background:#fff;border:1px solid #c9ced8;border-radius:4px;padding:0 5px;font-size:11.5px;font-family:Consolas,monospace;margin:1px 0}
+.hw-arrow{text-align:center;font-size:22px;color:#555}
+.hw-bottom{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:14px;min-width:860px}
+/* flow */
+.flow{display:flex;flex-direction:column;align-items:center;gap:0;margin:10px 0}
+.fb{background:var(--surface);border:2px solid var(--border);border-radius:10px;padding:8px 14px;max-width:640px;width:100%;text-align:center;font-size:13.5px}
+.fb.pilot{border-color:var(--c-ssf)}.fb.pi{border-color:var(--c-ppo)}.fb.ap{border-color:var(--c-rule)}.fb.dec{border-color:var(--c-ap);border-style:dashed}
+.fb b{display:block}
+.fa{font-size:18px;color:var(--muted);line-height:1.3}
+.flow-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;justify-content:center;margin-bottom:8px}
+.flow-legend span{border:2px solid;border-radius:6px;padding:0 6px}
+footer{margin-top:60px;font-size:12px;color:var(--muted)}
+@media (max-width:860px){.layout{grid-template-columns:1fr}nav.side{position:relative;height:auto}main{padding:16px}}
+</style>
+
+<style>main{min-width:0}.figure svg text{font-family:inherit}</style>
+</head>
+<body>
+<div class="tip" id="tip"></div>
+<div class="layout">
+<nav class="side" id="nav">
+  <div class="brand">ArduPilot + Gazebo · F450</div>
+  <div class="sub">Stage 3 flip recovery in Gazebo Classic 11 · ArduCopter 4.4.0-dev SITL · 30 m</div>
+  <div class="grp">Start here</div>
+  <a href="#s0">0. Summary</a>
+  <a href="#s1">1. How the pieces connect</a>
+  <div class="grp">Run it (in order)</div>
+  <a href="#r1">Step 1 · Install</a>
+  <a href="#r2">Step 2 · Start Gazebo + SITL (WSL)</a>
+  <a href="#r3">Step 3 · First-time settings</a>
+  <a href="#r3b">Step 3b · Restart / shut down</a>
+  <a href="#r4">Step 4 · Hover check</a>
+  <a href="#r5">Step 5 · Quick flip test</a>
+  <a href="#r6">Step 6 · Full Stage 3 test</a>
+  <div class="grp">What we changed (A → G)</div>
+  <a href="#c0">2. Change log at a glance</a>
+  <a href="#cA">A · Iris baseline (failed)</a>
+  <a href="#cB">B · New F450 model</a>
+  <a href="#cC">C · Thrust calibration</a>
+  <a href="#cD">D · Flight-controller settings</a>
+  <a href="#cE">E · Flight-log analysis</a>
+  <a href="#cF">F · Realistic props</a>
+  <a href="#cG">G · Lead hit (stumble fixed)</a>
+  <div class="grp">Results &amp; meaning</div>
+  <a href="#res">3. Results</a>
+  <a href="#lim">4. The hit: why it stumbled</a>
+  <a href="#real">5. What it means for the real drone</a>
+  <a href="#realp">5b. Real drone parameters</a>
+  <div class="grp">Reference</div>
+  <a href="#vals">6. Final values</a>
+  <a href="#files">7. Files</a>
+  <a href="#trouble">8. Troubleshooting</a>
+</nav>
+<main>
+<div class="topbar"><span style="font-size:12px;color:var(--muted)">Built 24 Oct 2026 · results from 23 Oct 2026</span><button id="themeBtn">◐ Theme</button></div>
+<h1><span class="stage-tag t3">STAGE 3</span>ArduPilot + Gazebo: F450 flip-recovery test<br><span style="font-size:19px;color:var(--text-2);font-weight:500">How to run it, and every change we made to get the AirSim-trained PPO recovering in Gazebo</span></h1>
+<p class="lead">This guide records how the Stage 3 flip-recovery test was moved from AirSim to a second simulator (Gazebo Classic 11 with ArduPilot SITL). It covers what failed, what we measured, what we changed and why. The PPO policy was <b>not</b> changed. What changed: the simulated drone, its flight-controller settings, and (in a separate copy of the test folder, <code>Stage_3_gazebo</code>) how the knock is delivered.</p>
+
+<h2 id="s0">0. Summary</h2>
+<div class="tiles">
+  <div class="tile"><div class="v">6 / 6</div><div class="k">medium + hard flips recovered by PPO with the lead hit (old hit: 5 / 6, all marginal)</div></div>
+  <div class="tile"><div class="v">13.5–24.8 m</div><div class="k">lowest height from a 30 m start, hard + medium (old hit: 3.5–10.9 m)</div></div>
+  <div class="tile"><div class="v">15–16</div><div class="k">turn rate in the hit, rad/s, smooth, no stumble (AirSim: 13–14)</div></div>
+  <div class="tile"><div class="v">≈ 1 s</div><div class="k">hit time for 1.9–2.7 turns (old hit: 1.35–1.85 s, AirSim 1.2–1.5 s)</div></div>
+</div>
+<div class="tw"><table>
+<tr><th>What</th><th>Final setting</th></tr>
+<tr><td>Simulator</td><td>Gazebo Classic 11.15 (WSL), real-time factor ≈ 1.00, <code>ardupilot_gazebo</code> plugin (ports 9002/9003)</td></tr>
+<tr><td>Flight controller</td><td>ArduCopter <b>4.4.0-dev</b> SITL, the same version as the AirSim runs</td></tr>
+<tr><td>Drone</td><td><b><code>f450_airsim</code></b>: F450 matched to AirSim's default quad (1.0 kg, 455 mm, thrust-to-weight 1.63)</td></tr>
+<tr><td>ArduPilot settings</td><td>Rate gains and filters copied from ArduPilot's AirSim defaults (<code>f450_airsim_match.parm</code>)</td></tr>
+<tr><td>Test scripts</td><td><b><code>Stage_3_gazebo</code></b> (copy of <code>Stage_3_v1</code>) with the <b>lead hit</b> in <code>impact_check.py</code> · start height 30 m · flip <code>BASE_TURNS</code> 2.0 · model <code>round1_final.zip</code></td></tr>
+<tr><td>AirSim folder</td><td><code>Stage_3_v1</code>: not touched (old hit, reproduces the AirSim results)</td></tr>
+</table></div>
+<div class="note"><b>One-line story.</b> The Gazebo Iris was a different (heavier, motor-limited) drone from the one PPO learned on, so we built an AirSim-matched F450 for Gazebo. We then checked it with measurements (weight, motor PWM, flight log) and fixed three remaining differences: thrust, controller settings and prop inertia. Easy flips then recovered, but medium and hard still failed, because the way the script creates the knock made ArduPilot stumble near upside-down. With the <b>lead hit</b> (Change G) the knock is clean, and the AirSim-trained PPO recovered every medium and hard flip.</div>
+
+<h2 id="s1">1. How the pieces connect</h2>
+<div class="figure" style="background:var(--surface)">
+<svg viewBox="0 0 860 250" width="100%" style="max-width:860px" role="img" aria-label="Windows test scripts talk MAVLink to ArduPilot SITL in WSL, which talks to Gazebo with the F450 model">
+  <defs><marker id="ar" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="var(--muted)"/></marker></defs>
+  <rect x="10" y="40" width="240" height="170" rx="12" fill="var(--surface-2)" stroke="var(--border)"/>
+  <text x="130" y="64" text-anchor="middle" font-size="14" font-weight="700" fill="var(--text)">Windows · PowerShell</text>
+  <text x="130" y="94" text-anchor="middle" font-size="12.5" fill="var(--text-2)">Stage_3_gazebo\</text>
+  <text x="130" y="116" text-anchor="middle" font-size="12.5" fill="var(--text-2)">test_stage_3_gated_curriculum.py</text>
+  <text x="130" y="138" text-anchor="middle" font-size="12.5" fill="var(--text-2)">impact_check.py · ap_link.py</text>
+  <text x="130" y="160" text-anchor="middle" font-size="12.5" fill="var(--text-2)">PPO: models\round1_final.zip</text>
+  <text x="130" y="190" text-anchor="middle" font-size="11.5" fill="var(--muted)">creates the hit, runs the recovery</text>
+  <rect x="310" y="40" width="240" height="170" rx="12" fill="var(--surface-2)" stroke="var(--s3)"/>
+  <text x="430" y="64" text-anchor="middle" font-size="14" font-weight="700" fill="var(--text)">WSL · ArduPilot SITL</text>
+  <text x="430" y="94" text-anchor="middle" font-size="12.5" fill="var(--text-2)">ArduCopter 4.4.0-dev</text>
+  <text x="430" y="116" text-anchor="middle" font-size="12.5" fill="var(--text-2)">rate controller, motor mixer, EKF</text>
+  <text x="430" y="138" text-anchor="middle" font-size="12.5" fill="var(--text-2)">settings: f450_airsim_match.parm</text>
+  <text x="430" y="160" text-anchor="middle" font-size="12.5" fill="var(--text-2)">MAVProxy console</text>
+  <text x="430" y="190" text-anchor="middle" font-size="11.5" fill="var(--muted)">the "flight controller"</text>
+  <rect x="610" y="40" width="240" height="170" rx="12" fill="var(--surface-2)" stroke="var(--border)"/>
+  <text x="730" y="64" text-anchor="middle" font-size="14" font-weight="700" fill="var(--text)">WSL · Gazebo 11</text>
+  <text x="730" y="94" text-anchor="middle" font-size="12.5" fill="var(--text-2)">f450_airsim_runway.world</text>
+  <text x="730" y="116" text-anchor="middle" font-size="12.5" fill="var(--text-2)">model f450_airsim (+ _base)</text>
+  <text x="730" y="138" text-anchor="middle" font-size="12.5" fill="var(--text-2)">ArduPilotPlugin + LiftDrag</text>
+  <text x="730" y="160" text-anchor="middle" font-size="12.5" fill="var(--text-2)">physics: weight, props, motors</text>
+  <text x="730" y="190" text-anchor="middle" font-size="11.5" fill="var(--muted)">the "drone and the air"</text>
+  <line x1="252" y1="110" x2="306" y2="110" stroke="var(--muted)" stroke-width="2" marker-end="url(#ar)"/>
+  <line x1="306" y1="140" x2="254" y2="140" stroke="var(--muted)" stroke-width="2" marker-end="url(#ar)"/>
+  <text x="280" y="102" text-anchor="middle" font-size="11" fill="var(--muted)">MAVLink</text>
+  <line x1="552" y1="110" x2="606" y2="110" stroke="var(--muted)" stroke-width="2" marker-end="url(#ar)"/>
+  <line x1="606" y1="140" x2="554" y2="140" stroke="var(--muted)" stroke-width="2" marker-end="url(#ar)"/>
+  <text x="580" y="102" text-anchor="middle" font-size="11" fill="var(--muted)">motors →</text>
+  <text x="580" y="158" text-anchor="middle" font-size="11" fill="var(--muted)">← sensors</text>
+  <text x="430" y="238" text-anchor="middle" font-size="12" fill="var(--text-2)">Same chain as AirSim: only the right-hand box (simulator + drone model) and the SITL settings differ</text>
+</svg></div>
+<div class="analogy">Think of it as the same pilot (PPO) and the same autopilot (ArduPilot 4.4) moved from one flight simulator to another. For the comparison to be fair, the simulated aircraft and the autopilot settings must match. Most of this guide is about making them match.</div>
+
+<h2 id="r1">Step 1 · Install the F450 model (WSL, once)</h2>
+<div class="step s3"><div class="sh"><span class="num">1</span><span class="tt">Run the setup script (version 2, final values)</span><span class="meta">your Iris files stay untouched</span></div>
+<div class="tw"><table><tr><th>When</th><th>Run these steps</th></tr>
+<tr><td><b>First time</b> (new PC or new folder)</td><td>Step 1 → 2a → 2b → <b>3</b> (load settings) → 4</td></tr>
+<tr><td><b>Every session after that</b></td><td>Step 2a → 2b → 2c, then the tests (Step 5 / 6)</td></tr></table></div>
+<p>Download <code>setup_f450_airsim.sh</code> to Windows Downloads. Then, in a WSL terminal, make the F450 SITL folder, go into it and run the setup script:</p>
+<div class="cmdbox"><pre class="cmd">mkdir -p ~/sitl_f450
+
+cd ~/sitl_f450
+
+cp /mnt/c/Users/lukas/Downloads/setup_f450_airsim.sh ~/
+
+bash ~/setup_f450_airsim.sh</pre><button class="copy">Copy</button></div>
+<div class="tw"><table><tr><th>Line</th><th>Why</th></tr>
+<tr><td><code>mkdir -p ~/sitl_f450</code></td><td>The F450's own SITL folder (nothing happens if it already exists)</td></tr>
+<tr><td><code>cd ~/sitl_f450</code></td><td>Work inside it: SITL is started from here in Step 2b</td></tr>
+<tr><td><code>cp … ~/</code></td><td>Copies the script from Windows into WSL</td></tr>
+<tr><td><code>bash ~/setup_f450_airsim.sh</code></td><td>Builds the F450 model and world, and writes the settings file into <code>~/sitl_f450</code></td></tr></table></div>
+<div class="tw"><table><tr><th>It creates</th><th>What it is</th></tr>
+<tr><td><code>~/ardupilot_gazebo/models/f450_airsim_base/</code></td><td>F450 body: weight, inertia, arm length, legs, props</td></tr>
+<tr><td><code>~/ardupilot_gazebo/models/f450_airsim/</code></td><td>Adds the rotor aerodynamics and the ArduPilot plugin</td></tr>
+<tr><td><code>~/ardupilot_gazebo/worlds/f450_airsim_runway.world</code></td><td>Copy of <code>iris_arducopter_runway.world</code> with the drone swapped</td></tr>
+<tr><td><code>~/sitl_f450/f450_airsim_match.parm</code></td><td>The ArduPilot settings used in this guide</td></tr></table></div>
+<div class="tw"><table><tr><th>You see</th><th>Meaning</th></tr>
+<tr><td><code>OK: world uses model://f450_airsim</code> … <code>Setup complete</code></td><td>✅ Ready</td></tr>
+<tr><td><code>WARNING: world does not include model://iris_with_ardupilot</code></td><td>Your world file includes the drone differently; see 8. Troubleshooting</td></tr></table></div>
+<p style="font-size:13px;color:var(--muted)">Already installed version 1 plus the two <code>sed</code> fixes (Changes C and F)? Then your installed model already equals version 2. Running the script again just rewrites the same values.</p></div>
+
+<h2 id="r2">Step 2 · Every session: start Gazebo and ArduPilot SITL (WSL)</h2>
+<p>Every test needs <b>three windows open at the same time</b>: two WSL terminals and one PowerShell. Start them in this order and leave them running.</p>
+<div class="figure" style="background:var(--surface)">
+<svg viewBox="0 0 860 220" width="100%" style="max-width:860px" role="img" aria-label="Three windows: WSL terminal 1 Gazebo, WSL terminal 2 SITL and MAVProxy, PowerShell test scripts">
+  <defs><marker id="w3" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="var(--muted)"/></marker></defs>
+  <rect x="10" y="20" width="250" height="150" rx="12" fill="var(--surface-2)" stroke="var(--border)"/>
+  <text x="135" y="46" text-anchor="middle" font-size="14" font-weight="700" fill="var(--text)">① WSL terminal 1</text>
+  <text x="135" y="72" text-anchor="middle" font-size="12.5" fill="var(--text-2)">gazebo --verbose …</text>
+  <text x="135" y="92" text-anchor="middle" font-size="12.5" fill="var(--text-2)">f450_airsim_runway.world</text>
+  <text x="135" y="122" text-anchor="middle" font-size="12" fill="var(--muted)">the drone + physics</text>
+  <text x="135" y="140" text-anchor="middle" font-size="12" fill="var(--muted)">start FIRST, wait for the runway</text>
+  <rect x="305" y="20" width="250" height="150" rx="12" fill="var(--surface-2)" stroke="var(--s3)"/>
+  <text x="430" y="46" text-anchor="middle" font-size="14" font-weight="700" fill="var(--text)">② WSL terminal 2</text>
+  <text x="430" y="72" text-anchor="middle" font-size="12.5" fill="var(--text-2)">cd ~/sitl_f450</text>
+  <text x="430" y="92" text-anchor="middle" font-size="12.5" fill="var(--text-2)">sim_vehicle.py … gazebo-iris</text>
+  <text x="430" y="122" text-anchor="middle" font-size="12" fill="var(--muted)">ArduPilot SITL + MAVProxy</text>
+  <text x="430" y="140" text-anchor="middle" font-size="12" fill="var(--muted)">start SECOND, wait for "using GPS"</text>
+  <rect x="600" y="20" width="250" height="150" rx="12" fill="var(--surface-2)" stroke="var(--border)"/>
+  <text x="725" y="46" text-anchor="middle" font-size="14" font-weight="700" fill="var(--text)">③ Windows PowerShell</text>
+  <text x="725" y="72" text-anchor="middle" font-size="12.5" fill="var(--text-2)">cd …\Stage_3_gazebo</text>
+  <text x="725" y="92" text-anchor="middle" font-size="12.5" fill="var(--text-2)">py .\test_stage_3_gated_…</text>
+  <text x="725" y="122" text-anchor="middle" font-size="12" fill="var(--muted)">your test scripts (PPO)</text>
+  <text x="725" y="140" text-anchor="middle" font-size="12" fill="var(--muted)">start LAST</text>
+  <line x1="262" y1="95" x2="301" y2="95" stroke="var(--muted)" stroke-width="2" marker-end="url(#w3)"/>
+  <line x1="301" y1="115" x2="264" y2="115" stroke="var(--muted)" stroke-width="2" marker-end="url(#w3)"/>
+  <text x="283" y="198" text-anchor="middle" font-size="11.5" fill="var(--muted)">ports 9002 / 9003</text>
+  <line x1="557" y1="95" x2="596" y2="95" stroke="var(--muted)" stroke-width="2" marker-end="url(#w3)"/>
+  <line x1="596" y1="115" x2="559" y2="115" stroke="var(--muted)" stroke-width="2" marker-end="url(#w3)"/>
+  <text x="578" y="198" text-anchor="middle" font-size="11.5" fill="var(--muted)">TCP 5762</text>
+</svg></div>
+
+<div class="step s3"><div class="sh"><span class="num">2a</span><span class="tt">WSL terminal 1: Gazebo with the F450 world</span><span class="meta">start first · leave running</span></div>
+<div class="cmdbox"><pre class="cmd">gazebo --verbose ~/ardupilot_gazebo/worlds/f450_airsim_runway.world</pre><button class="copy">Copy</button></div>
+<div class="tw"><table><tr><th>Check</th><th>Expected</th></tr>
+<tr><td>Gazebo window</td><td>runway + drone appear (about 10–20 s)</td></tr>
+<tr><td>Drone</td><td>Iris-looking body, <b>no gimbal</b> underneath, thin legs</td></tr>
+<tr><td>Real Time Factor (bottom bar)</td><td>about 1.00</td></tr>
+<tr><td>Which world is running (any WSL terminal): <code>ps aux | grep -o "[g]zserver.*"</code></td><td>ends with <code>f450_airsim_runway.world</code></td></tr></table></div></div>
+
+<div class="step s3"><div class="sh"><span class="num">2b</span><span class="tt">WSL terminal 2: ArduPilot SITL (sim_vehicle) + MAVProxy</span><span class="meta">start when the runway is visible · leave running</span></div>
+<p>Open a <b>second</b> WSL terminal (Windows Terminal → new Ubuntu tab):</p>
+<div class="cmdbox"><pre class="cmd">cd ~/sitl_f450
+
+sim_vehicle.py -v ArduCopter -f gazebo-iris --console --map</pre><button class="copy">Copy</button></div>
+<div class="tw"><table><tr><th>Part of the command</th><th>Meaning</th></tr>
+<tr><td><code>cd ~/sitl_f450</code></td><td><b>Always start from this folder.</b> SITL saves its settings (<code>eeprom.bin</code>) and flight logs (<code>logs/*.BIN</code>) in the folder you start it from, so the F450 settings from Step 3 live here</td></tr>
+<tr><td><code>-v ArduCopter</code></td><td>Multicopter firmware (your 4.4.0-dev build)</td></tr>
+<tr><td><code>-f gazebo-iris</code></td><td>"Physics comes from Gazebo" (quad X frame, Gazebo plugin on ports 9002/9003). The name says iris, but Gazebo flies whatever model the world loads, here the F450</td></tr>
+<tr><td><code>--console --map</code></td><td>Opens the MAVProxy console and map windows</td></tr></table></div>
+<div class="tw"><table><tr><th>What you see (in order, about 30–60 s)</th><th>Meaning</th></tr>
+<tr><td>MAVProxy console + map windows open; the prompt shows <code>STABILIZE&gt;</code></td><td>SITL is running and connected to Gazebo</td></tr>
+<tr><td><code>ArduCopter V4.4.0-dev …</code> · <code>Frame: QUAD/X</code></td><td>Right firmware and frame</td></tr>
+<tr><td><code>GPS 1: detected as u-blox</code> · <code>EKF3 IMU0 origin set</code></td><td>Simulated GPS is up</td></tr>
+<tr><td><b><code>EKF3 IMU0 is using GPS</code></b> (and IMU1)</td><td>✅ <b>Ready.</b> Now go to Step 3 (first time) or Step 4</td></tr></table></div>
+<div class="tw"><table><tr><th>Problem</th><th>Fix</th></tr>
+<tr><td><code>sim_vehicle.py: command not found</code></td><td>Run it with its full path: <code>~/ardupilot/Tools/autotest/sim_vehicle.py -v ArduCopter -f gazebo-iris --console --map</code> (or add <code>export PATH=$PATH:$HOME/ardupilot/Tools/autotest</code> to <code>~/.bashrc</code>)</td></tr>
+<tr><td>Terminal 2 keeps waiting / no <code>STABILIZE&gt;</code> prompt</td><td>Gazebo isn't running or isn't the F450 world: check terminal 1, then restart both (Step 3b)</td></tr>
+<tr><td>Never reaches <code>EKF3 … is using GPS</code></td><td>Wait up to 1 min; if not, restart both (Step 3b)</td></tr></table></div>
+<div class="warn"><b>One SITL folder per drone setup.</b> Like separate save files in a game: the folder you start from decides which settings load.
+<div class="tw" style="margin-top:8px"><table><tr><th>Start SITL from</th><th>Settings in that folder</th><th>Used for</th></tr>
+<tr><td><code>~/sitl_f450</code></td><td>F450 matched to AirSim (Step 3)</td><td><b>This guide</b> (Gazebo F450)</td></tr>
+<tr><td><code>~/sitl_gps</code></td><td>AirSim, GPS mode</td><td>Stage 1/2/3 AirSim guides</td></tr>
+<tr><td><code>~/ardupilot</code></td><td>AirSim, optical flow</td><td>Optical-flow version</td></tr></table></div></div>
+<p style="font-size:13px;color:var(--muted)">Ports: MAVProxy talks to SITL on TCP 5760; your PowerShell scripts connect on <b>TCP 5762</b> (<code>ap_link.py</code> default <code>tcp:127.0.0.1:5762</code>), so the MAVProxy window and the test scripts can be connected at the same time. Windows reaches WSL's 127.0.0.1 automatically.</p></div>
+
+<div class="step s3"><div class="sh"><span class="num">2c</span><span class="tt">Windows PowerShell: go to the Gazebo test folder</span><span class="meta">start last</span></div>
+<div class="cmdbox"><pre class="cmd">cd &lt;your project folder&gt;\Stage_3_gazebo</pre><button class="copy">Copy</button></div>
+<p>Use the same Python environment as for the AirSim runs (Python 3.9, SB3 2.3.2). The scripts take off to 30 m by themselves; you don't need to arm or take off in MAVProxy for the tests (only for the hover check in Step 4).</p></div>
+
+<h2 id="r3">Step 3 · First time only: load the settings (MAVProxy, terminal 2)</h2>
+<div class="step s3"><div class="sh"><span class="num">3</span><span class="tt">Load the AirSim-matched settings once per SITL folder</span><span class="meta">in <code>~/sitl_f450</code> · new PC, new folder, or wiped settings</span></div>
+<p>Check first whether they are already there:</p>
+<div class="cmdbox"><pre class="cmd">param show ATC_RAT_PIT_P</pre><button class="copy">Copy</button></div>
+<div class="tw"><table><tr><th>You see</th><th>Do</th></tr>
+<tr><td><code>ATC_RAT_PIT_P 0.25</code></td><td>✅ Already loaded: skip to Step 4</td></tr>
+<tr><td><code>ATC_RAT_PIT_P 0.135</code> (stock)</td><td>Load them (commands below)</td></tr></table></div>
+<div class="cmdbox"><pre class="cmd">param load /home/jlukas/sitl_f450/f450_airsim_match.parm
+
+param set ARMING_CHECK 0
+
+reboot</pre><button class="copy">Copy</button></div>
+<div class="tw"><table><tr><th>Line</th><th>Why</th></tr>
+<tr><td><code>param load …</code></td><td>Rate gains, filters and loop rate matched to AirSim SITL (Change D). The file is written by the setup script (Step 1)</td></tr>
+<tr><td><code>param set ARMING_CHECK 0</code></td><td>Simulation only, as in your working SITL (the log shows <code>Arming Checks Disabled</code>): lets the scripts arm in GUIDED_NOGPS without pre-arm blocks. <b>Never on the real drone</b></td></tr>
+<tr><td><code>reboot</code></td><td>Restarts the simulated flight controller so <code>SCHED_LOOP_RATE</code> and the filters take effect. Wait for <code>EKF3 IMU0 is using GPS</code> again</td></tr></table></div>
+<div class="tw"><table><tr><th>Check after the reboot</th><th>Expected</th></tr>
+<tr><td><code>param show ATC_RAT_PIT_P</code></td><td><code>0.25</code></td></tr>
+<tr><td><code>param show MOT_THST_EXPO</code></td><td><code>0.65</code> (keep it; see Change D)</td></tr>
+<tr><td><code>param show ATC_RATE_FF_ENAB</code></td><td><code>1</code> (the lead hit sets 0 only during each hit)</td></tr></table></div>
+<div class="warn"><b>Settings are saved in <code>~/sitl_f450/eeprom.bin</code></b>, so you load them once. They come back every time you start SITL from <code>~/sitl_f450</code> (Step 2b). Started from another folder, SITL has different settings: go back to <code>~/sitl_f450</code>.</div></div>
+
+<h2 id="r3b">Step 3b · Restart between runs, and shut down</h2>
+<div class="step s3"><div class="sh"><span class="num">3b</span><span class="tt">When a run fails, crashes or leaves the drone stuck</span><span class="meta">restart BOTH terminals</span></div>
+<div class="tw"><table><tr><th>#</th><th>Where</th><th>Do</th></tr>
+<tr><td>1</td><td>Terminal 2 (MAVProxy)</td><td>Press <b>Ctrl+C</b> (twice if needed) until you're back at the Ubuntu prompt</td></tr>
+<tr><td>2</td><td>Terminal 1 (Gazebo)</td><td>Press <b>Ctrl+C</b>, or close the Gazebo window</td></tr>
+<tr><td>3</td><td>Any WSL terminal (only if Gazebo hangs)</td><td><code>pkill -9 gzserver gzclient</code></td></tr>
+<tr><td>4</td><td>Terminals 1 and 2</td><td>Start again: Step 2a, then 2b (settings stay saved; no Step 3)</td></tr></table></div>
+<div class="tw"><table><tr><th>When to restart</th><th>Why</th></tr>
+<tr><td><code>💥 REAL CRASH</code> printed, or the drone is lying on the runway</td><td>SITL and Gazebo are out of step</td></tr>
+<tr><td><code>EKF Failsafe: changed to LAND</code>, or the next test stops early</td><td>EKF confused by the violent hits</td></tr>
+<tr><td><code>STOP - … is 0</code> / <code>still has test values</code></td><td>A run was killed mid-hit: fix the parameter it names (e.g. <code>param set ATC_RATE_FF_ENAB 1</code>) before restarting</td></tr></table></div>
+<p><b>Shut down at the end:</b> Ctrl+C in terminal 2, then terminal 1.</p></div>
+
+<h2 id="r4">Step 4 · Hover check (2 min): is the right drone flying?</h2>
+<div class="step s3"><div class="sh"><span class="num">4</span><span class="tt">Take off to 30 m, wait about 20 s, read the motor outputs</span><span class="meta">MAVProxy</span></div>
+<div class="cmdbox"><pre class="cmd">mode guided
+
+arm throttle
+
+takeoff 30
+
+status SERVO_OUTPUT_RAW</pre><button class="copy">Copy</button></div>
+<div class="tw"><table><tr><th><code>servo1_raw</code> … <code>servo4_raw</code> in steady hover</th><th>Meaning</th><th>Do</th></tr>
+<tr><td><b>About 1735–1755, all four within a few µs</b> (measured: 1741–1742)</td><td>✅ Final F450 loaded and level</td><td>Land (<code>mode land</code>) and go to Step 5</td></tr>
+<tr><td>About 1780</td><td>Old blade size (version 1 model)</td><td>Rerun Step 1, restart Gazebo</td></tr>
+<tr><td>Other, or the four differ a lot</td><td>Wrong model or world</td><td>See 8. Troubleshooting</td></tr></table></div>
+<div class="note"><b>Use PWM, not the throttle %.</b> The hover throttle in <code>VFR_HUD</code> (about 53–58%) includes ArduPilot's battery-voltage and air-density corrections (the runway world sits at 584 m), so it doesn't directly show thrust. The motor PWM does.</div></div>
+
+<h2 id="r5">Step 5 · Quick flip test (5 min)</h2>
+<div class="step s3"><div class="sh"><span class="num">5</span><span class="tt">Three hard flips, PPO recovery</span><span class="meta">PowerShell · <code>Stage_3_gazebo\</code></span></div>
+<p>Check <code>impact_check.py</code> in <code>Stage_3_gazebo</code>: <code>ALT = 30.0</code>, <code>BASE_TURNS = {"flip": 2.0, "spin": 2.0, "bird": 1.0}</code> (the same hits as AirSim), <code>HIT = "lead"</code>, <code>LEAD_FF_OFF = True</code>. The script takes off to 30 m by itself.</p>
+<div class="cmdbox"><pre class="cmd">py .\test_stage_3_gated_curriculum.py --model .\models\round1_final.zip --types flip --levels hard --repeats 3 --modes ppo-policy</pre><button class="copy">Copy</button></div>
+<div class="tw"><table><tr><th>Check</th><th>Expected (23 Oct, 22:16)</th><th>If not</th></tr>
+<tr><td>Start-up lines</td><td><code>Hit method: lead (attitude target 30 deg ahead + body rate)</code> and <code>Lead hit: ATC_RATE_FF_ENAB 1 -&gt; 0 only during each hit (check: OK)</code></td><td><code>Hit method: rate</code>: old file, see Change G</td></tr>
+<tr><td>Recovered</td><td><b>3 / 3</b></td><td>Check Step 4 first</td></tr>
+<tr><td>Peak rate in the hit</td><td>15–16 rad/s, smooth</td><td>About 8, smooth: lead hit version 1 (feed-forward not switched off)</td></tr>
+<tr><td>Hit time (2.2–2.7 turns)</td><td>about 1.0–1.15 s</td><td>Above 1.5 s with stumbles: old hit</td></tr>
+<tr><td>Lowest height</td><td>13.5–19.7 m</td><td>Below 5 m: send me the <code>_steps.csv</code></td></tr></table></div>
+<p><b>Output:</b> <code>Stage_3_gazebo\runs\test_stage_3\test_stage_3_&lt;date&gt;.csv / _steps.csv / .json</code> (the <code>.json</code> records <code>"hit": "lead"</code>).</p></div>
+
+<h2 id="r6">Step 6 · Full Stage 3 comparison (about 45 min)</h2>
+<div class="step s3"><div class="sh"><span class="num">6</span><span class="tt">All types and levels, all recovery modes (script defaults)</span><span class="meta"><code>Stage_3_gazebo\</code> · restart SITL after a failed run that leaves the drone stuck</span></div>
+<div class="cmdbox"><pre class="cmd">py .\test_stage_3_gated_curriculum.py --model .\models\round1_final.zip</pre><button class="copy">Copy</button></div>
+<p>Then copy the results into their own folder so they never mix with AirSim, for example <code>runs\test_stage_3_gazebo_f450\</code>.</p>
+<div class="tw"><table><tr><th>Result</th><th>Meaning for the thesis</th></tr>
+<tr><td>Same ranking as AirSim (PPO ≥ BC ≈ rule &gt; spin-stop-fast; stock ArduPilot fails HARD)</td><td>✅ Cross-simulator validation: the result doesn't depend on AirSim</td></tr>
+<tr><td>PPO recovers but loses more height than in AirSim</td><td>Report as a sim-to-sim gap (note the lead hit spins a bit faster than AirSim, see 4.)</td></tr>
+<tr><td>PPO fails where the rule recovers</td><td>Policy tuned to AirSim's physics: fine-tuning in Gazebo is the next step</td></tr></table></div></div>
+
+<h2 id="c0">2. Change log at a glance</h2>
+<p>Each change was made because a measurement pointed to it, and each one was checked by a test before the next. Changes A–F used easy flips; Change G was needed for medium and hard flips.</p>
+<div class="tw"><table>
+<tr><th>Step</th><th>What changed</th><th>Why</th><th class="n">Peak rate</th><th class="n">Hit time</th><th class="n">Lowest</th><th>Recovered</th></tr>
+<tr><td><b>A</b></td><td>Gazebo Iris (start)</td><td>default ArduPilot Gazebo drone</td><td class="n">≈ 6.6 avg, erratic</td><td class="n">1.51 s</td><td class="n">2.5–2.8 m</td><td>❌ 0 (all modes)</td></tr>
+<tr><td><b>B + C</b></td><td>AirSim-matched F450, thrust calibrated</td><td>Iris = different, motor-limited drone</td><td class="n">8.7</td><td class="n">1.55 s</td><td class="n">0.7 m</td><td>❌ 0 / 1</td></tr>
+<tr><td><b>D</b></td><td>ArduPilot settings copied from AirSim SITL</td><td>Gazebo ran softer default tuning</td><td class="n">9.2–10.0</td><td class="n">1.63–1.80 s</td><td class="n">1.7–6.5 m</td><td>⚠️ 1 / 2 (barely)</td></tr>
+<tr><td><b>E</b></td><td>(no change: flight-log analysis)</td><td>find the real cause</td><td colspan="4">ruled out: version, motor saturation, angle boost. Found: prop gyroscope + "ghost" target</td></tr>
+<tr><td><b>F</b></td><td>Realistic 9-inch prop inertia</td><td>heavy Iris props acted as gyroscopes</td><td class="n"><b>12.2–12.6</b></td><td class="n"><b>1.15–1.29 s</b></td><td class="n"><b>11.9–16.0 m</b></td><td>✅ <b>3 / 3</b></td></tr>
+<tr><td>F</td><td>(same, <b>medium</b> flips, old hit)</td><td>check harder hits</td><td class="n">12–15</td><td class="n">1.35–1.63 s</td><td class="n">3.5–7.7 m</td><td>⚠️ 2 / 3 (barely)</td></tr>
+<tr><td>F</td><td>(same, <b>hard</b> flips, old hit)</td><td>check harder hits</td><td class="n">12.2–15.1, stumbles</td><td class="n">1.58–1.85 s</td><td class="n">6.1–10.9 m</td><td>⚠️ 3 / 3 (marginal)</td></tr>
+<tr><td><b>G1</b></td><td>Lead hit v1: target 30° ahead + spin (hard)</td><td>stop the "ghost" running away</td><td class="n">≈ 8, smooth</td><td class="n">2.0–2.3 s</td><td class="n">2.5–3.6 m</td><td>❌ too slow</td></tr>
+<tr><td><b>G2</b></td><td>Lead hit v2: + <code>ATC_RATE_FF_ENAB</code> 0 during the hit (<b>hard</b>)</td><td>ArduPilot used its own ghost, not ours</td><td class="n"><b>15–16, smooth</b></td><td class="n"><b>0.97–1.15 s</b></td><td class="n"><b>13.5–19.7 m</b></td><td>✅ <b>3 / 3</b></td></tr>
+<tr><td><b>G2</b></td><td>(same, <b>medium</b>)</td><td></td><td class="n"><b>15–16, smooth</b></td><td class="n"><b>0.85–0.93 s</b></td><td class="n"><b>21.5–24.8 m</b></td><td>✅ <b>3 / 3</b></td></tr>
+<tr><td>ref</td><td>AirSim (old hit, hard)</td><td></td><td class="n">13–14</td><td class="n">1.2–1.5 s</td><td class="n">14–17 m</td><td>✅</td></tr>
+</table></div>
+<p class="cap">All rows are PPO unless stated. Row A includes PPO, attitude-rule and spin-stop-fast on the Iris. Rows B–F (top) are easy flips; the two extra F rows and G1–G2 are medium / hard flips as marked. AirSim row: Round 1 hard-flip PPO runs (10 flips).</p>
+<div class="note"><b>What did NOT change:</b> the PPO model (<code>round1_final.zip</code>) and training, all <code>Stage_3_v1</code> scripts (AirSim), the 30 m start height, the hit sizes (<code>BASE_TURNS</code>) and directions, ArduCopter 4.4.0-dev, <code>MOT_THST_EXPO</code> 0.65, <code>ap_link.py</code>, and your Iris model files. Only <code>impact_check.py</code> in the <code>Stage_3_gazebo</code> copy changed (Change G).</div>
+
+<h2 id="cA">A · Iris baseline: why it failed</h2>
+<div class="step s3"><div class="sh"><span class="num">A</span><span class="tt">EASY flip in the Gazebo Iris: every recovery fell below 5 m</span><span class="meta">impact_check + PPO, 23 Oct morning</span></div>
+<div class="tw"><table><tr><th>Measured</th><th>Iris (Gazebo)</th><th>AirSim drone</th></tr>
+<tr><td>Hit</td><td>1.5 turns in 1.51 s, about 6.6 rad/s on average, erratic</td><td>harder 2.8-turn flip in 1.45 s, steady 13–14 rad/s</td></tr>
+<tr><td>Height lost during the hit alone</td><td>9.3 m</td><td>about 4 m</td></tr>
+<tr><td>Recovery starts at</td><td>about 20 m, still spinning about 8.6 rad/s, falling about 13 m/s</td><td>—</td></tr></table></div>
+<p>Reading the model files and the plugin source code showed the Iris is a different drone:</p>
+<div class="tw"><table><tr><th>Property</th><th>Gazebo Iris</th><th>Why it matters</th></tr>
+<tr><td>Weight</td><td>2.41 kg + gimbal (hover measurements imply about 2.9 kg)</td><td>AirSim's drone is 1.0 kg</td></tr>
+<tr><td><b>Motor ceiling</b></td><td>rotor speed can never exceed <b>621 rad/s</b>, even when ArduPilot asks for 796</td><td>The motor torque cap (<code>cmd_max</code> 2.5) is almost all used up by the joint friction (damping 0.004 × speed). Near hover there is no spare torque to speed up</td></tr>
+<tr><td>Thrust-to-weight</td><td>about 1.2–1.4</td><td>AirSim: 1.62. Almost no spare thrust for a recovery</td></tr></table></div>
+<div class="analogy">A car with a speed limiter set just above cruising speed: fine on the motorway, but there is nothing left for an emergency overtake. No driver (PPO, PID or rule) can fix that.</div></div>
+
+<h2 id="cB">B · New F450 model matched to AirSim</h2>
+<div class="step s3"><div class="sh"><span class="num">B</span><span class="tt">Copy the Iris files, then change only the physics numbers</span><span class="meta">setup_f450_airsim.sh</span></div>
+<p>AirSim's numbers come from its source (<code>AirLib/…/MultiRotorParams.hpp</code>, <code>setupFrameGenericQuad</code>, and <code>RotorParams.hpp</code>): an F450 frame, 1.0 kg, arm 0.2275 m, 4.179 N maximum thrust and 0.0556 N·m maximum torque per rotor.</p>
+<div class="figure" style="background:var(--surface)">
+<svg viewBox="0 0 820 290" width="100%" style="max-width:820px" role="img" aria-label="Top view comparing Iris and F450 rotor positions">
+  <g transform="translate(205,150)">
+    <text x="0" y="-122" text-anchor="middle" font-size="14" font-weight="700" fill="var(--text)">Gazebo Iris (≈2.4 kg + gimbal)</text>
+    <line x1="-84" y1="-52" x2="84" y2="52" stroke="var(--muted)" stroke-width="3"/><line x1="84" y1="-52" x2="-84" y2="52" stroke="var(--muted)" stroke-width="3"/>
+    <rect x="-40" y="-26" width="80" height="52" rx="8" fill="var(--surface-2)" stroke="var(--border)"/>
+    <circle cx="84" cy="-52" r="50" fill="none" stroke="var(--c-bc)" stroke-width="2"/><circle cx="-84" cy="52" r="50" fill="none" stroke="var(--c-bc)" stroke-width="2"/>
+    <circle cx="84" cy="52" r="50" fill="none" stroke="var(--c-bc)" stroke-width="2"/><circle cx="-84" cy="-52" r="50" fill="none" stroke="var(--c-bc)" stroke-width="2"/>
+    <text x="0" y="5" text-anchor="middle" font-size="12" fill="var(--text-2)">2.0 kg body</text>
+    <text x="0" y="125" text-anchor="middle" font-size="12" fill="var(--text-2)">rotors x ±0.13, y ±0.20–0.22 m · max 621 rad/s</text>
+  </g>
+  <g transform="translate(610,150)">
+    <text x="0" y="-122" text-anchor="middle" font-size="14" font-weight="700" fill="var(--text)">f450_airsim (1.0 kg)</text>
+    <line x1="-64" y1="-64" x2="64" y2="64" stroke="var(--muted)" stroke-width="3"/><line x1="64" y1="-64" x2="-64" y2="64" stroke="var(--muted)" stroke-width="3"/>
+    <rect x="-36" y="-22" width="72" height="44" rx="8" fill="var(--surface-2)" stroke="var(--border)"/>
+    <circle cx="64" cy="-64" r="46" fill="none" stroke="var(--c-rule)" stroke-width="2"/><circle cx="-64" cy="64" r="46" fill="none" stroke="var(--c-rule)" stroke-width="2"/>
+    <circle cx="64" cy="64" r="46" fill="none" stroke="var(--c-rule)" stroke-width="2"/><circle cx="-64" cy="-64" r="46" fill="none" stroke="var(--c-rule)" stroke-width="2"/>
+    <text x="0" y="5" text-anchor="middle" font-size="12" fill="var(--text-2)">0.9 kg body</text>
+    <text x="0" y="125" text-anchor="middle" font-size="12" fill="var(--text-2)">rotors ±0.161 m (455 mm X) · no motor ceiling</text>
+  </g>
+  <text x="410" y="282" text-anchor="middle" font-size="12" fill="var(--text-2)">same scale · front = up · circles = props (Iris 10 in, F450 9 in)</text>
+</svg></div>
+<div class="tw"><table><tr><th>File / item</th><th>Iris</th><th>f450_airsim</th><th>Effect</th></tr>
+<tr><td><code>_base</code>: body mass</td><td>2.0 kg</td><td>0.898 kg (total 1.0 kg)</td><td>AirSim weight</td></tr>
+<tr><td><code>_base</code>: body inertia</td><td>0.008 / 0.015 / 0.017</td><td>set so the total is about AirSim's 0.0067 / 0.0080 / 0.0143</td><td>Same resistance to rotation</td></tr>
+<tr><td><code>_base</code>: rotor positions</td><td>x ±0.13, y ±0.20 (rear) / ±0.22 (front)</td><td>±0.1609, ±0.1609</td><td>F450 X layout</td></tr>
+<tr><td><code>_base</code>: sensor links</td><td>0.15 kg each</td><td>0.001 kg</td><td>No hidden weight</td></tr>
+<tr><td>Plugins: gimbal</td><td>yes</td><td><b>removed</b></td><td>AirSim's quad has none</td></tr>
+<tr><td>Plugins: blade <code>cda</code> (8 blades)</td><td>0.10</td><td>0.67</td><td>Yaw torque = AirSim (0.053 N·m at max throttle)</td></tr>
+<tr><td>Plugins: motor torque cap <code>cmd_max</code>/<code>cmd_min</code></td><td>±2.5</td><td><b>±5.0</b></td><td>Removes the motor ceiling (now about 1250 rad/s)</td></tr>
+<tr><td>Names</td><td colspan="3">Kept unchanged on purpose: model <code>iris_demo_test</code> and nested <code>iris</code>, so the plugin's <code>imuName</code> and joint names keep working</td></tr></table></div></div>
+
+<h2 id="cC">C · Thrust calibration from measurements</h2>
+<div class="step s3"><div class="sh"><span class="num">C</span><span class="tt">Weigh it, read the motors, then match thrust-to-weight to AirSim</span><span class="meta">gz + MAVProxy</span></div>
+<div class="tw"><table><tr><th>#</th><th>Measurement</th><th>Result</th><th>Conclusion</th></tr>
+<tr><td>1</td><td>Hover throttle <code>status VFR_HUD</code></td><td>58%</td><td>Misleading (ArduPilot voltage and air-density corrections); not used</td></tr>
+<tr><td>2</td><td>Which world is running: <code>ps aux | grep -o "[g]zserver.*"</code> + <code>diff</code> of the worlds</td><td><code>f450_airsim_runway.world</code>, one line different</td><td>World correct</td></tr>
+<tr><td>3</td><td>Weight inside Gazebo: <code>gz model -m iris_demo_test -i | grep mass</code> (summed)</td><td><b>1.0 kg</b></td><td>Model loaded as designed</td></tr>
+<tr><td>4</td><td>Motor PWM in hover: <code>status SERVO_OUTPUT_RAW</code></td><td><b>1780–1781</b> (predicted from the plugin code: 1785)</td><td>Physics model confirmed. Thrust-to-weight = <b>1.47</b>, below AirSim's 1.62</td></tr>
+<tr><td>5</td><td>Blade area 0.00055 → <b>0.00061</b> (thrust scales with area)</td><td>PWM <b>1741–1742</b> (predicted 1745)</td><td>✅ Thrust-to-weight 1.63 ≈ AirSim 1.62</td></tr></table></div>
+<p>The change we applied (already included in setup version 2):</p>
+<div class="cmdbox"><pre class="cmd">sed -i 's#&lt;area&gt;0.00055&lt;/area&gt;#&lt;area&gt;0.00061&lt;/area&gt;#g' ~/ardupilot_gazebo/models/f450_airsim/model.sdf
+
+grep -c "&lt;area&gt;0.00061&lt;/area&gt;" ~/ardupilot_gazebo/models/f450_airsim/model.sdf</pre><button class="copy">Copy</button></div>
+<div class="analogy">Like checking a new car on a weighbridge and a dyno instead of trusting the brochure: weight 1.0 kg ✓, engine output now within 1% of the target ✓.</div></div>
+
+<h2 id="cD">D · Flight-controller settings matched to AirSim SITL</h2>
+<div class="step s3"><div class="sh"><span class="num">D</span><span class="tt">Copy ArduPilot's own AirSim settings into Gazebo SITL</span><span class="meta">f450_airsim_match.parm</span></div>
+<p>When SITL is started for AirSim, ArduPilot automatically loads <code>Tools/autotest/default_params/airsim-quadX.parm</code>. Gazebo SITL was running the standard defaults, so the "same autopilot" was tuned differently:</p>
+<div class="tw"><table><tr><th>Setting</th><th>Gazebo before</th><th>AirSim / now</th><th>Effect</th></tr>
+<tr><td><code>ATC_RAT_PIT_P</code>, <code>_I</code> (and <code>RLL</code>)</td><td>0.135, 0.135</td><td><b>0.25, 0.25</b></td><td>About 1.9× stronger reaction to a rate demand</td></tr>
+<tr><td><code>ATC_RAT_PIT_D</code> (and <code>RLL</code>)</td><td>0.0036</td><td>0.003</td><td>About the same</td></tr>
+<tr><td><code>ATC_RAT_*_FLTD</code>, <code>FLTT</code></td><td>20 Hz</td><td><b>50 Hz</b></td><td>Less filter delay</td></tr>
+<tr><td><code>INS_GYRO_FILTER</code>, <code>INS_ACCEL_FILTER</code></td><td>20 Hz</td><td><b>50 Hz</b></td><td>Less filter delay</td></tr>
+<tr><td><code>SCHED_LOOP_RATE</code></td><td>400</td><td>300</td><td>Minor</td></tr>
+<tr><td><code>MOT_THST_EXPO</code></td><td>0.65</td><td><b>0.65 (kept)</b></td><td>See below</td></tr></table></div>
+<div class="note"><b>Why <code>MOT_THST_EXPO</code> stays different from AirSim (0.0).</b> It tells ArduPilot how thrust relates to throttle. AirSim's motors are linear, so 0.0 is right there. Gazebo's motors follow thrust ∝ speed², and the fitted value for this curve is 0.66, so 0.65 is right for Gazebo. <b>Real motors behave like Gazebo's.</b></div>
+<p><b>Result:</b> peak rate rose only to 9.2–10 rad/s and the flip still stalled near upside-down. So tuning was <b>not the main cause</b>, but we kept it so both simulators run the same autopilot.</p></div>
+
+<h2 id="cE">E · Flight-log analysis (no change, finding the real cause)</h2>
+<div class="step s3"><div class="sh"><span class="num">E</span><span class="tt">Read ArduPilot's own log (.BIN) during the hits</span><span class="meta">6 hits analysed</span></div>
+<p>How we got the log (WSL):</p>
+<div class="cmdbox"><pre class="cmd">cp "$(ls -t $(find ~ -name '*.BIN' -path '*logs*' 2&gt;/dev/null) | head -1)" /mnt/c/Users/lukas/Downloads/gazebo_flip.BIN</pre><button class="copy">Copy</button></div>
+<div class="tw"><table><tr><th>Question</th><th>Log answer</th><th>Verdict</th></tr>
+<tr><td>Same ArduPilot version as AirSim?</td><td>ArduCopter V4.4.0-dev (e6d6848f)</td><td>✅ ruled out</td></tr>
+<tr><td>Is ArduPilot pushing hard enough?</td><td>Motors at <b>1950 / 1150</b> (absolute max / min) from the first instant</td><td>✅ ruled out (not a soft controller)</td></tr>
+<tr><td>Does "angle boost" kill authority upside-down?</td><td>Throttle cut to 0 past about 85°, but the motors keep the full 1950/1150 difference</td><td>✅ ruled out</td></tr>
+<tr><td><b>Why the stall?</b></td><td>During the stall <b>ArduPilot itself asks for a backwards pitch rate</b> and swaps the motors, while the script still asks for forward</td><td>⚠️ <b>"Chase the ghost"</b> (section 4)</td></tr>
+<tr><td>Anything Gazebo-specific?</td><td>Sideways roll and yaw of 2–4 rad/s during a pure pitch flip (AirSim: about 0)</td><td>⚠️ Points to the props acting as gyroscopes → Change F</td></tr></table></div></div>
+
+<h2 id="cF">F · Realistic prop inertia (the fix)</h2>
+<div class="step s3"><div class="sh"><span class="num">F</span><span class="tt">Give the props the spin inertia of a real 9-inch prop + motor</span><span class="meta">f450_airsim_base/model.sdf, 4 rotors</span></div>
+<div class="tw"><table><tr><th>Rotor inertia (kg·m²)</th><th>Iris props (before)</th><th>Real 9-inch F450 (now)</th></tr>
+<tr><td>Spin axis <code>izz</code></td><td>1.676e-4</td><td><b>5.7e-5</b> (12 g prop ≈ 5.2e-5 + motor bell ≈ 0.5e-5)</td></tr>
+<tr><td>Across the prop <code>ixx</code> / <code>iyy</code></td><td>9.75e-6 / 1.667e-4 (very uneven)</td><td><b>2.85e-5 / 2.85e-5</b> (even)</td></tr></table></div>
+<p>A heavy spinning prop resists being tipped, like a bicycle wheel. The Iris props were about 3× heavier in spin than a real F450 prop, and AirSim models no prop gyroscope at all. The change we applied (already included in setup version 2):</p>
+<div class="cmdbox"><pre class="cmd">sed -i 's#&lt;ixx&gt;9.75e-06&lt;/ixx&gt;#&lt;ixx&gt;2.85e-05&lt;/ixx&gt;#; s#&lt;iyy&gt;0.000166704&lt;/iyy&gt;#&lt;iyy&gt;2.85e-05&lt;/iyy&gt;#; s#&lt;izz&gt;0.000167604&lt;/izz&gt;#&lt;izz&gt;5.7e-05&lt;/izz&gt;#' ~/ardupilot_gazebo/models/f450_airsim_base/model.sdf
+
+grep -c "&lt;izz&gt;5.7e-05&lt;/izz&gt;" ~/ardupilot_gazebo/models/f450_airsim_base/model.sdf</pre><button class="copy">Copy</button></div>
+<p><b>Result:</b> peak rate 12.2–12.6 rad/s, hit 1.15–1.29 s, <b>3 / 3 recovered</b>, lowest 11.9 / 13.2 / 16.0 m. Total inertia is now 0.0065 / 0.0078 / 0.0138 kg·m² (AirSim 0.0067 / 0.0080 / 0.0143).</p>
+<p><b>But:</b> medium and hard flips still failed or only just held (lowest 3.5–10.9 m). The recovery itself looked like AirSim's; the drone simply started it lower and falling faster, because the <b>hit</b> stumbled near upside-down (section 4). That led to Change G.</p></div>
+
+<h2 id="cG">G · Lead hit: fixing how the knock is delivered</h2>
+<div class="step s3"><div class="sh"><span class="num">G</span><span class="tt">Keep ArduPilot's target just ahead of the drone during the hit</span><span class="meta">impact_check.py in <code>Stage_3_gazebo</code> only</span></div>
+<p>The script fakes the knock by asking ArduPilot to spin the drone. ArduPilot turns that into its own target attitude, the <b>ghost (G)</b>, and chases it. We went through three versions:</p>
+<div class="figure" style="background:var(--surface)">
+<svg viewBox="0 0 860 330" width="100%" style="max-width:860px" role="img" aria-label="Old hit, lead hit v1 and lead hit v2 compared">
+  <defs><marker id="gR" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="var(--bad)"/></marker>
+  <marker id="gG" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="var(--c-rule)"/></marker></defs>
+  <g transform="translate(145,0)">
+    <text x="0" y="26" text-anchor="middle" font-size="14" font-weight="700" fill="var(--text)">1. Old hit</text>
+    <circle cx="0" cy="118" r="64" fill="none" stroke="var(--border)" stroke-width="9"/>
+    <path d="M0 54 A64 64 0 0 0 -45.3 163.3" fill="none" stroke="var(--bad)" stroke-width="3" marker-end="url(#gR)"/>
+    <circle cx="0" cy="54" r="12" fill="var(--c-rule)"/><text x="0" y="58.5" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">D</text>
+    <circle cx="-32" cy="173.4" r="12" fill="var(--surface)" stroke="var(--text-2)" stroke-dasharray="3 2" stroke-width="2"/><text x="-32" y="177.9" text-anchor="middle" font-size="12" fill="var(--text-2)">G</text>
+    <text x="4" y="112" text-anchor="middle" font-size="12" fill="var(--text-2)">G 210° ahead</text>
+    <text x="4" y="129" text-anchor="middle" font-size="12" fill="var(--text-2)">steers backwards</text>
+    <text x="0" y="214" text-anchor="middle" font-size="12" fill="var(--text-2)">script: "spin 16 rad/s"</text>
+    <text x="0" y="231" text-anchor="middle" font-size="12" fill="var(--text-2)">ATC_RATE_FF_ENAB = 1</text>
+    <rect x="-100" y="246" width="200" height="54" rx="8" fill="var(--bad-soft)" stroke="var(--bad)"/>
+    <text x="0" y="268" text-anchor="middle" font-size="13" font-weight="700" fill="var(--bad)">Stumbles</text>
+    <text x="0" y="287" text-anchor="middle" font-size="12" fill="var(--text-2)">hard: lowest 6.1–10.9 m</text>
+  </g>
+  <g transform="translate(430,0)">
+    <text x="0" y="26" text-anchor="middle" font-size="14" font-weight="700" fill="var(--text)">2. Lead hit v1</text>
+    <circle cx="0" cy="118" r="64" fill="none" stroke="var(--border)" stroke-width="9"/>
+    <path d="M0 54 A64 64 0 0 1 63.8 112.4" fill="none" stroke="var(--c-rule)" stroke-width="1.3" stroke-dasharray="4 3" marker-end="url(#gG)"/>
+    <circle cx="0" cy="54" r="12" fill="var(--c-rule)"/><text x="0" y="58.5" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">D</text>
+    <circle cx="32" cy="62.6" r="11" fill="var(--surface)" stroke="var(--c-ppo)" stroke-width="2"/><text x="32" y="67" text-anchor="middle" font-size="11" font-weight="700" fill="var(--c-ppo)">T</text>
+    <circle cx="63" cy="129" r="12" fill="var(--surface)" stroke="var(--text-2)" stroke-dasharray="3 2" stroke-width="2"/><text x="63" y="133.5" text-anchor="middle" font-size="12" fill="var(--text-2)">G</text>
+    <text x="-6" y="112" text-anchor="middle" font-size="12" fill="var(--text-2)">T 30°, G ~100°</text>
+    <text x="-6" y="129" text-anchor="middle" font-size="12" fill="var(--text-2)">weak push</text>
+    <text x="0" y="214" text-anchor="middle" font-size="12" fill="var(--text-2)">script: 30° target + spin</text>
+    <text x="0" y="231" text-anchor="middle" font-size="12" fill="var(--text-2)">ATC_RATE_FF_ENAB = 1</text>
+    <rect x="-100" y="246" width="200" height="54" rx="8" fill="var(--bad-soft)" stroke="var(--bad)"/>
+    <text x="0" y="268" text-anchor="middle" font-size="13" font-weight="700" fill="var(--bad)">Too slow (≈ 8 rad/s)</text>
+    <text x="0" y="287" text-anchor="middle" font-size="12" fill="var(--text-2)">hard: lowest 2.5–3.6 m</text>
+  </g>
+  <g transform="translate(715,0)">
+    <text x="0" y="20" text-anchor="middle" font-size="14" font-weight="700" fill="var(--text)">3. Lead hit v2 (now)</text>
+    <circle cx="0" cy="118" r="64" fill="none" stroke="var(--border)" stroke-width="9"/>
+    <path d="M-7.1 36.3 A82 82 0 0 1 30.7 42" fill="none" stroke="var(--c-rule)" stroke-width="4" stroke-linecap="round"/><polygon points="38.1,45 28.8,46.6 32.6,37.4" fill="var(--c-rule)"/>
+    <circle cx="0" cy="54" r="12" fill="var(--c-rule)"/><text x="0" y="58.5" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">D</text>
+    <circle cx="34" cy="63.5" r="13" fill="var(--surface)" stroke="var(--c-ppo)" stroke-width="2"/><text x="34" y="67.5" text-anchor="middle" font-size="10" font-weight="700" fill="var(--c-ppo)">G=T</text>
+    <text x="0" y="112" text-anchor="middle" font-size="12" fill="var(--text-2)">G = T, 30° ahead</text>
+    <text x="0" y="129" text-anchor="middle" font-size="12" fill="var(--text-2)">full push</text>
+    <text x="0" y="214" text-anchor="middle" font-size="12" fill="var(--text-2)">script: 30° target + spin</text>
+    <text x="0" y="231" text-anchor="middle" font-size="12" fill="var(--text-2)">FF_ENAB = 0 during hit only</text>
+    <rect x="-100" y="246" width="200" height="54" rx="8" fill="var(--good-soft)" stroke="var(--good)"/>
+    <text x="0" y="268" text-anchor="middle" font-size="13" font-weight="700" fill="var(--good)">Smooth, 15–16 rad/s</text>
+    <text x="0" y="287" text-anchor="middle" font-size="12" fill="var(--text-2)">hard: 13.5–19.7 m, 3 / 3</text>
+  </g>
+  <text x="430" y="322" text-anchor="middle" font-size="12" fill="var(--text-2)">D = drone · T = target the script sends · G = ArduPilot's own target ("ghost") · arrow = how ArduPilot pushes</text>
+</svg></div>
+<div class="analogy">A carrot on a stick in front of a donkey. <b>Old hit:</b> the carrot is on a cart that drives away faster than the donkey can walk; once it's more than half a lap ahead, the donkey turns round. <b>v1:</b> we hold a carrot 30 cm ahead, but the driver still holds his own carrot on a long stick, so the donkey only ambles. <b>v2:</b> the driver uses our carrot, always 30 cm ahead, so the donkey runs flat out.</div>
+<p><b>In plain words: what happens during ONE hit now</b> (the script does all of this by itself, in about 2–3 s):</p>
+<div class="figure" style="background:var(--surface)">
+<svg viewBox="0 0 860 200" width="100%" style="max-width:860px" role="img" aria-label="One hit step by step: hover, hit, PPO recovery, hand back">
+  <defs><marker id="tl" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="var(--muted)"/></marker></defs>
+  <rect x="10" y="20" width="190" height="160" rx="10" fill="var(--surface-2)" stroke="var(--border)"/>
+  <text x="105" y="44" text-anchor="middle" font-size="14" font-weight="700" fill="var(--text)">1. Hover</text>
+  <text x="105" y="68" text-anchor="middle" font-size="12" fill="var(--text-2)">30 m, GUIDED</text>
+  <text x="105" y="88" text-anchor="middle" font-size="12" fill="var(--text-2)">ArduPilot holds still</text>
+  <text x="105" y="118" text-anchor="middle" font-size="12" fill="var(--muted)">FF_ENAB 1</text>
+  <text x="105" y="136" text-anchor="middle" font-size="12" fill="var(--muted)">ATC_ACCEL normal</text>
+  <rect x="225" y="20" width="190" height="160" rx="10" fill="var(--bad-soft)" stroke="var(--bad)"/>
+  <text x="320" y="44" text-anchor="middle" font-size="14" font-weight="700" fill="var(--text)">2. Hit (≈1 s)</text>
+  <text x="320" y="68" text-anchor="middle" font-size="12" fill="var(--text-2)">50×/s: "be 30° ahead</text>
+  <text x="320" y="86" text-anchor="middle" font-size="12" fill="var(--text-2)">of where you are + spin"</text>
+  <text x="320" y="106" text-anchor="middle" font-size="12" fill="var(--text-2)">until the planned turns are counted</text>
+  <text x="320" y="136" text-anchor="middle" font-size="12" font-weight="700" fill="var(--bad)">FF_ENAB 0 · ATC_ACCEL 0</text>
+  <rect x="440" y="20" width="190" height="160" rx="10" fill="var(--surface-2)" stroke="var(--c-ppo)"/>
+  <text x="535" y="44" text-anchor="middle" font-size="14" font-weight="700" fill="var(--text)">3. PPO recovers</text>
+  <text x="535" y="68" text-anchor="middle" font-size="12" fill="var(--text-2)">FF_ENAB back to 1 first</text>
+  <text x="535" y="86" text-anchor="middle" font-size="12" fill="var(--text-2)">PPO: attitude + thrust</text>
+  <text x="535" y="106" text-anchor="middle" font-size="12" fill="var(--text-2)">until calm</text>
+  <text x="535" y="136" text-anchor="middle" font-size="12" fill="var(--muted)">FF_ENAB 1 · ATC_ACCEL 0</text>
+  <text x="535" y="154" text-anchor="middle" font-size="12" fill="var(--muted)">GUID_OPTIONS bit 3</text>
+  <rect x="655" y="20" width="195" height="160" rx="10" fill="var(--good-soft)" stroke="var(--good)"/>
+  <text x="752" y="44" text-anchor="middle" font-size="14" font-weight="700" fill="var(--text)">4. Hand back</text>
+  <text x="752" y="68" text-anchor="middle" font-size="12" fill="var(--text-2)">ArduPilot holds again</text>
+  <text x="752" y="88" text-anchor="middle" font-size="12" fill="var(--text-2)">score recorded</text>
+  <text x="752" y="118" text-anchor="middle" font-size="12" fill="var(--muted)">everything back to</text>
+  <text x="752" y="136" text-anchor="middle" font-size="12" fill="var(--muted)">your normal values</text>
+  <line x1="202" y1="100" x2="221" y2="100" stroke="var(--muted)" stroke-width="2" marker-end="url(#tl)"/>
+  <line x1="417" y1="100" x2="436" y2="100" stroke="var(--muted)" stroke-width="2" marker-end="url(#tl)"/>
+  <line x1="632" y1="100" x2="651" y2="100" stroke="var(--muted)" stroke-width="2" marker-end="url(#tl)"/>
+</svg></div>
+<div class="tw"><table><tr><th></th><th>Before (old hit, <code>Stage_3_v1</code>)</th><th>After (lead hit, <code>Stage_3_gazebo</code>)</th></tr>
+<tr><td>The one line inside the hit loop</td><td><code>link.send_rates(p, q, r, 0.5)</code><br>= "spin at 16 rad/s"</td><td><code>send_hit(link, (p, q, r))</code><br>= "be 30° ahead of where you are now, and spin at 16 rad/s"</td></tr>
+<tr><td>Around the hit loop</td><td>only <code>ATC_ACCEL</code> → 0</td><td>also <code>ATC_RATE_FF_ENAB</code> → 0 before, → 1 right after</td></tr>
+<tr><td>What ArduPilot chases</td><td>its own target, which runs away</td><td>our target, which is always 30° ahead</td></tr>
+<tr><td>Everything else (turns, stop rule, recovery, PPO, scoring)</td><td colspan="2">identical</td></tr></table></div>
+<div class="tw"><table><tr><th>Version</th><th>What the script sends (50 times a second)</th><th>What ArduPilot 4.4 does (from its code)</th><th>Result (hard flips)</th></tr>
+<tr><td>Old hit</td><td>"spin at 16 rad/s"</td><td>Its ghost spins at exactly 16; the drone manages about 12, so the ghost runs away. Past ~half a turn it steers the shortest way = backwards</td><td>Stumbles; 1.58–1.85 s; lowest 6.1–10.9 m</td></tr>
+<tr><td>Lead v1</td><td>target = <b>current attitude + 30°</b> about the hit axis, + "spin 16 rad/s"</td><td>With <code>ATC_RATE_FF_ENAB = 1</code> (<code>input_quaternion</code>) it keeps its own ghost spinning at 16 and only pulls it toward our target; the ghost settles ~100° ahead, where the spin command is dropped and only the angle gain pushes (4.5 × ~1.8 rad ≈ 8 rad/s)</td><td>Smooth but slow; 2.0–2.3 s; lowest 2.5–3.6 m ❌</td></tr>
+<tr><td><b>Lead v2</b></td><td>same as v1, and <code>ATC_RATE_FF_ENAB</code> → <b>0</b> during the hit only</td><td>With it at 0, ArduPilot uses our target <b>as</b> its ghost (exactly 30° ahead) and still adds the full 16 rad/s spin command → motors at full effort, ghost can never run away</td><td><b>Smooth, 15–16 rad/s; 0.97–1.15 s; lowest 13.5–19.7 m; 3 / 3</b> ✅</td></tr></table></div>
+<p><b>What changed in <code>impact_check.py</code></b> (Stage_3_gazebo copy only; header section 10 documents it):</p>
+<div class="tw"><table><tr><th>Item</th><th>Detail</th></tr>
+<tr><td>New settings</td><td><code>HIT = "lead"</code> · <code>LEAD_DEG = 30.0</code> · <code>LEAD_FF_OFF = True</code></td></tr>
+<tr><td>New functions</td><td><code>qmul</code>, <code>lead_quat</code> (current attitude turned 30° about the hit axis), <code>send_hit</code> (SET_ATTITUDE_TARGET with attitude + body rate + thrust 0.5, <code>type_mask</code> 0)</td></tr>
+<tr><td>Hit loop</td><td><code>link.send_rates(p, q, r, 0.5)</code> → <code>send_hit(link, (p, q, r))</code>. Same axis, direction, turns and stop rule</td></tr>
+<tr><td>Feed-forward</td><td><code>ATC_RATE_FF_ENAB</code> → 0 at the start of each hit, <b>back to your value (1) the moment the hit ends</b>, before the recovery; also restored on Ctrl+C</td></tr>
+<tr><td>Safety check</td><td>At start-up the script tests that the FC accepts the change. If it finds <code>ATC_RATE_FF_ENAB = 0</code> (left over from a crashed run) it stops: <code>param set ATC_RATE_FF_ENAB 1</code></td></tr>
+<tr><td>Record</td><td>Prints <code>Hit method: lead …</code>; every <code>.json</code> saves <code>hit</code>, <code>lead_deg</code>, <code>lead_ff_off</code></td></tr>
+<tr><td>Old hit</td><td><code>HIT = "rate"</code> (or <code>py .\impact_check.py --hit rate</code>) gives exactly the <code>Stage_3_v1</code> hit</td></tr>
+<tr><td>Not changed</td><td>Training environment (still old hit), all recovery modes, <code>ap_link.py</code>, PPO model</td></tr></table></div>
+<div class="tw"><table><tr><th>Lead hit v2 results (PPO)</th><th class="n">Turns / hit time</th><th class="n">Height at hit end</th><th class="n">Lowest</th><th>Recovered</th></tr>
+<tr><td>Hard (22:16)</td><td class="n">2.22–2.67 / 0.97–1.15 s</td><td class="n">25.4–26.6 m</td><td class="n">13.5 / 19.7 / 15.3 m</td><td>3 / 3</td></tr>
+<tr><td>Medium (22:19)</td><td class="n">1.86–2.07 / 0.85–0.93 s</td><td class="n">27.0–27.5 m</td><td class="n">24.1 / 21.5 / 24.8 m</td><td>3 / 3</td></tr>
+<tr><td>AirSim hard (reference)</td><td class="n">2.2–2.95 / 1.2–1.5 s</td><td class="n">23–26 m</td><td class="n">14–17 m</td><td>10 / 10</td></tr></table></div></div>
+
+<h2 id="res">3. Results</h2>
+<div class="chart"><div class="ct">Turn rate during a hard flip: the same 2.33 turns in all three</div>
+<div class="cs">AirSim vs Gazebo F450 with the old hit vs Gazebo F450 with the lead hit · hover a line for values · rad/s</div>
+<div class="legend" id="lg"></div>
+<div id="ch1"></div>
+<button class="btn" id="tbBtn" style="margin-top:6px">Show data table</button>
+<div class="charttable" id="tb1"></div></div>
+<p class="cap">All three are the first hard flip of a run, each 2.32–2.34 turns. With the old hit, the Gazebo drone stumbles (rate drops to about 0 at 0.6–0.8 s and again to about 5 rad/s at 1.4–1.7 s) and needs 1.85 s. With the lead hit it spins smoothly at 15–16 rad/s and finishes in 1.04 s (AirSim: 1.25 s at 13–14 rad/s).</p>
+<div class="tw"><table><tr><th>Easy flips, old hit (23 Oct, 13:34, after Change F)</th><th class="n">Flip 1</th><th class="n">Flip 2</th><th class="n">Flip 3</th></tr>
+<tr><td>Turns / hit time</td><td class="n">1.48 / 1.19 s</td><td class="n">1.63 / 1.29 s</td><td class="n">1.42 / 1.15 s</td></tr>
+<tr><td>Peak rate</td><td class="n">12.6</td><td class="n">12.4</td><td class="n">12.2</td></tr>
+<tr><td>Height when the hit ends</td><td class="n">24.2 m</td><td class="n">24.5 m</td><td class="n">25.7 m</td></tr>
+<tr><td>Calm (tilt &lt; 30°, rate &lt; 1.2) after the hit</td><td class="n">0.78 s</td><td class="n">0.76 s</td><td class="n">0.74 s</td></tr>
+<tr><td>Lowest height</td><td class="n">11.9 m</td><td class="n">13.2 m</td><td class="n">16.0 m</td></tr></table></div>
+<p>Medium and hard flips with the lead hit: see the results table in Change G (6 / 6 recovered, lowest 13.5–24.8 m).</p>
+<div class="note"><b>Key findings for the thesis.</b> (1) PPO trained only in AirSim recovered a drone in a different physics engine (Gazebo: quadratic motors, prop gyroscopes) in every easy, medium and hard flip tested, once the simulated drone, the autopilot settings and the way the knock is delivered matched. (2) Recovery needs spare thrust and fast motors (the Iris case), a measurable hardware requirement. (3) How an artificial hit is injected matters as much as the controller: a hit that lets the autopilot's target run away produces a worse, inconsistent start for the recovery.</div>
+
+<h2 id="lim">4. The hit: why it stumbled ("chase the ghost") — fixed by Change G</h2>
+<div class="figure" style="background:var(--surface)">
+<svg viewBox="0 0 820 230" width="100%" style="max-width:820px" role="img" aria-label="Ghost target runs ahead; past half a turn the shortest way is backwards">
+  <defs><marker id="ag" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="var(--c-rule)"/></marker>
+  <marker id="ab" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="var(--bad)"/></marker></defs>
+  <g transform="translate(200,115)">
+    <circle r="78" fill="none" stroke="var(--border)" stroke-width="10"/>
+    <text y="-96" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--text)">Less than half a turn behind</text>
+    <circle cx="0" cy="-78" r="11" fill="var(--c-rule)"/><text x="0" y="-74" text-anchor="middle" font-size="10" fill="#fff" font-weight="700">D</text>
+    <circle cx="74" cy="24" r="11" fill="none" stroke="var(--text-2)" stroke-dasharray="3 2" stroke-width="2"/><text x="74" y="28" text-anchor="middle" font-size="10" fill="var(--text-2)">G</text>
+    <path d="M 22 -75 A 78 78 0 0 1 70 -12" fill="none" stroke="var(--c-rule)" stroke-width="3" marker-end="url(#ag)"/>
+    <text y="5" text-anchor="middle" font-size="12" fill="var(--text-2)">shortest way</text><text y="21" text-anchor="middle" font-size="12" fill="var(--text-2)">= forward ✓</text>
+  </g>
+  <g transform="translate(600,115)">
+    <circle r="78" fill="none" stroke="var(--border)" stroke-width="10"/>
+    <text y="-96" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--text)">More than half a turn behind</text>
+    <circle cx="0" cy="-78" r="11" fill="var(--c-rule)"/><text x="0" y="-74" text-anchor="middle" font-size="10" fill="#fff" font-weight="700">D</text>
+    <circle cx="-60" cy="50" r="11" fill="none" stroke="var(--text-2)" stroke-dasharray="3 2" stroke-width="2"/><text x="-60" y="54" text-anchor="middle" font-size="10" fill="var(--text-2)">G</text>
+    <path d="M -22 -75 A 78 78 0 0 0 -76 15" fill="none" stroke="var(--bad)" stroke-width="3" marker-end="url(#ab)"/>
+    <text y="5" text-anchor="middle" font-size="12" fill="var(--text-2)">shortest way</text><text y="21" text-anchor="middle" font-size="12" fill="var(--text-2)">= backwards ✗</text>
+  </g>
+  <text x="410" y="222" text-anchor="middle" font-size="12" fill="var(--text-2)">D = drone · G = ArduPilot's target ("ghost"), spinning ahead at 16 rad/s · arrows = the direction ArduPilot steers</text>
+</svg></div>
+<p>The script creates the hit by asking ArduPilot to spin at 16 rad/s. Inside ArduPilot 4.4 this becomes a target attitude, the "ghost", that keeps spinning at 16 rad/s while the drone chases it. From the ArduPilot code:</p>
+<div class="tw"><table><tr><th>Drone behind the ghost by</th><th>ArduPilot (4.4 <code>attitude_controller_run_quat</code>)</th></tr>
+<tr><td>under 30°</td><td>full "spin" command plus correction</td></tr>
+<tr><td>30–60°</td><td>"spin" command faded out</td></tr>
+<tr><td>over 60°</td><td>only steers toward the ghost, <b>by the shortest way</b>; past about half a turn, that can be backwards</td></tr></table></div>
+<p>In AirSim the flip stayed perfectly in one plane and kept spinning forward. In Gazebo, small differences (slightly slower start, sideways motion) make ArduPilot sometimes choose "backwards", which gives a 0.1–0.3 s stumble near upside-down. The log proves the mechanism, but the exact trigger isn't pinned down. That is why we call the method <b>fragile</b>: tiny differences decide whether it stumbles.</p>
+<div class="note"><b>Status: fixed in <code>Stage_3_gazebo</code> by the lead hit (Change G).</b> The old hit stays in <code>Stage_3_v1</code> so the AirSim results remain reproducible.</div>
+<div class="tw"><table><tr><th>What's left (honest notes)</th><th>Meaning / action</th></tr>
+<tr><td>The lead hit spins a bit <b>faster</b> than AirSim's hit (15–16 vs 13–14 rad/s)</td><td>Same turns, finished sooner, so slightly less time upside-down. State it when comparing simulators; for a strict comparison, rerun AirSim once with the lead hit (optional)</td></tr>
+<tr><td>In 2 of 3 hard flips, PPO's recovery had a <b>roll swing</b> (tilt back to 150–174° for about 0.2 s)</td><td>Recovered anyway (lost 11–13 m vs 6–11 m in AirSim). Look at it later with a full-rate flight log (<code>LOG_BITMASK 180223</code>)</td></tr>
+<tr><td>Not yet tested with the lead hit: <b>easy flips, spin and bird hits</b>, other recovery modes</td><td>Covered by the full run (Step 6)</td></tr>
+<tr><td>Training (<code>drone_flip_recovery_env_injector_gated.py</code>) still uses the old hit</td><td>Fine for testing; if PPO is ever fine-tuned in Gazebo, switch it to the lead hit too</td></tr></table></div>
+
+<h2 id="real">5. What it means for the real drone</h2>
+<div class="tw"><table><tr><th>Finding in Gazebo</th><th>Real F450</th><th>Action</th></tr>
+<tr><td>No spare thrust = no recovery (Iris)</td><td>Same physics</td><td>Measure weight and thrust per motor; aim for thrust-to-weight <b>at least 1.6, ideally about 2</b></td></tr>
+<tr><td>A soft inner loop slowed the flip</td><td>Same</td><td>Run <b>AutoTune</b> before any PPO flight</td></tr>
+<tr><td>Prop gyroscope effect matters</td><td>Real props have it (realistic now in Gazebo)</td><td>Nothing extra; Gazebo now rehearses it</td></tr>
+<tr><td>"Chase the ghost" hits are fragile</td><td>Real motors are slower, so the old hit would <b>very likely stumble</b></td><td>Use the <b>lead hit</b> (Change G) for any scripted hit on the real drone; start with small hits (section 5b)</td></tr>
+<tr><td>EKF failsafe after violent hits (seen in the SITL log)</td><td>Would switch to LAND mid-recovery</td><td>Review EKF failsafe settings with care before real flips (don't just disable)</td></tr></table></div>
+<div class="warn"><b>Never copy the simulator settings (<code>f450_airsim_match.parm</code>) to the real drone.</b> Real rate gains come from AutoTune; real filters come from vibration logs (usually lower, plus the harmonic notch); <code>MOT_THST_HOVER</code> is learned in flight; keep <code>SCHED_LOOP_RATE</code> at the default 400.</div>
+<div class="tw"><table><tr><th>Which simulator is closer to the real F450?</th><th>AirSim</th><th>Gazebo F450 (now)</th><th>Real F450</th></tr>
+<tr><td>Thrust vs throttle</td><td>straight line</td><td>∝ speed² ✅</td><td>∝ speed²</td></tr>
+<tr><td>Prop gyroscope effect</td><td>none</td><td>yes ✅</td><td>yes</td></tr>
+<tr><td>Motor speed-up</td><td>5 ms</td><td>about 10 ms</td><td>usually slower; measure it</td></tr></table></div>
+
+<h2 id="realp">5b. Real drone parameters: what to set, and what not</h2>
+<p>There are three kinds of settings in this guide. Only the third kind belongs on the real drone permanently.</p>
+<div class="tw"><table><tr><th>Kind</th><th>Examples</th><th>On the real F450</th></tr>
+<tr><td><b>1. Simulator matching</b> (<code>f450_airsim_match.parm</code>)</td><td><code>ATC_RAT_*</code> 0.25, filters 50 Hz, <code>SCHED_LOOP_RATE</code> 300</td><td>❌ <b>Never.</b> They make Gazebo's autopilot match AirSim's; a real drone needs its own values</td></tr>
+<tr><td><b>2. Temporary, set by the script</b> during a hit / recovery only</td><td><code>ATC_ACCEL_R/P/Y_MAX</code> → 0, <code>ATC_RATE_FF_ENAB</code> → 0 (lead hit), <code>GUID_OPTIONS</code> bit 3</td><td>⚠️ <b>Don't set them by hand.</b> The script switches them for a fraction of a second and restores your values. Check after every session (below)</td></tr>
+<tr><td><b>3. Real-drone setup</b></td><td>AutoTune gains, filters, thrust curve, hover, battery</td><td>✅ Set these on the real drone (table below)</td></tr></table></div>
+<div class="tw"><table><tr><th>Real F450 setting</th><th>How to set it</th></tr>
+<tr><td>Rate gains <code>ATC_RAT_*</code> and <code>ATC_ACCEL_*_MAX</code></td><td><b>AutoTune</b> (it also sets the acceleration limits)</td></tr>
+<tr><td>Gyro filter + harmonic notch</td><td>From real vibration / FFT logs (not 50 Hz)</td></tr>
+<tr><td><code>SCHED_LOOP_RATE</code></td><td>Default 400</td></tr>
+<tr><td><code>MOT_THST_EXPO</code></td><td>Start at 0.65 (real props behave like Gazebo's), or from a thrust-stand test</td></tr>
+<tr><td><code>MOT_THST_HOVER</code></td><td>Learned in AltHold / Loiter (<code>MOT_HOVER_LEARN</code> 2)</td></tr>
+<tr><td><code>MOT_BAT_VOLT_MAX</code> / <code>MIN</code></td><td>For 4S: 16.8 / 13.2 V (4.2 / 3.3 V per cell), so thrust stays steady as the battery drains</td></tr>
+<tr><td><code>ATC_RATE_FF_ENAB</code></td><td><b>1</b> (default; PPO was trained with it)</td></tr>
+<tr><td><code>GUID_OPTIONS</code></td><td>0 (the script adds bit 3 only during a recovery)</td></tr></table></div>
+<p>After every real-drone test session, confirm the script put everything back (MAVProxy or Mission Planner):</p>
+<div class="cmdbox"><pre class="cmd">param show ATC_RATE_FF_ENAB
+
+param show ATC_ACCEL*
+
+param show GUID_OPTIONS</pre><button class="copy">Copy</button></div>
+<div class="tw"><table><tr><th>Expected</th><th>If not</th></tr>
+<tr><td><code>ATC_RATE_FF_ENAB 1</code> · <code>ATC_ACCEL_R/P/Y_MAX</code> your AutoTune values (not 0) · <code>GUID_OPTIONS 0</code></td><td>A run was interrupted mid-hit: set them back before the next flight (the script also refuses to start until they are)</td></tr></table></div>
+<div class="warn"><b>Real-drone safety for scripted hits:</b> the lead hit drives the motors at full effort, so start with small hits (fewer turns, e.g. a 90–180° tilt) at your 30 m limit, keep an RC switch to take over manually, and check the logs after each hit before making it bigger.</div>
+
+<h2 id="vals">6. Final values (reference)</h2>
+<div class="tw"><table><tr><th>Gazebo model</th><th>Value</th><th>AirSim</th></tr>
+<tr><td>Total mass</td><td>1.0 kg (gz-measured)</td><td>1.0 kg</td></tr>
+<tr><td>Total inertia (kg·m²)</td><td>0.0065 / 0.0078 / 0.0138</td><td>0.0067 / 0.0080 / 0.0143</td></tr>
+<tr><td>Rotor positions</td><td>±0.1609 m (X), z 0.023</td><td>arm 0.2275 m</td></tr>
+<tr><td>LiftDrag (8 blades)</td><td><code>area</code> 0.00061, <code>cda</code> 0.67, <code>cla</code> 4.25, <code>a0</code> 0.3, <code>cp</code> 0.084</td><td>—</td></tr>
+<tr><td>Thrust-to-weight (at 95% max throttle)</td><td>1.63</td><td>1.62</td></tr>
+<tr><td>Motor loop</td><td>VELOCITY, <code>p_gain</code> 0.20, <code>cmd_max</code> ±5.0, <code>multiplier</code> ±838, joint damping 0.004</td><td>5 ms filter</td></tr>
+<tr><td>Rotor inertia</td><td><code>ixx</code> = <code>iyy</code> 2.85e-5, <code>izz</code> 5.7e-5</td><td>(not modelled)</td></tr>
+<tr><td>Hover PWM</td><td>1741–1742</td><td>—</td></tr></table></div>
+<div class="tw"><table><tr><th>ArduPilot SITL (<code>f450_airsim_match.parm</code>)</th><th>Value</th></tr>
+<tr><td><code>ATC_RAT_PIT_P / I / D</code>, <code>ATC_RAT_RLL_P / I / D</code></td><td>0.25 / 0.25 / 0.003</td></tr>
+<tr><td><code>ATC_RAT_PIT_FLTD / FLTT</code>, <code>ATC_RAT_RLL_FLTD / FLTT</code></td><td>50 / 50</td></tr>
+<tr><td><code>INS_GYRO_FILTER</code>, <code>INS_ACCEL_FILTER</code></td><td>50, 50</td></tr>
+<tr><td><code>SCHED_LOOP_RATE</code></td><td>300</td></tr>
+<tr><td>Unchanged (for the record)</td><td><code>MOT_THST_EXPO</code> 0.65 · <code>MOT_SPIN_MIN</code> 0.15 · <code>MOT_SPIN_MAX</code> 0.95 · <code>ATC_ANGLE_BOOST</code> 1 · <code>ATC_THR_MIX_MAX</code> 0.5 · <code>MOT_HOVER_LEARN</code> 2 · <code>ATC_RATE_FF_ENAB</code> 1 (0 only during a lead hit, set by the script)</td></tr></table></div>
+<div class="tw"><table><tr><th>Lead hit (<code>Stage_3_gazebo\impact_check.py</code>)</th><th>Value</th></tr>
+<tr><td><code>HIT</code> · <code>LEAD_DEG</code> · <code>LEAD_FF_OFF</code></td><td><code>"lead"</code> · 30.0 · True</td></tr>
+<tr><td>Hit rates (unchanged)</td><td>flip 16 rad/s (roll or pitch) · spin 10 rad/s yaw · bird 10 / 10 / 6 rad/s</td></tr></table></div>
+
+<h2 id="files">7. Files</h2>
+<div class="tw"><table><tr><th>File</th><th>Where</th><th>Purpose</th></tr>
+<tr><td><code>setup_f450_airsim.sh</code> (version 2)</td><td>Windows Downloads → <code>~/</code> in WSL</td><td>Installs everything in Step 1</td></tr>
+<tr><td><code>f450_airsim_base/model.sdf</code>, <code>f450_airsim/model.sdf</code></td><td><code>~/ardupilot_gazebo/models/</code></td><td>The F450 model (body / plugins)</td></tr>
+<tr><td><code>f450_airsim_runway.world</code></td><td><code>~/ardupilot_gazebo/worlds/</code></td><td>Runway world with the F450</td></tr>
+<tr><td><code>f450_airsim_match.parm</code></td><td><code>~/sitl_f450/</code></td><td>ArduPilot settings (simulation only)</td></tr>
+<tr><td><code>impact_check.py</code> (lead hit, header section 10)</td><td><code>Stage_3_gazebo\</code> only</td><td>How the knock is delivered (Change G)</td></tr>
+<tr><td><code>Stage_3_v1\</code></td><td>unchanged</td><td>AirSim (old hit)</td></tr>
+<tr><td>Test results</td><td><code>Stage_3_gazebo\runs\test_stage_3\</code> (earlier Gazebo runs: <code>Stage_3_v1\runs\…</code>)</td><td>csv / _steps.csv / json</td></tr>
+<tr><td>Flight-controller logs</td><td><code>~/sitl_f450/logs/*.BIN</code></td><td>Motor outputs, rate targets (Change E)</td></tr></table></div>
+
+<h2 id="trouble">8. Troubleshooting</h2>
+<div class="tw"><table><tr><th>Symptom</th><th>Cause</th><th>Fix</th></tr>
+<tr><td>Gazebo shows a gimbal under the drone</td><td>Iris world launched</td><td>Launch <code>f450_airsim_runway.world</code> (Step 2)</td></tr>
+<tr><td><code>model://f450_airsim</code> not found</td><td>Model path</td><td><code>echo $GAZEBO_MODEL_PATH</code> must include <code>~/ardupilot_gazebo/models</code></td></tr>
+<tr><td>Setup: <code>WARNING: world does not include …</code></td><td>Different world layout</td><td>Send me <code>grep -n "iris" ~/ardupilot_gazebo/worlds/iris_arducopter_runway.world</code></td></tr>
+<tr><td>Hover PWM about 1780</td><td>Version 1 blade size</td><td>Rerun Step 1, restart Gazebo</td></tr>
+<tr><td>Peak rate about 9, stall upside-down</td><td>Old prop inertia or old settings</td><td>Rerun Step 1; check <code>param show ATC_RAT_PIT_P</code> = 0.25</td></tr>
+<tr><td><code>MOT_THST_HOVER</code> doesn't change</td><td>Hover learning only runs in specific steady conditions</td><td>Not needed; use the PWM check (Step 4)</td></tr>
+<tr><td>"EKF Failsafe: changed to LAND" after a hit</td><td>Violent motion confused the EKF</td><td>Restart SITL before the next run</td></tr>
+<tr><td>A test stops early / one impact line missing</td><td>Previous run ended in LAND or failsafe</td><td>Restart SITL, rerun</td></tr>
+<tr><td><code>STOP - ATC_RATE_FF_ENAB is 0</code></td><td>Left over from an interrupted lead-hit run</td><td><code>param set ATC_RATE_FF_ENAB 1</code>, rerun</td></tr>
+<tr><td>Start-up prints <code>Hit method: rate</code></td><td>Old <code>impact_check.py</code> (or running from <code>Stage_3_v1</code>)</td><td>Use the <code>Stage_3_gazebo</code> copy with the lead hit</td></tr>
+<tr><td>Hit smooth but only about 8 rad/s, 2+ s long</td><td>Lead hit version 1 (feed-forward not switched off)</td><td>Use version 2: <code>LEAD_FF_OFF = True</code> and the start-up line <code>Lead hit: ATC_RATE_FF_ENAB 1 -&gt; 0</code></td></tr>
+<tr><td>Hit stumbles near upside-down (rate drops toward 0)</td><td>Old hit</td><td>Lead hit (Change G)</td></tr></table></div>
+<footer>ArduPilot + Gazebo F450 guide · sources: AirSim AirLib (MultiRotorParams.hpp, RotorParams.hpp), ardupilot_gazebo ArduPilotPlugin.cc, Gazebo LiftDragPlugin.cc, ArduPilot 4.4 AC_AttitudeControl.cpp (attitude_controller_run_quat, input_quaternion) and airsim-quadX.parm, your SITL logs and step files of 23 Oct 2026</footer>
+</main></div>
+<script>
+const DATA = {"airsim": [[0.031, 0.01, 0.4], [0.047, 0.48, 0.6], [0.062, 2.73, 2.7], [0.093, 5.49, 8.3], [0.109, 7.63, 18.1], [0.125, 5.98, 24.9], [0.14, 4.77, 30.0], [0.171, 6.11, 36.7], [0.187, 6.95, 43.7], [0.202, 7.74, 54.0], [0.234, 8.52, 62.6], [0.25, 9.2, 71.9], [0.266, 9.91, 83.5], [0.282, 10.66, 97.9], [0.313, 11.16, 109.2], [0.329, 11.61, 121.1], [0.344, 12.09, 135.5], [0.375, 12.46, 148.2], [0.39, 12.9, 165.7], [0.406, 13.19, 179.0], [0.422, 13.45, 166.9], [0.452, 13.73, 150.4], [0.468, 13.96, 131.4], [0.483, 13.62, 117.2], [0.515, 13.89, 103.1], [0.53, 13.81, 86.4], [0.546, 13.98, 72.1], [0.562, 13.94, 52.9], [0.593, 13.76, 38.7], [0.609, 13.89, 24.6], [0.624, 13.66, 8.1], [0.656, 13.68, 10.7], [0.671, 13.6, 24.7], [0.687, 13.51, 38.6], [0.702, 13.73, 55.0], [0.734, 13.6, 69.1], [0.75, 13.58, 87.7], [0.766, 13.72, 101.9], [0.782, 13.51, 115.9], [0.813, 13.57, 132.1], [0.829, 13.63, 150.9], [0.844, 13.52, 164.7], [0.875, 13.61, 176.8], [0.89, 13.72, 164.4], [0.906, 13.38, 150.7], [0.921, 13.64, 132.2], [0.951, 13.69, 118.1], [0.966, 13.69, 104.1], [0.981, 13.63, 87.7], [1.012, 13.5, 69.2], [1.028, 13.64, 55.3], [1.044, 13.62, 41.5], [1.06, 13.52, 26.1], [1.091, 13.62, 14.4], [1.106, 13.5, 12.8], [1.122, 13.55, 24.5], [1.153, 13.7, 37.9], [1.168, 13.67, 54.1], [1.184, 13.62, 72.7], [1.2, 13.52, 86.6], [1.231, 13.69, 100.5], [1.247, 13.44, 116.7]], "old": [[0.031, 0.01, 0.1], [0.047, 2.18, 1.7], [0.063, 4.96, 6.6], [0.093, 7.31, 14.2], [0.108, 6.84, 22.6], [0.124, 4.72, 28.7], [0.155, 5.02, 34.1], [0.171, 5.51, 40.3], [0.186, 6.29, 47.2], [0.202, 7.05, 55.1], [0.233, 7.75, 63.7], [0.249, 8.43, 73.2], [0.265, 9.06, 83.4], [0.281, 9.64, 94.2], [0.312, 10.15, 105.7], [0.328, 10.66, 117.7], [0.343, 11.18, 130.4], [0.374, 12.07, 157.3], [0.405, 11.75, 170.0], [0.421, 11.67, 173.2], [0.452, 11.26, 161.7], [0.468, 11.38, 149.4], [0.484, 10.45, 137.5], [0.515, 9.72, 115.3], [0.545, 9.57, 104.7], [0.561, 6.72, 95.8], [0.592, 2.89, 91.3], [0.607, 0.59, 90.9], [0.622, 3.44, 93.9], [0.654, 5.5, 99.7], [0.669, 5.58, 106.1], [0.685, 4.63, 111.8], [0.701, 1.48, 114.4], [0.732, 1.39, 113.7], [0.748, 3.87, 110.0], [0.763, 6.1, 103.7], [0.794, 8.21, 95.0], [0.809, 10.17, 84.0], [0.825, 9.68, 72.5], [0.855, 5.06, 56.2], [0.886, 5.39, 50.5], [0.901, 5.64, 44.2], [0.932, 6.36, 37.2], [0.948, 7.25, 29.2], [0.963, 7.88, 20.6], [0.994, 9.2, 4.4], [1.025, 9.81, 11.6], [1.056, 10.84, 34.9], [1.088, 11.4, 47.5], [1.103, 11.81, 60.2], [1.136, 12.32, 85.9], [1.167, 12.15, 98.8], [1.182, 11.87, 111.2], [1.213, 11.39, 125.5], [1.229, 10.38, 136.7], [1.244, 10.45, 147.1], [1.26, 9.68, 155.8], [1.292, 9.27, 161.4], [1.306, 9.14, 162.3], [1.322, 8.86, 158.1], [1.353, 8.42, 151.2], [1.369, 7.83, 143.0], [1.384, 7.0, 136.0], [1.414, 7.4, 128.2], [1.429, 7.67, 119.6], [1.445, 7.93, 111.1], [1.461, 6.8, 103.3], [1.492, 7.69, 95.0], [1.507, 8.09, 86.7], [1.522, 8.11, 78.0], [1.554, 8.26, 69.0], [1.569, 8.9, 59.5], [1.585, 6.71, 51.3], [1.632, 4.43, 44.7], [1.647, 7.08, 44.0], [1.663, 7.1, 43.3], [1.693, 7.11, 42.0], [1.708, 7.03, 39.9], [1.723, 7.31, 36.8], [1.754, 7.72, 33.2], [1.77, 8.26, 29.7], [1.786, 8.99, 27.2], [1.801, 9.59, 27.4], [1.832, 10.12, 30.9], [1.847, 10.56, 37.5]], "lead": [[0.03, 0.04, 0.2], [0.046, 1.69, 1.3], [0.061, 4.48, 5.5], [0.092, 6.93, 12.7], [0.108, 9.12, 22.5], [0.124, 10.85, 34.4], [0.155, 14.05, 63.9], [0.186, 14.87, 80.7], [0.202, 15.11, 98.0], [0.233, 14.37, 114.4], [0.249, 14.28, 130.9], [0.264, 14.52, 147.5], [0.295, 14.93, 178.8], [0.327, 15.18, 161.5], [0.343, 15.87, 143.5], [0.374, 15.4, 125.8], [0.39, 15.67, 107.9], [0.405, 15.81, 89.9], [0.421, 15.56, 71.9], [0.452, 15.06, 54.8], [0.468, 14.71, 37.8], [0.483, 15.02, 20.6], [0.515, 15.26, 3.3], [0.53, 15.44, 14.3], [0.545, 15.22, 31.9], [0.56, 15.65, 49.5], [0.591, 15.36, 67.1], [0.607, 15.61, 85.1], [0.622, 15.2, 102.7], [0.653, 15.44, 120.2], [0.669, 15.54, 138.0], [0.684, 15.36, 155.7], [0.715, 15.73, 168.8], [0.745, 15.95, 150.6], [0.761, 16.28, 132.0], [0.791, 15.93, 113.8], [0.806, 16.14, 95.3], [0.822, 16.22, 76.7], [0.853, 15.43, 59.0], [0.869, 15.18, 40.6], [0.885, 15.41, 22.9], [0.915, 15.52, 5.4], [0.931, 15.48, 12.5], [0.947, 15.43, 30.2], [0.962, 15.45, 47.9], [0.994, 15.94, 65.8], [1.009, 16.0, 84.2], [1.024, 15.62, 102.3], [1.04, 15.58, 120.0]]};
+const NS="http://www.w3.org/2000/svg", $=s=>document.querySelector(s), tip=$("#tip");
+function showTip(e,h){tip.innerHTML=h;tip.style.display="block";const x=Math.min(e.clientX+14,innerWidth-tip.offsetWidth-8),y=Math.min(e.clientY+14,innerHeight-tip.offsetHeight-8);tip.style.left=x+"px";tip.style.top=y+"px";}
+function hideTip(){tip.style.display="none";}
+function el(t,a,p){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e;}
+function tx(p,x,y,s,a){const t=el("text",Object.assign({x,y},a||{}),p);t.textContent=s;return t;}
+const SER=[{id:"airsim",name:"AirSim (reference, old hit)",key:"--c-ppo"},{id:"old",name:"Gazebo F450, old hit",key:"--c-bc"},{id:"lead",name:"Gazebo F450, lead hit",key:"--c-rule"}];
+const TMAX=1.9, VMAX=18;
+$("#lg").innerHTML=SER.map(s=>`<span><i style="background:var(${s.key})"></i>${s.name}</span>`).join("");
+function draw(){
+  const box=$("#ch1"); box.innerHTML=""; const W=Math.max(320,box.clientWidth), H=300, m={l:44,r:16,t:12,b:36};
+  const svg=el("svg",{viewBox:`0 0 ${W} ${H}`,width:"100%",height:H},box), iw=W-m.l-m.r, ih=H-m.t-m.b;
+  const X=t=>m.l+t/TMAX*iw, Y=v=>m.t+ih-(v/VMAX)*ih;
+  for(const v of [0,4,8,12,16]){el("line",{x1:m.l,x2:W-m.r,y1:Y(v),y2:Y(v),stroke:"var(--border)","stroke-width":1},svg);tx(svg,m.l-6,Y(v)+4,v,{"text-anchor":"end","font-size":11,fill:"var(--muted)"});}
+  for(const t of [0,0.5,1,1.5]){tx(svg,X(t),H-14,t.toFixed(2)+" s",{"text-anchor":"middle","font-size":11,fill:"var(--muted)"});}
+  el("line",{x1:m.l,x2:W-m.r,y1:Y(16),y2:Y(16),stroke:"var(--muted)","stroke-dasharray":"4 4"},svg);
+  tx(svg,W-m.r-4,Y(16)+14,"commanded 16 rad/s",{"text-anchor":"end","font-size":11,fill:"var(--text-2)"});
+  for(const s of SER){const d=DATA[s.id];el("path",{d:d.map((p,i)=>(i?"L":"M")+X(p[0]).toFixed(1)+","+Y(p[1]).toFixed(1)).join(" "),fill:"none",stroke:`var(${s.key})`,"stroke-width":2,"stroke-linejoin":"round"},svg);
+    const L=d[d.length-1]; }
+  const lab=[["lead",0.55,"lead hit: 1.04 s",6,-10],["airsim",1.05,"AirSim: 1.25 s",6,-10]];
+  for(const [id,t,s,dx,dy] of lab){const p=DATA[id].reduce((a,b)=>Math.abs(b[0]-t)<Math.abs(a[0]-t)?b:a);tx(svg,X(p[0])+dx,Y(p[1])+dy,s,{"font-size":11.5,"font-weight":700,fill:"var(--text)"});}
+  tx(svg,X(1.3),Y(1.6),"old hit: stumbles, 1.85 s",{"text-anchor":"middle","font-size":11.5,"font-weight":700,fill:"var(--text)"});
+  const cur=el("line",{y1:m.t,y2:m.t+ih,stroke:"var(--text-2)","stroke-width":1,visibility:"hidden"},svg);
+  const dots=SER.map(s=>el("circle",{r:4.5,fill:`var(${s.key})`,stroke:"var(--surface)","stroke-width":2,visibility:"hidden"},svg));
+  const hit=el("rect",{x:m.l,y:m.t,width:iw,height:ih,fill:"transparent"},svg);
+  hit.addEventListener("mousemove",e=>{const r=svg.getBoundingClientRect(),px=(e.clientX-r.left)*W/r.width,t=Math.max(0,Math.min(TMAX,(px-m.l)/iw*TMAX));
+    cur.setAttribute("x1",X(t));cur.setAttribute("x2",X(t));cur.setAttribute("visibility","visible");let h=`<b>t ≈ ${t.toFixed(2)} s</b>`;
+    SER.forEach((s,i)=>{const dd=DATA[s.id];if(t>dd[dd.length-1][0]+0.02){dots[i].setAttribute("visibility","hidden");h+=`<br><i style="display:inline-block;width:9px;height:9px;border-radius:2px;background:var(${s.key})"></i> ${s.name}: hit finished`;return;}const p=dd.reduce((a,b)=>Math.abs(b[0]-t)<Math.abs(a[0]-t)?b:a);dots[i].setAttribute("cx",X(p[0]));dots[i].setAttribute("cy",Y(p[1]));dots[i].setAttribute("visibility","visible");
+      h+=`<br><i style="display:inline-block;width:9px;height:9px;border-radius:2px;background:var(${s.key})"></i> ${s.name}: <b>${p[1].toFixed(1)}</b> rad/s, tilt ${p[2].toFixed(0)}°`;});showTip(e,h);});
+  hit.addEventListener("mouseleave",()=>{hideTip();cur.setAttribute("visibility","hidden");dots.forEach(d=>d.setAttribute("visibility","hidden"));});
+}
+draw(); addEventListener("resize",draw);
+(function(){let h="<div class='tw'><table><tr><th>Series</th><th>time s → rate rad/s (tilt °)</th></tr>";for(const s of SER)h+=`<tr><td>${s.name}</td><td style="font-size:12px">${DATA[s.id].map(p=>`${p[0].toFixed(2)}→${p[1].toFixed(1)} (${p[2].toFixed(0)}°)`).join(", ")}</td></tr>`;$("#tb1").innerHTML=h+"</table></div>";})();
+$("#tbBtn").onclick=()=>{const t=$("#tb1");t.classList.toggle("show");$("#tbBtn").textContent=t.classList.contains("show")?"Hide data table":"Show data table";};
+document.getElementById("themeBtn").onclick=()=>{const c=document.documentElement.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");const n=c==="dark"?"light":"dark";document.documentElement.setAttribute("data-theme",n);try{localStorage.setItem("guideTheme",n)}catch(e){}};
+try{const t=localStorage.getItem("guideTheme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}
+document.querySelectorAll(".cmdbox button.copy").forEach(b=>b.onclick=()=>{const t=b.parentElement.querySelector("pre").innerText;const d=()=>{b.textContent="Copied";setTimeout(()=>b.textContent="Copy",1200)};if(navigator.clipboard)navigator.clipboard.writeText(t).then(d,()=>{});else d();});
+(function(){const L=[...document.querySelectorAll("nav.side a")],S=L.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);addEventListener("scroll",()=>{let c=S[0];for(const s of S)if(s.getBoundingClientRect().top<120)c=s;L.forEach(a=>a.classList.toggle("active",a.getAttribute("href")==="#"+c.id))},{passive:true})})();
+</script>
+</body>
+</html>

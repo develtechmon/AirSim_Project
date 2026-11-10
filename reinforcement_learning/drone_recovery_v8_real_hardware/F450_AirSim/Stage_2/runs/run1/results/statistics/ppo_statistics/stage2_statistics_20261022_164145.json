@@ -1,0 +1,131 @@
+{
+  "date": "20261022_164145",
+  "run": "run1",
+  "stage1_run": "..\\Stage_1\\runs\\run1",
+  "settings": {
+    "models": [
+      "warm"
+    ],
+    "gust_episodes": 10,
+    "level_episodes": 2,
+    "max_steps": 500,
+    "wind_strength": 20.0,
+    "run": null,
+    "stage1_run": null
+  },
+  "levels_mps": [
+    5.0,
+    10.0,
+    15.0,
+    20.0
+  ],
+  "names": {
+    "pid": "PID teacher",
+    "stage1": "Stage 1 (BC)",
+    "warm": "PPO warm",
+    "cold": "PPO cold",
+    "ardupilot": "Stock ArduPilot"
+  },
+  "results": {
+    "warm": {
+      "controller": "runs\\run1\\models\\warm\\hover_disturbance_policy.zip",
+      "gust_summary": {
+        "episodes": 10,
+        "successes": 10,
+        "success_pct": 100.0,
+        "avg_distance_m": 0.15282658372367736,
+        "avg_wind_handled": 6.797080820522534,
+        "max_wind_survived": 18.547854751687947,
+        "avg_length_steps": 500.0,
+        "rmse_m": 0.22648465141164392,
+        "mean_dist_3d_m": 0.16876852406766266,
+        "mean_dist_m": 0.15282658372367736,
+        "end_dist_m": 0.10824271516874431,
+        "max_dist_m": 0.7929955765604972,
+        "worst_dist_m": 1.1786623001098633,
+        "hold_pct": 95.91999999999999,
+        "mean_wind_mps": 6.797080820522534,
+        "max_wind_mps": 18.547854751687947,
+        "fail_reasons": {}
+      },
+      "level_summary": {
+        "5.0": {
+          "episodes": 2,
+          "successes": 2,
+          "success_pct": 100.0,
+          "avg_distance_m": 0.15382487163832412,
+          "avg_wind_handled": 5.0,
+          "max_wind_survived": 5.0,
+          "avg_length_steps": 500.0,
+          "rmse_m": 0.206523137542172,
+          "mean_dist_3d_m": 0.15752079435437916,
+          "mean_dist_m": 0.15382487163832412,
+          "end_dist_m": 0.11872510388493537,
+          "max_dist_m": 0.6726769655942917,
+          "worst_dist_m": 1.1960207223892212,
+          "hold_pct": 97.0,
+          "mean_wind_mps": 5.0,
+          "max_wind_mps": 5.0,
+          "fail_reasons": {}
+        },
+        "10.0": {
+          "episodes": 2,
+          "successes": 2,
+          "success_pct": 100.0,
+          "avg_distance_m": 0.18578670665621755,
+          "avg_wind_handled": 10.0,
+          "max_wind_survived": 10.0,
+          "avg_length_steps": 500.0,
+          "rmse_m": 0.25776517639555985,
+          "mean_dist_3d_m": 0.18789108008891345,
+          "mean_dist_m": 0.18578670665621755,
+          "end_dist_m": 0.14223955422639847,
+          "max_dist_m": 1.0195330679416656,
+          "worst_dist_m": 1.241781234741211,
+          "hold_pct": 94.5,
+          "mean_wind_mps": 10.0,
+          "max_wind_mps": 10.0,
+          "fail_reasons": {}
+        },
+        "15.0": {
+          "episodes": 2,
+          "successes": 2,
+          "success_pct": 100.0,
+          "avg_distance_m": 0.17243277494609355,
+          "avg_wind_handled": 15.0,
+          "max_wind_survived": 15.0,
+          "avg_length_steps": 500.0,
+          "rmse_m": 0.2021545915091214,
+          "mean_dist_3d_m": 0.18341673173755407,
+          "mean_dist_m": 0.17243277494609355,
+          "end_dist_m": 0.16504933834075927,
+          "max_dist_m": 0.5394092500209808,
+          "worst_dist_m": 0.668722927570343,
+          "hold_pct": 97.8,
+          "mean_wind_mps": 15.0,
+          "max_wind_mps": 15.0,
+          "fail_reasons": {}
+        },
+        "20.0": {
+          "episodes": 2,
+          "successes": 2,
+          "success_pct": 100.0,
+          "avg_distance_m": 0.24478066714806482,
+          "avg_wind_handled": 20.0,
+          "max_wind_survived": 20.0,
+          "avg_length_steps": 500.0,
+          "rmse_m": 0.35580236079293825,
+          "mean_dist_3d_m": 0.2703572190776467,
+          "mean_dist_m": 0.24478066714806482,
+          "end_dist_m": 0.18335254453122615,
+          "max_dist_m": 1.178717941045761,
+          "worst_dist_m": 1.4384608268737793,
+          "hold_pct": 92.4,
+          "mean_wind_mps": 20.0,
+          "max_wind_mps": 20.0,
+          "fail_reasons": {}
+        }
+      }
+    }
+  }
+}

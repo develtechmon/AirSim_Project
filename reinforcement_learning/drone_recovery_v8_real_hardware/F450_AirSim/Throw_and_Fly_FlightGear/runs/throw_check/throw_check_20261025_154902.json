@@ -1,0 +1,152 @@
+{
+  "date": "2026-10-25T15:51:39",
+  "position_source": "optical flow (relative position only)",
+  "hover": 0.349283367395401,
+  "modes": [
+    "ppo-policy"
+  ],
+  "types": [
+    "roll"
+  ],
+  "repeats": 3,
+  "throws": {
+    "up": {
+      "shove": [
+        0.0,
+        0.0,
+        -30.0
+      ],
+      "twist": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "ms": 300
+    },
+    "roll": {
+      "shove": [
+        0.0,
+        0.0,
+        -45.0
+      ],
+      "twist": [
+        40.0,
+        0.0,
+        0.0
+      ],
+      "ms": 300
+    },
+    "pitch": {
+      "shove": [
+        0.0,
+        0.0,
+        -45.0
+      ],
+      "twist": [
+        0.0,
+        40.0,
+        0.0
+      ],
+      "ms": 300
+    }
+  },
+  "freefall_g": 0.35,
+  "freefall_n": 3,
+  "model": ".\\models\\round1_final.zip",
+  "after_recovery": "loiter",
+  "loiter_s": 10.0,
+  "stopped": null,
+  "summary": {
+    "ppo-policy/roll": {
+      "recovered": "3/3",
+      "mean_recovered_s": 1.16,
+      "mean_low_m": 6.16,
+      "mean_drift_m": 2.78,
+      "mean_brake_m": 1.25,
+      "mean_wander_m": 1.68
+    }
+  },
+  "results": [
+    {
+      "n": 1,
+      "type": "roll",
+      "mode": "ppo-policy",
+      "released": true,
+      "detected": true,
+      "release_s": 0.57,
+      "motors_on_s": 0.23,
+      "upright_s": 0.62,
+      "caught_s": 0.77,
+      "recovered": true,
+      "recovered_s": 1.13,
+      "apex_m": 6.18,
+      "low_m": 6.18,
+      "peak_rate_rads": 11.88,
+      "drift_m": 4.17,
+      "crashed": false,
+      "impact_speed_ms": null,
+      "hold_mode": "script height hold",
+      "hold_s": 10.0,
+      "hold_max_m": 3.26,
+      "hold_end_m": 3.26,
+      "hold_dz_m": 0.59,
+      "brake_s": 5.12,
+      "brake_m": 1.73,
+      "wander_m": 1.67
+    },
+    {
+      "n": 2,
+      "type": "roll",
+      "mode": "ppo-policy",
+      "released": true,
+      "detected": true,
+      "release_s": 0.54,
+      "motors_on_s": 0.5,
+      "upright_s": 0.7,
+      "caught_s": 0.86,
+      "recovered": true,
+      "recovered_s": 1.2,
+      "apex_m": 6.15,
+      "low_m": 6.15,
+      "peak_rate_rads": 8.38,
+      "drift_m": 0.56,
+      "crashed": false,
+      "impact_speed_ms": null,
+      "hold_mode": "script height hold",
+      "hold_s": 10.0,
+      "hold_max_m": 2.07,
+      "hold_end_m": 2.07,
+      "hold_dz_m": 0.53,
+      "brake_s": 0.56,
+      "brake_m": 0.17,
+      "wander_m": 1.89
+    },
+    {
+      "n": 3,
+      "type": "roll",
+      "mode": "ppo-policy",
+      "released": true,
+      "detected": true,
+      "release_s": 0.57,
+      "motors_on_s": 0.3,
+      "upright_s": 0.63,
+      "caught_s": 0.8,
+      "recovered": true,
+      "recovered_s": 1.16,
+      "apex_m": 6.16,
+      "low_m": 6.16,
+      "peak_rate_rads": 8.69,
+      "drift_m": 3.61,
+      "crashed": false,
+      "impact_speed_ms": null,
+      "hold_mode": "script height hold",
+      "hold_s": 10.0,
+      "hold_max_m": 3.19,
+      "hold_end_m": 3.19,
+      "hold_dz_m": 0.53,
+      "brake_s": 4.54,
+      "brake_m": 1.85,
+      "wander_m": 1.49
+    }
+  ]
+}

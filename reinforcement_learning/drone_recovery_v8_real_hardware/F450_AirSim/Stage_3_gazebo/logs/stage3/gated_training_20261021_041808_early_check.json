@@ -1,0 +1,33 @@
+{
+  "timesteps": 60192,
+  "episodes": 420,
+  "levels": {
+    "EASY": {
+      "BC": {
+        "episodes": 50,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 20.837307853698732
+      }
+    },
+    "MEDIUM": {
+      "BC": {
+        "episodes": 50,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 16.39346876144409
+      }
+    },
+    "HARD": {
+      "BC": {
+        "episodes": 42,
+        "recovered_pct": 92.85714285714286,
+        "avg_lowest_m": 14.097257387070428
+      },
+      "PPO": {
+        "episodes": 50,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 14.008110303878784
+      },
+      "verdict": "about the same as BC - let it run, check again later"
+    }
+  }
+}

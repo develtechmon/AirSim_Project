@@ -30,6 +30,7 @@ ale-py==0.11.2
 ### Windows ####
 ## python 3.9
 pip install PyWavelets
+pip install onnx onnxruntime
 
 pip install swig "gymnasium[all]" stable-baselines3[extra] tensorboard ale-py
 ## For GPu support --> pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121

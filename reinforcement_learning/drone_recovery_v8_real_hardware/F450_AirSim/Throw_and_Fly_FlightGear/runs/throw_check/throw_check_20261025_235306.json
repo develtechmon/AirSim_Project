@@ -1,0 +1,283 @@
+{
+  "date": "2026-10-25T23:57:05",
+  "position_source": "GPS position, GPS velocity",
+  "hover": 0.5504742860794067,
+  "modes": [
+    "attitude-rule",
+    "ppo-policy"
+  ],
+  "types": [
+    "up",
+    "roll",
+    "pitch"
+  ],
+  "repeats": 1,
+  "throws": {
+    "up": {
+      "shove": [
+        0.0,
+        0.0,
+        -30.0
+      ],
+      "twist": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "ms": 300
+    },
+    "roll": {
+      "shove": [
+        0.0,
+        0.0,
+        -45.0
+      ],
+      "twist": [
+        40.0,
+        0.0,
+        0.0
+      ],
+      "ms": 300
+    },
+    "pitch": {
+      "shove": [
+        0.0,
+        0.0,
+        -45.0
+      ],
+      "twist": [
+        0.0,
+        40.0,
+        0.0
+      ],
+      "ms": 300
+    }
+  },
+  "freefall_g": 0.35,
+  "freefall_n": 3,
+  "model": ".\\models\\round1_final.zip",
+  "after_recovery": "loiter",
+  "launch": true,
+  "loiter_s": 10.0,
+  "stopped": null,
+  "summary": {
+    "attitude-rule/up": {
+      "recovered": "1/1",
+      "mean_recovered_s": 0.48,
+      "mean_low_m": 5.33,
+      "mean_drift_m": 0.68,
+      "mean_brake_m": 0.0,
+      "mean_wander_m": 0.18
+    },
+    "attitude-rule/roll": {
+      "recovered": "1/1",
+      "mean_recovered_s": 0.88,
+      "mean_low_m": 4.66,
+      "mean_drift_m": 1.91,
+      "mean_brake_m": 0.58,
+      "mean_wander_m": 0.3
+    },
+    "attitude-rule/pitch": {
+      "recovered": "1/1",
+      "mean_recovered_s": 1.03,
+      "mean_low_m": 4.13,
+      "mean_drift_m": 3.17,
+      "mean_brake_m": 0.72,
+      "mean_wander_m": 0.28
+    },
+    "ppo-policy/up": {
+      "recovered": "1/1",
+      "mean_recovered_s": 0.35,
+      "mean_low_m": 5.42,
+      "mean_drift_m": 0.51,
+      "mean_brake_m": 0.0,
+      "mean_wander_m": 0.09
+    },
+    "ppo-policy/roll": {
+      "recovered": "1/1",
+      "mean_recovered_s": 0.79,
+      "mean_low_m": 4.92,
+      "mean_drift_m": 1.45,
+      "mean_brake_m": 0.61,
+      "mean_wander_m": 0.31
+    },
+    "ppo-policy/pitch": {
+      "recovered": "1/1",
+      "mean_recovered_s": 0.79,
+      "mean_low_m": 4.87,
+      "mean_drift_m": 2.45,
+      "mean_brake_m": 0.67,
+      "mean_wander_m": 0.18
+    }
+  },
+  "results": [
+    {
+      "n": 1,
+      "type": "up",
+      "mode": "attitude-rule",
+      "released": true,
+      "detected": true,
+      "release_s": 0.65,
+      "motors_on_s": 0.37,
+      "upright_s": 0.0,
+      "caught_s": 0.37,
+      "recovered": true,
+      "recovered_s": 0.48,
+      "apex_m": 5.68,
+      "low_m": 5.33,
+      "peak_rate_rads": 0.18,
+      "drift_m": 0.68,
+      "crashed": false,
+      "impact_speed_ms": null,
+      "hold_mode": "LOITER",
+      "hold_s": 10.0,
+      "hold_max_m": 0.18,
+      "hold_end_m": 0.18,
+      "hold_dz_m": 0.11,
+      "brake_s": 0.02,
+      "brake_m": 0.0,
+      "wander_m": 0.18,
+      "hover_used": 0.51
+    },
+    {
+      "n": 2,
+      "type": "up",
+      "mode": "ppo-policy",
+      "released": true,
+      "detected": true,
+      "release_s": 0.64,
+      "motors_on_s": 0.35,
+      "upright_s": 0.0,
+      "caught_s": 0.35,
+      "recovered": true,
+      "recovered_s": 0.35,
+      "apex_m": 5.69,
+      "low_m": 5.42,
+      "peak_rate_rads": 0.23,
+      "drift_m": 0.51,
+      "crashed": false,
+      "impact_speed_ms": null,
+      "hold_mode": "LOITER",
+      "hold_s": 10.0,
+      "hold_max_m": 0.09,
+      "hold_end_m": 0.08,
+      "hold_dz_m": 0.1,
+      "brake_s": 0.01,
+      "brake_m": 0.0,
+      "wander_m": 0.09,
+      "hover_used": 0.51
+    },
+    {
+      "n": 3,
+      "type": "roll",
+      "mode": "attitude-rule",
+      "released": true,
+      "detected": true,
+      "release_s": 0.73,
+      "motors_on_s": 0.37,
+      "upright_s": 0.58,
+      "caught_s": 0.88,
+      "recovered": true,
+      "recovered_s": 0.88,
+      "apex_m": 5.86,
+      "low_m": 4.66,
+      "peak_rate_rads": 10.62,
+      "drift_m": 1.91,
+      "crashed": false,
+      "impact_speed_ms": null,
+      "hold_mode": "LOITER",
+      "hold_s": 10.0,
+      "hold_max_m": 0.87,
+      "hold_end_m": 0.87,
+      "hold_dz_m": 0.11,
+      "brake_s": 1.03,
+      "brake_m": 0.58,
+      "wander_m": 0.3,
+      "hover_used": 0.51
+    },
+    {
+      "n": 4,
+      "type": "roll",
+      "mode": "ppo-policy",
+      "released": true,
+      "detected": true,
+      "release_s": 0.73,
+      "motors_on_s": 0.35,
+      "upright_s": 0.6,
+      "caught_s": 0.79,
+      "recovered": true,
+      "recovered_s": 0.79,
+      "apex_m": 5.97,
+      "low_m": 4.92,
+      "peak_rate_rads": 10.95,
+      "drift_m": 1.45,
+      "crashed": false,
+      "impact_speed_ms": null,
+      "hold_mode": "LOITER",
+      "hold_s": 10.0,
+      "hold_max_m": 0.92,
+      "hold_end_m": 0.92,
+      "hold_dz_m": 0.12,
+      "brake_s": 1.06,
+      "brake_m": 0.61,
+      "wander_m": 0.31,
+      "hover_used": 0.51
+    },
+    {
+      "n": 5,
+      "type": "pitch",
+      "mode": "attitude-rule",
+      "released": true,
+      "detected": true,
+      "release_s": 0.74,
+      "motors_on_s": 0.34,
+      "upright_s": 0.65,
+      "caught_s": 1.03,
+      "recovered": true,
+      "recovered_s": 1.03,
+      "apex_m": 5.82,
+      "low_m": 4.13,
+      "peak_rate_rads": 10.56,
+      "drift_m": 3.17,
+      "crashed": false,
+      "impact_speed_ms": null,
+      "hold_mode": "LOITER",
+      "hold_s": 10.0,
+      "hold_max_m": 0.99,
+      "hold_end_m": 0.99,
+      "hold_dz_m": 0.32,
+      "brake_s": 1.2,
+      "brake_m": 0.72,
+      "wander_m": 0.28,
+      "hover_used": 0.51
+    },
+    {
+      "n": 6,
+      "type": "pitch",
+      "mode": "ppo-policy",
+      "released": true,
+      "detected": true,
+      "release_s": 0.79,
+      "motors_on_s": 0.35,
+      "upright_s": 0.53,
+      "caught_s": 0.79,
+      "recovered": true,
+      "recovered_s": 0.79,
+      "apex_m": 5.98,
+      "low_m": 4.87,
+      "peak_rate_rads": 10.54,
+      "drift_m": 2.45,
+      "crashed": false,
+      "impact_speed_ms": null,
+      "hold_mode": "LOITER",
+      "hold_s": 10.0,
+      "hold_max_m": 0.85,
+      "hold_end_m": 0.84,
+      "hold_dz_m": 0.12,
+      "brake_s": 1.08,
+      "brake_m": 0.67,
+      "wander_m": 0.18,
+      "hover_used": 0.51
+    }
+  ]
+}

@@ -1,0 +1,260 @@
+{
+  "date": "2026-10-25T21:10:41",
+  "position_source": "optical flow (relative position only)",
+  "hover": 0.3478721082210541,
+  "modes": [
+    "attitude-rule",
+    "ppo-policy"
+  ],
+  "types": [
+    "up",
+    "roll",
+    "pitch"
+  ],
+  "repeats": 1,
+  "throws": {
+    "up": {
+      "shove": [
+        0.0,
+        0.0,
+        -30.0
+      ],
+      "twist": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "ms": 300
+    },
+    "roll": {
+      "shove": [
+        0.0,
+        0.0,
+        -45.0
+      ],
+      "twist": [
+        40.0,
+        0.0,
+        0.0
+      ],
+      "ms": 300
+    },
+    "pitch": {
+      "shove": [
+        0.0,
+        0.0,
+        -45.0
+      ],
+      "twist": [
+        0.0,
+        40.0,
+        0.0
+      ],
+      "ms": 300
+    }
+  },
+  "freefall_g": 0.35,
+  "freefall_n": 3,
+  "model": ".\\models\\round1_final.zip",
+  "after_recovery": "loiter",
+  "loiter_s": 10.0,
+  "stopped": null,
+  "summary": {
+    "attitude-rule/up": {
+      "recovered": "0/1",
+      "mean_recovered_s": null,
+      "mean_low_m": null,
+      "mean_drift_m": null,
+      "mean_brake_m": null,
+      "mean_wander_m": null
+    },
+    "attitude-rule/roll": {
+      "recovered": "1/1",
+      "mean_recovered_s": 2.75,
+      "mean_low_m": 1.98,
+      "mean_drift_m": 16.19,
+      "mean_brake_m": 1.93,
+      "mean_wander_m": 0.23
+    },
+    "attitude-rule/pitch": {
+      "recovered": "1/1",
+      "mean_recovered_s": 3.03,
+      "mean_low_m": 3.11,
+      "mean_drift_m": 18.05,
+      "mean_brake_m": 2.09,
+      "mean_wander_m": 0.23
+    },
+    "ppo-policy/up": {
+      "recovered": "0/1",
+      "mean_recovered_s": null,
+      "mean_low_m": null,
+      "mean_drift_m": null,
+      "mean_brake_m": null,
+      "mean_wander_m": null
+    },
+    "ppo-policy/roll": {
+      "recovered": "1/1",
+      "mean_recovered_s": 3.13,
+      "mean_low_m": 2.84,
+      "mean_drift_m": 17.94,
+      "mean_brake_m": 1.95,
+      "mean_wander_m": 0.32
+    },
+    "ppo-policy/pitch": {
+      "recovered": "1/1",
+      "mean_recovered_s": 3.13,
+      "mean_low_m": 3.25,
+      "mean_drift_m": 18.6,
+      "mean_brake_m": 2.26,
+      "mean_wander_m": 0.37
+    }
+  },
+  "results": [
+    {
+      "n": 1,
+      "type": "up",
+      "mode": "attitude-rule",
+      "released": true,
+      "detected": true,
+      "release_s": 0.54,
+      "motors_on_s": 1.06,
+      "upright_s": 0.0,
+      "caught_s": null,
+      "recovered": false,
+      "recovered_s": null,
+      "apex_m": 2.45,
+      "low_m": -0.07,
+      "peak_rate_rads": 0.0,
+      "drift_m": null,
+      "crashed": true,
+      "impact_speed_ms": 6.59
+    },
+    {
+      "n": 2,
+      "type": "up",
+      "mode": "ppo-policy",
+      "released": true,
+      "detected": true,
+      "release_s": 0.55,
+      "motors_on_s": 1.05,
+      "upright_s": 0.0,
+      "caught_s": null,
+      "recovered": false,
+      "recovered_s": null,
+      "apex_m": 2.44,
+      "low_m": 0.1,
+      "peak_rate_rads": 0.0,
+      "drift_m": null,
+      "crashed": true,
+      "impact_speed_ms": null
+    },
+    {
+      "n": 3,
+      "type": "roll",
+      "mode": "attitude-rule",
+      "released": true,
+      "detected": true,
+      "release_s": 0.57,
+      "motors_on_s": 1.05,
+      "upright_s": 1.36,
+      "caught_s": 1.7,
+      "recovered": true,
+      "recovered_s": 2.75,
+      "apex_m": 4.52,
+      "low_m": 1.98,
+      "peak_rate_rads": 8.36,
+      "drift_m": 16.19,
+      "crashed": false,
+      "impact_speed_ms": null,
+      "hold_mode": "LOITER",
+      "hold_s": 10.0,
+      "hold_max_m": 2.15,
+      "hold_end_m": 2.14,
+      "hold_dz_m": 0.04,
+      "brake_s": 1.49,
+      "brake_m": 1.93,
+      "wander_m": 0.23
+    },
+    {
+      "n": 4,
+      "type": "roll",
+      "mode": "ppo-policy",
+      "released": true,
+      "detected": true,
+      "release_s": 0.58,
+      "motors_on_s": 0.99,
+      "upright_s": 1.3,
+      "caught_s": 1.53,
+      "recovered": true,
+      "recovered_s": 3.13,
+      "apex_m": 4.54,
+      "low_m": 2.84,
+      "peak_rate_rads": 8.41,
+      "drift_m": 17.94,
+      "crashed": false,
+      "impact_speed_ms": null,
+      "hold_mode": "LOITER",
+      "hold_s": 10.0,
+      "hold_max_m": 2.14,
+      "hold_end_m": 2.03,
+      "hold_dz_m": 0.03,
+      "brake_s": 1.61,
+      "brake_m": 1.95,
+      "wander_m": 0.32
+    },
+    {
+      "n": 5,
+      "type": "pitch",
+      "mode": "attitude-rule",
+      "released": true,
+      "detected": true,
+      "release_s": 0.59,
+      "motors_on_s": 0.92,
+      "upright_s": 1.22,
+      "caught_s": 1.49,
+      "recovered": true,
+      "recovered_s": 3.03,
+      "apex_m": 4.5,
+      "low_m": 3.11,
+      "peak_rate_rads": 8.19,
+      "drift_m": 18.05,
+      "crashed": false,
+      "impact_speed_ms": null,
+      "hold_mode": "LOITER",
+      "hold_s": 10.0,
+      "hold_max_m": 2.26,
+      "hold_end_m": 2.21,
+      "hold_dz_m": 0.07,
+      "brake_s": 1.62,
+      "brake_m": 2.09,
+      "wander_m": 0.23
+    },
+    {
+      "n": 6,
+      "type": "pitch",
+      "mode": "ppo-policy",
+      "released": true,
+      "detected": true,
+      "release_s": 0.56,
+      "motors_on_s": 0.89,
+      "upright_s": 1.25,
+      "caught_s": 1.49,
+      "recovered": true,
+      "recovered_s": 3.13,
+      "apex_m": 4.5,
+      "low_m": 3.25,
+      "peak_rate_rads": 8.37,
+      "drift_m": 18.6,
+      "crashed": false,
+      "impact_speed_ms": null,
+      "hold_mode": "LOITER",
+      "hold_s": 10.0,
+      "hold_max_m": 2.48,
+      "hold_end_m": 2.46,
+      "hold_dz_m": 0.09,
+      "brake_s": 1.84,
+      "brake_m": 2.26,
+      "wander_m": 0.37
+    }
+  ]
+}

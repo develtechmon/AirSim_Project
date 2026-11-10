@@ -1,0 +1,166 @@
+{
+  "by_level": {
+    "ppo-policy": {
+      "hard": {
+        "flights": 5,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 15.168000000000001,
+        "worst_lowest_m": 13.94,
+        "avg_height_loss_m": 14.824000000000002,
+        "avg_recovery_time_s": 1.5379999999999998,
+        "below_5m": 0
+      }
+    },
+    "bc-policy": {
+      "hard": {
+        "flights": 5,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 13.441999999999998,
+        "worst_lowest_m": 10.59,
+        "avg_height_loss_m": 16.536,
+        "avg_recovery_time_s": 1.848,
+        "below_5m": 0
+      }
+    },
+    "attitude-rule": {
+      "hard": {
+        "flights": 5,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 13.996,
+        "worst_lowest_m": 12.94,
+        "avg_height_loss_m": 15.981999999999996,
+        "avg_recovery_time_s": 1.984,
+        "below_5m": 0
+      }
+    },
+    "spin-stop-fast": {
+      "hard": {
+        "flights": 5,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 14.368,
+        "worst_lowest_m": 13.3,
+        "avg_height_loss_m": 15.607999999999999,
+        "avg_recovery_time_s": 1.8340000000000003,
+        "below_5m": 0
+      }
+    }
+  },
+  "by_type": {
+    "ppo-policy": {
+      "flip": {
+        "flights": 5,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 15.168000000000001,
+        "worst_lowest_m": 13.94,
+        "avg_height_loss_m": 14.824000000000002,
+        "avg_recovery_time_s": 1.5379999999999998,
+        "below_5m": 0
+      }
+    },
+    "bc-policy": {
+      "flip": {
+        "flights": 5,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 13.441999999999998,
+        "worst_lowest_m": 10.59,
+        "avg_height_loss_m": 16.536,
+        "avg_recovery_time_s": 1.848,
+        "below_5m": 0
+      }
+    },
+    "attitude-rule": {
+      "flip": {
+        "flights": 5,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 13.996,
+        "worst_lowest_m": 12.94,
+        "avg_height_loss_m": 15.981999999999996,
+        "avg_recovery_time_s": 1.984,
+        "below_5m": 0
+      }
+    },
+    "spin-stop-fast": {
+      "flip": {
+        "flights": 5,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 14.368,
+        "worst_lowest_m": 13.3,
+        "avg_height_loss_m": 15.607999999999999,
+        "avg_recovery_time_s": 1.8340000000000003,
+        "below_5m": 0
+      }
+    }
+  },
+  "all": {
+    "ppo-policy": {
+      "flights": 5,
+      "recovered_pct": 100.0,
+      "avg_lowest_m": 15.168000000000001,
+      "worst_lowest_m": 13.94,
+      "avg_height_loss_m": 14.824000000000002,
+      "avg_recovery_time_s": 1.5379999999999998,
+      "below_5m": 0
+    },
+    "bc-policy": {
+      "flights": 5,
+      "recovered_pct": 100.0,
+      "avg_lowest_m": 13.441999999999998,
+      "worst_lowest_m": 10.59,
+      "avg_height_loss_m": 16.536,
+      "avg_recovery_time_s": 1.848,
+      "below_5m": 0
+    },
+    "attitude-rule": {
+      "flights": 5,
+      "recovered_pct": 100.0,
+      "avg_lowest_m": 13.996,
+      "worst_lowest_m": 12.94,
+      "avg_height_loss_m": 15.981999999999996,
+      "avg_recovery_time_s": 1.984,
+      "below_5m": 0
+    },
+    "spin-stop-fast": {
+      "flights": 5,
+      "recovered_pct": 100.0,
+      "avg_lowest_m": 14.368,
+      "worst_lowest_m": 13.3,
+      "avg_height_loss_m": 15.607999999999999,
+      "avg_recovery_time_s": 1.8340000000000003,
+      "below_5m": 0
+    }
+  },
+  "settings": {
+    "model": "models/stage3_checkpoints/gated_curriculum_policy.zip",
+    "modes": [
+      "ppo-policy",
+      "bc-policy",
+      "attitude-rule",
+      "spin-stop-fast"
+    ],
+    "types": [
+      "flip"
+    ],
+    "levels": [
+      "hard"
+    ],
+    "repeats": 5,
+    "seed": 1
+  },
+  "comparison": {
+    "bc-policy": {
+      "height_gained_m": 1.7260000000000026,
+      "time_saved_s": 0.3100000000000003,
+      "recovered_pct_diff": 0.0
+    },
+    "attitude-rule": {
+      "height_gained_m": 1.1720000000000006,
+      "time_saved_s": 0.4460000000000002,
+      "recovered_pct_diff": 0.0
+    },
+    "spin-stop-fast": {
+      "height_gained_m": 0.8000000000000007,
+      "time_saved_s": 0.2960000000000005,
+      "recovered_pct_diff": 0.0
+    }
+  }
+}

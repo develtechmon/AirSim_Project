@@ -1,0 +1,7 @@
+For Stage 2, below files are required for result:
+
+stage2_statistics_20261018_084033.json -- Folder -- Stage_2\runs\run1\results\statistics
+stage2_statistics_20261018_084033.pkl  -- Folder -- Stage_2\runs\run1\results\statistics
+episodes.csv                           -- Folder -- Stage_2\runs\run1\logs\stage2\warm\ (learning curve)
+training_info.json                     -- Folder -- Stage_2\runs\run1\models\warm\ (settings)
+STAGE2_SUMMARY_run1.md                 -- Folder -- Stage_2\runs\run1\results\

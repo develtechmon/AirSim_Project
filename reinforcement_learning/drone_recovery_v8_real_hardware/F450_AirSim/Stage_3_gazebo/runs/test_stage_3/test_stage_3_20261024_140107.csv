@@ -1,0 +1,4 @@
+n,type,level,recovery,cmd_rates,planned_turns,turns,impact_s,peak_rate_rads,peak_tilt_deg,recovered,recovery_time_s,alt_loss_m,min_alt_m,virtual_ground,drift_m,impact_cut_low,alt_end_impact_m,spin_stopped_s,rule_handover_s,rescued
+1,flip,hard,ppo-policy,"[0.0, 16.0, 0.0]",2.32,2.38,1.03,16.77,179.0,True,0.93,15.35,14.65,False,15.6,False,26.38,0.76,,False
+2,flip,hard,ppo-policy,"[0.0, 16.0, 0.0]",2.63,2.65,1.18,16.46,177.8,True,0.43,10.91,19.06,False,10.98,False,25.15,0.3,,False
+3,flip,hard,ppo-policy,"[0.0, 16.0, 0.0]",2.22,2.27,1.01,16.41,174.2,True,1.14,15.7,14.26,False,16.37,False,26.4,0.75,,False

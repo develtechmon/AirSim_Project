@@ -1,0 +1,4 @@
+n,type,mode,released,detected,release_s,motors_on_s,upright_s,caught_s,recovered,recovered_s,apex_m,low_m,peak_rate_rads,drift_m,crashed,impact_speed_ms,hold_mode,hold_s,hold_max_m,hold_end_m,hold_dz_m,brake_s,brake_m,wander_m
+1,up,ppo-policy,True,True,0.55,1.05,0.0,,False,,2.45,0.04,0.0,,True,,,,,,,,,
+2,roll,ppo-policy,True,True,0.55,0.92,1.27,1.5,True,3.04,4.49,3.07,8.34,17.71,False,,LOITER,10.0,2.36,2.06,0.12,1.74,1.88,0.48
+3,pitch,ppo-policy,True,True,0.58,1.0,1.29,1.56,True,3.26,4.5,2.69,8.25,18.62,False,,LOITER,10.0,2.24,2.13,0.05,1.81,1.92,0.33

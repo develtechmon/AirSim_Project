@@ -1,0 +1,53 @@
+==============================================================================
+STAGE 1 STATISTICS REPORT
+PID Expert vs BC Policy - ArduPilot SITL + AirSim
+Sensor mode: gps | Firmware: 4.4.0-dev | Model trained: 20261017_180044
+Episodes: 10 per controller x 300 steps at 20 Hz | targets: alt 1.0-3.0 m, +/-1.0 m xy, +/-0.5 m z (seed 42)
+==============================================================================
+
+TABLE 1 - MAIN COMPARISON
+------------------------------------------------------------------------------
+Metric                                    PID Expert   BC Policy         Gap
+------------------------------------------------------------------------------
+  Position error RMSE (m)                      0.344       0.348      +0.004
+  Altitude RMSE (m)                            0.083       0.086      +0.002
+  Altitude std within episode (m)              0.079       0.079      -0.000
+  Mean horizontal distance (m)                 0.160       0.166      +0.006
+  Max horizontal distance (m)                  1.102       1.103      +0.001
+  End error, last 1 s (m)                      0.013       0.036      +0.023
+  Success rate (%)                           100.000     100.000      +0.000
+  Settled rate (%)                           100.000     100.000      +0.000
+------------------------------------------------------------------------------
+  Position RMSE ratio (BC / PID)                           1.011
+  Transfer efficiency, position (%)                        98.91
+  Altitude RMSE ratio (BC / PID)                           1.029
+  Transfer efficiency, altitude (%)                        97.13
+
+TABLE 2 - PER EPISODE
+------------------------------------------------------------------------------
+Ep   Target alt  PID pos RMSE  BC pos RMSE   PID end    BC end     BC result
+------------------------------------------------------------------------------
+1          1.87         0.297        0.311     0.014     0.031     completed
+2          2.10         0.601        0.590     0.023     0.054     completed
+3          1.56         0.515        0.532     0.017     0.036     completed
+4          2.21         0.582        0.571     0.011     0.048     completed
+5          2.33         0.489        0.484     0.020     0.034     completed
+6          1.68         0.264        0.267     0.015     0.039     completed
+7          1.93         0.081        0.094     0.004     0.027     completed
+8          1.64         0.157        0.162     0.006     0.023     completed
+9          1.96         0.317        0.326     0.008     0.024     completed
+10         2.01         0.137        0.140     0.010     0.041     completed
+
+ACTION DISTRIBUTION (m/s)
+------------------------------------------------------------------------------
+  vn: PID mean +0.0014 std 0.2137 | BC mean +0.0005 std 0.1962
+  ve: PID mean -0.0067 std 0.1800 | BC mean -0.0063 std 0.1710
+  vd: PID mean -0.0001 std 0.0913 | BC mean +0.0003 std 0.0907
+
+DEFINITIONS
+------------------------------------------------------------------------------
+  Success: no safety stop and end error < 0.5 m (end error = mean of last 20 steps)
+  Settled: end error < 0.3 m
+  Transfer efficiency = (1 - (BC_RMSE - PID_RMSE) / PID_RMSE) x 100%
+  Real loop time: PID 50.0 ms, BC 50.0 ms
+==============================================================================

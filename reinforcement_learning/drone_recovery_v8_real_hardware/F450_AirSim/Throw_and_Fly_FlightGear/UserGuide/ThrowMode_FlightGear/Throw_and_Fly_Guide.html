@@ -1,0 +1,741 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Throw and Fly Guide</title>
+<style>
+/* =====================================================================
+   THEME TOKENS  (edit colours here only)
+   ===================================================================== */
+:root{
+  color-scheme:light;
+  --bg:#f6f6f4; --surface:#fcfcfb; --surface-2:#f0efec; --border:#dcdad3;
+  --text:#1a1a19; --text-2:#52514e; --muted:#7a7972;
+  --accent:#2a78d6; --accent-soft:#e3eefb;
+  --good:#1b7f3b; --good-soft:#e2f3e7; --warn:#a96a00; --warn-soft:#fdf1d8; --bad:#c23a39; --bad-soft:#fbe5e4;
+  --code-bg:#f0efec;
+  /* controller colours: one colour per controller, same everywhere */
+  --c-ppo:#2a78d6; --c-bc:#eb6834; --c-rule:#1baf7a; --c-ssf:#eda100; --c-ap:#e87ba4;
+  --s1:#2f5ea8; --s2:#2e7d4f; --s3:#b83232;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#121211; --surface:#1a1a19; --surface-2:#242422; --border:#3a3936;
+    --text:#f0efec; --text-2:#c3c2b7; --muted:#9a998f;
+    --accent:#3987e5; --accent-soft:#1d2a3b;
+    --good:#5cc97f; --good-soft:#16281c; --warn:#e3a53a; --warn-soft:#2c2414; --bad:#ef7473; --bad-soft:#2e1717;
+    --code-bg:#242422;
+    --c-ppo:#3987e5; --c-bc:#d95926; --c-rule:#199e70; --c-ssf:#c98500; --c-ap:#d55181;
+    --s1:#6d9be0; --s2:#5fb383; --s3:#e06a6a;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#121211; --surface:#1a1a19; --surface-2:#242422; --border:#3a3936;
+  --text:#f0efec; --text-2:#c3c2b7; --muted:#9a998f;
+  --accent:#3987e5; --accent-soft:#1d2a3b;
+  --good:#5cc97f; --good-soft:#16281c; --warn:#e3a53a; --warn-soft:#2c2414; --bad:#ef7473; --bad-soft:#2e1717;
+  --code-bg:#242422;
+  --c-ppo:#3987e5; --c-bc:#d95926; --c-rule:#199e70; --c-ssf:#c98500; --c-ap:#d55181;
+  --s1:#6d9be0; --s2:#5fb383; --s3:#e06a6a;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 "Segoe UI",Calibri,system-ui,-apple-system,Arial,sans-serif}
+a{color:var(--accent)}
+code,pre{font-family:Consolas,"Cascadia Mono",Menlo,monospace}
+code{background:var(--code-bg);padding:1px 5px;border-radius:4px;font-size:13px;word-break:break-word}
+/* layout */
+.layout{display:grid;grid-template-columns:270px minmax(0,1fr);min-height:100vh}
+nav.side{position:sticky;top:0;height:100vh;overflow:auto;background:var(--surface);border-right:1px solid var(--border);padding:16px 12px 40px}
+nav.side .brand{font-weight:700;font-size:15px;margin:0 6px 2px}
+nav.side .sub{font-size:12px;color:var(--muted);margin:0 6px 12px}
+nav.side a{display:block;text-decoration:none;color:var(--text-2);padding:4px 8px;border-radius:6px;font-size:13.5px}
+nav.side a.l2{padding-left:22px;font-size:12.5px}
+nav.side a:hover{background:var(--surface-2)}
+nav.side a.active{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav.side .grp{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:14px 8px 4px}
+main{padding:24px 40px 80px;max-width:1180px}
+.topbar{display:flex;gap:10px;align-items:center;justify-content:flex-end;margin-bottom:6px}
+button,.btn{font:inherit;font-size:13px;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:7px;padding:5px 11px;cursor:pointer}
+button:hover{background:var(--surface-2)}
+button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+h1{font-size:28px;margin:4px 0 2px;line-height:1.2}
+h2{font-size:22px;margin:46px 0 10px;padding-top:10px;border-top:2px solid var(--border)}
+h3{font-size:17px;margin:28px 0 8px}
+h4{font-size:15px;margin:18px 0 6px}
+.lead{color:var(--text-2);font-size:15.5px;margin:4px 0 16px}
+.stage-tag{display:inline-block;color:#fff;border-radius:5px;padding:1px 8px;font-size:13px;font-weight:700;margin-right:8px;vertical-align:2px}
+.t1{background:var(--s1)}.t2{background:var(--s2)}.t3{background:var(--s3)}.thw{background:#5b5b66}
+/* tables */
+.tw{overflow-x:auto;margin:8px 0 14px}
+table{border-collapse:collapse;width:100%;font-size:13.5px;background:var(--surface)}
+th,td{border:1px solid var(--border);padding:5px 8px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.hl td{background:var(--accent-soft);font-weight:600}
+/* callouts */
+.note,.warn,.ok,.bad{border-left:4px solid;border-radius:6px;padding:9px 13px;margin:12px 0;font-size:14px}
+.note{border-color:var(--accent);background:var(--accent-soft)}
+.ok{border-color:var(--good);background:var(--good-soft)}
+.warn{border-color:var(--warn);background:var(--warn-soft)}
+.bad{border-color:var(--bad);background:var(--bad-soft)}
+.note b:first-child,.warn b:first-child,.ok b:first-child,.bad b:first-child{display:inline}
+.analogy{border:1px dashed var(--border);border-radius:8px;padding:9px 13px;margin:12px 0;font-size:14px;background:var(--surface)}
+.analogy::before{content:"Analogy  ";font-weight:700;color:var(--accent)}
+/* status chips */
+.chip{display:inline-block;font-size:11.5px;font-weight:700;border-radius:10px;padding:1px 8px;white-space:nowrap}
+.done{background:var(--good-soft);color:var(--good)}.run{background:var(--warn-soft);color:var(--warn)}.todo{background:var(--surface-2);color:var(--muted)}.fail{background:var(--bad-soft);color:var(--bad)}
+/* steps */
+.step{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin:12px 0}
+.step>.sh{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.step>.sh .num{background:var(--s3);color:#fff;border-radius:6px;font-weight:700;font-size:12.5px;padding:1px 8px}
+.step.s1 .num{background:var(--s1)}.step.s2 .num{background:var(--s2)}.step.hw .num{background:#5b5b66}
+.step>.sh .tt{font-weight:700;font-size:15.5px}
+.step>.sh .meta{margin-left:auto;font-size:12.5px;color:var(--muted)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:900px){.cols{grid-template-columns:1fr}}
+/* command block */
+.cmdbox{position:relative;margin:8px 0}
+pre.cmd{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:10px 70px 10px 12px;margin:0;font-size:13px;white-space:pre-wrap;word-break:break-all}
+.cmdbox button{position:absolute;top:6px;right:6px;font-size:12px;padding:2px 9px}
+details{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;margin:10px 0}
+details>summary{cursor:pointer;font-weight:600;font-size:14px}
+details[open]>summary{margin-bottom:6px}
+/* diagrams */
+.dgwrap{background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px;overflow:hidden;margin:10px 0}
+.dgwrap .dg{transform-origin:0 0}
+.dgwrap table{background:#fff;width:auto}.dgwrap th,.dgwrap td{color:#1d2433}
+.figure{background:#fff;border:1px solid var(--border);border-radius:10px;padding:8px;margin:10px 0;text-align:center}
+.figure img{max-width:100%;height:auto}
+.cap{font-size:12.5px;color:var(--muted);margin:4px 2px 12px}
+/* charts */
+.chart{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin:10px 0}
+.chart .ct{font-weight:700;font-size:14.5px}
+.chart .cs{font-size:12.5px;color:var(--muted);margin-bottom:6px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12.5px;color:var(--text-2);margin:4px 0 2px}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+.tip{position:fixed;pointer-events:none;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:7px;padding:6px 9px;font-size:12.5px;box-shadow:0 4px 14px rgba(0,0,0,.15);z-index:50;display:none;max-width:280px}
+svg text{fill:var(--text-2);font-size:11.5px}
+svg .axis{stroke:var(--border)}
+svg .grid{stroke:var(--border);stroke-dasharray:2 3}
+.charttable{display:none}
+.charttable.show{display:block}
+/* replay */
+.replay{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;margin:14px 0}
+.rp-controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+.rp-controls select{font:inherit;font-size:13px;padding:4px 6px;border-radius:7px;border:1px solid var(--border);background:var(--surface);color:var(--text);max-width:100%}
+.rp-controls input[type=range]{flex:1;min-width:160px}
+.rp-time{font-variant-numeric:tabular-nums;font-size:13px;color:var(--text-2);min-width:120px}
+#rpStage{width:100%;height:auto;display:block;background:linear-gradient(var(--surface-2),var(--surface));border-radius:10px}
+.rp-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:10px}
+.rp-card{border:1px solid var(--border);border-radius:8px;padding:6px 9px;font-size:12.5px;border-top:4px solid}
+.rp-card b{font-size:13px}
+/* timeline (who flies) */
+.tl{position:relative;height:56px;border-radius:9px;overflow:hidden;display:flex;margin:8px 0 4px;border:1px solid var(--border)}
+.tl div{display:flex;align-items:center;justify-content:center;color:#fff;font-size:12.5px;font-weight:700;text-align:center;padding:0 4px}
+.tl .cursor{position:absolute;top:0;bottom:0;width:3px;background:var(--text);left:0;transition:left .1s linear;padding:0}
+.tl-cap{min-height:44px;font-size:14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 12px}
+/* stat tiles */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:12px 0}
+.tile{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+.tile .v{font-size:24px;font-weight:700;line-height:1.1}
+.tile .k{font-size:12.5px;color:var(--muted)}
+/* explorer */
+.explorer{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin:10px 0}
+.explorer label{font-size:13px;color:var(--text-2)}
+.explorer input[type=range]{width:100%}
+.ex-out{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:8px}
+.ex-out div{background:var(--surface-2);border-radius:8px;padding:6px 10px;font-size:13px}
+.ex-out b{display:block;font-size:18px}
+.bar-h{height:14px;border-radius:4px;display:inline-block;vertical-align:middle}
+/* hardware block diagram (editable HTML) */
+.hw{background:#fff;color:#1d2433;border:1px solid var(--border);border-radius:10px;padding:14px;margin:10px 0;overflow-x:auto}
+.hw-grid{display:grid;grid-template-columns:1fr 46px 1.25fr 46px 1fr;gap:0;min-width:860px;align-items:center}
+.hw-col{display:flex;flex-direction:column;gap:12px}
+.hwb{border:2px solid #5b5b66;border-radius:10px;padding:8px 10px;background:#f7f7f9;font-size:13px;line-height:1.35}
+.hwb h5{margin:0 0 3px;font-size:14px;color:#2c2c38}
+.hwb.fc{border-color:#b83232;background:#fbeeee}.hwb.fc h5{color:#b83232}
+.hwb.pi{border-color:#2f5ea8;background:#eef3fb}.hwb.pi h5{color:#2f5ea8}
+.hwb.sens{border-color:#2e7d4f;background:#edf7f0}.hwb.sens h5{color:#2e7d4f}
+.hwb.pwr{border-color:#a96a00;background:#fdf6e6}.hwb.pwr h5{color:#a96a00}
+.hwb .lbl{display:inline-block;background:#fff;border:1px solid #c9ced8;border-radius:4px;padding:0 5px;font-size:11.5px;font-family:Consolas,monospace;margin:1px 0}
+.hw-arrow{text-align:center;font-size:22px;color:#555}
+.hw-bottom{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:14px;min-width:860px}
+/* flow */
+.flow{display:flex;flex-direction:column;align-items:center;gap:0;margin:10px 0}
+.fb{background:var(--surface);border:2px solid var(--border);border-radius:10px;padding:8px 14px;max-width:640px;width:100%;text-align:center;font-size:13.5px}
+.fb.pilot{border-color:var(--c-ssf)}.fb.pi{border-color:var(--c-ppo)}.fb.ap{border-color:var(--c-rule)}.fb.dec{border-color:var(--c-ap);border-style:dashed}
+.fb b{display:block}
+.fa{font-size:18px;color:var(--muted);line-height:1.3}
+.flow-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;justify-content:center;margin-bottom:8px}
+.flow-legend span{border:2px solid;border-radius:6px;padding:0 6px}
+footer{margin-top:60px;font-size:12px;color:var(--muted)}
+@media (max-width:860px){.layout{grid-template-columns:1fr}nav.side{position:relative;height:auto}main{padding:16px}}
+</style>
+
+</head>
+<body>
+<div class="tip" id="tip"></div>
+<div class="layout">
+<nav class="side" id="nav">
+  <div class="brand">Throw &amp; Fly · Simulation guide</div>
+  <div class="sub">Throw the drone, catch it · ArduCopter 4.4 SITL (built-in physics) · FlightGear view</div>
+  <div class="grp">Start here</div>
+  <a href="#s0">0. Summary</a>
+  <a href="#s1">1. How the pieces connect</a>
+  <a href="#s2">2. What happens in one throw</a>
+  <div class="grp">Part A · Outdoor (GPS)</div>
+  <a href="#a1">A. ArduPilot Throw mode, by hand</a>
+  <div class="grp">Part B · Indoor (optical flow)</div>
+  <a href="#b0">B0. When to do which step</a>
+  <a href="#b1">B1. Rangefinder fix (once)</a>
+  <a href="#b2">B2. FlightGear: start the view</a>
+  <a href="#b3">B3. Start the simulator</a>
+  <a href="#b4">B4. Optical-flow settings (once)</a>
+  <a href="#b5">B5. Run the throw tests</a>
+  <a href="#b6">B6. Read the results</a>
+  <div class="grp">Part C · FlightGear 2024 on Windows</div>
+  <a href="#c1">C1. One-time setup</a>
+  <a href="#c2">C2. Every session</a>
+  <a href="#c3">C3. Other scenery</a>
+  <div class="grp">Part D · Gazebo F450</div>
+  <a href="#d1">D. Throw &amp; flip in Gazebo (--launch)</a>
+  <div class="grp">Findings</div>
+  <a href="#f1">3. Results so far</a>
+  <a href="#f2">4. Height source (POSZ) finding</a>
+  <a href="#f3">5. Timing check</a>
+  <a href="#f4">6. Corrections to the notes</a>
+  <div class="grp">Reference</div>
+  <a href="#r1">7. Next: the real drone</a>
+  <a href="#r2">8. Troubleshooting</a>
+  <a href="#r3">9. Files and outputs</a>
+</nav>
+<main>
+<div class="topbar"><span style="font-size:12px;color:var(--muted)">Built 25 Oct 2026 · results from 25 Oct 2026</span><button id="themeBtn">◐ Theme</button></div>
+<h1><span class="stage-tag thw">THROW</span>Throw &amp; Fly: throw the drone, catch it<br><span style="font-size:19px;color:var(--text-2);font-weight:500">Outdoor with GPS (ArduPilot Throw mode) and indoor with optical flow (attitude-rule and PPO), watched in FlightGear</span></h1>
+<p class="lead">This guide turns your notes into a step-by-step run sheet. The throw is made inside ArduPilot's own simulator physics (<code>-f quad</code>) with a short push (<code>SIM_SHOVE</code>) and spin (<code>SIM_TWIST</code>). FlightGear only <b>draws</b> what the simulator does. Places where the notes needed a fix are marked <span class="chip run">FIX</span> and listed in section 6.</p>
+
+<h2 id="s0">0. Summary</h2>
+<div class="tiles">
+  <div class="tile"><div class="v">0 / 6</div><div class="k">ArduPilot Throw mode on optical flow: never catches (it needs a GPS position, from the 4.4 source)</div></div>
+  <div class="tile"><div class="v">≈ 0.3 s</div><div class="k">attitude-rule and PPO: release → motors on (free fall seen by the accelerometer)</div></div>
+  <div class="tile"><div class="v">1.1–1.3 s</div><div class="k">roll / pitch throw caught (calm), attitude-rule and PPO alike</div></div>
+  <div class="tile"><div class="v">0.1–0.4 m</div><div class="k">LOITER holds the recovery point this still on optical flow, after ~0.6 m of braking</div></div>
+</div>
+<div class="tw"><table>
+<tr><th>Setup</th><th>Position source</th><th>Who catches the drone</th><th>Part</th></tr>
+<tr><td><b>Outdoor</b></td><td>GPS</td><td>ArduPilot <b>Throw mode</b> (by hand in MAVProxy)</td><td><a href="#a1">A</a></td></tr>
+<tr><td><b>Indoor</b></td><td>Optical flow + rangefinder</td><td><code>throw_check.py</code>: <b>attitude-rule</b> (teacher) and <b>PPO</b> (student)</td><td><a href="#b0">B</a></td></tr>
+<tr><td>Watching</td><td>—</td><td>FlightGear in WSL (old, slow) or <b>FlightGear 2024 on Windows</b> (recommended)</td><td><a href="#b2">B2</a> / <a href="#c1">C</a></td></tr>
+</table></div>
+<div class="note"><b>The three rules that matter most.</b> 1) Every run: <b>motors on ≈ 0.3 s</b>, otherwise the simulator is too slow and the numbers are not valid (<a href="#f3">section 5</a>). 2) Same <b>height source (POSZ)</b> for every run you compare (<a href="#f2">section 4</a>). 3) FlightGear and the simulator must start at the <b>same place</b> (<a href="#c3">C3</a>).</div>
+
+<h2 id="s1">1. How the pieces connect</h2>
+<div class="figure">
+<svg viewBox="0 0 880 330" width="100%" style="max-width:880px" role="img" aria-label="Windows runs throw_check.py and FlightGear 2024; WSL runs MAVProxy and ArduCopter SITL. MAVLink on TCP 5762, FlightGear view on UDP 5503.">
+<defs><marker id="ar1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#5b5b66"/></marker></defs>
+<rect x="10" y="10" width="400" height="310" rx="14" fill="#eef3fb" stroke="#2f5ea8" stroke-width="1.5"/>
+<text x="30" y="38" style="font-size:15px;font-weight:700;fill:#2f5ea8">Windows</text>
+<rect x="470" y="10" width="400" height="310" rx="14" fill="#edf7f0" stroke="#2e7d4f" stroke-width="1.5"/>
+<text x="490" y="38" style="font-size:15px;font-weight:700;fill:#2e7d4f">WSL (Ubuntu)</text>
+<rect x="30" y="58" width="360" height="74" rx="9" fill="#fff" stroke="#2f5ea8"/>
+<text x="46" y="82" style="font-size:14px;font-weight:700;fill:#1d2433">PowerShell · throw_check.py</text>
+<text x="46" y="102" style="font-size:12px;fill:#444">folder Throw_and_Fly\ · attitude-rule / PPO</text>
+<text x="46" y="120" style="font-size:12px;fill:#444">detects the release, flies the catch, logs</text>
+<rect x="30" y="200" width="360" height="96" rx="9" fill="#fff" stroke="#2f5ea8"/>
+<text x="46" y="224" style="font-size:14px;font-weight:700;fill:#1d2433">FlightGear 2024 (Part C)</text>
+<text x="46" y="244" style="font-size:12px;fill:#444">double-click FlightGear_quad.bat</text>
+<text x="46" y="262" style="font-size:12px;fill:#444">uses your graphics card · only DRAWS the drone</text>
+<text x="46" y="280" style="font-size:12px;fill:#444">listens on UDP 5503</text>
+<rect x="490" y="58" width="360" height="74" rx="9" fill="#fff" stroke="#2e7d4f"/>
+<text x="506" y="82" style="font-size:14px;font-weight:700;fill:#1d2433">ArduCopter SITL + MAVProxy</text>
+<text x="506" y="102" style="font-size:12px;fill:#444">sim_vehicle.py -f quad · started in ~/sitl_throw</text>
+<text x="506" y="120" style="font-size:12px;fill:#444">built-in physics: the throw push lives here</text>
+<rect x="490" y="200" width="360" height="96" rx="9" fill="#fff" stroke="#2e7d4f" stroke-dasharray="6 4"/>
+<text x="506" y="224" style="font-size:14px;font-weight:700;fill:#1d2433">FlightGear in WSL (Part B2, old way)</text>
+<text x="506" y="244" style="font-size:12px;fill:#444">fg_quad_view.sh · software drawing (CPU)</text>
+<text x="506" y="262" style="font-size:12px;fill:#444">can slow the simulator → check motors on</text>
+<text x="506" y="280" style="font-size:12px;fill:#444">listens on UDP 5503 (127.0.0.1)</text>
+<line x1="392" y1="95" x2="486" y2="95" stroke="#5b5b66" stroke-width="2" marker-end="url(#ar1)" marker-start="url(#ar1)"/>
+<text x="439" y="84" text-anchor="middle" style="font-size:11.5px;fill:#1d2433;font-weight:700">MAVLink</text>
+<text x="439" y="114" text-anchor="middle" style="font-size:11px;fill:#444">tcp 5762</text>
+<path d="M600 134 L600 165 L250 165 L250 196" fill="none" stroke="#2f5ea8" stroke-width="2" marker-end="url(#ar1)"/>
+<text x="243" y="188" text-anchor="end" style="font-size:11.5px;fill:#2f5ea8;font-weight:700">UDP 5503 · -A "--fg &lt;Windows IP&gt;"</text>
+<path d="M740 134 L740 196" fill="none" stroke="#2e7d4f" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#ar1)"/>
+<text x="748" y="178" style="font-size:11px;fill:#2e7d4f">default</text>
+</svg>
+<div class="cap">Use ONE of the two FlightGear boxes. The script always talks to the simulator on <code>tcp:127.0.0.1:5762</code>; FlightGear never changes the test.</div>
+</div>
+<div class="analogy">The simulator is the football match, <code>throw_check.py</code> is the goalkeeper, FlightGear is the TV. Changing the TV (WSL or Windows, KSFO or Kuching) does not change the match, unless the TV is so heavy that the match itself slows down (section 5).</div>
+
+<h2 id="s2">2. What happens in one throw (script modes)</h2>
+<div class="figure">
+<svg viewBox="0 0 900 250" width="100%" style="max-width:900px" role="img" aria-label="Throw timeline: idle, push, release, spool, recover, caught, LOITER, land and disarm">
+<defs><marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#5b5b66"/></marker></defs>
+<g style="font-size:12px">
+<rect x="10" y="40" width="96" height="74" rx="8" fill="#f1efe8" stroke="#888"/><text x="58" y="66" text-anchor="middle" style="font-weight:700;fill:#1d2433">1 Idle</text><text x="58" y="84" text-anchor="middle" style="fill:#444">armed, level</text><text x="58" y="100" text-anchor="middle" style="fill:#444">1.5 s</text>
+<rect x="120" y="40" width="96" height="74" rx="8" fill="#faeeda" stroke="#ba7517"/><text x="168" y="66" text-anchor="middle" style="font-weight:700;fill:#633806">2 Push</text><text x="168" y="84" text-anchor="middle" style="fill:#633806">SIM_SHOVE</text><text x="168" y="100" text-anchor="middle" style="fill:#633806">+ TWIST 0.3 s</text>
+<rect x="230" y="40" width="96" height="74" rx="8" fill="#e6f1fb" stroke="#185fa5"/><text x="278" y="66" text-anchor="middle" style="font-weight:700;fill:#0c447c">3 Release</text><text x="278" y="84" text-anchor="middle" style="fill:#0c447c">accel &lt; 0.35 g</text><text x="278" y="100" text-anchor="middle" style="fill:#0c447c">3 samples · t = 0</text>
+<rect x="340" y="40" width="96" height="74" rx="8" fill="#e6f1fb" stroke="#185fa5"/><text x="388" y="66" text-anchor="middle" style="font-weight:700;fill:#0c447c">4 Spool</text><text x="388" y="84" text-anchor="middle" style="fill:#0c447c">motors up</text><text x="388" y="100" text-anchor="middle" style="fill:#0c447c">≈ 0.3 s</text>
+<rect x="450" y="40" width="96" height="74" rx="8" fill="#e6f1fb" stroke="#185fa5" stroke-width="2"/><text x="498" y="66" text-anchor="middle" style="font-weight:700;fill:#0c447c">5 Recover</text><text x="498" y="84" text-anchor="middle" style="fill:#0c447c">rule or PPO</text><text x="498" y="100" text-anchor="middle" style="fill:#0c447c">50 Hz → 400 Hz</text>
+<rect x="560" y="40" width="96" height="74" rx="8" fill="#e6f1fb" stroke="#185fa5"/><text x="608" y="66" text-anchor="middle" style="font-weight:700;fill:#0c447c">6 Caught</text><text x="608" y="84" text-anchor="middle" style="fill:#0c447c">calm 0.5 s</text><text x="608" y="100" text-anchor="middle" style="fill:#0c447c">= recovered</text>
+<rect x="670" y="40" width="96" height="74" rx="8" fill="#e1f5ee" stroke="#0f6e56"/><text x="718" y="66" text-anchor="middle" style="font-weight:700;fill:#085041">7 LOITER</text><text x="718" y="84" text-anchor="middle" style="fill:#085041">ArduPilot holds</text><text x="718" y="100" text-anchor="middle" style="fill:#085041">10 s</text>
+<rect x="780" y="40" width="110" height="74" rx="8" fill="#e1f5ee" stroke="#0f6e56"/><text x="835" y="66" text-anchor="middle" style="font-weight:700;fill:#085041">8 LAND</text><text x="835" y="84" text-anchor="middle" style="fill:#085041">right there</text><text x="835" y="100" text-anchor="middle" style="fill:#085041">→ disarm</text>
+<line x1="106" y1="77" x2="118" y2="77" stroke="#5b5b66" stroke-width="1.5" marker-end="url(#ar2)"/><line x1="216" y1="77" x2="228" y2="77" stroke="#5b5b66" stroke-width="1.5" marker-end="url(#ar2)"/><line x1="326" y1="77" x2="338" y2="77" stroke="#5b5b66" stroke-width="1.5" marker-end="url(#ar2)"/><line x1="436" y1="77" x2="448" y2="77" stroke="#5b5b66" stroke-width="1.5" marker-end="url(#ar2)"/><line x1="546" y1="77" x2="558" y2="77" stroke="#5b5b66" stroke-width="1.5" marker-end="url(#ar2)"/><line x1="656" y1="77" x2="668" y2="77" stroke="#5b5b66" stroke-width="1.5" marker-end="url(#ar2)"/><line x1="766" y1="77" x2="778" y2="77" stroke="#5b5b66" stroke-width="1.5" marker-end="url(#ar2)"/>
+<text x="10" y="26" style="font-size:12.5px;font-weight:700;fill:#1d2433">Who is in charge:</text>
+<rect x="130" y="15" width="14" height="14" rx="3" fill="#faeeda" stroke="#ba7517"/><text x="150" y="26" style="fill:#444">simulator push (the "hand")</text>
+<rect x="330" y="15" width="14" height="14" rx="3" fill="#e6f1fb" stroke="#185fa5"/><text x="350" y="26" style="fill:#444">throw_check.py (detect + catch)</text>
+<rect x="560" y="15" width="14" height="14" rx="3" fill="#e1f5ee" stroke="#0f6e56"/><text x="580" y="26" style="fill:#444">ArduPilot by itself</text>
+<line x1="278" y1="124" x2="278" y2="150" stroke="#185fa5" stroke-dasharray="3 3"/><text x="278" y="166" text-anchor="middle" style="fill:#0c447c;font-weight:700">t = 0 (release)</text>
+<line x1="388" y1="124" x2="388" y2="150" stroke="#185fa5" stroke-dasharray="3 3"/><text x="388" y="166" text-anchor="middle" style="fill:#0c447c">motors on ≈ 0.3 s</text>
+<line x1="608" y1="124" x2="608" y2="150" stroke="#185fa5" stroke-dasharray="3 3"/><text x="608" y="166" text-anchor="middle" style="fill:#0c447c">up ≈ 0.5 s · roll/pitch ≈ 1.2 s</text>
+<text x="10" y="205" style="fill:#444">Recover = "turn level, push harder the faster it falls" (rule) or the trained network (PPO). During it only: rotation limits off + thrust mode, then restored.</text>
+<text x="10" y="225" style="fill:#444">LOITER refused (no position yet) → the script holds the height itself. Still armed after landing → script lands it and force-disarms (simulator only).</text>
+</g>
+</svg>
+</div>
+<div class="analogy">A goalkeeper (the script) watches the thrower's hand. The moment the ball leaves the hand (free fall), he dives (spool + recover). Once he has the ball (caught), he hands it to the referee (ArduPilot LOITER), who puts it down (LAND).</div>
+
+<!-- ============================ PART A ============================ -->
+<h2 id="a1"><span class="stage-tag t1">A</span>Outdoor: ArduPilot Throw mode, by hand (GPS)</h2>
+<p>ArduPilot's own Throw mode only detects a throw with an <b>absolute (GPS) position</b> (<code>mode_throw.cpp</code> needs <code>horiz_pos_abs</code>, which EKF3 sets only for GPS). So this part runs with GPS. You "throw" by typing the push into MAVProxy.</p>
+
+<div class="step s1"><div class="sh"><span class="num">A1</span><span class="tt">Start the simulator</span><span class="meta">WSL terminal</span></div>
+<div class="cmdbox"><pre class="cmd">cd ~/sitl_throw
+
+sim_vehicle.py -v ArduCopter -f quad --console --map</pre><button class="copy">Copy</button></div>
+<p>✅ Wait for <code>EKF3 IMU0 is using GPS</code>.</p></div>
+
+<div class="step s1"><div class="sh"><span class="num">A2</span><span class="tt">GPS settings (when switching from optical flow)</span><span class="meta">MAVProxy console</span></div>
+<div class="cmdbox"><pre class="cmd">param set EK3_SRC1_POSXY 3
+
+param set EK3_SRC1_VELXY 3
+
+param set EK3_SRC1_POSZ 1
+
+param set EK3_SRC1_VELZ 3
+
+reboot</pre><button class="copy">Copy</button></div>
+<div class="tw"><table><tr><th>Parameter</th><th>Value</th><th>Meaning</th></tr>
+<tr><td><code>EK3_SRC1_POSXY</code></td><td>3</td><td>Horizontal position from GPS</td></tr>
+<tr><td><code>EK3_SRC1_VELXY</code></td><td>3</td><td>Horizontal speed from GPS</td></tr>
+<tr><td><code>EK3_SRC1_POSZ</code></td><td>1</td><td>Height from barometer</td></tr>
+<tr><td><code>EK3_SRC1_VELZ</code></td><td>3</td><td>Vertical speed from GPS</td></tr></table></div>
+<div class="warn"><b>Same folder, same save file.</b> <code>~/sitl_throw</code> keeps the last settings (<code>eeprom.bin</code>). After Part A, set the optical-flow values again (<a href="#b4">B4</a>) before Part B.</div></div>
+
+<div class="step s1"><div class="sh"><span class="num">A3</span><span class="tt">Arm in Throw mode, then throw</span><span class="meta">MAVProxy console</span></div>
+<div class="cmdbox"><pre class="cmd">mode THROW
+
+arm throttle
+
+param set SIM_SHOVE_Z -30
+
+param set SIM_SHOVE_TIME 300</pre><button class="copy">Copy</button></div>
+<div class="tw"><table><tr><th>Line</th><th>What it does</th></tr>
+<tr><td><code>mode THROW</code> + <code>arm throttle</code></td><td>Armed, motors <b>stopped</b> (<code>THROW_MOT_START</code> 0), console says <code>waiting for throw</code></td></tr>
+<tr><td><code>SIM_SHOVE_Z -30</code></td><td>Push strength: 30 m/s² upward (body frame, negative = up)</td></tr>
+<tr><td><code>SIM_SHOVE_TIME 300</code></td><td>Push for 300 ms. <b>This line starts the throw</b></td></tr></table></div>
+<p><span class="chip run">FIX</span> <code>SIM_SHOVE_TIME</code> resets itself to 0 after every push (SITL source, <code>SIM_Aircraft.cpp</code>). For the next throw: land, <code>arm throttle</code> again, then set <code>SIM_SHOVE_TIME 300</code> again (<code>SIM_SHOVE_Z</code> stays).</p>
+<details><summary>Optional: a rolling throw by hand</summary>
+<div class="cmdbox"><pre class="cmd">param set SIM_SHOVE_Z -45
+
+param set SIM_TWIST_X 40
+
+param set SIM_TWIST_TIME 300
+
+param set SIM_SHOVE_TIME 300</pre><button class="copy">Copy</button></div>
+<p>Same push and spin as <code>throw_check.py</code>'s roll throw (45 m/s² up, 40 rad/s² roll, 0.3 s). Afterwards set <code>SIM_TWIST_X 0</code>.</p></details>
+<div class="tw"><table><tr><th>You see</th><th>Meaning</th><th>Measured (GPS, 25 Oct)</th></tr>
+<tr><td><code>throw detected - spooling motors</code> → <code>uprighting</code> → <code>controlling height</code> → <code>controlling position</code></td><td>✅ Throw mode caught it</td><td>Up: motors on 0.72 s, calm 2.04 s, fell 4.4 → 2.0 m, drift 0.1 m · Roll: motors on 0.68 s, calm 2.38 s, <b>drift 13.2 m</b></td></tr>
+<tr><td><code>SIM Hit ground</code>, no "throw detected"</td><td>Not on GPS (check A2), or it was not armed</td><td>On optical flow this always happens</td></tr></table></div>
+<div class="note">Throw mode stays in Throw and holds position (<code>THROW_NEXTMODE</code> 18, default). Land with <code>mode LAND</code>.</div></div>
+
+<!-- ============================ PART B ============================ -->
+<h2 id="b0"><span class="stage-tag t3">B</span>Indoor: the script with optical flow</h2>
+<h3>B0. When to do which step</h3>
+<div class="tw"><table><tr><th>When</th><th>Steps</th></tr>
+<tr><td><b>First time</b> (new PC / new ArduPilot build)</td><td>B1 → B2 → B3 → <b>B4</b> → B5</td></tr>
+<tr><td><b>Every session</b></td><td>B2 (FlightGear, optional) → B3 → B5</td></tr>
+<tr><td>After Part A (GPS)</td><td>B3 → <b>B4</b> again → B5</td></tr></table></div>
+
+<div class="step" id="b1"><div class="sh"><span class="num">B1</span><span class="tt">Rangefinder fix for rolling throws (once)</span><span class="meta">WSL · simulator only</span></div>
+<p>ArduPilot 4.4 SITL reports an <b>infinite</b> rangefinder distance when the drone tilts past 90°. Later code turns that into an integer and SITL stops with <code>Floating point exception - aborting</code>. The fix reports 99 m ("nothing in view") instead:</p>
+<div class="cmdbox"><pre class="cmd">sed -i 's/        return INFINITY;/        return 99.0f;/' ~/ardupilot/libraries/SITL/SIM_Aircraft.cpp
+
+cd ~/ardupilot
+
+./waf copter</pre><button class="copy">Copy</button></div>
+<p>Check (one line = done):</p>
+<div class="cmdbox"><pre class="cmd">grep -n "return 99.0f" ~/ardupilot/libraries/SITL/SIM_Aircraft.cpp</pre><button class="copy">Copy</button></div>
+<div class="note">Only the simulator code changes. Your Stage 1–3 (AirSim, Gazebo) runs and real firmware are not affected.</div></div>
+
+<div class="step" id="b2"><div class="sh"><span class="num">B2</span><span class="tt">FlightGear: start the view (optional, before the simulator)</span><span class="meta">pick ONE</span></div>
+<div class="tw"><table><tr><th>Option</th><th>How</th><th>Note</th></tr>
+<tr class="hl"><td><b>FlightGear 2024 on Windows</b> (recommended)</td><td>Double-click <code>FlightGear_quad.bat</code> (set up once in <a href="#c1">Part C</a>)</td><td>Uses the graphics card; does not slow the simulator</td></tr>
+<tr><td>FlightGear in WSL (old)</td><td>Command below</td><td>Software drawing on the CPU; slowed the simulator once (motors on 1.0 s)</td></tr></table></div>
+<div class="cmdbox"><pre class="cmd">LIBGL_ALWAYS_SOFTWARE=1 ~/ardupilot/Tools/autotest/fg_quad_view.sh --airport=KSFO</pre><button class="copy">Copy</button></div>
+<p>or, Kuching scenery (downloads the first time; wait, then restart FlightGear once):</p>
+<div class="cmdbox"><pre class="cmd">LIBGL_ALWAYS_SOFTWARE=1 ~/ardupilot/Tools/autotest/fg_quad_view.sh --enable-terrasync --airport=WBGG</pre><button class="copy">Copy</button></div>
+<div class="warn"><b>Same place in both programs.</b> FlightGear at KSFO → simulator with the KSFO <code>--custom-location</code> (B3). FlightGear at WBGG → <code>--custom-location=1.4847,110.3472,28,0</code>. A mismatch gives a dark sky (FlightGear's "noon" is for its own airport) or blue sea under the drone.</div></div>
+
+<div class="step" id="b3"><div class="sh"><span class="num">B3</span><span class="tt">Start the simulator</span><span class="meta">new WSL terminal</span></div>
+<div class="cmdbox"><pre class="cmd">cd ~/sitl_throw
+
+sim_vehicle.py -v ArduCopter -f quad --console --custom-location=37.6188,-122.3754,5,0</pre><button class="copy">Copy</button></div>
+<div class="tw"><table><tr><th>Watching with</th><th>Add to the command</th></tr>
+<tr><td>FlightGear in WSL</td><td>nothing (default address 127.0.0.1)</td></tr>
+<tr><td>FlightGear 2024 on Windows</td><td><code>-A "--fg 172.28.0.1"</code> (your Windows IP, <a href="#c2">C2</a>)</td></tr>
+<tr><td>No FlightGear (best for thesis numbers)</td><td>nothing; the default location also works: <code>sim_vehicle.py -v ArduCopter -f quad --console --map</code></td></tr></table></div>
+<p><span class="chip run">FIX</span> Your notes used <code>--map</code> together with the KSFO location. On 25 Oct that combination gave motors on 1.0 s (too slow). We suspect the map downloading tiles for the new place (not proven). Leave <code>--map</code> out when you use <code>--custom-location</code>, and always do the timing check (<a href="#f3">section 5</a>).</p>
+<p>The 4th number (<code>5</code>) is the ground height in m. With 4 the drone sat 0.5 m inside FlightGear's ground. FlightGear's <code>altitude</code> on the ground should read about 0 to +0.5.</p>
+<p>✅ Wait for <code>EKF3 IMU0 origin set</code> before starting a script.</p></div>
+
+<div class="step" id="b4"><div class="sh"><span class="num">B4</span><span class="tt">Optical-flow settings (once; again after Part A)</span><span class="meta">MAVProxy console</span></div>
+<p><span class="chip run">FIX</span> The <code>RNGFND1_…</code> settings only appear <b>after</b> <code>RNGFND1_TYPE</code> is set and the drone is rebooted (otherwise "Unable to find parameter"). So it is two rounds:</p>
+<p><b>Round 1</b>, sensors and position source:</p>
+<div class="cmdbox"><pre class="cmd">param set FLOW_TYPE 10
+
+param set SIM_FLOW_ENABLE 1
+
+param set RNGFND1_TYPE 100
+
+param set EK3_SRC1_POSXY 0
+
+param set EK3_SRC1_VELXY 5
+
+param set EK3_SRC1_POSZ 1
+
+param set EK3_SRC1_VELZ 0
+
+param set EK3_SRC1_YAW 1
+
+param set ARMING_CHECK 0
+
+reboot</pre><button class="copy">Copy</button></div>
+<p><b>Round 2</b>, rangefinder limits (after the reboot):</p>
+<div class="cmdbox"><pre class="cmd">param set RNGFND1_ORIENT 25
+
+param set RNGFND1_MIN_CM 1
+
+param set RNGFND1_MAX_CM 800
+
+reboot</pre><button class="copy">Copy</button></div>
+<div class="tw"><table><tr><th>Parameter</th><th>Value</th><th>Meaning</th></tr>
+<tr><td><code>FLOW_TYPE</code> / <code>SIM_FLOW_ENABLE</code></td><td>10 / 1</td><td>Simulated optical-flow sensor</td></tr>
+<tr><td><code>RNGFND1_TYPE</code></td><td>100</td><td>Simulated rangefinder</td></tr>
+<tr><td><code>EK3_SRC1_POSXY</code></td><td>0</td><td>No absolute position (no GPS)</td></tr>
+<tr><td><code>EK3_SRC1_VELXY</code></td><td>5</td><td>Horizontal speed from optical flow</td></tr>
+<tr class="hl"><td><code>EK3_SRC1_POSZ</code></td><td><b>1</b> (barometer) or 2 (rangefinder)</td><td><span class="chip run">FIX</span> the notes had both lines: <b>pick one</b>. See <a href="#f2">section 4</a>. With 2, <code>RNGFND1_MIN_CM 1</code> is required</td></tr>
+<tr><td><code>EK3_SRC1_VELZ</code></td><td>0</td><td>None</td></tr>
+<tr><td><code>EK3_SRC1_YAW</code></td><td>1</td><td>Compass</td></tr>
+<tr><td><code>ARMING_CHECK</code></td><td>0</td><td>Simulator only: skip pre-arm checks</td></tr>
+<tr><td><code>RNGFND1_ORIENT</code></td><td>25</td><td>Pointing down (default)</td></tr>
+<tr><td><code>RNGFND1_MIN_CM</code></td><td><b>1</b></td><td>Same as the real MTF-01 (ArduPilot's MTF-01 page: 0.01 m). SITL default 20 cm made LOITER refuse with POSZ 2</td></tr>
+<tr><td><code>RNGFND1_MAX_CM</code></td><td><b>800</b></td><td>Same as the real MTF-01 (8 m). Your notes had 700 (SITL default)</td></tr></table></div>
+<p>Check:</p>
+<div class="cmdbox"><pre class="cmd">param show EK3_SRC1_*
+
+param show RNGFND1_*</pre><button class="copy">Copy</button></div></div>
+
+<div class="step" id="b5"><div class="sh"><span class="num">B5</span><span class="tt">Run the throw tests</span><span class="meta">Windows PowerShell · folder Throw_and_Fly</span></div>
+<p>The folder needs: <code>throw_check.py</code>, <code>ap_link.py</code>, <code>impact_check.py</code> (latest versions), and for PPO also <code>train_imitation.py</code>, <code>models\obs_norm.npz</code>, <code>models\round1_final.zip</code>.</p>
+<div class="tw"><table><tr><th>Goal</th><th>Command</th><th>Throws</th><th>≈ Time</th></tr>
+<tr><td>Timing check (first, every session)</td><td><code>py .\throw_check.py --modes attitude-rule --types roll</code></td><td>1</td><td>1 min</td></tr>
+<tr><td>PPO, all throw types</td><td><code>py .\throw_check.py --modes ppo-policy --model .\models\round1_final.zip --repeats 1 --types up roll pitch</code></td><td>3</td><td>3 min</td></tr>
+<tr><td>PPO, roll × 3</td><td><code>py .\throw_check.py --modes ppo-policy --model .\models\round1_final.zip --repeats 3 --types roll</code></td><td>3</td><td>3 min</td></tr>
+<tr><td>Attitude-rule (teacher)</td><td><code>py .\throw_check.py --modes attitude-rule --repeats 3 --types up roll pitch</code></td><td>9</td><td>8 min</td></tr>
+<tr class="hl"><td><b>Both, for the thesis</b></td><td><code>py .\throw_check.py --modes attitude-rule ppo-policy --model .\models\round1_final.zip --repeats 5 --types up roll pitch</code></td><td>30</td><td>25 min</td></tr>
+<tr><td>Old ending (fly back to the throw spot)</td><td>add <code>--fly-back</code></td><td></td><td></td></tr></table></div>
+<p>Copy the thesis command:</p>
+<div class="cmdbox"><pre class="cmd">py .\throw_check.py --modes attitude-rule ppo-policy --model .\models\round1_final.zip --repeats 5 --types up roll pitch</pre><button class="copy">Copy</button></div>
+<div class="tw"><table><tr><th>Throw</th><th>Push (0.3 s)</th><th>Spin (0.3 s)</th><th>Top</th></tr>
+<tr><td>up</td><td>30 m/s² up</td><td>none</td><td>≈ 2.8 m</td></tr>
+<tr><td>roll</td><td>45 m/s² up</td><td>40 rad/s² roll</td><td>≈ 6.1–6.7 m, ~1 tumble</td></tr>
+<tr><td>pitch</td><td>45 m/s² up</td><td>40 rad/s² pitch</td><td>≈ 6.1–6.7 m</td></tr></table></div>
+<p><span class="chip run">FIX</span> <code>disarm force</code> is no longer needed. If the drone is still armed before the next throw (or at the start), the script now lands it, waits until it stops sinking, and force-disarms it by itself (<code>[sim] drone still armed … forced disarm</code>). Leftover test values (<code>GUID_OPTIONS</code>, rotation limits) are also put back automatically. Manual fallback, MAVProxy console only:</p>
+<div class="cmdbox"><pre class="cmd">disarm force</pre><button class="copy">Copy</button></div></div>
+
+<h3 id="b6">B6. Read the results</h3>
+<p>One line per throw, then a <code>hold:</code> line:</p>
+<div class="cmdbox"><pre class="cmd">Throw  2 | roll  | attitude-rule | detected yes | motors on  0.24 s | top 6.1 m, lowest 6.1 m | peak rate 11.3 | drift 1.0 m | recovered 1.14s after release
+         hold: LOITER 10.0 s | braked 0.59 m in 1.14 s | then held within 0.27 m | height +/-0.09 m</pre></div>
+<div class="tw"><table><tr><th>Field</th><th>Meaning</th><th>Good value</th></tr>
+<tr><td>motors on</td><td>release → motors at full range</td><td><b>≈ 0.3 s</b> (≈ 1.0 s = simulator too slow, run not valid)</td></tr>
+<tr><td>recovered</td><td>release → calm for 0.5 s (rate &lt; 1.2 rad/s, tilt &lt; 30°, h-speed &lt; 3 m/s, falling &lt; 1 m/s, height &gt; 0.5 m)</td><td>up ≈ 0.5 s, roll/pitch ≈ 1.2 s</td></tr>
+<tr><td>top / lowest</td><td>highest / lowest point after the top, m above the ground</td><td>up ≈ 2.8 m, roll/pitch ≈ 6.1–6.7 m</td></tr>
+<tr><td>peak rate</td><td>fastest spin, rad/s</td><td>roll/pitch ≈ 8–12</td></tr>
+<tr><td>drift</td><td>distance from the throw spot at the end of the hold</td><td>≈ 1 m</td></tr>
+<tr><td>braked</td><td>LOITER stopping distance after the hand-over</td><td>≈ 0.6 m (roll/pitch), 0 (up)</td></tr>
+<tr><td>held within</td><td>after braking: how still it hovers</td><td>0.1–0.4 m</td></tr></table></div>
+<p>Files in <code>runs\throw_check\</code>: <code>throw_check_&lt;date&gt;.csv</code> (one line per throw), <code>_steps.csv</code> (every 50 Hz step), <code>.json</code> (settings + summary).</p>
+
+<!-- ============================ PART C ============================ -->
+<h2 id="c1"><span class="stage-tag t2">C</span>FlightGear 2024 on Windows</h2>
+<h3>C1. One-time setup</h3>
+<div class="step s2"><div class="sh"><span class="num">C1.1</span><span class="tt">Install FlightGear 2024.1.7 (Windows 10/11)</span><span class="meta">≈ 1.8 GB data download</span></div>
+<p>From the FlightGear download page. Let the "Setup required data files" window reach 100%.</p></div>
+<div class="step s2"><div class="sh"><span class="num">C1.2</span><span class="tt">Copy ArduPilot's quad model to Windows</span><span class="meta">WSL · once</span></div>
+<p>FlightGear has no ArduPilot quad. The <code>arducopter</code> model (props spin with the motor outputs, altitude/roll/pitch shown on screen) lives inside ArduPilot in WSL, so Windows FlightGear needs its own copy:</p>
+<div class="cmdbox"><pre class="cmd">cp -r ~/ardupilot/Tools/autotest/aircraft /mnt/c/Users/lukas/fg_aircraft
+
+ls /mnt/c/Users/lukas/fg_aircraft/arducopter</pre><button class="copy">Copy</button></div>
+<p>✅ Shows <code>arducopter-set.xml</code>, <code>arducopter.xml</code>, <code>Models</code>, <code>quad.nas</code> …</p></div>
+<div class="step s2"><div class="sh"><span class="num">C1.3</span><span class="tt">Make FlightGear_quad.bat</span><span class="meta">Notepad · once</span></div>
+<p>Notepad → paste → <b>Save As</b> <code>FlightGear_quad.bat</code> (Desktop or project folder), <b>Save as type: All files</b>. The first time Windows Firewall asks, allow FlightGear on <b>private and public</b> networks.</p>
+<div class="cmdbox"><pre class="cmd">@echo off
+title FlightGear quad view (ArduPilot SITL)
+
+rem ---- 1. Paths (change FG_EXE if your FlightGear is somewhere else) ----
+set "FG_EXE=C:\Program Files\FlightGear 2024.1\bin\fgfs.exe"
+set "FG_AIRCRAFT=%USERPROFILE%\fg_aircraft"
+
+rem ---- 2. Check FlightGear is there ----
+if not exist "%FG_EXE%" (
+    echo [ERROR] fgfs.exe not found here:
+    echo         %FG_EXE%
+    echo FlightGear folders in Program Files:
+    dir /b "C:\Program Files\FlightGear*"
+    echo Fix the FG_EXE line at the top of this file.
+    pause
+    exit /b 1
+)
+
+rem ---- 3. Check the ArduPilot quad model is there ----
+if not exist "%FG_AIRCRAFT%\arducopter\arducopter-set.xml" (
+    echo [ERROR] ArduPilot quad model not found here:
+    echo         %FG_AIRCRAFT%\arducopter
+    echo Run this ONCE in WSL, then try again:
+    echo   cp -r ~/ardupilot/Tools/autotest/aircraft /mnt/c/Users/lukas/fg_aircraft
+    pause
+    exit /b 1
+)
+
+rem ---- 4. Start FlightGear: listens on UDP 5503 for ArduPilot SITL ----
+echo Starting FlightGear (KSFO, noon, quad) ...
+"%FG_EXE%" --native-fdm=socket,in,10,,5503,udp --fdm=external --aircraft=arducopter "--fg-aircraft=%FG_AIRCRAFT%" --airport=KSFO --timeofday=noon --geometry=1400x900 --disable-sound --disable-ai-models --disable-random-objects --wind=0@0 --log-level=info
+
+echo.
+echo FlightGear closed (exit code %ERRORLEVEL%). Read any error above.
+pause</pre><button class="copy">Copy</button></div>
+<div class="tw"><table><tr><th>Part of the start line</th><th>Meaning</th></tr>
+<tr><td><code>--native-fdm=socket,in,10,,5503,udp</code></td><td>Do not fly by yourself: listen on UDP 5503 for the drone's position from ArduPilot</td></tr>
+<tr><td><code>--fdm=external</code></td><td>FlightGear physics off; ArduPilot's physics moves the drone</td></tr>
+<tr><td><code>--aircraft=arducopter</code> + <code>--fg-aircraft=…</code></td><td>Show ArduPilot's quad from the copied folder</td></tr>
+<tr><td><code>--airport=KSFO --timeofday=noon</code></td><td>Bright daylight at San Francisco (same place as the simulator)</td></tr>
+<tr><td><code>--geometry=1400x900</code></td><td>Window size</td></tr>
+<tr><td><code>--disable-…</code>, <code>--wind=0@0</code></td><td>Less to draw, no wind: lighter</td></tr></table></div>
+<div class="note">Paste this into Notepad, not PowerShell: PowerShell reads the commas in <code>socket,in,10,,5503,udp</code> as its own syntax ("Unexpected token").</div></div>
+
+<h3 id="c2">C2. Every session</h3>
+<div class="step s2"><div class="sh"><span class="num">C2</span><span class="tt">FlightGear → simulator → script</span><span class="meta">in this order</span></div>
+<p><b>1.</b> Double-click <code>FlightGear_quad.bat</code>, wait for the runway.</p>
+<p><b>2.</b> WSL: find the Windows IP (it can change after a reboot):</p>
+<div class="cmdbox"><pre class="cmd">ip route | grep default</pre><button class="copy">Copy</button></div>
+<p>✅ <code>default via 172.28.0.1 dev eth0</code>: the number after <code>via</code> is the <b>Windows</b> IP as WSL sees it.</p>
+<p><b>3.</b> WSL: the simulator, sending the view to Windows:</p>
+<div class="cmdbox"><pre class="cmd">cd ~/sitl_throw
+
+sim_vehicle.py -v ArduCopter -f quad --console --custom-location=37.6188,-122.3754,5,0 -A "--fg 172.28.0.1"</pre><button class="copy">Copy</button></div>
+<p><b>4.</b> In FlightGear: <code>v</code> = next view (chase view is easiest), <code>x</code> / <code>X</code> = zoom in / out, right-drag = look around.</p>
+<p><b>5.</b> PowerShell: B5 (start with the timing check).</p></div>
+
+<h3 id="c3">C3. Other scenery</h3>
+<p>FlightGear downloads any airport by itself with TerraSync. In the <code>.bat</code>: add <code>--enable-terrasync</code> and change <code>--airport=</code>. In WSL use the matching <code>--custom-location</code>:</p>
+<div class="tw"><table><tr><th>Place</th><th><code>--airport=</code></th><th><code>--custom-location=</code></th></tr>
+<tr><td>San Francisco (scenery included)</td><td><code>KSFO</code></td><td><code>37.6188,-122.3754,5,0</code></td></tr>
+<tr><td>Kuching</td><td><code>WBGG</code></td><td><code>1.4847,110.3472,28,0</code></td></tr>
+<tr><td>Keflavík, Iceland (flat, open)</td><td><code>BIKF</code></td><td><code>63.985,-22.6056,53,0</code></td></tr></table></div>
+<div class="tw"><table><tr><th>FlightGear shows</th><th>Cause</th><th>Fix</th></tr>
+<tr><td>Blue sea under the drone</td><td>Scenery not downloaded yet, or places don't match</td><td>Wait 2–5 min, restart FlightGear once; check both places match</td></tr>
+<tr><td>Dark / purple sky</td><td>FlightGear started at another airport ("noon" there)</td><td>Same airport in the <code>.bat</code> and the location in WSL</td></tr>
+<tr><td><code>altitude</code> negative on the ground (drone in the ground)</td><td>FlightGear's ground is higher</td><td>Raise the 3rd number of <code>--custom-location</code> by that amount + 0.5</td></tr></table></div>
+
+<!-- ============================ PART D ============================ -->
+<h2 id="d1"><span class="stage-tag t3">D</span>Gazebo F450: throw &amp; flip with --launch</h2>
+<p>Gazebo does its own physics, so the simulator's throw push (<code>SIM_SHOVE</code> / <code>SIM_TWIST</code>, ArduPilot's own physics only) does <b>nothing</b> there. With <code>--launch</code> the drone <b>throws itself</b>, then the same catch → LOITER → LAND runs.</p>
+<div class="figure">
+<svg viewBox="0 0 900 200" width="100%" style="max-width:900px" role="img" aria-label="Launch sequence: climb to hand height and measure hover thrust, push, spin kick, release with motors at minimum, 0.3 s free tumble, catch">
+<defs><marker id="ar4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#5b5b66"/></marker></defs>
+<g style="font-size:12px">
+<rect x="10" y="30" width="130" height="80" rx="8" fill="#f1efe8" stroke="#888"/><text x="75" y="56" text-anchor="middle" style="font-weight:700;fill:#1d2433">1 Climb</text><text x="75" y="74" text-anchor="middle" style="fill:#444">to 3 m (≈4.5 m)</text><text x="75" y="92" text-anchor="middle" style="fill:#444">measure hover thrust</text>
+<rect x="160" y="30" width="110" height="80" rx="8" fill="#faeeda" stroke="#ba7517"/><text x="215" y="56" text-anchor="middle" style="font-weight:700;fill:#633806">2 Push</text><text x="215" y="74" text-anchor="middle" style="fill:#633806">full thrust</text><text x="215" y="92" text-anchor="middle" style="fill:#633806">level, 0.6 s</text>
+<rect x="290" y="30" width="120" height="80" rx="8" fill="#faeeda" stroke="#ba7517"/><text x="350" y="56" text-anchor="middle" style="font-weight:700;fill:#633806">3 Spin kick</text><text x="350" y="74" text-anchor="middle" style="fill:#633806">roll / pitch</text><text x="350" y="92" text-anchor="middle" style="fill:#633806">9 rad/s</text>
+<rect x="430" y="30" width="130" height="80" rx="8" fill="#e6f1fb" stroke="#185fa5"/><text x="495" y="56" text-anchor="middle" style="font-weight:700;fill:#0c447c">4 Release</text><text x="495" y="74" text-anchor="middle" style="fill:#0c447c">motors minimum</text><text x="495" y="92" text-anchor="middle" style="fill:#0c447c">free fall &lt; 0.35 g</text>
+<rect x="580" y="30" width="130" height="80" rx="8" fill="#e6f1fb" stroke="#185fa5"/><text x="645" y="56" text-anchor="middle" style="font-weight:700;fill:#0c447c">5 Free tumble</text><text x="645" y="74" text-anchor="middle" style="fill:#0c447c">0.3 s = hand-throw</text><text x="645" y="92" text-anchor="middle" style="fill:#0c447c">spool-up delay</text>
+<rect x="730" y="30" width="160" height="80" rx="8" fill="#e1f5ee" stroke="#0f6e56"/><text x="810" y="56" text-anchor="middle" style="font-weight:700;fill:#085041">6 Catch</text><text x="810" y="74" text-anchor="middle" style="fill:#085041">rule / PPO →</text><text x="810" y="92" text-anchor="middle" style="fill:#085041">LOITER → LAND</text>
+<line x1="140" y1="70" x2="158" y2="70" stroke="#5b5b66" stroke-width="1.5" marker-end="url(#ar4)"/><line x1="270" y1="70" x2="288" y2="70" stroke="#5b5b66" stroke-width="1.5" marker-end="url(#ar4)"/><line x1="410" y1="70" x2="428" y2="70" stroke="#5b5b66" stroke-width="1.5" marker-end="url(#ar4)"/><line x1="560" y1="70" x2="578" y2="70" stroke="#5b5b66" stroke-width="1.5" marker-end="url(#ar4)"/><line x1="710" y1="70" x2="728" y2="70" stroke="#5b5b66" stroke-width="1.5" marker-end="url(#ar4)"/>
+<text x="10" y="140" style="fill:#444">Orange = the drone makes its own "throw" (like the arm + wrist). Blue = released and tumbling (≈1 full turn through upside down).</text>
+<text x="10" y="160" style="fill:#444">Green = the same catch as the hand throw. "motors on" in the results = the 0.3 s free tumble + detection (≈0.34 s).</text>
+<text x="10" y="180" style="fill:#444">Only attitude-rule / ppo-policy (ArduPilot's Throw mode needs a real push with the motors stopped).</text>
+</g></svg></div>
+
+<div class="step" id="d2"><div class="sh"><span class="num">D1</span><span class="tt">WSL terminal 1: Gazebo with the F450 world</span><span class="meta">as in the Gazebo F450 guide</span></div>
+<div class="cmdbox"><pre class="cmd">gazebo --verbose ~/ardupilot_gazebo/worlds/f450_airsim_runway.world</pre><button class="copy">Copy</button></div></div>
+<div class="step"><div class="sh"><span class="num">D2</span><span class="tt">WSL terminal 2: SITL from the F450 folder</span><span class="meta">start when the runway is visible</span></div>
+<div class="cmdbox"><pre class="cmd">cd ~/sitl_f450
+
+sim_vehicle.py -v ArduCopter -f gazebo-iris --console --map</pre><button class="copy">Copy</button></div>
+<p>Uses the F450 settings saved in <code>~/sitl_f450</code> (GPS, F450 rate gains). No FlightGear needed: you watch in Gazebo.</p></div>
+<div class="step"><div class="sh"><span class="num">D3</span><span class="tt">PowerShell: throw / flip with --launch</span><span class="meta">folder Throw_and_Fly</span></div>
+<div class="cmdbox"><pre class="cmd">py .\throw_check.py --launch --types up roll pitch</pre><button class="copy">Copy</button></div>
+<p>Rule and PPO together:</p>
+<div class="cmdbox"><pre class="cmd">py .\throw_check.py --launch --modes attitude-rule ppo-policy --model .\models\round1_final.zip --repeats 3 --types up roll pitch</pre><button class="copy">Copy</button></div>
+<p>✅ Before each throw: <code>launch: hovering at 4.5 m | hover thrust measured 0.58 (MOT_THST_HOVER …) -&gt; using 0.58</code>. Your Gazebo value may differ; that's the point of measuring it.</p></div>
+
+<h3>Expected results</h3>
+<div class="warn"><b>Measured on ArduPilot's own physics with an F450 frame file, not in Gazebo</b> (no Gazebo on the test PC): 1.0 kg, 455 mm, inertia 0.0067/0.0080/0.0143, T/W 1.63, thrust expo 0.65. Your Gazebo run is the real result.</div>
+<div class="tw"><table><tr><th>Throw (attitude-rule, ×2)</th><th>recovered</th><th>lowest</th><th>drift</th><th>LOITER braked / held within</th></tr>
+<tr><td>up</td><td>0.70–0.72 s</td><td>4.1 m</td><td>0.6 m</td><td>0 m / 0.04–0.05 m</td></tr>
+<tr><td>roll</td><td>1.02–1.06 s</td><td>3.2–3.3 m</td><td>1.2–1.4 m</td><td>0.09–0.16 m / 0.1 m</td></tr>
+<tr><td>pitch</td><td>1.04–1.06 s</td><td>3.1–3.3 m</td><td>1.1–1.2 m</td><td>0.18–0.22 m / 0.1 m</td></tr></table></div>
+<h3>Two findings from building it</h3>
+<div class="tw"><table><tr><th>Finding</th><th>Measured</th><th>What the script does now</th></tr>
+<tr><td><b>Hover thrust must be right</b></td><td>With <code>MOT_THST_HOVER</code> at its default 0.39, the F450 only balanced its weight in the catch and sank into the ground at 2 m/s (3/3 crashed). Real hover thrust 0.58–0.59 → 6/6 caught</td><td>Measures the hover thrust before every launch and uses it for the rule, PPO and the height hold</td></tr>
+<tr><td><b>The spin decides how hard the catch is</b></td><td>12 rad/s: catch starts level again (4°, too easy) · <b>9 rad/s: on its side (85–111°)</b> · 7 rad/s: upside down (141–154°), crashed from 2 m</td><td>9 rad/s and a 3 m launch height: fair, hard and safe for the weak F450</td></tr></table></div>
+<div class="analogy">The drone becomes its own thrower: it jumps (push), flicks its wrist (spin kick), lets go (motors to minimum) and only then tries to catch itself, after the same 0.3 s a real throw needs to spool up.</div>
+
+
+<!-- ============================ FINDINGS ============================ -->
+<h2 id="f1">3. Results so far (ArduCopter 4.4 SITL, quad, 25 Oct 2026)</h2>
+<h3>GPS (Part A and <code>throw_check.py</code>)</h3>
+<div class="tw"><table><tr><th>Throw</th><th>ArduPilot Throw mode</th><th>attitude-rule</th></tr>
+<tr><td>up</td><td>caught · motors on 0.72 s · calm 2.04 s · fell 4.4 → 2.0 m · drift 0.1 m</td><td>caught · motors on 0.32 s · calm 0.50 s · drift 0.0 m</td></tr>
+<tr><td>roll</td><td>caught · motors on 0.68 s · calm 2.38 s · <b>drift 13.2 m</b></td><td>caught · motors on 0.26 s · calm 1.26 s · drift 0.4 m</td></tr></table></div>
+<p>The script reacts faster because it sees the free fall on the accelerometer at once; Throw mode waits until the speed has dropped by 2.5 m/s (its confirmation rule).</p>
+<h3>Optical flow (Part B)</h3>
+<div class="tw"><table><tr><th>Mode</th><th>up</th><th>roll</th><th>pitch</th><th>LOITER after the catch</th></tr>
+<tr><td>ArduPilot Throw mode</td><td colspan="3"><span class="chip fail">0 / 6</span> "could not arm: Need Position Estimate" or not detected → hit the ground (up to 8.5 m/s)</td><td>—</td></tr>
+<tr><td>attitude-rule (POSZ 1)</td><td>recovered 0.46–0.56 s · top ≈ 2.8 m</td><td>1.12–1.26 s · top 6.1–6.7 m · drift 0.5–1.1 m</td><td>1.12–1.23 s · drift 0.7–1.2 m</td><td>accepted · braked 0–0.64 m · held within 0.09–0.36 m</td></tr>
+<tr><td>PPO (your run, POSZ 2, min 20 cm)</td><td>—</td><td><b>3 / 3, 1.16 s</b> · top 6.2 m · motors on 0.30 s</td><td>—</td><td><span class="chip fail">refused 3/3</span> → script height hold (held within ~1.7 m)</td></tr>
+<tr><td>PPO (POSZ 1, or POSZ 2 + min 1 cm)</td><td colspan="3"><span class="chip todo">PENDING</span> run the thesis command in B5</td><td>accepted (you confirmed)</td></tr></table></div>
+<div class="ok"><b>What it shows so far.</b> On optical flow ArduPilot's own Throw mode cannot catch at all; the script (rule and PPO) catches every throw in ≈ 1.2 s, and LOITER then holds the recovery point within a few decimetres. PPO matched its teacher on roll (1.16 s vs 1.16–1.18 s). The full PPO vs rule comparison (5 repeats, up/roll/pitch, one POSZ setting) is the next result to record.</div>
+
+<h2 id="f2">4. Height source (EK3_SRC1_POSZ) finding</h2>
+<div class="figure">
+<svg viewBox="0 0 880 300" width="100%" style="max-width:880px" role="img" aria-label="During a throw the rangefinder is invalid on the ground and while tumbling. POSZ 2 switches the EKF height source back and forth; POSZ 1 keeps the barometer the whole time.">
+<g style="font-size:12px">
+<text x="170" y="26" text-anchor="middle" style="font-weight:700;fill:#1d2433">On the ground</text>
+<text x="380" y="26" text-anchor="middle" style="font-weight:700;fill:#1d2433">Push + tumbling</text>
+<text x="600" y="26" text-anchor="middle" style="font-weight:700;fill:#1d2433">Level, LOITER</text>
+<text x="790" y="26" text-anchor="middle" style="font-weight:700;fill:#1d2433">Landing</text>
+<text x="10" y="62" style="font-weight:700;fill:#1d2433">Rangefinder</text>
+<rect x="100" y="44" width="140" height="30" rx="5" fill="#fcebeb" stroke="#a32d2d"/><text x="170" y="64" text-anchor="middle" style="fill:#791f1f">~0 m: too close</text>
+<rect x="250" y="44" width="260" height="30" rx="5" fill="#fcebeb" stroke="#a32d2d"/><text x="380" y="64" text-anchor="middle" style="fill:#791f1f">looks sideways / up: nonsense</text>
+<rect x="520" y="44" width="160" height="30" rx="5" fill="#eaf3de" stroke="#3b6d11"/><text x="600" y="64" text-anchor="middle" style="fill:#27500a">sees the floor ✓</text>
+<rect x="690" y="44" width="180" height="30" rx="5" fill="#faeeda" stroke="#ba7517"/><text x="780" y="64" text-anchor="middle" style="fill:#633806">valid → too close</text>
+<text x="10" y="118" style="font-weight:700;fill:#1d2433">POSZ 2</text>
+<text x="10" y="134" style="fill:#444">(rangefinder)</text>
+<rect x="100" y="100" width="140" height="30" rx="5" fill="#faeeda" stroke="#ba7517"/><text x="170" y="120" text-anchor="middle" style="fill:#633806">baro (fallback)</text>
+<rect x="250" y="100" width="260" height="30" rx="5" fill="#faeeda" stroke="#ba7517"/><text x="380" y="120" text-anchor="middle" style="fill:#633806">baro (fallback)</text>
+<rect x="520" y="100" width="160" height="30" rx="5" fill="#e6f1fb" stroke="#185fa5"/><text x="600" y="120" text-anchor="middle" style="fill:#0c447c">rangefinder</text>
+<rect x="690" y="100" width="180" height="30" rx="5" fill="#faeeda" stroke="#ba7517"/><text x="780" y="120" text-anchor="middle" style="fill:#633806">→ baro again</text>
+<text x="515" y="152" text-anchor="middle" style="fill:#a32d2d;font-weight:700">⚡ switch = height jump</text>
+<text x="685" y="152" text-anchor="middle" style="fill:#a32d2d;font-weight:700">⚡</text>
+<text x="10" y="196" style="font-weight:700;fill:#1d2433">POSZ 1</text>
+<text x="10" y="212" style="fill:#444">(barometer)</text>
+<rect x="100" y="178" width="770" height="30" rx="5" fill="#e1f5ee" stroke="#0f6e56"/><text x="485" y="198" text-anchor="middle" style="fill:#085041">barometer the whole time: one steady height · the rangefinder still scales the flow and tracks the floor when it can</text>
+<text x="10" y="250" style="fill:#1d2433;font-weight:700">Measured:</text>
+<text x="100" y="250" style="fill:#444">POSZ 2 + min 20 cm (your PC): LOITER refused 3/3, landing not confirmed · POSZ 2 + min 1 cm: LOITER accepted, but up-throw height ~2 m off (my sim)</text>
+<text x="100" y="270" style="fill:#444">POSZ 1: LOITER accepted, heights right (all my runs + your PPO run) · EKF3 source: AP_NavEKF3_PosVelFusion.cpp, selectHeightForFusion()</text>
+</g>
+</svg>
+</div>
+<div class="tw"><table><tr><th>Setting</th><th>LOITER after a throw</th><th>Height numbers</th><th>Use</th></tr>
+<tr><td>POSZ 2 + <code>RNGFND1_MIN_CM 20</code></td><td><span class="chip fail">refused 3/3</span> (your PC)</td><td>unreliable</td><td>❌ never</td></tr>
+<tr><td>POSZ 2 + <code>RNGFND1_MIN_CM 1</code></td><td><span class="chip done">accepted</span> (yours + mine)</td><td>roll/pitch OK; up throw ~2 m off in my sim (height drifted on the ground)</td><td>OK if heights check out (B6 table)</td></tr>
+<tr class="hl"><td><b>POSZ 1</b></td><td><span class="chip done">accepted</span> (yours + mine)</td><td>correct in all runs so far</td><td>✅ recommended (also ArduPilot's optical-flow setup page)</td></tr></table></div>
+<div class="analogy">A blindfolded person finding their way by touching the wall (rangefinder). POSZ 2: they let go of the wall when they jump, so in the air they are lost, and on landing they guess, sometimes 2 m wrong. POSZ 1: they also count their steps the whole time (barometer), so they still know roughly where they are and correct it when they touch the wall again.</div>
+<div class="warn"><b>For the thesis:</b> use one POSZ setting for every run you compare (rule and PPO). Write the setting into the results table.</div>
+
+<h2 id="f3">5. Timing check: motors on ≈ 0.3 s</h2>
+<p><code>throw_check.py</code> uses the PC clock. If the simulator runs slower than real time, the script's catch comes too late in simulator time. Reproduced on 25 Oct with <code>--speedup 0.5</code>:</p>
+<div class="tw"><table><tr><th>Simulator speed</th><th>motors on</th><th>up throw</th><th>roll throw</th></tr>
+<tr><td>Normal (1×)</td><td>0.26–0.32 s</td><td>✅ caught 0.52 s</td><td>✅ caught 1.21 s, drift 0.7 m</td></tr>
+<tr><td>Half speed (0.5×, on purpose)</td><td><b>1.06 s</b></td><td>❌ crashed 6.53 m/s</td><td>❌ crashed</td></tr>
+<tr><td>Your run with FlightGear (WSL, 1400×900) / KSFO + --map</td><td><b>1.00–1.07 s</b></td><td>❌ crashed 6.59 m/s</td><td>2.5–3.0 s, drift 15–17 m</td></tr></table></div>
+<div class="tw"><table><tr><th>motors on</th><th>Do</th></tr>
+<tr><td>≈ 0.3 s</td><td>✅ results valid, carry on</td></tr>
+<tr><td>0.5–1.0 s</td><td>Close FlightGear (or use the Windows version), drop <code>--map</code>, restart the simulator, run the timing check again. Thesis numbers only from ≈ 0.3 s runs</td></tr></table></div>
+<div class="analogy">A goalkeeper watching the match on a laggy stream: he dives at the right moment for his screen, but the ball is already in the net.</div>
+
+<h2 id="f4">6. Corrections to the notes</h2>
+<div class="tw"><table><tr><th>#</th><th>In the notes</th><th>Corrected</th><th>Why</th></tr>
+<tr><td>1</td><td><code>EK3_SRC1_POSZ 1</code> and <code>EK3_SRC1_POSZ 2</code> both listed</td><td>Pick one; POSZ 1 recommended</td><td>The second line overwrites the first; section 4</td></tr>
+<tr><td>2</td><td>No <code>RNGFND1_MIN_CM</code></td><td><code>RNGFND1_MIN_CM 1</code></td><td>Needed for POSZ 2 (LOITER refused with 20 cm); matches the real MTF-01</td></tr>
+<tr><td>3</td><td><code>RNGFND1_ORIENT</code> / <code>MAX_CM</code> set together with <code>RNGFND1_TYPE</code></td><td>Set <code>RNGFND1_TYPE</code>, reboot, then the rest</td><td>These settings only exist after TYPE is set + reboot</td></tr>
+<tr><td>4</td><td><code>RNGFND1_MAX_CM 700</code></td><td><code>800</code></td><td>Matches the MTF-01's 8 m (700 is only the SITL default)</td></tr>
+<tr><td>5</td><td><code>--map</code> with <code>--custom-location</code></td><td>Leave <code>--map</code> out</td><td>Seen with motors on 1.0 s at KSFO; suspected tile downloads</td></tr>
+<tr><td>6</td><td><code>disarm force</code> to go to the next stage</td><td>Automatic now</td><td>The script lands + force-disarms (simulator only); manual is only a fallback</td></tr>
+<tr><td>7</td><td>"WSL IP" from <code>ip route | grep default</code></td><td>It is the <b>Windows</b> IP</td><td>The default route from WSL points to Windows: that is where FlightGear listens</td></tr>
+<tr><td>8</td><td>Outdoor: one <code>SIM_SHOVE_TIME 300</code></td><td>Set it again for every throw</td><td>It resets to 0 after each push (SITL source)</td></tr>
+<tr><td>9</td><td>FlightGear in WSL as the main view</td><td>FlightGear 2024 on Windows</td><td>The WSL version draws on the CPU and slowed the simulator once</td></tr></table></div>
+
+<!-- ============================ REFERENCE ============================ -->
+<h2 id="r1">7. Next: the real drone</h2>
+<p><code>throw_check.py</code> is simulator-only: it refuses to run without <code>SIM_SHOVE_TIME</code>, and it arms with the props spinning at idle. A real-drone script (<code>throw_real.py</code>, Raspberry Pi) comes next, after the drone flies LOITER on the MTF-01.</p>
+<h3>The safe cycle (one throw)</h3>
+<div class="flow">
+<div class="fb pilot"><b>1 · Pilot arms</b>props stay STOPPED (<code>MOT_SPIN_ARM 0</code>)</div><div class="fa">↓</div>
+<div class="fb pilot"><b>2 · Pilot: throw-enable switch ON</b>the script only reacts now</div><div class="fa">↓</div>
+<div class="fb pi"><b>3 · You throw</b>push above ~1.5 g, then free fall → motors start</div><div class="fa">↓</div>
+<div class="fb pi"><b>4 · Recovery</b>attitude-rule or PPO</div><div class="fa">↓</div>
+<div class="fb ap"><b>5 · LOITER 3 s → LAND → DISARM</b>ArduPilot; throttle stick centred</div><div class="fa">↓</div>
+<div class="fb dec"><b>6 · Pick it up only when disarmed</b>picking it up = push + drop = looks like a throw</div>
+</div>
+<h3>Test ladder (each step must pass before the next)</h3>
+<div class="tw"><table><tr><th>Step</th><th>What</th><th>Props</th><th>Pass when</th></tr>
+<tr><td>1 Bench</td><td>Arm, walk, wave, shake; then drop 30 cm onto a pillow</td><td><b>off</b></td><td>Motors start only on the drop; logs: drop &lt; 0.35 g, hand movements never</td></tr>
+<tr><td>2 Hover</td><td>AltHold → LOITER over the 5 × 5 m area, 2–3 m</td><td>on</td><td>Holds about ±0.5 m; emergency stop works (tested at 0.5 m)</td></tr>
+<tr><td>3 Up throw</td><td>Gentle, to 2–3 m, attitude-rule</td><td>on</td><td>Caught, LOITER holds, lands, disarms</td></tr>
+<tr><td>4 Roll / pitch</td><td>Half turn, then a full turn, attitude-rule</td><td>on</td><td>Caught every time, stays in the area</td></tr>
+<tr><td>5 PPO</td><td>Steps 3–4 with PPO</td><td>on</td><td>Compare with the rule (thesis result)</td></tr></table></div>
+<div class="tw"><table><tr><th>Safety</th><th>Why</th></tr>
+<tr><td>Two people: thrower + pilot holding the RC (emergency motor stop <code>RCx_OPTION 31</code> + mode switch)</td><td>Someone must be able to stop it at once</td></tr>
+<tr><td>Gloves + glasses; throw up and away from the body; below 3 m first, over grass/foam</td><td>5" props at full power cut</td></tr>
+<tr><td>Pilot takes over (ALT_HOLD / LAND) if it drifts &gt; 2 m or climbs above ~5 m</td><td>5 × 5 m area; optical flow is lost above the rangefinder range (8 m)</td></tr>
+<tr><td>Same POSZ as the simulator runs; <code>RNGFND1_MIN_CM 1</code>, <code>RNGFND1_MAX_CM 800</code></td><td>Section 4</td></tr></table></div>
+<h3>What to send for <code>throw_real.py</code></h3>
+<div class="tw"><table><tr><th>What</th><th>How</th><th>Why</th></tr>
+<tr><td>Full parameter file</td><td>Mission Planner: CONFIG → Full Parameter List → Save to file</td><td>Hover thrust, spool time, rotation limits, EKF/flow/rangefinder, Pi serial port, switches, failsafes</td></tr>
+<tr><td>One hover log (<code>.bin</code>)</td><td>1–2 min LOITER at ~2 m; DataFlash Logs → Download</td><td>Real hover thrust, vibration, accelerometer noise (checks the 0.35 g limit)</td></tr>
+<tr><td>Weight, battery, FC position</td><td>Scale, label, ruler (cm from the centre)</td><td>An off-centre IMU adds acceleration when spinning</td></tr></table></div>
+
+<h2 id="r2">8. Troubleshooting</h2>
+<div class="tw"><table><tr><th>Symptom</th><th>Cause</th><th>Fix</th></tr>
+<tr><td><code>Floating point exception - aborting</code> on a roll throw</td><td>B1 not done / not rebuilt</td><td>B1, check with <code>grep</code></td></tr>
+<tr><td><code>Unable to find parameter RNGFND1_…</code></td><td>TYPE not set + rebooted yet</td><td>B4 round 1, reboot, round 2</td></tr>
+<tr><td><code>Mode change to LOITER failed: requires position</code></td><td>POSZ 2 with min 20 cm, or height above the rangefinder range</td><td>POSZ 1, or <code>RNGFND1_MIN_CM 1</code>; check <code>top</code> &lt; ~6 m</td></tr>
+<tr><td>motors on ≈ 1.0 s, crashes</td><td>Simulator slower than real time</td><td>Section 5</td></tr>
+<tr><td><code>STOP - the drone is still ARMED and could not be disarmed</code></td><td>Simulator stuck</td><td>Ctrl+C the simulator, start it again (same command)</td></tr>
+<tr><td><code>land() got an unexpected keyword argument 'fly_alt'</code></td><td>Old <code>ap_link.py</code></td><td>Copy the latest <code>ap_link.py</code> next to <code>throw_check.py</code></td></tr>
+<tr><td><code>No SIM_SHOVE_TIME</code></td><td>Started with Gazebo / AirSim</td><td>Use <code>-f quad</code> (ArduPilot's own physics)</td></tr>
+<tr><td>FlightGear shows the quad but it never moves</td><td>Wrong IP in <code>--fg</code> or firewall</td><td>C2 step 2; allow FlightGear (private + public)</td></tr>
+<tr><td>Throw mode: <code>Need Position Estimate</code></td><td>On optical flow</td><td>Expected: Throw mode needs GPS (Part A)</td></tr>
+<tr><td>PPO: <code>ppo-policy needs --model</code> / <code>No models/obs_norm.npz</code></td><td>Model files missing</td><td>Copy <code>models\</code> and <code>train_imitation.py</code> from Stage 3</td></tr></table></div>
+
+<h2 id="r3">9. Files and outputs</h2>
+<div class="tw"><table><tr><th>File</th><th>Where</th><th>What</th></tr>
+<tr><td><code>throw_check.py</code></td><td>Throw_and_Fly\</td><td>The throw test (simulator only). Header: how to run, expected results, findings</td></tr>
+<tr><td><code>ap_link.py</code></td><td>Throw_and_Fly\</td><td>MAVLink link: modes, arming, return/landing helpers</td></tr>
+<tr><td><code>impact_check.py</code></td><td>Throw_and_Fly\</td><td>attitude-rule, network loading (shared with Stage 3)</td></tr>
+<tr><td><code>train_imitation.py</code>, <code>models\obs_norm.npz</code>, <code>models\round1_final.zip</code></td><td>Throw_and_Fly\</td><td>Needed for <code>ppo-policy</code></td></tr>
+<tr><td><code>runs\throw_check\throw_check_&lt;date&gt;.csv / _steps.csv / .json</code></td><td>Throw_and_Fly\</td><td>Results: per throw / every 50 Hz step / settings + summary</td></tr>
+<tr><td><code>~/sitl_throw/eeprom.bin</code></td><td>WSL</td><td>The simulator's saved settings (GPS or optical flow, whichever was set last)</td></tr>
+<tr><td><code>FlightGear_quad.bat</code></td><td>Desktop / project</td><td>Starts FlightGear 2024 for ArduPilot</td></tr>
+<tr><td><code>C:\Users\lukas\fg_aircraft\arducopter\</code></td><td>Windows</td><td>ArduPilot's quad model for FlightGear</td></tr></table></div>
+
+<footer>Throw &amp; Fly simulation guide · ArduCopter 4.4 SITL · numbers from the runs of 25 Oct 2026 (your PC and the reference runs) · results not run yet are marked PENDING.</footer>
+</main>
+</div>
+<script>
+document.getElementById("themeBtn").onclick=()=>{const c=document.documentElement.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");const n=c==="dark"?"light":"dark";document.documentElement.setAttribute("data-theme",n);try{localStorage.setItem("guideTheme",n)}catch(e){}};
+try{const t=localStorage.getItem("guideTheme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}
+document.querySelectorAll(".cmdbox button.copy").forEach(b=>b.onclick=()=>{const t=b.parentElement.querySelector("pre").innerText;const d=()=>{b.textContent="Copied";setTimeout(()=>b.textContent="Copy",1200)};if(navigator.clipboard)navigator.clipboard.writeText(t).then(d,()=>{});else d();});
+(function(){const L=[...document.querySelectorAll("nav.side a")],S=L.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);addEventListener("scroll",()=>{let c=S[0];for(const s of S)if(s.getBoundingClientRect().top<120)c=s;L.forEach(a=>a.classList.toggle("active",a.getAttribute("href")==="#"+c.id))},{passive:true})})();
+</script>
+</body>
+</html>

@@ -1,0 +1,111 @@
+{
+  "teacher": "attitude-rule",
+  "dataset": "demos\\recovery_demos.npz",
+  "collection": {
+    "teacher": "attitude-rule",
+    "rule": {
+      "version": 3,
+      "k": 6.0,
+      "alpha": 30.0,
+      "thr_inv_x_hover": 1.0,
+      "up_min": 0.3,
+      "brake": 0.25,
+      "side_k": 0.15,
+      "side_max": 0.45
+    },
+    "hover_thrust": 0.5492176413536072,
+    "hz": 50.0,
+    "types": {
+      "flip": 0.45,
+      "bird": 0.45,
+      "spin": 0.1
+    },
+    "curriculum": {
+      "easy": [
+        0.7,
+        0.9
+      ],
+      "medium": [
+        0.9,
+        1.1
+      ],
+      "hard": [
+        1.1,
+        1.5
+      ]
+    },
+    "base_turns": {
+      "flip": 2.0,
+      "spin": 2.0,
+      "bird": 1.0
+    },
+    "start_alt_m": 30.0,
+    "obs": [
+      "down_x",
+      "down_y",
+      "down_z",
+      "p",
+      "q",
+      "r",
+      "v_down",
+      "dalt_since_hit",
+      "v_fwd",
+      "v_right",
+      "prev_roll",
+      "prev_pitch",
+      "prev_thr_x_hover"
+    ],
+    "act": [
+      "roll_rad",
+      "pitch_rad",
+      "thrust_x_hover"
+    ],
+    "limits_stock": {
+      "ATC_ACCEL_R_MAX": 110000.0,
+      "ATC_ACCEL_P_MAX": 110000.0,
+      "ATC_ACCEL_Y_MAX": 27000.0
+    },
+    "guid_stock": 0
+  },
+  "samples": 37311,
+  "hits": 400,
+  "split": "by hit 90/10",
+  "train_samples": 33842,
+  "val_samples": 3469,
+  "architecture": "13-256-256-128-3, ReLU",
+  "params": 102659,
+  "epochs": 150,
+  "batch_size": 256,
+  "lr": 0.001,
+  "seed": 0,
+  "best_val_loss": 0.00037906222860328853,
+  "best_epoch": 103,
+  "val_rmse": {
+    "roll_rad": 0.013742617331445217,
+    "pitch_rad": 0.010911032557487488,
+    "thrust_x_hover": 0.028797144070267677
+  },
+  "val_rmse_per_type": {
+    "flip": {
+      "samples": 1876,
+      "roll_rad": 0.013524136506021023,
+      "pitch_rad": 0.010040140710771084,
+      "thrust_x_hover": 0.03350043669342995
+    },
+    "bird": {
+      "samples": 1202,
+      "roll_rad": 0.01610155776143074,
+      "pitch_rad": 0.013624840416014194,
+      "thrust_x_hover": 0.025284908711910248
+    },
+    "spin": {
+      "samples": 391,
+      "roll_rad": 0.0010096423793584108,
+      "pitch_rad": 0.0013792325044050813,
+      "thrust_x_hover": 0.0027185578364878893
+    }
+  },
+  "transfer_max_action_diff": 0.0,
+  "training_log": "logs\\bc\\training_20261019_234556.csv",
+  "trained_at": "20261019_234556"
+}

@@ -1,0 +1,484 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ESP32-S3 Throw Catcher</title>
+<style>
+/* ESP32-S3 throw guide: same tokens and components as the Throw & Fly guides */
+/* =====================================================================
+   THEME TOKENS  (edit colours here only)
+   ===================================================================== */
+:root{
+  color-scheme:light;
+  --bg:#f6f6f4; --surface:#fcfcfb; --surface-2:#f0efec; --border:#dcdad3;
+  --text:#1a1a19; --text-2:#52514e; --muted:#7a7972;
+  --accent:#2a78d6; --accent-soft:#e3eefb;
+  --good:#1b7f3b; --good-soft:#e2f3e7; --warn:#a96a00; --warn-soft:#fdf1d8; --bad:#c23a39; --bad-soft:#fbe5e4;
+  --code-bg:#f0efec;
+  /* controller colours: one colour per controller, same everywhere */
+  --c-ppo:#2a78d6; --c-bc:#eb6834; --c-rule:#1baf7a; --c-ssf:#eda100; --c-ap:#e87ba4;
+  --s1:#2f5ea8; --s2:#2e7d4f; --s3:#b83232;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#121211; --surface:#1a1a19; --surface-2:#242422; --border:#3a3936;
+    --text:#f0efec; --text-2:#c3c2b7; --muted:#9a998f;
+    --accent:#3987e5; --accent-soft:#1d2a3b;
+    --good:#5cc97f; --good-soft:#16281c; --warn:#e3a53a; --warn-soft:#2c2414; --bad:#ef7473; --bad-soft:#2e1717;
+    --code-bg:#242422;
+    --c-ppo:#3987e5; --c-bc:#d95926; --c-rule:#199e70; --c-ssf:#c98500; --c-ap:#d55181;
+    --s1:#6d9be0; --s2:#5fb383; --s3:#e06a6a;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#121211; --surface:#1a1a19; --surface-2:#242422; --border:#3a3936;
+  --text:#f0efec; --text-2:#c3c2b7; --muted:#9a998f;
+  --accent:#3987e5; --accent-soft:#1d2a3b;
+  --good:#5cc97f; --good-soft:#16281c; --warn:#e3a53a; --warn-soft:#2c2414; --bad:#ef7473; --bad-soft:#2e1717;
+  --code-bg:#242422;
+  --c-ppo:#3987e5; --c-bc:#d95926; --c-rule:#199e70; --c-ssf:#c98500; --c-ap:#d55181;
+  --s1:#6d9be0; --s2:#5fb383; --s3:#e06a6a;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 "Segoe UI",Calibri,system-ui,-apple-system,Arial,sans-serif}
+a{color:var(--accent)}
+code,pre{font-family:Consolas,"Cascadia Mono",Menlo,monospace}
+code{background:var(--code-bg);padding:1px 5px;border-radius:4px;font-size:13px;word-break:break-word}
+/* layout */
+.layout{display:grid;grid-template-columns:270px minmax(0,1fr);min-height:100vh}
+nav.side{position:sticky;top:0;height:100vh;overflow:auto;background:var(--surface);border-right:1px solid var(--border);padding:16px 12px 40px}
+nav.side .brand{font-weight:700;font-size:15px;margin:0 6px 2px}
+nav.side .sub{font-size:12px;color:var(--muted);margin:0 6px 12px}
+nav.side a{display:block;text-decoration:none;color:var(--text-2);padding:4px 8px;border-radius:6px;font-size:13.5px}
+nav.side a.l2{padding-left:22px;font-size:12.5px}
+nav.side a:hover{background:var(--surface-2)}
+nav.side a.active{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav.side .grp{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:14px 8px 4px}
+main{padding:24px 40px 80px;max-width:1180px}
+.topbar{display:flex;gap:10px;align-items:center;justify-content:flex-end;margin-bottom:6px}
+button,.btn{font:inherit;font-size:13px;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:7px;padding:5px 11px;cursor:pointer}
+button:hover{background:var(--surface-2)}
+button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+h1{font-size:28px;margin:4px 0 2px;line-height:1.2}
+h2{font-size:22px;margin:46px 0 10px;padding-top:10px;border-top:2px solid var(--border)}
+h3{font-size:17px;margin:28px 0 8px}
+h4{font-size:15px;margin:18px 0 6px}
+.lead{color:var(--text-2);font-size:15.5px;margin:4px 0 16px}
+.stage-tag{display:inline-block;color:#fff;border-radius:5px;padding:1px 8px;font-size:13px;font-weight:700;margin-right:8px;vertical-align:2px}
+.t1{background:var(--s1)}.t2{background:var(--s2)}.t3{background:var(--s3)}.thw{background:#5b5b66}
+/* tables */
+.tw{overflow-x:auto;margin:8px 0 14px}
+table{border-collapse:collapse;width:100%;font-size:13.5px;background:var(--surface)}
+th,td{border:1px solid var(--border);padding:5px 8px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.hl td{background:var(--accent-soft);font-weight:600}
+/* callouts */
+.note,.warn,.ok,.bad{border-left:4px solid;border-radius:6px;padding:9px 13px;margin:12px 0;font-size:14px}
+.note{border-color:var(--accent);background:var(--accent-soft)}
+.ok{border-color:var(--good);background:var(--good-soft)}
+.warn{border-color:var(--warn);background:var(--warn-soft)}
+.bad{border-color:var(--bad);background:var(--bad-soft)}
+.note b:first-child,.warn b:first-child,.ok b:first-child,.bad b:first-child{display:inline}
+.analogy{border:1px dashed var(--border);border-radius:8px;padding:9px 13px;margin:12px 0;font-size:14px;background:var(--surface)}
+.analogy::before{content:"Analogy  ";font-weight:700;color:var(--accent)}
+/* status chips */
+.chip{display:inline-block;font-size:11.5px;font-weight:700;border-radius:10px;padding:1px 8px;white-space:nowrap}
+.done{background:var(--good-soft);color:var(--good)}.run{background:var(--warn-soft);color:var(--warn)}.todo{background:var(--surface-2);color:var(--muted)}.fail{background:var(--bad-soft);color:var(--bad)}
+/* steps */
+.step{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin:12px 0}
+.step>.sh{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.step>.sh .num{background:var(--s3);color:#fff;border-radius:6px;font-weight:700;font-size:12.5px;padding:1px 8px}
+.step.s1 .num{background:var(--s1)}.step.s2 .num{background:var(--s2)}.step.hwstep .num{background:#5b5b66}
+.step>.sh .tt{font-weight:700;font-size:15.5px}
+.step>.sh .meta{margin-left:auto;font-size:12.5px;color:var(--muted)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:900px){.cols{grid-template-columns:1fr}}
+/* command block */
+.cmdbox{position:relative;margin:8px 0}
+pre.cmd{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:10px 70px 10px 12px;margin:0;font-size:13px;white-space:pre-wrap;word-break:break-all}
+.cmdbox button{position:absolute;top:6px;right:6px;font-size:12px;padding:2px 9px}
+details{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;margin:10px 0}
+details>summary{cursor:pointer;font-weight:600;font-size:14px}
+details[open]>summary{margin-bottom:6px}
+/* diagrams */
+.dgwrap{background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px;overflow:hidden;margin:10px 0}
+.dgwrap .dg{transform-origin:0 0}
+.dgwrap table{background:#fff;width:auto}.dgwrap th,.dgwrap td{color:#1d2433}
+.figure{background:#fff;border:1px solid var(--border);border-radius:10px;padding:8px;margin:10px 0;text-align:center}
+.figure img{max-width:100%;height:auto}
+.cap{font-size:12.5px;color:var(--muted);margin:4px 2px 12px}
+/* charts */
+.chart{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin:10px 0}
+.chart .ct{font-weight:700;font-size:14.5px}
+.chart .cs{font-size:12.5px;color:var(--muted);margin-bottom:6px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12.5px;color:var(--text-2);margin:4px 0 2px}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+.tip{position:fixed;pointer-events:none;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:7px;padding:6px 9px;font-size:12.5px;box-shadow:0 4px 14px rgba(0,0,0,.15);z-index:50;display:none;max-width:280px}
+svg text{fill:var(--text-2);font-size:11.5px}
+svg .axis{stroke:var(--border)}
+svg .grid{stroke:var(--border);stroke-dasharray:2 3}
+.charttable{display:none}
+.charttable.show{display:block}
+/* replay */
+.replay{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;margin:14px 0}
+.rp-controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+.rp-controls select{font:inherit;font-size:13px;padding:4px 6px;border-radius:7px;border:1px solid var(--border);background:var(--surface);color:var(--text);max-width:100%}
+.rp-controls input[type=range]{flex:1;min-width:160px}
+.rp-time{font-variant-numeric:tabular-nums;font-size:13px;color:var(--text-2);min-width:120px}
+#rpStage{width:100%;height:auto;display:block;background:linear-gradient(var(--surface-2),var(--surface));border-radius:10px}
+.rp-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:10px}
+.rp-card{border:1px solid var(--border);border-radius:8px;padding:6px 9px;font-size:12.5px;border-top:4px solid}
+.rp-card b{font-size:13px}
+/* timeline (who flies) */
+.tl{position:relative;height:56px;border-radius:9px;overflow:hidden;display:flex;margin:8px 0 4px;border:1px solid var(--border)}
+.tl div{display:flex;align-items:center;justify-content:center;color:#fff;font-size:12.5px;font-weight:700;text-align:center;padding:0 4px}
+.tl .cursor{position:absolute;top:0;bottom:0;width:3px;background:var(--text);left:0;transition:left .1s linear;padding:0}
+.tl-cap{min-height:44px;font-size:14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 12px}
+/* stat tiles */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:12px 0}
+.tile{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+.tile .v{font-size:24px;font-weight:700;line-height:1.1}
+.tile .k{font-size:12.5px;color:var(--muted)}
+/* explorer */
+.explorer{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin:10px 0}
+.explorer label{font-size:13px;color:var(--text-2)}
+.explorer input[type=range]{width:100%}
+.ex-out{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:8px}
+.ex-out div{background:var(--surface-2);border-radius:8px;padding:6px 10px;font-size:13px}
+.ex-out b{display:block;font-size:18px}
+.bar-h{height:14px;border-radius:4px;display:inline-block;vertical-align:middle}
+/* hardware block diagram (editable HTML) */
+.hw{background:#fff;color:#1d2433;border:1px solid var(--border);border-radius:10px;padding:14px;margin:10px 0;overflow-x:auto}
+.hw-grid{display:grid;grid-template-columns:1fr 46px 1.25fr 46px 1fr;gap:0;min-width:860px;align-items:center}
+.hw-col{display:flex;flex-direction:column;gap:12px}
+.hwb{border:2px solid #5b5b66;border-radius:10px;padding:8px 10px;background:#f7f7f9;font-size:13px;line-height:1.35}
+.hwb h5{margin:0 0 3px;font-size:14px;color:#2c2c38}
+.hwb.fc{border-color:#b83232;background:#fbeeee}.hwb.fc h5{color:#b83232}
+.hwb.pi{border-color:#2f5ea8;background:#eef3fb}.hwb.pi h5{color:#2f5ea8}
+.hwb.sens{border-color:#2e7d4f;background:#edf7f0}.hwb.sens h5{color:#2e7d4f}
+.hwb.pwr{border-color:#a96a00;background:#fdf6e6}.hwb.pwr h5{color:#a96a00}
+.hwb .lbl{display:inline-block;background:#fff;border:1px solid #c9ced8;border-radius:4px;padding:0 5px;font-size:11.5px;font-family:Consolas,monospace;margin:1px 0}
+.hw-arrow{text-align:center;font-size:22px;color:#555}
+.hw-bottom{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:14px;min-width:860px}
+/* flow */
+.flow{display:flex;flex-direction:column;align-items:center;gap:0;margin:10px 0}
+.fb{background:var(--surface);border:2px solid var(--border);border-radius:10px;padding:8px 14px;max-width:640px;width:100%;text-align:center;font-size:13.5px}
+.fb.pilot{border-color:var(--c-ssf)}.fb.pi{border-color:var(--c-ppo)}.fb.ap{border-color:var(--c-rule)}.fb.dec{border-color:var(--c-ap);border-style:dashed}
+.fb b{display:block}
+.fa{font-size:18px;color:var(--muted);line-height:1.3}
+.flow-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;justify-content:center;margin-bottom:8px}
+.flow-legend span{border:2px solid;border-radius:6px;padding:0 6px}
+footer{margin-top:60px;font-size:12px;color:var(--muted)}
+@media (max-width:860px){.layout{grid-template-columns:1fr}nav.side{position:relative;height:auto}main{padding:16px}}
+
+main{padding-block:24px 80px;padding-left:max(40px,env(safe-area-inset-left,0px));padding-right:max(40px,env(safe-area-inset-right,0px));min-width:0}
+@media (max-width:860px){main{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}}
+nav.side{padding-left:max(12px,env(safe-area-inset-left,0px))}
+.cmdbox pre{overflow-x:auto}
+h1,h2,h3{text-wrap:balance}
+button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head><body>
+<div class="layout">
+<nav class="side" id="nav">
+  <div class="brand">ESP32-S3 Throw Catcher</div>
+  <div class="sub">The Pi's throw_real.py, ported to an ESP32-S3 Super Mini · Arduino IDE · Round 1 PPO</div>
+  <div class="grp">Start here</div>
+  <a href="#s0">0. Summary</a>
+  <a href="#s1">1. Pi vs ESP32-S3</a>
+  <a href="#s2">2. Files and folders</a>
+  <div class="grp">Part A · Once</div>
+  <a href="#a1">A1. Install the tools</a>
+  <a href="#a2">A2. Convert the PPO (ONNX → C)</a>
+  <a href="#a3">A3. PPO test on the S3</a>
+  <a href="#a4">A4. Wiring</a>
+  <a href="#a5">A5. Upload the throw catcher</a>
+  <div class="grp">Part B · Tests, like the Pi</div>
+  <a href="#b1">B1. Bench check (props off)</a>
+  <a href="#b2">B2. Props-off throw</a>
+  <a href="#b3">B3. Field throws</a>
+  <div class="grp">Part C · Results</div>
+  <a href="#c1">C1. Copy the results to the PC</a>
+  <a href="#c2">C2. Typed commands</a>
+  <div class="grp">Record</div>
+  <a href="#v1">How it was verified (9 Nov)</a>
+  <a href="#t1">Troubleshooting</a>
+</nav>
+<main>
+<div class="topbar"><span style="font-size:12px;color:var(--muted)">Built and tested 9 Nov 2026 · ESP32 Arduino core 3.3.12 · SITL from your firmware 1e001fa0</span><button id="themeBtn" type="button">◐ Theme</button></div>
+
+<h1 id="s0">ESP32-S3 Throw Catcher</h1>
+<p class="lead">The same throw catcher as <code>throw_real.py</code> on the Pi (version d), running on an ESP32-S3 Super Mini: same detection, same Round 1 PPO, same 9 checks, same beeps, same 10 s hold → LAND, same take-over and the same result columns. The Pi stays your primary computer; this is the low-cost, low-power alternative.</p>
+<div class="tiles">
+  <div class="tile"><div class="v">0.00005</div><div class="k">largest difference ESP32 network vs the Pi's ONNX (10,000 inputs)</div></div>
+  <div class="tile"><div class="v">≈ 3–5 ms</div><div class="k">one PPO step on the S3 (estimate; 50 Hz needs &lt; 20 ms). A3 measures it</div></div>
+  <div class="tile"><div class="v">&lt; 1 s</div><div class="k">boot time (the Pi: ≈ 30–60 s). GPS is still the wait</div></div>
+  <div class="tile"><div class="v">same</div><div class="k">field-day results as Python v d in SITL: cancel, re-arm, catch, hold, take-over</div></div>
+</div>
+<div class="analogy">The PPO is the driver. On the Pi it rides in a big car with a full computer (Linux, Python, onnxruntime). On the ESP32 the same driver sits in a go-kart: no operating system, no Python, so we copy its brain as plain numbers (int16) and its habits as C++ code. Same driver, same decisions, smaller car.</div>
+<div class="tw"><table><tr><th>Step</th><th>Where</th><th>Time</th><th>Pass when</th></tr>
+<tr><td><a href="#a1">A1</a> Install Arduino board package + Python packages</td><td>PC</td><td>15 min</td><td>"esp32 by Espressif Systems" 3.x installed</td></tr>
+<tr><td><a href="#a2">A2</a> Convert the PPO</td><td>PC</td><td>1 min</td><td><code>int16 vs ONNX ... (OK)</code></td></tr>
+<tr><td><a href="#a3">A3</a> PPO test sketch</td><td>S3 on USB only</td><td>5 min</td><td><code>correctness ... (OK)</code> + <code>speed ... OK for 50 Hz</code></td></tr>
+<tr><td><a href="#a4">A4</a> Wiring (4 wires)</td><td>drone, battery OFF</td><td>15 min</td><td>Pi off TX3/RX3; S3 on TX3/RX3/5V/GND</td></tr>
+<tr><td><a href="#a5">A5</a> Upload the throw catcher</td><td>S3 on USB</td><td>5 min</td><td><code>[link] heartbeat from system 1</code></td></tr>
+<tr><td><a href="#b1">B1</a>–<a href="#b3">B3</a> Same ladder as the Pi (Throw &amp; Fly guide C4–C6)</td><td>bench → field</td><td>—</td><td>same as the Pi</td></tr>
+<tr><td><a href="#c1">C1</a> Copy results</td><td>PC + USB</td><td>1 min</td><td><code>... files saved, 0 bad</code></td></tr></table></div>
+
+<h2 id="s1">1. Pi vs ESP32-S3</h2>
+<div class="tw"><table><tr><th></th><th>Raspberry Pi Zero 2 W (primary)</th><th>ESP32-S3 Super Mini (this guide)</th></tr>
+<tr><td>Program</td><td><code>throw_real.py</code> (Python)</td><td><code>throw_esp32s3.ino</code> + <code>throw_core.cpp</code> (C++, line-by-line port, same names and printouts)</td></tr>
+<tr><td>PPO</td><td><code>round1_final.onnx</code> + onnxruntime (float32)</td><td><code>ppo_weights.h</code> (int16 + scale per row, in fast RAM) + <code>ppo_mlp.cpp</code>. Difference ≤ 0.00005</td></tr>
+<tr><td>Start</td><td>systemd autostart, ≈ 30–60 s</td><td>On power, &lt; 1 s. Then waits for GPS, same as the Pi</td></tr>
+<tr><td>Mode</td><td><code>mode.txt</code></td><td>Typed <code>mode ppo</code> / <code>mode rule</code> (saved on the board). Same start beeps</td></tr>
+<tr><td><code>--check</code></td><td><code>python3 throw_real.py --check</code></td><td>Typed <code>check</code> (stop with <code>stop</code>)</td></tr>
+<tr><td>Results</td><td><code>runs/throw_real/throw_real_&lt;date&gt;.csv / _steps.csv / .json</code></td><td><code>run&lt;boot&gt;.csv / _steps.csv / .json</code> on the board's flash, same columns (+ <code>steps_dropped</code>); date from GPS (UTC)</td></tr>
+<tr><td>Printout</td><td><code>runs/console.log</code></td><td><code>console.log</code> on the board + Serial Monitor</td></tr>
+<tr><td>Copy results</td><td><code>scp -r ... runs .</code></td><td><code>py .\get_logs_esp32.py --port COM5</code> (USB)</td></tr>
+<tr><td>Steps during READY</td><td>every step from READY</td><td>last 1 s before the release (RAM is small)</td></tr>
+<tr><td>Power / size</td><td>≈ 0.3–0.5 A at 5 V</td><td>≈ 0.1 A at 5 V, tiny</td></tr></table></div>
+<div class="note"><b>Why steps are written later on the ESP32:</b> writing the flash pauses the chip for up to ≈ 50 ms. During the catch (READY → caught) the steps stay in RAM; they are written during the 10 s GUIDED hold and LAND, when ArduPilot flies the drone. The printout (<code>console.log</code>) is written only in WAIT. So nothing slows down the catch.</div>
+
+<h2 id="s2">2. Files and folders</h2>
+<p>Unzip <code>Q250_ESP32S3_files.zip</code> into your PC folder <code>Q250_Hardware_Throw_Fly\</code> (next to <code>export_ppo_onnx.py</code> and <code>models\</code>). Arduino needs the sketch files in exactly these folders; that is why they come as one zip.</p>
+<div class="tw"><table><tr><th>File (in <code>Q250_Hardware_Throw_Fly\</code>)</th><th>What</th><th>Made by</th></tr>
+<tr><td><code>export_ppo_esp32.py</code></td><td>PC: <code>models\round1_final.onnx</code> → <code>ppo_weights.h</code> (+ <code>test_vectors.h</code>), checked against onnxruntime</td><td>zip</td></tr>
+<tr><td><code>get_logs_esp32.py</code></td><td>PC: copies the board's result files to <code>runs\throw_esp32\</code> over USB</td><td>zip</td></tr>
+<tr><td><code>esp32\ppo_test_esp32s3\ppo_test_esp32s3.ino</code></td><td>Phase 1: does the PPO run right and fast on the S3?</td><td>zip</td></tr>
+<tr><td><code>esp32\ppo_test_esp32s3\ppo_mlp.h / .cpp</code></td><td>The network maths (13-256-256-128-3)</td><td>zip</td></tr>
+<tr><td><code>esp32\ppo_test_esp32s3\ppo_weights.h, test_vectors.h</code></td><td>The numbers + 200 test inputs with the ONNX answers</td><td><b>A2</b></td></tr>
+<tr><td><code>esp32\throw_esp32s3\throw_esp32s3.ino</code></td><td>Phase 2: board part (pins, USB, flash files, settings). Header = how to run</td><td>zip</td></tr>
+<tr><td><code>esp32\throw_esp32s3\throw_core.h / .cpp</code></td><td>The throw catcher (port of <code>throw_real.py</code> v d); settings at the top</td><td>zip</td></tr>
+<tr><td><code>esp32\throw_esp32s3\hal.h</code></td><td>What the catcher needs from the board (lets the same code be tested on the PC against SITL)</td><td>zip</td></tr>
+<tr><td><code>esp32\throw_esp32s3\ppo_mlp.h / .cpp, ppo_weights.h</code></td><td>Same network as the test sketch</td><td>zip / <b>A2</b></td></tr>
+<tr><td><code>esp32\throw_esp32s3\src\mavlink\</code></td><td>Small MAVLink2 library: only the 20 messages used, made from ArduPilot's own definitions (all checksums equal pymavlink's)</td><td>zip</td></tr></table></div>
+
+<h2 id="a1"><span class="stage-tag thw">A1</span>Install the tools (once)</h2>
+<div class="step hwstep"><div class="sh"><span class="num">A1</span><span class="tt">Arduino IDE board package + Python packages</span><span class="meta">PC · ≈ 15 min</span></div>
+<p><b>① Arduino IDE 2:</b> File → Preferences → "Additional boards manager URLs" must contain the Espressif URL (you have it if you already use ESP32 boards):</p>
+<div class="cmdbox"><pre class="cmd">https://espressif.github.io/arduino-esp32/package_esp32_index.json</pre><button class="copy" type="button">Copy</button></div>
+<p>Tools → Board → Boards Manager → search <b>esp32</b> → <b>"esp32 by Espressif Systems"</b> → version <b>3.x</b> (tested: 3.3.12) → Install.</p>
+<p><b>② Python on the PC</b> (PowerShell; onnx + onnxruntime you already have from <code>export_ppo_onnx.py</code>):</p>
+<div class="cmdbox"><pre class="cmd">py -m pip install onnx onnxruntime pyserial</pre><button class="copy" type="button">Copy</button></div>
+<div class="tw"><table><tr><th>You see</th><th>Means</th></tr>
+<tr class="hl"><td>Boards Manager shows "esp32 by Espressif Systems 3.x.x INSTALLED"</td><td>✅</td></tr>
+<tr><td>Only 2.0.x available</td><td>Old index: restart the IDE, update the board list. The sketches use the 3.x API</td></tr>
+<tr><td><code>Successfully installed ... pyserial</code> (or "already satisfied")</td><td>✅</td></tr></table></div></div>
+
+<h2 id="a2"><span class="stage-tag t3">A2</span>Convert the PPO: ONNX → C (every time the model changes)</h2>
+<div class="step"><div class="sh"><span class="num">A2</span><span class="tt">export_ppo_esp32.py</span><span class="meta">PowerShell in <code>Q250_Hardware_Throw_Fly\</code> · 1 min</span></div>
+<p>Needs <code>models\round1_final.onnx</code> (made by <code>export_ppo_onnx.py</code>, the same file the Pi runs).</p>
+<div class="cmdbox"><pre class="cmd">cd C:\path\to\Q250_Hardware_Throw_Fly
+
+py .\export_ppo_esp32.py</pre><button class="copy" type="button">Copy</button></div>
+<div class="tw"><table><tr><th>Line printed</th><th>Means</th></tr>
+<tr><td><code>network: 13 -> 256 -> 256 -> 128 -> 3 (ReLU), source round1_final.zip</code></td><td>the Round 1 PPO</td></tr>
+<tr class="hl"><td><code>int16 vs ONNX (10000 inputs): max 0.00005 (OK)</code></td><td>✅ the ESP32 will give the same actions as the Pi (limit 0.001)</td></tr>
+<tr><td><code>wrote ...ppo_test_esp32s3\ppo_weights.h (753 KB) + test_vectors.h</code><br><code>wrote ...throw_esp32s3\ppo_weights.h (753 KB)</code></td><td>both sketches have the numbers</td></tr>
+<tr><td><code>TOO BIG - do not use</code></td><td>wrong .onnx or a different network: send me the printout</td></tr></table></div>
+<div class="note"><b>What "int16" means:</b> each of the 102,685 numbers is stored as a whole number −32767…32767 plus one scale per row of the network (number = whole × scale). That is 200 KB instead of 411 KB, so it fits in the S3's fast internal RAM. Measured difference to the ONNX: 0.00005 rad at most (≈ 0.003°), far below sensor noise.</div></div>
+
+<h2 id="a3"><span class="stage-tag t3">A3</span>PPO test on the S3 (USB only, nothing else connected)</h2>
+<div class="step"><div class="sh"><span class="num">A3</span><span class="tt">Upload ppo_test_esp32s3 and read the result</span><span class="meta">Arduino IDE · 5 min</span></div>
+<p>Open <code>esp32\ppo_test_esp32s3\ppo_test_esp32s3.ino</code>. Set the <b>Tools</b> menu exactly like this (the same for the throw catcher in A5):</p>
+<div class="tw"><table><tr><th>Tools menu</th><th>Set to</th><th>Why</th></tr>
+<tr><td>Board</td><td><b>ESP32S3 Dev Module</b></td><td>the Super Mini's chip</td></tr>
+<tr><td>USB CDC On Boot</td><td><b>Enabled</b></td><td>Serial Monitor over the USB-C port</td></tr>
+<tr><td>USB Mode</td><td><b>Hardware CDC and JTAG</b></td><td>default</td></tr>
+<tr><td>Flash Size</td><td><b>4MB (32Mb)</b></td><td>Super Mini (ESP32-S3FH4R2)</td></tr>
+<tr><td>Partition Scheme</td><td><b>Default 4MB with spiffs (1.2MB APP/1.5MB SPIFFS)</b></td><td>1.5 MB for the result files</td></tr>
+<tr><td>CPU Frequency</td><td><b>240MHz (WiFi)</b></td><td>full speed for the PPO</td></tr>
+<tr><td>PSRAM</td><td>Disabled (default)</td><td>not needed</td></tr>
+<tr><td>Port</td><td>the COM port that appears when you plug the board in</td><td>—</td></tr></table></div>
+<p>Upload → Tools → Serial Monitor → <b>115200</b> baud. Press the board's <b>RST</b> button once if nothing appears. It repeats every 5 s:</p>
+<div class="cmdbox"><pre class="cmd">PPO round1_final.zip on ESP32-S3 @ 240 MHz, free RAM 140000 B
+correctness: 200 inputs, max difference vs ONNX 0.00004 (OK)
+speed: 3500 us per step -> OK for 50 Hz (20000 us)</pre><button class="copy" type="button">Copy</button></div>
+<div class="tw"><table><tr><th>You see</th><th>Means</th><th>Do</th></tr>
+<tr class="hl"><td><code>(OK)</code> and <code>speed ... OK</code> (expected ≈ 3000–5000 us)</td><td>✅ the PPO runs right and fast enough on your board</td><td>Send me the 3 lines (the real speed is the number the emulator could not give). Go to A4</td></tr>
+<tr><td><code>@ 160 MHz</code> or <code>@ 80 MHz</code></td><td>CPU Frequency not 240</td><td>Tools → CPU Frequency → 240MHz, upload again</td></tr>
+<tr><td><code>TOO BIG</code></td><td><code>ppo_weights.h</code> and <code>test_vectors.h</code> from different exports</td><td>Run A2 again, upload again</td></tr>
+<tr><td>Compile error <code>ppo_weights.h: No such file</code></td><td>A2 not run (the zip leaves the numbers out on purpose)</td><td>A2</td></tr>
+<tr><td>Nothing in the Serial Monitor</td><td>USB CDC On Boot not Enabled, or wrong port</td><td>Check the Tools menu; press RST</td></tr></table></div></div>
+
+<h2 id="a4"><span class="stage-tag thw">A4</span>Wiring · battery OFF, props OFF</h2>
+<div class="step hwstep"><div class="sh"><span class="num">A4</span><span class="tt">ESP32-S3 Super Mini on the FC's SERIAL2 (TX3 / RX3), where the Pi was</span><span class="meta">4 wires · soldering iron</span></div>
+<div class="figure">
+<svg viewBox="0 0 900 380" width="100%" style="max-width:900px" role="img" aria-label="Wiring: Matek F405-HDTE TX3 to ESP32-S3 GPIO4, RX3 to GPIO5, 5V to 5V, GND to GND. Buzzer stays on the FC. USB-C of the ESP32 goes to the PC only at home.">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#3a3a44"/></marker></defs>
+<g style="font-family:Segoe UI,Arial,sans-serif">
+<rect x="20" y="40" width="280" height="270" rx="12" fill="#fbeeee" stroke="#b83232" stroke-width="2"/>
+<text x="160" y="68" text-anchor="middle" style="font-size:16px;font-weight:700;fill:#b83232">Matek F405-HDTE (FC)</text>
+<text x="160" y="88" text-anchor="middle" style="font-size:12px;fill:#55555f">SERIAL2 = USART3: MAVLink2, 921600</text>
+<g style="font-size:13px;fill:#1d2433">
+<rect x="200" y="112" width="100" height="30" rx="5" fill="#fff" stroke="#b83232"/><text x="250" y="132" text-anchor="middle" style="font-weight:700">TX3</text>
+<rect x="200" y="162" width="100" height="30" rx="5" fill="#fff" stroke="#b83232"/><text x="250" y="182" text-anchor="middle" style="font-weight:700">RX3</text>
+<rect x="200" y="212" width="100" height="30" rx="5" fill="#fff" stroke="#a96a00"/><text x="250" y="232" text-anchor="middle" style="font-weight:700">5V</text>
+<rect x="200" y="262" width="100" height="30" rx="5" fill="#fff" stroke="#3a3a44"/><text x="250" y="282" text-anchor="middle" style="font-weight:700">GND</text>
+<text x="40" y="132">buzzer (BZ+/BZ−):</text><text x="40" y="150">stays on the FC</text>
+<text x="40" y="200">the Pi's wires come</text><text x="40" y="218">OFF these 4 pads</text>
+</g>
+<rect x="600" y="40" width="280" height="270" rx="12" fill="#eef3fb" stroke="#2f5ea8" stroke-width="2"/>
+<text x="740" y="68" text-anchor="middle" style="font-size:16px;font-weight:700;fill:#2f5ea8">ESP32-S3 Super Mini</text>
+<text x="740" y="88" text-anchor="middle" style="font-size:12px;fill:#55555f">throw_esp32s3.ino · Serial1</text>
+<g style="font-size:13px;fill:#1d2433">
+<rect x="600" y="112" width="110" height="30" rx="5" fill="#fff" stroke="#2f5ea8"/><text x="655" y="132" text-anchor="middle" style="font-weight:700">GPIO 4 (RX)</text>
+<rect x="600" y="162" width="110" height="30" rx="5" fill="#fff" stroke="#2f5ea8"/><text x="655" y="182" text-anchor="middle" style="font-weight:700">GPIO 5 (TX)</text>
+<rect x="600" y="212" width="110" height="30" rx="5" fill="#fff" stroke="#a96a00"/><text x="655" y="232" text-anchor="middle" style="font-weight:700">5V</text>
+<rect x="600" y="262" width="110" height="30" rx="5" fill="#fff" stroke="#3a3a44"/><text x="655" y="282" text-anchor="middle" style="font-weight:700">GND</text>
+<text x="726" y="132">FC_RX_PIN = 4</text><text x="726" y="182">FC_TX_PIN = 5</text>
+<text x="726" y="232">≈ 0.1 A</text><text x="726" y="282">common ground</text>
+</g>
+<line x1="300" y1="127" x2="598" y2="127" stroke="#3a3a44" stroke-width="2.5" marker-end="url(#ar)"/>
+<line x1="598" y1="177" x2="302" y2="177" stroke="#3a3a44" stroke-width="2.5" marker-end="url(#ar)"/>
+<line x1="300" y1="227" x2="598" y2="227" stroke="#a96a00" stroke-width="2.5"/>
+<line x1="300" y1="277" x2="598" y2="277" stroke="#3a3a44" stroke-width="2.5"/>
+<g style="font-size:12.5px;fill:#1d2433" text-anchor="middle">
+<text x="450" y="119">FC sends (TX3) → ESP32 listens (GPIO 4)</text>
+<text x="450" y="169">ESP32 sends (GPIO 5) → FC listens (RX3)</text>
+<text x="450" y="219">5 V from the FC (the pad that fed the Pi)</text>
+<text x="450" y="269">ground</text>
+</g>
+<rect x="640" y="326" width="200" height="40" rx="8" fill="#fff" stroke="#55555f" stroke-dasharray="4 3"/>
+<text x="740" y="344" text-anchor="middle" style="font-size:12.5px;fill:#1d2433">USB-C → PC (at home only,</text>
+<text x="740" y="360" text-anchor="middle" style="font-size:12.5px;fill:#1d2433">battery OUT, see warning)</text>
+<line x1="740" y1="310" x2="740" y2="326" stroke="#55555f" stroke-dasharray="4 3"/>
+</g></svg></div>
+<p class="cap">TX always goes to RX. The pin numbers are set at the top of <code>throw_esp32s3.ino</code> (<code>FC_RX_PIN</code>, <code>FC_TX_PIN</code>); any free GPIO works if 4 / 5 are taken on your board.</p>
+<div class="tw"><table><tr><th>FC pad</th><th>Wire</th><th>ESP32-S3 Super Mini pin</th></tr>
+<tr><td>TX3</td><td>→</td><td>GPIO 4</td></tr>
+<tr><td>RX3</td><td>←</td><td>GPIO 5</td></tr>
+<tr><td>5V (the pad that powered the Pi)</td><td>—</td><td>5V</td></tr>
+<tr><td>GND</td><td>—</td><td>GND</td></tr></table></div>
+<div class="warn"><b>Only one computer on SERIAL2:</b> unsolder (or unplug) the Pi from TX3 / RX3 first. Two listeners on one port garble each other's commands.<br><b>USB and battery not at the same time:</b> on many Super Mini boards the USB 5 V is connected straight to the 5V pin. With the battery in, the FC's 5 V and the PC's 5 V would be joined. At home: battery OUT, then plug USB (the USB then powers the ESP32 and, through the 5V wire, the FC: that is fine, like plugging the FC's own USB).</div>
+<div class="tw"><table><tr><th>FC parameters (no change from the Pi)</th><th>Value</th></tr>
+<tr><td><code>SERIAL2_PROTOCOL</code> / <code>SERIAL2_BAUD</code></td><td>2 (MAVLink2) / 921</td></tr>
+<tr><td>Throw-day parameters</td><td>as on the Pi (Throw &amp; Fly guide C3): <code>MOT_SPIN_ARM 0</code>, <code>MOT_SPOOL_TIME 0.25</code>, <code>RC5_OPTION 0</code>, buzzer as before</td></tr></table></div></div>
+
+<h2 id="a5"><span class="stage-tag t3">A5</span>Upload the throw catcher</h2>
+<div class="step"><div class="sh"><span class="num">A5</span><span class="tt">throw_esp32s3.ino: upload, first boot</span><span class="meta">Arduino IDE · props OFF · battery OUT for the upload</span></div>
+<ol>
+<li>Open <code>esp32\throw_esp32s3\throw_esp32s3.ino</code>. Same Tools settings as A3 (the 4 MB "Default ... spiffs" partition matters: the results live there).</li>
+<li>Battery out, USB in → Upload → Serial Monitor 115200, line ending <b>"Newline"</b>.</li>
+<li>Indoors on USB only (FC powered through the 5V wire): you should see</li>
+</ol>
+<div class="cmdbox"><pre class="cmd">boot 1 | mode ppo-policy | files: 0 | free flash 1400 KB
+PPO (C, int16 weights) loaded: round1_final.zip
+[link] connecting to the FC (UART)
+[link] heartbeat from system 1
+waiting for the EKF position (GPS fix) ...</pre><button class="copy" type="button">Copy</button></div>
+<div class="tw"><table><tr><th>You see</th><th>Means</th><th>Do</th></tr>
+<tr class="hl"><td><code>[link] heartbeat from system 1</code>, then <code>waiting for the EKF position</code> (indoors: repeats)</td><td>✅ wiring and SERIAL2 OK. Indoors no GPS = normal (as on the Pi)</td><td>Type <code>info</code> → <code>boot 1 | mode ppo-policy | free flash ... | free RAM ...</code>. Go to B1 (outdoors)</td></tr>
+<tr><td><code>STOP - no heartbeat in 30 s</code>, restarts every 35 s</td><td>no MAVLink from the FC</td><td>TX/RX crossed? FC powered? <code>SERIAL2_PROTOCOL 2</code>, <code>SERIAL2_BAUD 921</code>? Pi still on the pads?</td></tr>
+<tr><td><code>WARNING: flash file system not mounted</code></td><td>wrong partition scheme</td><td>Tools → Partition Scheme → Default 4MB with spiffs, upload again</td></tr>
+<tr><td><code>STOP - The FC does not send ...</code></td><td>a data stream missing after 20 s of asking</td><td>Send me the line (as on the Pi)</td></tr></table></div>
+<p>Outdoors with GPS (battery in, no USB) it continues exactly like the Pi: <code>Connected | ppo-policy | hover thrust 0.149 | ...</code> → <b>1 long + 2 short beeps</b> = <code>ESP32 READY TO USE</code> → <code>WAIT | ...</code> every 2 s.</p></div>
+
+<h2 id="b1"><span class="stage-tag thw">B1</span>Bench check, props off (= the Pi's <code>--check</code>, Throw &amp; Fly guide C4)</h2>
+<div class="step hwstep"><div class="sh"><span class="num">B1</span><span class="tt">Typed command <code>check</code></span><span class="meta">props OFF · USB in, battery OUT · after READY TO USE (outdoors) </span></div>
+<p>The check needs the script past "waiting for GPS". Easiest: outdoors, power the drone from <b>USB only</b> (battery out, laptop on a table), wait for <code>ESP32 READY TO USE</code>, then type:</p>
+<div class="cmdbox"><pre class="cmd">check</pre><button class="copy" type="button">Copy</button></div>
+<div class="tw"><table><tr><th>Do</th><th>Expected (same as the Pi)</th></tr>
+<tr><td>Wait 2 s</td><td><code>link OK (IMU 50 Hz, ATT 50 Hz)</code>, then one line per second with <code>PPO x.x ms</code></td></tr>
+<tr class="hl"><td>Flip CH5 OFF, then ON</td><td><code>switch OK</code>, <b>3 short</b> then <b>2 long</b> beeps, the 9 checks (on the bench <code>NO</code> for armed and for the battery is right: disarmed, battery out)</td></tr>
+<tr><td>CH5 ON, toss onto a pillow</td><td><code>throw detected (check only - motors NOT started)</code></td></tr>
+<tr><td>Walk, shake</td><td>nothing</td></tr>
+<tr><td>Type <code>stop</code></td><td><code>check stopped</code>, back to WAIT</td></tr></table></div>
+<div class="note">The <code>PPO x.x ms</code> number here is the real time of one PPO step on your S3, measured in the loop. Expect ≈ 3–5 ms.</div></div>
+
+<h2 id="b2"><span class="stage-tag thw">B2</span>Props-off throw (= Throw &amp; Fly guide C5 / C6c Step 2)</h2>
+<div class="step hwstep"><div class="sh"><span class="num">B2</span><span class="tt">Same 10 steps as the Pi</span><span class="meta">outdoors · battery IN · USB OUT · props OFF</span></div>
+<p>CH5 OFF, CH6 middle, CH8 ALT_HOLD, stick LOW, disarmed → battery in → <b>1 long + 2 short</b> → hold the drone, CH9 arm (still) → CH5 ON → <b>3 short</b> → toss onto grass / a pillow → motors spin up, then it disarms by itself → CH5 OFF, CH9 to disarm → arm again <b>without touching CH8</b>.</p>
+<div class="tw"><table><tr><th>Check at home (USB, battery out, type <code>get console.log</code> or use C1)</th><th>Expected</th></tr>
+<tr><td>READY</td><td><code>READY - THROW NOW (3 short beeps, ...)</code></td></tr>
+<tr><td>Toss</td><td><code>Throw detected - spooling motors</code></td></tr>
+<tr><td>After</td><td><code>[handover] ...</code> / <code>[stop] ...</code>, <code>Throw 1 | ppo-policy | motors on ...</code>, <code>Saved: run0003.csv / _steps.csv / .json</code></td></tr>
+<tr><td>Re-arm</td><td><code>mode back to ALT_HOLD - arm again with CH9 when ready</code></td></tr></table></div>
+<p>With props off it usually ends <code>not caught in 3 s</code> or lands at once: fine. The point is READY → motors on the toss → disarm by itself → re-arm without CH8.</p></div>
+
+<h2 id="b3"><span class="stage-tag t3">B3</span>Field throws (= Throw &amp; Fly guide C6 and C6c)</h2>
+<p>Everything in the field is <b>identical to the Pi</b>: the 12 steps, the beeps, the stick LOW rule, no time limit in READY, the 10 s hold → LAND, back to ALT_HOLD, the take-over (<b>stick middle → CH8 PosHold</b>), CH7 for emergencies. Use the Throw &amp; Fly guide C6 / C6c as the procedure; only the start differs: the ESP32 is ready as soon as the GPS is (no Linux boot).</p>
+<div class="tw"><table><tr><th>Job</th><th>Pi</th><th>ESP32-S3</th></tr>
+<tr><td>Change the mode</td><td><code>echo attitude-rule &gt; mode.txt</code></td><td>at home on USB: type <code>mode rule</code> (or <code>mode ppo</code>); it restarts with that mode. Start beep tells you which (1 long + 1 short = rule)</td></tr>
+<tr><td>Next field day</td><td>battery in, wait for the beep</td><td>the same</td></tr></table></div>
+
+<h2 id="c1"><span class="stage-tag t2">C1</span>Copy the results to the PC</h2>
+<div class="step s2"><div class="sh"><span class="num">C1</span><span class="tt">get_logs_esp32.py</span><span class="meta">at home · battery OUT · USB in · Serial Monitor CLOSED</span></div>
+<p>The board answers while it waits for the FC / GPS, so indoors on USB is fine. Find the COM port in Arduino IDE → Tools → Port.</p>
+<div class="cmdbox"><pre class="cmd">py .\get_logs_esp32.py --port COM5</pre><button class="copy" type="button">Copy</button></div>
+<div class="tw"><table><tr><th>Line printed</th><th>Means</th></tr>
+<tr class="hl"><td><code>saved runs\throw_esp32\run0003.csv (812 B) OK</code> … <code>6 files saved, 0 bad</code></td><td>✅ copied, sizes checked</td></tr>
+<tr><td><code>no answer</code></td><td>wrong port, Serial Monitor still open, or the board is mid-throw</td></tr>
+<tr><td><code>SIZE WRONG</code></td><td>copy again (cable / port)</td></tr></table></div>
+<p>When the copy is good, empty the board for the next field day (1.4 MB ≈ 15–20 throws with full steps):</p>
+<div class="cmdbox"><pre class="cmd">py .\get_logs_esp32.py --port COM5 --delete</pre><button class="copy" type="button">Copy</button></div>
+<div class="tw"><table><tr><th>File</th><th>Columns / content</th><th>Compare with</th></tr>
+<tr><td><code>run&lt;boot&gt;.csv</code></td><td>One line per throw: <code>n, mode, date, detected, motors_on_s, upright_s, caught_s, recovered, recovered_s, ended, apex_m, low_m, peak_rate_rads, drift_m, volt, hover_used, hold_mode, brake_s, brake_m, wander_m, landed_disarmed, note, steps_dropped, checks</code></td><td>the Pi's <code>throw_real_&lt;date&gt;.csv</code> (same names)</td></tr>
+<tr><td><code>run&lt;boot&gt;_steps.csv</code></td><td>Every 50 Hz step: <code>n, mode, phase, t_s, tilt_deg, rate_rads, height_above_hand_m, hspeed_ms, dist_from_hand_m, accel_g, landed_state, ch5, p_rads, q_rads, r_rads</code></td><td>the Pi's <code>_steps.csv</code> (same columns)</td></tr>
+<tr><td><code>run&lt;boot&gt;.json</code></td><td>Settings of that power-up (mode, hover, model, limits, …)</td><td>the Pi's <code>.json</code></td></tr>
+<tr><td><code>console.log</code></td><td>Everything printed</td><td>the Pi's <code>runs/console.log</code></td></tr></table></div>
+<p>Plus the FC's <code>.bin</code> (Mission Planner → DataFlash Logs), as before.</p></div>
+
+<h2 id="c2"><span class="stage-tag t2">C2</span>Typed commands (Serial Monitor, "Newline", only while disarmed)</h2>
+<div class="tw"><table><tr><th>Command</th><th>Does</th><th>Works while waiting for FC / GPS?</th></tr>
+<tr><td><code>help</code></td><td>list of commands</td><td>✅</td></tr>
+<tr><td><code>info</code></td><td>power-up number, mode, free flash, free RAM</td><td>✅</td></tr>
+<tr><td><code>ls</code></td><td>files + sizes</td><td>✅</td></tr>
+<tr><td><code>get run0003.csv</code></td><td>print one file</td><td>✅</td></tr>
+<tr><td><code>getall</code> / <code>rmall</code></td><td>print all files / delete all files</td><td>✅</td></tr>
+<tr><td><code>mode ppo</code> / <code>mode rule</code></td><td>save the mode, restart</td><td>✅</td></tr>
+<tr><td><code>check</code> / <code>stop</code></td><td>bench check (B1) / end it</td><td>after READY TO USE</td></tr></table></div>
+
+<h2 id="v1">How it was verified (9 Nov 2026)</h2>
+<div class="tw"><table><tr><th>#</th><th>Test</th><th>How</th><th>Result</th></tr>
+<tr><td>1</td><td>Network maths in C = ONNX</td><td>10,000 inputs, C (float32) vs onnxruntime</td><td>max 0.0000007 ✅</td></tr>
+<tr><td>2</td><td>int16 storage = ONNX</td><td>same 10,000 inputs</td><td>max 0.00005 ✅</td></tr>
+<tr><td>3</td><td>Runs on the ESP32-S3</td><td>Arduino build (core 3.3.12) in Espressif's ESP32-S3 emulator (QEMU), 200 test inputs</td><td>max 0.00004 ✅; ≈ 630,000 instructions per step → ≈ 3–5 ms at 240 MHz (estimate; A3 measures)</td></tr>
+<tr><td>4</td><td>MAVLink library</td><td>20 messages made from ArduPilot's own definitions; checksums vs pymavlink</td><td>20/20 equal ✅</td></tr>
+<tr><td>5</td><td>Field day, your switches only (CH8 FLTMODE1–6, CH9 154, CH5, stick)</td><td>throw_core.cpp built on the PC vs SITL from your firmware 1e001fa0</td><td>cancel → ALT_HOLD; re-arm OK; READY 25 s (no limit); throw: motors 0.38 s, caught 0.38 s, hold 10.1 s, LAND, ALT_HOLD; take-over PosHold 2.36–2.44 m, script lets go ✅</td></tr>
+<tr><td>6</td><td>The <b>real firmware</b> flying</td><td>emulated ESP32-S3 running the Arduino binary, its UART wired to SITL</td><td>same as test 5 (hold 10.1 s, PosHold 2.21–2.31 m) ✅</td></tr>
+<tr><td>7</td><td>PPO spin throws: ESP32 vs Python v d (same SITL)</td><td>pitch / roll throws (harness5)</td><td>see table below ✅</td></tr>
+<tr><td>8</td><td>attitude-rule</td><td>pitch throw, ESP32 vs Python</td><td>both: motors 0.38 / 0.40 s, caught 0.52 s, lowest 2.25 / 2.28 m, handed over above 5 m ✅</td></tr>
+<tr><td>9</td><td>Check mode, low battery</td><td>typed <code>check</code>; SITL battery 14.8 V</td><td>link OK, PPO timing line; <code>REFUSED: battery &gt;= 14.9 V (14.80 V)</code> ✅</td></tr>
+<tr><td>10</td><td>Copy results</td><td>get_logs_esp32.py vs the emulated board's flash (after a real emulated throw)</td><td>4 files, sizes checked, 0 bad ✅</td></tr></table></div>
+<div class="tw"><table><tr><th>PPO throw (SITL, your firmware)</th><th>Motors on</th><th>Caught</th><th>Recovered</th><th>Lowest (hand = 0)</th><th>Held within</th></tr>
+<tr><td>Pitch · Python v d (Pi code)</td><td>0.40 s</td><td>0.62 s</td><td>0.76 s</td><td>+2.08 m</td><td>0.09 m</td></tr>
+<tr><td>Pitch · ESP32 core (PC build)</td><td>0.36 s</td><td>0.58 s</td><td>0.92 s</td><td>+2.25 m</td><td>0.22 m</td></tr>
+<tr><td>Pitch · ESP32 firmware (emulated S3)</td><td>0.38 s</td><td>0.58 s</td><td>0.96 s</td><td>+2.27 m</td><td>0.20 m</td></tr>
+<tr><td>Roll · Python v d</td><td>0.36 s</td><td>0.56 s</td><td>0.88 s</td><td>+2.24 m</td><td>0.15 m</td></tr>
+<tr><td>Roll · ESP32 core (PC build)</td><td>0.38 s</td><td>0.58 s</td><td>0.80 s</td><td>+2.29 m</td><td>0.12 m</td></tr>
+<tr><td>Roll · ESP32 firmware (emulated S3)</td><td>0.38 s</td><td>0.60 s</td><td>0.78 s</td><td>+2.15 m</td><td>0.20 m</td></tr></table></div>
+<p class="cap">Differences are inside the run-to-run spread of SITL (the simulator runs in real time, so two runs of the same code also differ by ≈ 0.1 s).</p>
+<div class="warn"><b>Not yet proven (only the real board can):</b> (1) the real PPO time on your S3 (A3 / B1 print it); (2) the UART at 921600 with real wires (A5: heartbeat + 50 Hz in B1); (3) the USB console never slowing the catch with no laptop (set by design: zero wait on USB); (4) flash writes only outside the catch (by design, see section 1). The emulator proves the code and the logic, not the timing of real hardware.</div>
+
+<h2 id="t1">Troubleshooting</h2>
+<div class="tw"><table><tr><th>Problem</th><th>Fix</th></tr>
+<tr><td>Compile error: <code>ppo_weights.h: No such file or directory</code></td><td>Run A2 (<code>py .\export_ppo_esp32.py</code>)</td></tr>
+<tr><td>Compile error mentioning <code>B0</code>, <code>B1</code> … "redeclared"</td><td>An old <code>ppo_weights.h</code> (before the <code>PPO_</code> names): run A2 again</td></tr>
+<tr><td>Compile error: <code>setTxTimeoutMs</code></td><td>Board package 2.x: install esp32 3.x (A1)</td></tr>
+<tr><td>Sketch too big / "text section exceeds"</td><td>Partition Scheme must be "Default 4MB with spiffs (1.2MB APP ...)" and Flash Size 4MB</td></tr>
+<tr><td>Upload fails, no COM port</td><td>Hold <b>BOOT</b>, tap <b>RST</b>, release BOOT, upload again; use a data USB-C cable</td></tr>
+<tr><td><code>no heartbeat in 30 s</code></td><td>TX3 → GPIO 4, RX3 ← GPIO 5 (crossed), FC powered, <code>SERIAL2_PROTOCOL 2</code>, <code>SERIAL2_BAUD 921</code>, Pi removed from the pads</td></tr>
+<tr><td><code>link OK</code> never appears in <code>check</code> (IMU / ATT &lt; 45 Hz)</td><td>Wires too long / noisy: shorten, twist TX/RX with GND</td></tr>
+<tr><td><code>steps_dropped</code> &gt; 0 in <code>run&lt;boot&gt;.csv</code></td><td>The catch phase lasted &gt; 12 s (RAM buffer full): the oldest steps were dropped. Send me the files</td></tr>
+<tr><td>Free flash low (<code>info</code>)</td><td>C1 with <code>--delete</code></td></tr>
+<tr><td>2 long beeps on CH5 ON</td><td>Same as the Pi: a check failed; <code>console.log</code> line <code>REFUSED: ...</code> names it</td></tr></table></div>
+<footer>ESP32-S3 Throw Catcher · port of throw_real.py v d (8 Nov 2026) · tested 9 Nov 2026 against SITL ArduCopter 4.6.0-dev 1e001fa0 and Espressif's ESP32-S3 emulator.</footer>
+</main>
+</div>
+<script>
+(function(){
+  var btn=document.getElementById("themeBtn");
+  btn.onclick=function(){var c=document.documentElement.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");var n=c==="dark"?"light":"dark";document.documentElement.setAttribute("data-theme",n);try{localStorage.setItem("guideTheme",n)}catch(e){}};
+  try{var t=localStorage.getItem("guideTheme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}
+  document.querySelectorAll(".cmdbox button.copy").forEach(function(b){b.onclick=function(){var pre=b.parentElement.querySelector("pre");var t=pre.innerText;var done=function(){b.textContent="Copied";setTimeout(function(){b.textContent="Copy"},1200)};var sel=function(){var r=document.createRange();r.selectNodeContents(pre);var s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent="Selected: Ctrl+C";setTimeout(function(){b.textContent="Copy"},1600)};try{navigator.clipboard.writeText(t).then(done,sel)}catch(e){sel()}}});
+  var L=[].slice.call(document.querySelectorAll("nav.side a")),S=L.map(function(a){return document.querySelector(a.getAttribute("href"))}).filter(Boolean);
+  addEventListener("scroll",function(){var c=S[0];S.forEach(function(s){if(s.getBoundingClientRect().top<120)c=s});L.forEach(function(a){a.classList.toggle("active",a.getAttribute("href")==="#"+c.id)})},{passive:true});
+})();
+</script>
+</body></html>
+
+</body></html>

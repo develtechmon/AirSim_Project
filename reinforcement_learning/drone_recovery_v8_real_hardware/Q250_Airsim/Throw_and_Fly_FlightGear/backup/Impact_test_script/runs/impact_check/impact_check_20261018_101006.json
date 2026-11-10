@@ -1,0 +1,82 @@
+{
+  "date": "20261018_101006",
+  "settings": {
+    "types": [
+      "flip"
+    ],
+    "levels": [
+      "hard"
+    ],
+    "repeats": 1,
+    "seed": 0,
+    "conn": "tcp:127.0.0.1:5762"
+  },
+  "disturbances": {
+    "flip": {
+      "rates": [
+        6.0,
+        0.0,
+        0.0
+      ],
+      "dur": 0.4
+    },
+    "spin": {
+      "rates": [
+        0.0,
+        0.0,
+        6.0
+      ],
+      "dur": 1.0
+    },
+    "bird": {
+      "rates": [
+        4.0,
+        4.0,
+        3.0
+      ],
+      "dur": 0.25
+    }
+  },
+  "levels": {
+    "easy": 0.7,
+    "medium": 1.0,
+    "hard": 1.5
+  },
+  "criterion": {
+    "rate_rads": 1.2,
+    "tilt_deg": 30.0,
+    "alt_m": 3.0,
+    "hspeed_ms": 3.0,
+    "held_s": 0.5,
+    "max_s": 10.0
+  },
+  "summary": {
+    "flip/hard": {
+      "impacts": 1,
+      "recovered_pct": 100.0,
+      "mean_peak_tilt_deg": 170.0,
+      "mean_recovery_s": 1.14,
+      "mean_alt_loss_m": 5.98
+    }
+  },
+  "impacts": [
+    {
+      "n": 1,
+      "type": "flip",
+      "level": "hard",
+      "cmd_rates": [
+        -9.0,
+        0.0,
+        0.0
+      ],
+      "cmd_duration_s": 0.4,
+      "peak_tilt_deg": 170.0,
+      "peak_rate_rads": 8.78,
+      "recovered": true,
+      "recovery_time_s": 1.14,
+      "alt_loss_m": 5.98,
+      "drift_m": 6.78,
+      "impact_cut_low": false
+    }
+  ]
+}

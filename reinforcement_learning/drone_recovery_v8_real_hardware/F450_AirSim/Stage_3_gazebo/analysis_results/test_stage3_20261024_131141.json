@@ -1,0 +1,55 @@
+{
+  "by_level": {
+    "ppo-policy": {
+      "hard": {
+        "flights": 3,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 15.636666666666665,
+        "worst_lowest_m": 13.33,
+        "avg_height_loss_m": 14.339999999999998,
+        "avg_recovery_time_s": 0.8766666666666666,
+        "below_5m": 0
+      }
+    }
+  },
+  "by_type": {
+    "ppo-policy": {
+      "flip": {
+        "flights": 3,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 15.636666666666665,
+        "worst_lowest_m": 13.33,
+        "avg_height_loss_m": 14.339999999999998,
+        "avg_recovery_time_s": 0.8766666666666666,
+        "below_5m": 0
+      }
+    }
+  },
+  "all": {
+    "ppo-policy": {
+      "flights": 3,
+      "recovered_pct": 100.0,
+      "avg_lowest_m": 15.636666666666665,
+      "worst_lowest_m": 13.33,
+      "avg_height_loss_m": 14.339999999999998,
+      "avg_recovery_time_s": 0.8766666666666666,
+      "below_5m": 0
+    }
+  },
+  "settings": {
+    "model": ".\\models\\round1_final.zip",
+    "modes": [
+      "ppo-policy"
+    ],
+    "types": [
+      "flip"
+    ],
+    "levels": [
+      "hard"
+    ],
+    "repeats": 3,
+    "seed": 1,
+    "yaw_brake_t": 0.5
+  },
+  "comparison": {}
+}

@@ -1,0 +1,2 @@
+n,type,level,cmd_rates,cmd_duration_s,peak_tilt_deg,peak_rate_rads,recovered,recovery_time_s,alt_loss_m,drift_m,impact_cut_low
+1,flip,hard,"[-9.0, 0.0, 0.0]",0.4,170.0,8.78,True,1.14,5.98,6.78,False

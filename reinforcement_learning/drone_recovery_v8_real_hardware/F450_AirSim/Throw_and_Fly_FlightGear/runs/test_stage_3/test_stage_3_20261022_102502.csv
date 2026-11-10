@@ -1,0 +1,21 @@
+n,type,level,recovery,cmd_rates,planned_turns,turns,impact_s,peak_rate_rads,peak_tilt_deg,recovered,recovery_time_s,alt_loss_m,min_alt_m,virtual_ground,drift_m,impact_cut_low,alt_end_impact_m,spin_stopped_s,rule_handover_s,rescued
+1,flip,hard,ppo-policy,"[0.0, 16.0, 0.0]",2.32,2.34,1.25,14.0,172.0,True,1.11,15.3,14.69,False,16.05,False,25.68,0.62,,False
+2,flip,hard,bc-policy,"[0.0, 16.0, 0.0]",2.32,2.32,1.25,14.18,175.9,True,1.03,15.39,14.59,False,15.86,False,25.62,0.72,,False
+3,flip,hard,attitude-rule,"[0.0, 16.0, 0.0]",2.32,2.33,1.23,14.44,174.0,True,1.32,16.27,13.71,False,17.0,False,25.69,0.84,,False
+4,flip,hard,spin-stop-fast,"[0.0, 16.0, 0.0]",2.32,2.34,1.24,14.42,176.1,True,1.47,15.73,14.25,False,16.44,False,25.62,0.77,,False
+5,flip,hard,ppo-policy,"[0.0, 16.0, 0.0]",2.63,2.68,1.41,14.08,169.2,True,0.86,14.47,15.52,False,14.61,False,24.21,0.53,,False
+6,flip,hard,bc-policy,"[0.0, 16.0, 0.0]",2.63,2.66,1.37,14.78,174.0,True,1.63,18.49,11.49,False,19.37,False,24.4,1.22,,False
+7,flip,hard,attitude-rule,"[0.0, 16.0, 0.0]",2.63,2.64,1.39,13.84,172.8,True,0.56,12.87,17.11,False,13.01,False,24.45,0.27,,False
+8,flip,hard,spin-stop-fast,"[0.0, 16.0, 0.0]",2.63,2.66,1.37,14.65,172.3,True,1.68,15.34,14.64,False,17.07,False,24.4,1.02,,False
+9,flip,hard,ppo-policy,"[0.0, 16.0, 0.0]",2.22,2.23,1.18,14.61,172.0,True,1.37,15.62,14.35,False,16.69,False,26.09,0.97,,False
+10,flip,hard,bc-policy,"[0.0, 16.0, 0.0]",2.22,2.28,1.21,14.04,175.4,True,1.14,15.48,14.5,False,16.21,False,25.8,0.74,,False
+11,flip,hard,attitude-rule,"[0.0, 16.0, 0.0]",2.22,2.25,1.21,14.31,174.1,True,0.94,14.73,15.25,False,15.34,False,25.93,0.67,,False
+12,flip,hard,spin-stop-fast,"[0.0, 16.0, 0.0]",2.22,2.23,1.2,13.91,173.3,True,3.65,15.07,14.92,False,13.5,False,25.92,0.58,,False
+13,flip,hard,ppo-policy,"[16.0, 0.0, 0.0]",2.36,2.38,1.26,14.47,177.0,True,0.66,13.26,16.75,False,13.29,False,25.4,0.55,,False
+14,flip,hard,bc-policy,"[16.0, 0.0, 0.0]",2.36,2.4,1.28,14.07,174.4,True,0.76,13.54,16.44,False,13.59,False,25.29,0.53,,False
+15,flip,hard,attitude-rule,"[16.0, 0.0, 0.0]",2.36,2.37,1.26,14.45,174.4,True,0.77,13.52,16.46,False,13.59,False,25.39,0.45,,False
+16,flip,hard,spin-stop-fast,"[16.0, 0.0, 0.0]",2.36,2.38,1.26,13.96,174.1,True,0.78,13.97,16.01,False,14.01,False,25.33,0.55,,False
+17,flip,hard,ppo-policy,"[-16.0, 0.0, 0.0]",2.9,2.92,1.53,13.92,178.7,True,0.42,13.22,16.78,False,13.53,False,23.07,0.15,,False
+18,flip,hard,bc-policy,"[-16.0, 0.0, 0.0]",2.9,2.92,1.52,13.92,172.2,True,0.47,12.99,16.99,False,13.43,False,23.19,0.17,,False
+19,flip,hard,attitude-rule,"[-16.0, 0.0, 0.0]",2.9,2.93,1.53,14.27,174.8,True,0.47,13.3,16.68,False,13.74,False,23.04,0.14,,False
+20,flip,hard,spin-stop-fast,"[-16.0, 0.0, 0.0]",2.9,2.91,1.51,14.05,178.2,True,0.92,14.71,15.27,False,15.14,False,23.12,0.17,,False

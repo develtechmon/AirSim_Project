@@ -1,0 +1,2 @@
+n,type,mode,released,detected,release_s,motors_on_s,upright_s,caught_s,recovered,recovered_s,apex_m,low_m,peak_rate_rads,drift_m,crashed,impact_speed_ms,hold_mode,hold_s,hold_max_m,hold_end_m,hold_dz_m,brake_s,brake_m,wander_m
+1,roll,ppo-policy,True,True,0.56,0.31,0.63,0.8,True,1.13,6.1,6.1,9.7,3.54,False,,script height hold,10.0,2.77,2.77,0.62,3.97,1.35,1.77

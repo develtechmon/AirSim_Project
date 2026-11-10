@@ -1,0 +1,71 @@
+{
+  "dataset": "runs\\run1\\demonstrations\\expert_demonstrations_gps_20261017_170846.pkl",
+  "collection": {
+    "firmware": "4.4.0-dev",
+    "sensor_mode": "gps",
+    "params": {
+      "EK3_SRC1_POSXY": 3.0,
+      "EK3_SRC1_VELXY": 3.0,
+      "EK3_SRC1_POSZ": 1.0,
+      "EK3_SRC1_VELZ": 3.0,
+      "EK3_SRC1_YAW": 1.0,
+      "FLOW_TYPE": 0.0,
+      "SIM_FLOW_ENABLE": 0.0,
+      "RNGFND1_TYPE": 0.0,
+      "RNGFND1_MAX_CM": 700.0,
+      "GPS_TYPE": 1.0,
+      "GUID_OPTIONS": 0.0,
+      "ARMING_CHECK": 0.0,
+      "WPNAV_SPEED": 2000.0,
+      "WPNAV_SPEED_UP": 400.0,
+      "WPNAV_SPEED_DN": 300.0
+    },
+    "settings": {
+      "connect": "tcp:127.0.0.1:5762",
+      "episodes": 200,
+      "steps": 300,
+      "hz": 20.0,
+      "alt_min": 1.0,
+      "alt_max": 3.0,
+      "xy_offset": 1.0,
+      "z_offset": 0.5,
+      "run": null
+    },
+    "obs": "rel_pos(3, NED, pos-target) | vel(3, NED) | quat wxyz(4) | body rates(3)",
+    "action": "velocity command vx, vy, vz (NED, m/s), GUIDED",
+    "expert": "observable P expert: v = gain x (target - position); xy gain 0.8/s cap 1.0 m/s, z gain 1.0/s cap 0.5 m/s",
+    "samples": 60000,
+    "episodes_done": 200,
+    "aborted": false,
+    "timing": {
+      "dt_mean": 0.04999999489491491,
+      "dt_std": 0.006338669760434095,
+      "dt_max": 0.06588809999993828,
+      "overruns": 0
+    },
+    "settled_pct": 100.0,
+    "settled_threshold_m": 0.3,
+    "end_err_mean_m": 0.011235
+  },
+  "samples": 60000,
+  "episodes": 200,
+  "split": "by episode 90/10",
+  "train_samples": 54000,
+  "val_samples": 6000,
+  "architecture": "13-256-256-128-3, ReLU",
+  "params": 102659,
+  "epochs": 150,
+  "batch_size": 256,
+  "lr": 0.001,
+  "seed": 0,
+  "best_val_loss": 0.00019391922978684306,
+  "best_epoch": 148,
+  "val_rmse_per_axis_mps": [
+    0.022659463807940483,
+    0.006298453081399202,
+    0.0053512463346123695
+  ],
+  "transfer_max_action_diff": 0.0,
+  "training_log": "runs\\run1\\logs\\stage1\\training_20261017_180044.csv",
+  "trained_at": "20261017_180044"
+}

@@ -1,0 +1,324 @@
+{
+  "date": "20261018_102717",
+  "settings": {
+    "types": [
+      "flip",
+      "spin",
+      "bird"
+    ],
+    "levels": [
+      "easy",
+      "medium",
+      "hard"
+    ],
+    "repeats": 1,
+    "seed": 0,
+    "keep_limits": false,
+    "conn": "tcp:127.0.0.1:5762"
+  },
+  "disturbances_rads": {
+    "flip": [
+      12.0,
+      0.0,
+      0.0
+    ],
+    "spin": [
+      0.0,
+      0.0,
+      10.0
+    ],
+    "bird": [
+      8.0,
+      8.0,
+      5.0
+    ]
+  },
+  "turns": {
+    "flip": {
+      "easy": 1.0,
+      "medium": 2.0,
+      "hard": 3.0
+    },
+    "spin": {
+      "easy": 1.0,
+      "medium": 2.0,
+      "hard": 3.0
+    },
+    "bird": {
+      "easy": 0.5,
+      "medium": 1.0,
+      "hard": 1.5
+    }
+  },
+  "limits_original": {
+    "ATC_ACCEL_R_MAX": 110000.0,
+    "ATC_ACCEL_P_MAX": 110000.0,
+    "ATC_ACCEL_Y_MAX": 27000.0
+  },
+  "impact_mode": true,
+  "hover_alt_m": 60.0,
+  "criterion": {
+    "rate_rads": 1.2,
+    "tilt_deg": 30.0,
+    "alt_m": 3.0,
+    "hspeed_ms": 3.0,
+    "held_s": 0.5,
+    "max_s": 15.0
+  },
+  "summary": {
+    "flip/easy": {
+      "impacts": 1,
+      "recovered_pct": 100.0,
+      "mean_turns": 1.02,
+      "mean_peak_rate_rads": 11.87,
+      "mean_recovery_s": 1.26,
+      "mean_alt_loss_m": 13.18
+    },
+    "flip/medium": {
+      "impacts": 1,
+      "recovered_pct": 100.0,
+      "mean_turns": 2.01,
+      "mean_peak_rate_rads": 12.33,
+      "mean_recovery_s": 2.19,
+      "mean_alt_loss_m": 18.8
+    },
+    "flip/hard": {
+      "impacts": 1,
+      "recovered_pct": 100.0,
+      "mean_turns": 3.04,
+      "mean_peak_rate_rads": 12.01,
+      "mean_recovery_s": 3.2,
+      "mean_alt_loss_m": 30.71
+    },
+    "spin/easy": {
+      "impacts": 1,
+      "recovered_pct": 100.0,
+      "mean_turns": 1.01,
+      "mean_peak_rate_rads": 8.82,
+      "mean_recovery_s": 3.62,
+      "mean_alt_loss_m": 0.24
+    },
+    "spin/medium": {
+      "impacts": 1,
+      "recovered_pct": 100.0,
+      "mean_turns": 2.01,
+      "mean_peak_rate_rads": 10.3,
+      "mean_recovery_s": 3.8,
+      "mean_alt_loss_m": 0.15
+    },
+    "spin/hard": {
+      "impacts": 1,
+      "recovered_pct": 100.0,
+      "mean_turns": 3.01,
+      "mean_peak_rate_rads": 10.9,
+      "mean_recovery_s": 3.67,
+      "mean_alt_loss_m": 0.0
+    },
+    "bird/easy": {
+      "impacts": 1,
+      "recovered_pct": 100.0,
+      "mean_turns": 0.51,
+      "mean_peak_rate_rads": 9.8,
+      "mean_recovery_s": 2.72,
+      "mean_alt_loss_m": 7.92
+    },
+    "bird/medium": {
+      "impacts": 1,
+      "recovered_pct": 100.0,
+      "mean_turns": 1.02,
+      "mean_peak_rate_rads": 11.19,
+      "mean_recovery_s": 1.95,
+      "mean_alt_loss_m": 12.98
+    },
+    "bird/hard": {
+      "impacts": 1,
+      "recovered_pct": 100.0,
+      "mean_turns": 1.55,
+      "mean_peak_rate_rads": 11.43,
+      "mean_recovery_s": 2.13,
+      "mean_alt_loss_m": 17.84
+    }
+  },
+  "impacts": [
+    {
+      "n": 1,
+      "type": "flip",
+      "level": "easy",
+      "cmd_rates": [
+        -12.0,
+        0.0,
+        0.0
+      ],
+      "planned_turns": 1.0,
+      "turns": 1.02,
+      "impact_s": 0.75,
+      "peak_tilt_deg": 175.5,
+      "peak_rate_rads": 11.87,
+      "recovered": true,
+      "recovery_time_s": 1.26,
+      "alt_loss_m": 13.18,
+      "drift_m": 13.43,
+      "impact_cut_low": false
+    },
+    {
+      "n": 2,
+      "type": "flip",
+      "level": "medium",
+      "cmd_rates": [
+        0.0,
+        12.0,
+        0.0
+      ],
+      "planned_turns": 2.0,
+      "turns": 2.01,
+      "impact_s": 1.28,
+      "peak_tilt_deg": 177.1,
+      "peak_rate_rads": 12.33,
+      "recovered": true,
+      "recovery_time_s": 2.19,
+      "alt_loss_m": 18.8,
+      "drift_m": 20.11,
+      "impact_cut_low": false
+    },
+    {
+      "n": 3,
+      "type": "flip",
+      "level": "hard",
+      "cmd_rates": [
+        12.0,
+        0.0,
+        0.0
+      ],
+      "planned_turns": 3.0,
+      "turns": 3.04,
+      "impact_s": 1.83,
+      "peak_tilt_deg": 178.0,
+      "peak_rate_rads": 12.01,
+      "recovered": true,
+      "recovery_time_s": 3.2,
+      "alt_loss_m": 30.71,
+      "drift_m": 31.91,
+      "impact_cut_low": false
+    },
+    {
+      "n": 4,
+      "type": "spin",
+      "level": "easy",
+      "cmd_rates": [
+        0.0,
+        0.0,
+        10.0
+      ],
+      "planned_turns": 1.0,
+      "turns": 1.01,
+      "impact_s": 1.59,
+      "peak_tilt_deg": 2.1,
+      "peak_rate_rads": 8.82,
+      "recovered": true,
+      "recovery_time_s": 3.62,
+      "alt_loss_m": 0.24,
+      "drift_m": 0.4,
+      "impact_cut_low": false
+    },
+    {
+      "n": 5,
+      "type": "spin",
+      "level": "medium",
+      "cmd_rates": [
+        0.0,
+        0.0,
+        -10.0
+      ],
+      "planned_turns": 2.0,
+      "turns": 2.01,
+      "impact_s": 2.35,
+      "peak_tilt_deg": 1.7,
+      "peak_rate_rads": 10.3,
+      "recovered": true,
+      "recovery_time_s": 3.8,
+      "alt_loss_m": 0.15,
+      "drift_m": 0.42,
+      "impact_cut_low": false
+    },
+    {
+      "n": 6,
+      "type": "spin",
+      "level": "hard",
+      "cmd_rates": [
+        0.0,
+        0.0,
+        -10.0
+      ],
+      "planned_turns": 3.0,
+      "turns": 3.01,
+      "impact_s": 2.89,
+      "peak_tilt_deg": 3.0,
+      "peak_rate_rads": 10.9,
+      "recovered": true,
+      "recovery_time_s": 3.67,
+      "alt_loss_m": 0.0,
+      "drift_m": 0.88,
+      "impact_cut_low": false
+    },
+    {
+      "n": 7,
+      "type": "bird",
+      "level": "easy",
+      "cmd_rates": [
+        -8.0,
+        8.0,
+        -5.0
+      ],
+      "planned_turns": 0.5,
+      "turns": 0.51,
+      "impact_s": 0.49,
+      "peak_tilt_deg": 165.1,
+      "peak_rate_rads": 9.8,
+      "recovered": true,
+      "recovery_time_s": 2.72,
+      "alt_loss_m": 7.92,
+      "drift_m": 12.03,
+      "impact_cut_low": false
+    },
+    {
+      "n": 8,
+      "type": "bird",
+      "level": "medium",
+      "cmd_rates": [
+        8.0,
+        -8.0,
+        5.0
+      ],
+      "planned_turns": 1.0,
+      "turns": 1.02,
+      "impact_s": 0.8,
+      "peak_tilt_deg": 155.4,
+      "peak_rate_rads": 11.19,
+      "recovered": true,
+      "recovery_time_s": 1.95,
+      "alt_loss_m": 12.98,
+      "drift_m": 13.2,
+      "impact_cut_low": false
+    },
+    {
+      "n": 9,
+      "type": "bird",
+      "level": "hard",
+      "cmd_rates": [
+        -8.0,
+        -8.0,
+        5.0
+      ],
+      "planned_turns": 1.5,
+      "turns": 1.55,
+      "impact_s": 1.09,
+      "peak_tilt_deg": 167.7,
+      "peak_rate_rads": 11.43,
+      "recovered": true,
+      "recovery_time_s": 2.13,
+      "alt_loss_m": 17.84,
+      "drift_m": 21.4,
+      "impact_cut_low": false
+    }
+  ]
+}

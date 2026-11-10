@@ -1,0 +1,96 @@
+{
+  "date": "20261018_102105",
+  "settings": {
+    "types": [
+      "flip"
+    ],
+    "levels": [
+      "hard"
+    ],
+    "repeats": 1,
+    "seed": 0,
+    "keep_limits": false,
+    "conn": "tcp:127.0.0.1:5762"
+  },
+  "disturbances_rads": {
+    "flip": [
+      12.0,
+      0.0,
+      0.0
+    ],
+    "spin": [
+      0.0,
+      0.0,
+      10.0
+    ],
+    "bird": [
+      8.0,
+      8.0,
+      5.0
+    ]
+  },
+  "turns": {
+    "flip": {
+      "easy": 1.0,
+      "medium": 2.0,
+      "hard": 3.0
+    },
+    "spin": {
+      "easy": 1.0,
+      "medium": 2.0,
+      "hard": 3.0
+    },
+    "bird": {
+      "easy": 0.5,
+      "medium": 1.0,
+      "hard": 1.5
+    }
+  },
+  "limits_original": {
+    "ATC_ACCEL_R_MAX": 110000.0,
+    "ATC_ACCEL_P_MAX": 110000.0,
+    "ATC_ACCEL_Y_MAX": 27000.0
+  },
+  "impact_mode": true,
+  "hover_alt_m": 60.0,
+  "criterion": {
+    "rate_rads": 1.2,
+    "tilt_deg": 30.0,
+    "alt_m": 3.0,
+    "hspeed_ms": 3.0,
+    "held_s": 0.5,
+    "max_s": 15.0
+  },
+  "summary": {
+    "flip/hard": {
+      "impacts": 1,
+      "recovered_pct": 100.0,
+      "mean_turns": 3.0,
+      "mean_peak_rate_rads": 12.08,
+      "mean_recovery_s": 5.04,
+      "mean_alt_loss_m": 28.51
+    }
+  },
+  "impacts": [
+    {
+      "n": 1,
+      "type": "flip",
+      "level": "hard",
+      "cmd_rates": [
+        -12.0,
+        0.0,
+        0.0
+      ],
+      "planned_turns": 3.0,
+      "turns": 3.0,
+      "impact_s": 1.81,
+      "peak_tilt_deg": 174.2,
+      "peak_rate_rads": 12.08,
+      "recovered": true,
+      "recovery_time_s": 5.04,
+      "alt_loss_m": 28.51,
+      "drift_m": 28.14,
+      "impact_cut_low": false
+    }
+  ]
+}

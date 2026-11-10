@@ -1,0 +1,1469 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>5-Inch Sim-to-Real Guide</title>
+<style>
+/* =====================================================================
+   THEME TOKENS  (edit colours here only)
+   ===================================================================== */
+:root{
+  color-scheme:light dark;
+  --bg:#f6f6f4; --surface:#fcfcfb; --surface-2:#f0efec; --border:#dcdad3;
+  --text:#1a1a19; --text-2:#52514e; --muted:#7a7972;
+  --accent:#2a78d6; --accent-soft:#e3eefb;
+  --good:#1b7f3b; --good-soft:#e2f3e7; --warn:#a96a00; --warn-soft:#fdf1d8; --bad:#c23a39; --bad-soft:#fbe5e4;
+  --code-bg:#f0efec;
+  /* controller colours: one colour per controller, same everywhere */
+  --c-ppo:#2a78d6; --c-bc:#eb6834; --c-rule:#1baf7a; --c-ssf:#eda100; --c-ap:#e87ba4;
+  --s1:#2f5ea8; --s2:#2e7d4f; --s3:#b83232;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#121211; --surface:#1a1a19; --surface-2:#242422; --border:#3a3936;
+    --text:#f0efec; --text-2:#c3c2b7; --muted:#9a998f;
+    --accent:#3987e5; --accent-soft:#1d2a3b;
+    --good:#5cc97f; --good-soft:#16281c; --warn:#e3a53a; --warn-soft:#2c2414; --bad:#ef7473; --bad-soft:#2e1717;
+    --code-bg:#242422;
+    --c-ppo:#3987e5; --c-bc:#d95926; --c-rule:#199e70; --c-ssf:#c98500; --c-ap:#d55181;
+    --s1:#6d9be0; --s2:#5fb383; --s3:#e06a6a;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#121211; --surface:#1a1a19; --surface-2:#242422; --border:#3a3936;
+  --text:#f0efec; --text-2:#c3c2b7; --muted:#9a998f;
+  --accent:#3987e5; --accent-soft:#1d2a3b;
+  --good:#5cc97f; --good-soft:#16281c; --warn:#e3a53a; --warn-soft:#2c2414; --bad:#ef7473; --bad-soft:#2e1717;
+  --code-bg:#242422;
+  --c-ppo:#3987e5; --c-bc:#d95926; --c-rule:#199e70; --c-ssf:#c98500; --c-ap:#d55181;
+  --s1:#6d9be0; --s2:#5fb383; --s3:#e06a6a;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 "Segoe UI",Calibri,system-ui,-apple-system,Arial,sans-serif}
+a{color:var(--accent)}
+code,pre{font-family:Consolas,"Cascadia Mono",Menlo,monospace}
+code{background:var(--code-bg);padding:1px 5px;border-radius:4px;font-size:13px;word-break:break-word}
+/* layout */
+.layout{display:grid;grid-template-columns:270px minmax(0,1fr);min-height:100vh}
+nav.side{position:sticky;top:0;height:100vh;overflow:auto;background:var(--surface);border-right:1px solid var(--border);padding:16px 12px 40px}
+nav.side .brand{font-weight:700;font-size:15px;margin:0 6px 2px}
+nav.side .sub{font-size:12px;color:var(--muted);margin:0 6px 12px}
+nav.side a{display:block;text-decoration:none;color:var(--text-2);padding:4px 8px;border-radius:6px;font-size:13.5px}
+nav.side a.l2{padding-left:22px;font-size:12.5px}
+nav.side a:hover{background:var(--surface-2)}
+nav.side a.active{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav.side .grp{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:14px 8px 4px}
+main{padding:24px 40px 80px;max-width:1180px}
+.topbar{display:flex;gap:10px;align-items:center;justify-content:flex-end;margin-bottom:6px}
+button,.btn{font:inherit;font-size:13px;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:7px;padding:5px 11px;cursor:pointer}
+button:hover{background:var(--surface-2)}
+button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+h1{font-size:28px;margin:4px 0 2px;line-height:1.2}
+h2{font-size:22px;margin:46px 0 10px;padding-top:10px;border-top:2px solid var(--border)}
+h3{font-size:17px;margin:28px 0 8px}
+h4{font-size:15px;margin:18px 0 6px}
+.lead{color:var(--text-2);font-size:15.5px;margin:4px 0 16px}
+.stage-tag{display:inline-block;color:#fff;border-radius:5px;padding:1px 8px;font-size:13px;font-weight:700;margin-right:8px;vertical-align:2px}
+.t1{background:var(--s1)}.t2{background:var(--s2)}.t3{background:var(--s3)}.thw{background:#5b5b66}
+/* tables */
+.tw{overflow-x:auto;margin:8px 0 14px}
+table{border-collapse:collapse;width:100%;font-size:13.5px;background:var(--surface)}
+th,td{border:1px solid var(--border);padding:5px 8px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.hl td{background:var(--accent-soft);font-weight:600}
+/* callouts */
+.note,.warn,.ok,.bad{border-left:4px solid;border-radius:6px;padding:9px 13px;margin:12px 0;font-size:14px}
+.note{border-color:var(--accent);background:var(--accent-soft)}
+.ok{border-color:var(--good);background:var(--good-soft)}
+.warn{border-color:var(--warn);background:var(--warn-soft)}
+.bad{border-color:var(--bad);background:var(--bad-soft)}
+.note b:first-child,.warn b:first-child,.ok b:first-child,.bad b:first-child{display:inline}
+.analogy{border:1px dashed var(--border);border-radius:8px;padding:9px 13px;margin:12px 0;font-size:14px;background:var(--surface)}
+.analogy::before{content:"Analogy  ";font-weight:700;color:var(--accent)}
+/* status chips */
+.chip{display:inline-block;font-size:11.5px;font-weight:700;border-radius:10px;padding:1px 8px;white-space:nowrap}
+.done{background:var(--good-soft);color:var(--good)}.run{background:var(--warn-soft);color:var(--warn)}.todo{background:var(--surface-2);color:var(--muted)}.fail{background:var(--bad-soft);color:var(--bad)}
+/* steps */
+.step{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin:12px 0}
+.step>.sh{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.step>.sh .num{background:var(--s3);color:#fff;border-radius:6px;font-weight:700;font-size:12.5px;padding:1px 8px}
+.step.s1 .num{background:var(--s1)}.step.s2 .num{background:var(--s2)}.step.hw .num{background:#5b5b66}
+.step>.sh .tt{font-weight:700;font-size:15.5px}
+.step>.sh .meta{margin-left:auto;font-size:12.5px;color:var(--muted)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:900px){.cols{grid-template-columns:1fr}}
+/* command block */
+.cmdbox{position:relative;margin:8px 0}
+pre.cmd{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:10px 70px 10px 12px;margin:0;font-size:13px;white-space:pre-wrap;word-break:break-all}
+.cmdbox button{position:absolute;top:6px;right:6px;font-size:12px;padding:2px 9px}
+details{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;margin:10px 0}
+details>summary{cursor:pointer;font-weight:600;font-size:14px}
+details[open]>summary{margin-bottom:6px}
+/* diagrams */
+.dgwrap{background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px;overflow:hidden;margin:10px 0}
+.dgwrap .dg{transform-origin:0 0}
+.dgwrap table{background:#fff;width:auto}.dgwrap th,.dgwrap td{color:#1d2433}
+.figure{background:#fff;border:1px solid var(--border);border-radius:10px;padding:8px;margin:10px 0;text-align:center}
+.figure img{max-width:100%;height:auto}
+.cap{font-size:12.5px;color:var(--muted);margin:4px 2px 12px}
+/* charts */
+.chart{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin:10px 0}
+.chart .ct{font-weight:700;font-size:14.5px}
+.chart .cs{font-size:12.5px;color:var(--muted);margin-bottom:6px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12.5px;color:var(--text-2);margin:4px 0 2px}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+.tip{position:fixed;pointer-events:none;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:7px;padding:6px 9px;font-size:12.5px;box-shadow:0 4px 14px rgba(0,0,0,.15);z-index:50;display:none;max-width:280px}
+svg text{fill:var(--text-2);font-size:11.5px}
+svg .axis{stroke:var(--border)}
+svg .grid{stroke:var(--border);stroke-dasharray:2 3}
+.charttable{display:none}
+.charttable.show{display:block}
+/* replay */
+.replay{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;margin:14px 0}
+.rp-controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+.rp-controls select{font:inherit;font-size:13px;padding:4px 6px;border-radius:7px;border:1px solid var(--border);background:var(--surface);color:var(--text);max-width:100%}
+.rp-controls input[type=range]{flex:1;min-width:160px}
+.rp-time{font-variant-numeric:tabular-nums;font-size:13px;color:var(--text-2);min-width:120px}
+#rpStage{width:100%;height:auto;display:block;background:linear-gradient(var(--surface-2),var(--surface));border-radius:10px}
+.rp-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:10px}
+.rp-card{border:1px solid var(--border);border-radius:8px;padding:6px 9px;font-size:12.5px;border-top:4px solid}
+.rp-card b{font-size:13px}
+/* timeline (who flies) */
+.tl{position:relative;height:56px;border-radius:9px;overflow:hidden;display:flex;margin:8px 0 4px;border:1px solid var(--border)}
+.tl div{display:flex;align-items:center;justify-content:center;color:#fff;font-size:12.5px;font-weight:700;text-align:center;padding:0 4px}
+.tl .cursor{position:absolute;top:0;bottom:0;width:3px;background:var(--text);left:0;transition:left .1s linear;padding:0}
+.tl-cap{min-height:44px;font-size:14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 12px}
+/* stat tiles */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:12px 0}
+.tile{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+.tile .v{font-size:24px;font-weight:700;line-height:1.1}
+.tile .k{font-size:12.5px;color:var(--muted)}
+/* explorer */
+.explorer{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin:10px 0}
+.explorer label{font-size:13px;color:var(--text-2)}
+.explorer input[type=range]{width:100%}
+.ex-out{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:8px}
+.ex-out div{background:var(--surface-2);border-radius:8px;padding:6px 10px;font-size:13px}
+.ex-out b{display:block;font-size:18px}
+.bar-h{height:14px;border-radius:4px;display:inline-block;vertical-align:middle}
+/* hardware block diagram (editable HTML) */
+.hw{background:#fff;color:#1d2433;border:1px solid var(--border);border-radius:10px;padding:14px;margin:10px 0;overflow-x:auto}
+.hw-grid{display:grid;grid-template-columns:1fr 46px 1.25fr 46px 1fr;gap:0;min-width:860px;align-items:center}
+.hw-col{display:flex;flex-direction:column;gap:12px}
+.hwb{border:2px solid #5b5b66;border-radius:10px;padding:8px 10px;background:#f7f7f9;font-size:13px;line-height:1.35}
+.hwb h5{margin:0 0 3px;font-size:14px;color:#2c2c38}
+.hwb.fc{border-color:#b83232;background:#fbeeee}.hwb.fc h5{color:#b83232}
+.hwb.pi{border-color:#2f5ea8;background:#eef3fb}.hwb.pi h5{color:#2f5ea8}
+.hwb.sens{border-color:#2e7d4f;background:#edf7f0}.hwb.sens h5{color:#2e7d4f}
+.hwb.pwr{border-color:#a96a00;background:#fdf6e6}.hwb.pwr h5{color:#a96a00}
+.hwb .lbl{display:inline-block;background:#fff;border:1px solid #c9ced8;border-radius:4px;padding:0 5px;font-size:11.5px;font-family:Consolas,monospace;margin:1px 0}
+.hw-arrow{text-align:center;font-size:22px;color:#555}
+.hw-bottom{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:14px;min-width:860px}
+/* flow */
+.flow{display:flex;flex-direction:column;align-items:center;gap:0;margin:10px 0}
+.fb{background:var(--surface);border:2px solid var(--border);border-radius:10px;padding:8px 14px;max-width:640px;width:100%;text-align:center;font-size:13.5px}
+.fb.pilot{border-color:var(--c-ssf)}.fb.pi{border-color:var(--c-ppo)}.fb.ap{border-color:var(--c-rule)}.fb.dec{border-color:var(--c-ap);border-style:dashed}
+.fb b{display:block}
+.fa{font-size:18px;color:var(--muted);line-height:1.3}
+.flow-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;justify-content:center;margin-bottom:8px}
+.flow-legend span{border:2px solid;border-radius:6px;padding:0 6px}
+footer{margin-top:60px;font-size:12px;color:var(--muted)}
+@media (max-width:860px){.layout{grid-template-columns:1fr}nav.side{position:relative;height:auto}main{padding:16px}}
+</style>
+<style>ul.ck{list-style:none;padding-left:4px;margin:6px 0}ul.ck li{margin:5px 0}ul.ck input{margin-right:8px;transform:scale(1.15)}.step.s3 .num{background:var(--s3)}
+th,td{color:var(--text);background:var(--surface)}th{background:var(--surface-2)}tr.hl td{background:var(--accent-soft);color:var(--text)}td code,th code{color:var(--text)}input[type=checkbox]{accent-color:var(--accent)}td code{white-space:nowrap;word-break:normal}.calc{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:12px;margin:10px 0}.calc-row{display:flex;flex-direction:column;gap:4px;min-width:0}.calc-row label{font-size:12.5px;color:var(--text-2)}.calc-row input{font:inherit;padding:6px 8px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);min-width:0}.calc-out{grid-column:1/-1;font-size:15px;color:var(--text)}h3{font-size:16px;margin:18px 0 6px}main{min-width:0}</style>
+</head>
+<body>
+<div class="layout">
+<nav class="side" id="nav">
+  <div class="brand">5″ PPO drone · sim-to-real</div>
+  <div class="sub">AirSim + ArduCopter (drone: 4.6.0-dev) · Q250 · HSKRC 2205 1700KV · 4S 1500</div>
+  <div class="grp">Start here</div>
+  <a href="#s0">0. The plan on one page</a>
+  <a href="#st">✓ Status 8 Nov + findings</a>
+  <div class="grp">Part 1 · PC (AirSim)</div>
+  <a href="#p1">1. Note what you use now</a>
+  <a href="#p2">2. Install Unreal + Visual Studio</a>
+  <a href="#p3">3. Build AirSim</a>
+  <a href="#p4">4. Make Blocks.exe + check</a>
+  <a href="#p5">5. Add the 5″ drone</a>
+  <div class="grp">Part 2 · Drone build</div>
+  <a href="#d1">6. Parts</a>
+  <a href="#d2">7. Build and wire</a>
+  <div class="grp">Part 3 · Firmware</div>
+  <a href="#f1">8. Build firmware (same as sim)</a>
+  <a href="#f2">9. Flash the flight controller</a>
+  <div class="grp">Part 4 · Set-up and tune</div>
+  <a href="#m1">10. Mission Planner set-up</a>
+  <a href="#m2">11. First hover</a>
+  <a href="#m3">12. Notch hover</a>
+  <a href="#m4">13. AutoTune</a>
+  <a href="#m5">14. Loiter</a>
+  <a href="#m6">15. Weigh and measure</a>
+  <div class="grp">Part 5 · Hand-over</div>
+  <a href="#x1">16. Send me (complete list)</a>
+  <a href="#x2">17. What happens next</a>
+  <a href="#x3">Troubleshooting</a>
+</nav>
+<main>
+<div class="topbar"><span style="font-size:12px;color:var(--muted)">Built 28 Oct 2026 · updated 8 Nov 2026 (status box below)</span><button id="themeBtn">◐ Theme</button></div>
+<h1><span class="stage-tag t3">5″</span>5-inch sim-to-real guide<br><span style="font-size:19px;color:var(--text-2);font-weight:500">Install AirSim, build and tune the 5-inch drone on the same ArduPilot as the simulator, and send the numbers that make the simulator match it</span></h1>
+<p class="lead">Two tracks run side by side: the <b>PC</b> (Parts 1) and the <b>drone</b> (Parts 2–4). One action per tick box. Every <b>📤 Send me</b> box says exactly what to send, and Part 5 lists everything in one place.</p>
+
+<!-- ================= PLAN ================= -->
+<h2 id="s0">0. The plan on one page</h2>
+<div class="figure">
+<svg viewBox="0 0 900 270" width="100%" style="max-width:900px" role="img" aria-label="Two tracks: PC builds AirSim and checks old results; drone is built, flashed with the same ArduPilot, tuned and measured; both meet at the AirSim 5-inch twin, then PPO fine-tune and real throws">
+<defs><marker id="z0" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#5b5b66"/></marker></defs>
+<g style="font-size:12px">
+<text x="10" y="18" style="font-weight:700;fill:#4527a0">PC track</text>
+<rect x="10" y="26" width="150" height="56" rx="8" fill="#ede7f6" stroke="#5e35b1"/><text x="85" y="49" text-anchor="middle" style="font-weight:700;fill:#4527a0">1–2 Install</text><text x="85" y="67" text-anchor="middle" style="fill:#4527a0">Unreal 4.27 + VS 2022</text>
+<rect x="180" y="26" width="150" height="56" rx="8" fill="#ede7f6" stroke="#5e35b1"/><text x="255" y="49" text-anchor="middle" style="font-weight:700;fill:#4527a0">3 Build AirSim</text><text x="255" y="67" text-anchor="middle" style="fill:#4527a0">build.cmd</text>
+<rect x="350" y="26" width="150" height="56" rx="8" fill="#ede7f6" stroke="#5e35b1"/><text x="425" y="49" text-anchor="middle" style="font-weight:700;fill:#4527a0">4 Check</text><text x="425" y="67" text-anchor="middle" style="fill:#4527a0">old results the same</text>
+<line x1="160" y1="54" x2="178" y2="54" stroke="#5b5b66" stroke-width="1.5" marker-end="url(#z0)"/><line x1="330" y1="54" x2="348" y2="54" stroke="#5b5b66" stroke-width="1.5" marker-end="url(#z0)"/>
+<text x="10" y="118" style="font-weight:700;fill:#0c447c">Drone track</text>
+<rect x="10" y="126" width="150" height="56" rx="8" fill="#e6f1fb" stroke="#185fa5"/><text x="85" y="149" text-anchor="middle" style="font-weight:700;fill:#0c447c">6–7 Build</text><text x="85" y="167" text-anchor="middle" style="fill:#0c447c">Q250 + wiring</text>
+<rect x="180" y="126" width="150" height="56" rx="8" fill="#e6f1fb" stroke="#185fa5"/><text x="255" y="149" text-anchor="middle" style="font-weight:700;fill:#0c447c">8–9 Firmware</text><text x="255" y="167" text-anchor="middle" style="fill:#0c447c">same ArduPilot as sim</text>
+<rect x="350" y="126" width="150" height="56" rx="8" fill="#e6f1fb" stroke="#185fa5"/><text x="425" y="149" text-anchor="middle" style="font-weight:700;fill:#0c447c">10–14 Set-up, tune</text><text x="425" y="167" text-anchor="middle" style="fill:#0c447c">hover, AutoTune, Loiter</text>
+<rect x="520" y="126" width="150" height="56" rx="8" fill="#e6f1fb" stroke="#185fa5"/><text x="595" y="149" text-anchor="middle" style="font-weight:700;fill:#0c447c">15 Measure</text><text x="595" y="167" text-anchor="middle" style="fill:#0c447c">scale + ruler</text>
+<line x1="160" y1="154" x2="178" y2="154" stroke="#5b5b66" stroke-width="1.5" marker-end="url(#z0)"/><line x1="330" y1="154" x2="348" y2="154" stroke="#5b5b66" stroke-width="1.5" marker-end="url(#z0)"/><line x1="500" y1="154" x2="518" y2="154" stroke="#5b5b66" stroke-width="1.5" marker-end="url(#z0)"/>
+<rect x="700" y="70" width="190" height="66" rx="8" fill="#fdf1d8" stroke="#a96a00"/><text x="795" y="94" text-anchor="middle" style="font-weight:700;fill:#7a4b00">16 Send me → 5 AirSim</text><text x="795" y="112" text-anchor="middle" style="fill:#7a4b00">I build the 5″ twin,</text><text x="795" y="128" text-anchor="middle" style="fill:#7a4b00">you rebuild AirSim</text>
+<path d="M500 54 H600 V80 H698" fill="none" stroke="#5b5b66" stroke-width="1.5" marker-end="url(#z0)"/>
+<path d="M670 154 H684 V120 H698" fill="none" stroke="#5b5b66" stroke-width="1.5" marker-end="url(#z0)"/>
+<rect x="700" y="190" width="190" height="66" rx="8" fill="#fbe5e4" stroke="#c23a39"/><text x="795" y="214" text-anchor="middle" style="font-weight:700;fill:#8e2321">17 PPO</text><text x="795" y="232" text-anchor="middle" style="fill:#8e2321">baseline → fine-tune →</text><text x="795" y="248" text-anchor="middle" style="fill:#8e2321">SITL check → real throws</text>
+<line x1="795" y1="136" x2="795" y2="188" stroke="#5b5b66" stroke-width="1.5" marker-end="url(#z0)"/>
+</g></svg></div>
+<div class="analogy"><b>The idea:</b> the PPO is a driver trained in a simulator car. We make the simulator car a copy of your real 5-inch (same weight, size, thrust, motor speed and the <b>same ArduPilot</b>), let the driver practise in it, and only then hand over the real one.</div>
+
+<!-- ================= STATUS 8 NOV ================= -->
+<h2 id="st"><span class="stage-tag t3">✓</span>Status on 8 Nov 2026: what is done and what we measured</h2>
+<p class="lead">This box is the record. Each step below also has a <b>📌 Your result</b> note with its numbers. Where a step was planned one way and done another, the guide now shows <b>what you actually have</b>.</p>
+<div class="tiles">
+  <div class="tile"><div class="v">544.5 g</div><div class="k">drone ready to fly (4S 1500 mAh)</div></div>
+  <div class="tile"><div class="v">0.149</div><div class="k"><code>MOT_THST_HOVER</code>, learned outdoors (indoor logs 0.150–0.158)</div></div>
+  <div class="tile"><div class="v">Roll tuned</div><div class="k">AutoTune roll; pitch copied from roll; yaw default. Stable in flight</div></div>
+  <div class="tile"><div class="v">27 / 27</div><div class="k">SITL throws caught, 8 Nov (Throw &amp; Fly guide)</div></div>
+</div>
+<div class="figure">
+<svg viewBox="0 0 900 150" width="100%" style="max-width:900px" role="img" aria-label="Progress on 8 Nov 2026: steps 1 to 11, 14 and 15 done; step 5 twin fixed and impact-tested (5.7); step 12 notch not done; step 13 AutoTune partly done; step 17 at real throws">
+<g style="font-size:11.5px" text-anchor="middle">
+<text x="10" y="18" text-anchor="start" style="font-weight:700;fill:#1d2433">Progress, 8 Nov 2026</text>
+<rect x="10" y="30" width="56" height="44" rx="6" fill="#d9f2e6" stroke="#1b8a5a"/><text x="38" y="50" style="font-weight:700;fill:#0f5e3c">1–4</text><text x="38" y="66" style="fill:#0f5e3c">AirSim</text>
+<rect x="72" y="30" width="56" height="44" rx="6" fill="#d9f2e6" stroke="#1b8a5a"/><text x="100" y="50" style="font-weight:700;fill:#0f5e3c">5</text><text x="100" y="66" style="fill:#0f5e3c">5″ twin</text>
+<rect x="134" y="30" width="56" height="44" rx="6" fill="#d9f2e6" stroke="#1b8a5a"/><text x="162" y="50" style="font-weight:700;fill:#0f5e3c">6–7</text><text x="162" y="66" style="fill:#0f5e3c">build</text>
+<rect x="196" y="30" width="56" height="44" rx="6" fill="#d9f2e6" stroke="#1b8a5a"/><text x="224" y="50" style="font-weight:700;fill:#0f5e3c">8–9</text><text x="224" y="66" style="fill:#0f5e3c">firmware</text>
+<rect x="258" y="30" width="56" height="44" rx="6" fill="#d9f2e6" stroke="#1b8a5a"/><text x="286" y="50" style="font-weight:700;fill:#0f5e3c">10</text><text x="286" y="66" style="fill:#0f5e3c">set-up</text>
+<rect x="320" y="30" width="56" height="44" rx="6" fill="#d9f2e6" stroke="#1b8a5a"/><text x="348" y="50" style="font-weight:700;fill:#0f5e3c">11</text><text x="348" y="66" style="fill:#0f5e3c">hover</text>
+<rect x="382" y="30" width="56" height="44" rx="6" fill="#eeeef2" stroke="#8a8a96"/><text x="410" y="50" style="font-weight:700;fill:#55555f">12</text><text x="410" y="66" style="fill:#55555f">notch</text>
+<rect x="444" y="30" width="56" height="44" rx="6" fill="#fdf1d8" stroke="#a96a00"/><text x="472" y="50" style="font-weight:700;fill:#7a4b00">13</text><text x="472" y="66" style="fill:#7a4b00">AutoTune</text>
+<rect x="506" y="30" width="56" height="44" rx="6" fill="#d9f2e6" stroke="#1b8a5a"/><text x="534" y="50" style="font-weight:700;fill:#0f5e3c">14</text><text x="534" y="66" style="fill:#0f5e3c">Loiter</text>
+<rect x="568" y="30" width="56" height="44" rx="6" fill="#d9f2e6" stroke="#1b8a5a"/><text x="596" y="50" style="font-weight:700;fill:#0f5e3c">15</text><text x="596" y="66" style="fill:#0f5e3c">measure</text>
+<rect x="630" y="30" width="56" height="44" rx="6" fill="#d9f2e6" stroke="#1b8a5a"/><text x="658" y="50" style="font-weight:700;fill:#0f5e3c">SITL</text><text x="658" y="66" style="fill:#0f5e3c">throws</text>
+<rect x="692" y="30" width="198" height="44" rx="6" fill="#fbe5e4" stroke="#c23a39"/><text x="791" y="50" style="font-weight:700;fill:#8e2321">17 · NOW</text><text x="791" y="66" style="fill:#8e2321">hardware checks → real throws</text>
+</g>
+<g style="font-size:11.5px;fill:#1d2433">
+<rect x="10" y="100" width="12" height="12" fill="#d9f2e6" stroke="#1b8a5a"/><text x="28" y="110">done</text>
+<rect x="80" y="100" width="12" height="12" fill="#fdf1d8" stroke="#a96a00"/><text x="98" y="110">done in part / new numbers to check</text>
+<rect x="320" y="100" width="12" height="12" fill="#eeeef2" stroke="#8a8a96"/><text x="338" y="110">not done</text>
+<rect x="420" y="100" width="12" height="12" fill="#fbe5e4" stroke="#c23a39"/><text x="438" y="110">next</text>
+</g></svg></div>
+
+<h3>Step by step</h3>
+<div class="tw"><table><tr><th>Step</th><th>Status</th><th>Result / data</th></tr>
+<tr><td>1 · Versions</td><td>✅</td><td>Drone: <code>ArduCopter V4.6.0-dev (1e001fa0)</code>, board MatekF405-TE. Your <code>~/ardupilot</code> is a development version too (<code>git describe</code> = <code>AP_Periph-1.5.0</code>), not the 4.4.4 this guide was first checked with</td></tr>
+<tr><td>2–4 · AirSim</td><td>✅</td><td>Built from source, Blocks packaged; first 5″ twin test on 31 Oct (old twin numbers, finding F1)</td></tr>
+<tr><td>5 · 5″ twin</td><td>✅ 8 Nov</td><td>8 Nov values in 5.3 and 5.4: <code>Q250_THRUST_N</code> 8.1, <code>Q250_MOTOR_KG</code> 0.070 (inertia fix), hover 0.149, your real gains. Check 5.5 passed: <code>throttle 15</code>, steady, climb 0.009 m/s</td></tr>
+<tr><td>5.7 · Twin impact test</td><td>✅ 8 Nov</td><td>36 flights, Round 1 PPO vs attitude-rule on the fixed twin: <b>36/36 recovered</b>, 0 below 5 m, worst 23.1 m (finding F12)</td></tr>
+<tr><td>6–7 · Build</td><td>✅</td><td>Built and flying. Different from the plan: GPS <b>Radiolink SE100</b> (u-blox M8 inside: HW 00080000, ROM CORE 3.01), props <b>YSIDO 5045 3-blade</b>, <b>Raspberry Pi Zero 2 W</b> (aarch64, Debian 12, Python 3.11), battery 4S <b>1500 mAh</b></td></tr>
+<tr><td>8–9 · Firmware</td><td>✅</td><td>4.6.0-dev with optical flow (FLOW_TYPE exists)</td></tr>
+<tr><td>10 · Set-up</td><td>✅</td><td>Your 7 Nov parameter file; 10.2 now lists your real values (switches, EKF sets, arming, failsafes)</td></tr>
+<tr><td>11 · Hover</td><td>✅</td><td><code>MOT_THST_HOVER</code> <b>0.149</b> (hover logs: outdoor 0.141–0.149, indoor 0.150 / 0.158)</td></tr>
+<tr><td>12 · Notch</td><td>⏳</td><td>Not done (<code>INS_HNTCH_ENABLE 0</code>). Flight is stable without it</td></tr>
+<tr><td>13 · AutoTune</td><td>⚠️ roll only</td><td>Roll: <code>RAT P 0.065, I 0.065, D 0.0018, ANG_P 23.457, ACCEL_MAX 282459</code>. Pitch = copied from roll. Yaw = default. Stable on the real drone: you chose to stop here</td></tr>
+<tr><td>14 · Loiter</td><td>✅</td><td>Position hold flown on the MTF-01 (indoor, AltHold take-off then hold) and on GPS (outdoor)</td></tr>
+<tr><td>15 · Measure</td><td>✅</td><td>A 544.5 g · B 250 mm · C 33 g (spec) · D 74 × 33 × 70 mm. <b>But</b> the inertia from these is too low by about 2× (finding F5)</td></tr>
+<tr><td>SITL throw test</td><td>✅</td><td>8 Nov, 27/27 caught. Full result in the <b>Throw &amp; Fly 5-inch guide</b> (separate artifact)</td></tr>
+<tr><td>17 · Next</td><td>▶</td><td>Hardware checks → <code>throw_real.py</code> → real throws (step 17)</td></tr>
+</table></div>
+
+<h3>Findings so far</h3>
+<div class="tw"><table><tr><th>#</th><th>Date</th><th>Finding</th><th>Numbers</th><th>What it changes</th></tr>
+<tr><td>F1</td><td>31 Oct</td><td>Old PPO on the 5″ twin, no retraining (54 flights, old twin numbers: thrust 6.68 N, hover 0.2, stand-in gains)</td><td>Height lost overall: PPO 2.9 m · attitude-rule 2.9 m · spin-stop-fast 4.8 m. Flip HARD: PPO 11.0 vs rule 9.7 m. PPO ends 2–8 m <b>above</b> the start (over-climb)</td><td>Superseded by <b>F12</b> (rerun on the fixed twin, 8 Nov). Kept as the "before the fix" record</td></tr>
+<tr><td>F2</td><td>6–7 Nov</td><td>Hover value</td><td>Learned and saved: 0.149 (outdoors). Measured from the hover logs: outdoor 0.141–0.149, indoor 0.150 / 0.158. Indoors the rangefinder's surface tracking (<code>SURFTRAK_MODE 1</code>, default) keeps the target climb rate from being exactly 0, so the saved value does not learn there</td><td>Use 0.149 everywhere (Pi scripts, twin, SITL). You kept <code>SURFTRAK_MODE</code> at default</td></tr>
+<tr><td>F3</td><td>31 Oct</td><td>Twin thrust calibration</td><td>With 6.68 N the twin hovered at 18 %, not the 20 % the formula gave</td><td><code>Q250_THRUST_N</code> = 6.68 × 0.18 ÷ 0.149 = <b>8.1</b> (calibrated, not formula)</td></tr>
+<tr><td>F4</td><td>7 Nov</td><td>AutoTune lessons</td><td>Roll alone used a full pack. Gains save only on disarm while still in AutoTune, and only for finished axes. A battery failsafe switches to LAND, which leaves AutoTune: that tune was lost</td><td>One axis per battery (13). You entered the roll gains by hand from the log</td></tr>
+<tr><td>F5</td><td>7 Nov</td><td>Inertia ≈ 2× the step-15 estimate</td><td>SITL with your real gains: 1× shook at 2.6 rad/s, 1.5× at 1.7 rad/s, <b>2× steady</b> (0.003 rad/s)</td><td>The step-15 box ignores plates, arms, Pi, GPS mast, wires. Twin fix: <code>Q250_MOTOR_KG</code> 0.070 (5.3)</td></tr>
+<tr><td>F6</td><td>8 Nov</td><td>SITL throw test (FlightGear, Round 1 PPO)</td><td>27/27 caught. Roll/pitch: rule 0.91–0.96 s, PPO 0.94–1.01 s, Throw mode 3.9 s (drift 6 m vs 29 m)</td><td>Script ≈ 4× faster than Throw mode. PPO = rule here (gap inside the spread)</td></tr>
+<tr><td>F7</td><td>7 Nov</td><td>EKF height after a source switch</td><td>1.5–2 m off in the 09:21 log</td><td>Throw height limits are measured from the throw spot, not the raw EKF height</td></tr>
+<tr><td>F8</td><td>6 Nov</td><td><code>AHRS_GPS_USE</code></td><td>Only affects the backup DCM attitude, not EKF3 (checked in the ArduPilot docs)</td><td>Stays 0</td></tr>
+<tr><td>F9</td><td>7 Nov</td><td>Arming indoors with <code>ARMING_CHECK 33032</code> (GPS lock + battery + rangefinder)</td><td>In AltHold (a non-GPS mode) the GPS-lock check is skipped while the fence is off</td><td>You can arm indoors without a GPS fix</td></tr>
+<tr><td>F10</td><td>all logs</td><td>Left-heavy</td><td>Left motors 36–50 PWM higher than right in every log</td><td>Balance check before throws (17)</td></tr>
+<tr><td>F12</td><td>8 Nov</td><td>Round 1 PPO on the <b>fixed</b> 5″ twin (5.7): 36 flights, PPO vs attitude-rule, same hits</td><td>36/36 recovered, 0 below 5 m, worst 23.1 m. Height lost: PPO 2.4 m · rule 2.7 m. Flip HARD loss: PPO 4.9 m vs rule 6.6 m (31 Oct: 11.0 vs 9.7). Spin: PPO stops the spin faster (0.84 vs 1.04 s) but climbs ≈ +3.6 m and drifts ≈ 3.6 m (rule 0.5 m / 0.6 m). Bird HARD: PPO slower (1.46 vs 0.83 s)</td><td>The F450-trained PPO works on the 5″ with no retraining and equals its teacher overall. Left gaps (spin climb/drift, bird HARD) are a few metres at 30 m with only 2 flights per case. Fine-tune decision after the real throws (17, row 7)</td></tr>
+<tr><td>F11</td><td>7 Nov</td><td>Battery went to 12.36 V</td><td>3.09 V per cell: below the 3.3 V floor</td><td>Check that pack for puffing before using it again</td></tr>
+</table></div>
+
+<!-- ================= PART 1 PC ================= -->
+<h2 id="p1"><span class="stage-tag t3">1</span>Note what you use now</h2>
+<div class="step s3"><div class="sh"><span class="num">1</span><span class="tt">Write down your current versions</span><span class="meta">so the new build matches the old one</span></div>
+<ul class="ck">
+<li><label><input type="checkbox"> Find your current <code>settings.json</code> (usually <code>Documents\AirSim\settings.json</code>). Copy it somewhere safe.</label></li>
+<li><label><input type="checkbox"> Write down which AirSim you use now: the <b>WindowsNoEditor</b> folder you double-click (its name, e.g. "Blocks" or another map, and the AirSim version if shown).</label></li>
+<li><label><input type="checkbox"> In WSL, check the ArduPilot version your simulator runs:</label></li>
+</ul>
+<div class="cmdbox"><pre class="cmd">cd ~/ardupilot
+
+grep THISFIRMWARE ArduCopter/version.h
+
+git log -1 --format=%cd</pre><button class="copy">Copy</button></div>
+<p><b>Expected:</b> a line like <code>#define THISFIRMWARE "ArduCopter V4.4.4"</code> and a date. The real drone must run <b>this exact version</b> (Part 3 builds it from this same folder).</p>
+<div class="note"><b>📌 Your result:</b> your <code>~/ardupilot</code> is a development version (<code>git describe</code> = <code>AP_Periph-1.5.0</code>), and the drone runs <code>ArduCopter V4.6.0-dev (1e001fa0)</code>. Same code on both = check that the commit matches: <code>git -C ~/ardupilot log -1 --format=%h</code> should print <code>1e001fa0</code> (or a later commit if you rebuilt the drone since). This dev version cannot load a SITL frame file from your home folder; see the Throw &amp; Fly guide (<code>@ROMFS</code>).</div>
+<div class="note"><b>📤 Send me:</b> the version line, the date, your AirSim version, and the <code>settings.json</code> file.<br><b>Where:</b> version line + date = the two lines the WSL command above prints (select, copy, paste as text). AirSim version = the name of your old WindowsNoEditor folder. File = <code>C:\Users\lukas\Documents\AirSim\settings.json</code> (attach it). <a href="#x0">Where and how to get it: step 16.0 →</a></div></div>
+
+<h2 id="p2"><span class="stage-tag t3">2</span>Install Unreal Engine and Visual Studio</h2>
+<div class="step s3"><div class="sh"><span class="num">2</span><span class="tt">Install the tools</span><span class="meta">skip anything already installed</span></div>
+<ul class="ck">
+<li><label><input type="checkbox"> Install the <b>Epic Games Launcher</b> (free account needed).</label></li>
+<li><label><input type="checkbox"> Launcher → <b>Unreal Engine</b> tab → <b>Library</b> → <b>+</b> → choose <b>4.27</b> → Install.</label></li>
+<li><label><input type="checkbox"> Click the small arrow next to Launch on 4.27 and <b>Set Current</b>.</label></li>
+<li><label><input type="checkbox"> Install <b>Visual Studio 2022</b> (Community is fine). Tick <b>Desktop development with C++</b>.</label></li>
+<li><label><input type="checkbox"> In the same installer, under <b>Individual components</b>, tick <b>Windows 10 SDK (10.0.19041)</b> and the newest <b>.NET Framework SDK</b>.</label></li>
+<li><label><input type="checkbox"> Restart the PC.</label></li>
+</ul></div>
+
+<h2 id="p3"><span class="stage-tag t3">3</span>Build AirSim</h2>
+<div class="step s3"><div class="sh"><span class="num">3</span><span class="tt">Clone and build</span><span class="meta">Windows Start menu → type <b>Developer Command Prompt for VS 2022</b> → open it normally (no Admin)</span></div>
+<div class="note"><b>What this is:</b> a black command window that comes with Visual Studio 2022 (not VS Code). It knows where the C++ compiler is. Type each command below and press Enter, one at a time.</div>
+<div class="warn"><b>Use <code>C:\AirSim</code>, not <code>C:\Program Files</code>.</b> Program Files is write-protected (every build and copy would need Admin), and its space can break build scripts. <code>C:\AirSim</code> needs no Admin. If you already built one in Program Files, leave it; this new one replaces it.</div>
+<div class="cmdbox"><pre class="cmd">cd C:\
+
+git clone https://github.com/Microsoft/AirSim.git
+
+cd C:\AirSim
+
+build.cmd</pre><button class="copy">Copy</button></div>
+<p><b>What happens:</b> it downloads and compiles AirSim (10–30 min). At the end it <b>copies the AirSim plugin into the Blocks project by itself</b>: nothing to copy by hand.</p>
+<div class="tw"><table><tr><th>You see</th><th>Do</th></tr>
+<tr class="hl"><td>Window returns to <code>C:\AirSim&gt;</code>, no line with "error"</td><td>✅ Step 4</td></tr>
+<tr><td>"git is not recognized"</td><td>Install Git for Windows, close and reopen the Developer Command Prompt</td></tr>
+<tr><td>Error about Windows SDK or MSBuild</td><td>Re-run the Visual Studio installer and add the components from step 2</td></tr>
+<tr><td>The last lines show <code>Cannot find path 'HKEY_CLASSES_ROOT\Unreal.ProjectFile\shell\rungenproj'</code> and <code>'/projectfiles' is not recognized</code></td><td>✅ <b>Harmless, ignore it.</b> It is the very last job of <code>build.cmd</code> (making a Visual Studio project file for Blocks), which <code>package.bat</code> does not need. AirSim and the plugin copy are already finished</td></tr></table></div>
+<div class="warn"><b>Never run <code>UnrealVersionSelector.exe -fileassociations</code></b> to "fix" that message. It registers Unreal in Windows, and from then on <code>build.cmd</code>'s last job starts the version selector, which <b>hangs</b> at <code>Generating files for Blocks.uproject</code> (seen on 28 Oct: 1 hour, no pop-up). If it was already done, see Troubleshooting.</div></div>
+
+<h2 id="p4"><span class="stage-tag t3">4</span>Make Blocks.exe and check it matches your old AirSim</h2>
+<div class="analogy"><b>Why:</b> today you double-click a ready-made AirSim (your "WindowsNoEditor" folder). Step 4.1 turns the new source build into the same kind of double-click program. Step 4.3 then runs one test you already have numbers for. Same numbers = the new AirSim behaves like the old one, so later differences come from the 5″ drone, not from the new build. Like baking your usual cake once in a new oven before trying a new recipe.</div>
+
+<div class="step s3"><div class="sh"><span class="num">4.1</span><span class="tt">Package Blocks into a double-click program</span><span class="meta">same Developer Command Prompt · 30–90 min the first time</span></div>
+<div class="cmdbox"><pre class="cmd">cd C:\AirSim\Unreal\Environments\Blocks
+
+package.bat C:\AirSimBuilds "" 4.27</pre><button class="copy">Copy</button></div>
+<p><code>C:\AirSimBuilds</code> = where the program goes · <code>""</code> = Unreal in its normal place · <code>4.27</code> = your Unreal version.</p>
+<div class="tw"><table><tr><th>You see</th><th>Do</th></tr>
+<tr class="hl"><td>"BUILD SUCCESSFUL", then a folder <code>C:\AirSimBuilds\Blocks</code> with <code>Blocks.exe</code> and <code>run.bat</code>. (Unreal also leaves a working copy in <code>C:\AirSim\Unreal\Environments\Blocks\Saved\StagedBuilds\WindowsNoEditor</code>, without <code>run.bat</code>; steps 4.1b and 4.2 use the <code>C:\AirSimBuilds\Blocks</code> one.)</td><td>✅ Step 4.1b</td></tr>
+<tr><td>"Unreal Engine build path … was not found"</td><td>Unreal is installed elsewhere: put its path in the quotes, e.g. <code>package.bat C:\AirSimBuilds "E:\Epic Games\UE_4.27\Engine\Build\BatchFiles" 4.27</code></td></tr></table></div></div>
+
+<div class="step s3"><div class="sh"><span class="num">4.1b</span><span class="tt">Make a start file with your window size</span><span class="meta">Notepad · 2 minutes · once</span></div>
+<p><code>package.bat</code> makes <code>run.bat</code>, which opens AirSim at its default size. Make your own start file next to it, so you choose the window size and repackaging never overwrites it.</p>
+<ul class="ck">
+<li><label><input type="checkbox"> Open <b>Notepad</b> and type this one line:</label></li>
+</ul>
+<div class="cmdbox"><pre class="cmd">start Blocks -windowed -ResX=640 -ResY=480</pre><button class="copy">Copy</button></div>
+<ul class="ck">
+<li><label><input type="checkbox"> File → <b>Save As</b> → go to the folder <code>C:\AirSimBuilds\Blocks</code> (the one with <code>Blocks.exe</code>).</label></li>
+<li><label><input type="checkbox"> "Save as type": choose <b>All files (*.*)</b>. File name: <code>run_small.bat</code>. Click Save.</label></li>
+<li><label><input type="checkbox"> Double-click <code>run_small.bat</code>: AirSim opens in a 640 × 480 window.</label></li>
+</ul>
+<div class="tw"><table><tr><th>Part of the line</th><th>Means</th><th>Change it to</th></tr>
+<tr><td><code>start Blocks</code></td><td>Starts <code>Blocks.exe</code> in this folder</td><td>Keep</td></tr>
+<tr><td><code>-windowed</code></td><td>A window, not full screen</td><td>Keep</td></tr>
+<tr><td><code>-ResX=640 -ResY=480</code></td><td>Window width × height in pixels</td><td><code>-ResX=1280 -ResY=720</code> for a bigger view</td></tr>
+<tr><td>(optional) <code>-WinX=0 -WinY=0</code></td><td>Opens the window at the top-left corner of the screen</td><td>Add at the end of the line</td></tr></table></div>
+<p><b>Tip:</b> a small window uses less graphics power, so long training runs stay smooth.</p></div>
+
+<div class="step s3"><div class="sh"><span class="num">4.2</span><span class="tt">Start the simulation: 3 windows, in this order</span><span class="meta">exactly like your Stage 1–3 work</span></div>
+<div class="tw"><table><tr><th>#</th><th>Window</th><th>Do</th><th>Wait until you see</th></tr>
+<tr><td>1</td><td><b>Windows</b> (File Explorer)</td><td>Double-click <code>C:\AirSimBuilds\Blocks\run_small.bat</code> (step 4.1b)</td><td>A grey world of blocks with the drone on the ground</td></tr>
+<tr><td>2</td><td><b>WSL</b> (Ubuntu terminal)</td><td>Start SITL from your GPS folder (commands below)</td><td>The lines in the table below</td></tr>
+<tr><td>3</td><td><b>PowerShell</b> in your <code>Stage_3</code> folder</td><td>Run the test (step 4.3)</td><td>The summary table</td></tr></table></div>
+<p><b>settings.json:</b> nothing to do. AirSim reads <code>Documents\AirSim\settings.json</code> by itself when it starts. It's the same file you always used (you saved a copy in step 1).</p>
+<p><b>WSL window:</b></p>
+<div class="cmdbox"><pre class="cmd">cd ~/sitl_gps
+
+sim_vehicle.py -v ArduCopter -f airsim-copter --console --map --sim-address=172.28.0.1 --out=127.0.0.1:14550</pre><button class="copy">Copy</button></div>
+<div class="tw"><table><tr><th>Line in the WSL window</th><th>Means</th></tr>
+<tr><td><code>Bind SITL sensor input at 172.28.0.1:9003</code></td><td>SITL found AirSim</td></tr>
+<tr><td><code>Received … parameters</code></td><td>MAVProxy talks to ArduPilot</td></tr>
+<tr><td><code>STABILIZE&gt;</code> prompt</td><td>SITL is running</td></tr>
+<tr><td><code>EKF3 IMU0 is using GPS</code></td><td>✅ Ready: go to step 4.3</td></tr></table></div>
+<p>No "Bind SITL" line? The Windows IP changed. In a second WSL window run <code>ip route | grep default</code> and use the IP shown in place of <code>172.28.0.1</code>.</p></div>
+
+<div class="step s3"><div class="sh"><span class="num">4.3</span><span class="tt">Run the known test and compare</span><span class="meta">PowerShell in Stage_3 · about 15 min</span></div>
+<div class="cmdbox"><pre class="cmd">py .\impact_check.py --repeats 2 --compare-recovery --modes spin-stop-fast attitude-rule rate-rule</pre><button class="copy">Copy</button></div>
+<p>Compare the <b>"Avg low"</b> numbers it prints with what you measured on 19 Oct (also in the header of <code>impact_check.py</code>):</p>
+<div class="tw"><table><tr><th>Recovery (19 Oct)</th><th>Flip EASY</th><th>MEDIUM</th><th>HARD</th></tr>
+<tr><td>attitude-rule</td><td>22.7</td><td>19.1</td><td>16.6</td></tr>
+<tr><td>spin-stop-fast</td><td>22.9</td><td>18.4</td><td>17.0</td></tr>
+<tr><td>rate-rule</td><td>19.9</td><td>16.2</td><td>12.9</td></tr></table></div>
+<div class="tw"><table><tr><th>Your new numbers</th><th>Means</th><th>Next</th></tr>
+<tr class="hl"><td>Within about ±2 m, nothing below 5 m</td><td>New AirSim = old AirSim</td><td>✅ Done with the PC until step 5</td></tr>
+<tr><td>Clearly different (e.g. 5 m lower, or failures)</td><td>Something differs between the builds</td><td>Send me the new CSV and your old AirSim version</td></tr></table></div>
+<p><b>Different world, same physics:</b> Blocks looks different from your old .exe, but the drone physics come from the same AirSim plugin, and at 30 m nothing in the world touches the drone. So the numbers should match.</p>
+<p><b>To stop:</b> wait for the script to finish → Ctrl+C in the WSL window → close the Blocks window.</p>
+<div class="note"><b>📤 Send me:</b> the summary table it printed, and <code>runs\impact_check\impact_check_&lt;date&gt;.csv</code>.<br><b>Where:</b> table = select it in the PowerShell window → right-click (copies) → paste as text. CSV = in your <code>Stage_3</code> folder under <code>runs\impact_check\</code>, the newest file, e.g. <code>impact_check_20261028_022810_steps.csv</code> (attach it). <a href="#x0">Where and how to get it: step 16.0 →</a></div></div>
+
+<h2 id="p5"><span class="stage-tag t3">5</span>Add the 5″ drone to AirSim (one code change, then numbers in settings.json)</h2>
+<div class="note"><b>How it works:</b> AirSim's drone physics are C++ code inside the <code>.exe</code>. We change <b>one file</b> once, so AirSim gets a second drone called <b>"Q250"</b> that reads its numbers (weight, size, thrust, motor delay) from <code>settings.json</code>. After that: new numbers = edit settings.json + restart AirSim, <b>no rebuild</b>. The F450 stays exactly as it was.</div>
+<div class="tw"><table><tr><th>Change</th><th>Rebuild AirSim?</th></tr>
+<tr><td>Install the Q250 code (5.1–5.2)</td><td>✅ Once</td></tr>
+<tr><td>Estimated numbers → your measured numbers</td><td>❌ No: edit <code>settings_Q250.json</code>, switch, restart</td></tr>
+<tr><td>Switch F450 ↔ 5-inch</td><td>❌ No: one command (5.3)</td></tr>
+<tr><td>Your AutoTune gains</td><td>❌ No: they go into SITL's parameter file (I prepare it)</td></tr></table></div>
+<div class="step s3"><div class="sh"><span class="num">5.1</span><span class="tt">Back up the original file and write the new one</span><span class="meta"><b>PowerShell</b> (normal, not Admin) · paste each box, press Enter</span></div>
+<p><b>① Point to the file and back it up</b> (only the first time; it never overwrites an existing backup):</p>
+<div class="cmdbox"><pre class="cmd">$f = &quot;C:\AirSim\AirLib\include\vehicles\multirotor\firmwares\arducopter\ArduCopterParams.hpp&quot;
+
+if (-not (Test-Path &quot;$f.original&quot;)) { Copy-Item $f &quot;$f.original&quot; }</pre><button class="copy">Copy</button></div>
+<p><b>② Write the new file</b> (one paste: the whole box, from <code>$code = @'</code> to the last line):</p>
+<div class="cmdbox"><pre class="cmd">$code = @&#x27;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+/*
+=========================================================================================
+ ArduCopterParams.hpp  -  AirSim + ArduCopter, with a second drone &quot;Q250&quot; (5-inch)
+=========================================================================================
+
+ 1. WHAT CHANGED (compared with the original AirSim file)
+ -----------------------------------------------------------------------------------------
+    | Part              | Original                    | This file                          |
+    |-------------------|-----------------------------|------------------------------------|
+    | setupParams()     | always the generic F450     | &quot;Model&quot;: &quot;Q250&quot; -&gt; 5-inch drone,   |
+    |                   |                             | anything else -&gt; generic F450      |
+    | setupFrameQ250()  | -                           | NEW: builds the 5-inch drone from  |
+    |                   |                             | the &quot;Parameters&quot; in settings.json  |
+    | F450 drone        | setupFrameGenericQuad()     | unchanged (same function, same     |
+    |                   |                             | numbers as all Stage 1-3 training) |
+
+ 2. HOW TO INSTALL  (5-inch guide, step 5)
+ -----------------------------------------------------------------------------------------
+    1) PowerShell (normal, not Admin): back up the original as ArduCopterParams.hpp.original
+       and write this file in its place (one paste, guide step 5.1).
+    2) Developer Command Prompt for VS 2022 (guide step 5.2):
+         cd C:\AirSim
+         build.cmd
+         cd C:\AirSim\Unreal\Environments\Blocks
+         package.bat C:\AirSimBuilds &quot;&quot; 4.27
+    To undo: copy ArduCopterParams.hpp.original back over ArduCopterParams.hpp, rebuild.
+
+ 3. HOW TO SELECT THE DRONE  (Documents\AirSim\settings.json, inside your vehicle)
+ -----------------------------------------------------------------------------------------
+    F450   : no &quot;Model&quot; line (AirSim&#x27;s default model name is &quot;Generic&quot;)
+    5-inch : &quot;Model&quot;: &quot;Q250&quot;,
+             &quot;Parameters&quot;: { &quot;Q250_MASS_KG&quot;: ..., &quot;Q250_ARM_M&quot;: ..., ... }   (keys below)
+
+ 4. THE 5-INCH NUMBERS  (read once when AirSim starts; a missing key uses the default)
+ -----------------------------------------------------------------------------------------
+    | Key              | Unit | Default | From your measurement                        |
+    |------------------|------|---------|----------------------------------------------|
+    | Q250_MASS_KG     | kg   | 0.55    | drone ready to fly (g) / 1000                |
+    | Q250_ARM_M       | m    | 0.125   | diagonal motor-to-motor (mm) / 2 / 1000      |
+    | Q250_MOTOR_KG    | kg   | 0.033   | one motor + prop + nut (g) / 1000            |
+    | Q250_PROP_D_M    | m    | 0.127   | prop diameter: 5 inch x 0.0254               |
+    | Q250_THRUST_N    | N    | 5.4     | max thrust of ONE motor:                     |
+    |                  |      |         | mass_kg x 9.81 / (4 x MOT_THST_HOVER)        |
+    | Q250_MOTOR_TC_S  | s    | 0.02    | motor delay (starting value; refined from    |
+    |                  |      |         | the AutoTune log)                            |
+    | Q250_BODY_X_M    | m    | 0.15    | centre block length, front-back (mm) / 1000  |
+    | Q250_BODY_Y_M    | m    | 0.05    | centre block width, left-right (mm) / 1000   |
+    | Q250_BODY_Z_M    | m    | 0.07    | centre block height, bottom-top (mm) / 1000  |
+
+    How AirSim uses them (same method as the F450 in MultiRotorParams.hpp):
+      - inertia = centre block (mass - 4 x motor) as a solid box + 4 motors as points at
+        the arm tips (computeInertiaMatrix)
+      - thrust of one motor = Q250_THRUST_N x motor command (0..1), so ArduPilot in SITL
+        keeps MOT_THST_EXPO 0 (as ArduPilot&#x27;s own airsim-quadX.parm)
+      - motor delay = first-order filter with time constant Q250_MOTOR_TC_S
+
+ 5. EXPECTED RESULT
+ -----------------------------------------------------------------------------------------
+    F450 (no &quot;Model&quot;): flies exactly as before.
+    Q250: climbs much faster than the F450, and the learned hover throttle
+          (MOT_THST_HOVER in MAVProxy, after ~1 min of hover) settles far lower than
+          the F450&#x27;s value under the same test.
+=========================================================================================
+*/
+
+#ifndef msr_airlib_vehicles_ArduCopter_hpp
+#define msr_airlib_vehicles_ArduCopter_hpp
+
+#include &quot;vehicles/multirotor/firmwares/arducopter/ArduCopterApi.hpp&quot;
+#include &quot;vehicles/multirotor/MultiRotorParams.hpp&quot;
+#include &quot;common/AirSimSettings.hpp&quot;
+#include &quot;sensors/SensorFactory.hpp&quot;
+#include &lt;cmath&gt;
+#include &lt;string&gt;
+
+namespace msr
+{
+namespace airlib
+{
+
+    class ArduCopterParams : public MultiRotorParams
+    {
+    public:
+        ArduCopterParams(const AirSimSettings::MavLinkVehicleSetting&amp; vehicle_setting, std::shared_ptr&lt;const SensorFactory&gt; sensor_factory)
+            : sensor_factory_(sensor_factory)
+        {
+            connection_info_ = getConnectionInfo(vehicle_setting);
+        }
+
+        virtual ~ArduCopterParams() = default;
+
+        virtual std::unique_ptr&lt;MultirotorApiBase&gt; createMultirotorApi() override
+        {
+            return std::unique_ptr&lt;MultirotorApiBase&gt;(new ArduCopterApi(this, connection_info_));
+        }
+
+    protected:
+        virtual void setupParams() override
+        {
+            auto&amp; params = getParams();
+
+            // &quot;Model&quot; in settings.json selects the drone (default model name is &quot;Generic&quot;)
+            if (connection_info_.model == &quot;Q250&quot;) {
+                setupFrameQ250(params); // 5-inch drone, numbers from settings.json &quot;Parameters&quot;
+            }
+            else {
+                setupFrameGenericQuad(params); // F450, unchanged (all Stage 1-3 training)
+            }
+        }
+
+        // 5-inch drone. Same structure as setupFrameGenericQuad() in MultiRotorParams.hpp,
+        // but every number comes from settings.json &quot;Parameters&quot; (or the default below).
+        void setupFrameQ250(Params&amp; params)
+        {
+            params.rotor_count = 4;
+            std::vector&lt;real_T&gt; arm_lengths(params.rotor_count, q250Value(&quot;Q250_ARM_M&quot;, 0.125f));
+
+            params.mass = q250Value(&quot;Q250_MASS_KG&quot;, 0.55f);
+            real_T motor_assembly_weight = q250Value(&quot;Q250_MOTOR_KG&quot;, 0.033f);
+            real_T box_mass = params.mass - params.rotor_count * motor_assembly_weight;
+
+            // rotor: prop size, motor delay, and max thrust of one motor
+            params.rotor_params.propeller_diameter = q250Value(&quot;Q250_PROP_D_M&quot;, 0.127f);
+            params.rotor_params.control_signal_filter_tc = q250Value(&quot;Q250_MOTOR_TC_S&quot;, 0.02f);
+            // choose max_rpm so that calculateMaxThrust() gives exactly Q250_THRUST_N
+            // (thrust = C_T * air_density * (rpm/60)^2 * D^4, AirSim&#x27;s own formula in RotorParams.hpp)
+            const real_T thrust_n = q250Value(&quot;Q250_THRUST_N&quot;, 5.4f);
+            const real_T d4 = static_cast&lt;real_T&gt;(std::pow(params.rotor_params.propeller_diameter, 4));
+            const real_T rev_per_s = std::sqrt(thrust_n / (params.rotor_params.C_T * params.rotor_params.air_density * d4));
+            params.rotor_params.max_rpm = rev_per_s * 60.0f;
+            params.rotor_params.calculateMaxThrust();
+
+            // centre block (stack + battery + Pi) as a box
+            params.body_box.x() = q250Value(&quot;Q250_BODY_X_M&quot;, 0.15f);
+            params.body_box.y() = q250Value(&quot;Q250_BODY_Y_M&quot;, 0.05f);
+            params.body_box.z() = q250Value(&quot;Q250_BODY_Z_M&quot;, 0.07f);
+            real_T rotor_z = 2.5f / 100; // same as the F450
+
+            initializeRotorQuadX(params.rotor_poses, params.rotor_count, arm_lengths.data(), rotor_z);
+            computeInertiaMatrix(params.inertia, params.body_box, params.rotor_poses, box_mass, motor_assembly_weight);
+        }
+
+        // value from settings.json &quot;Parameters&quot;, or the default if the key is missing
+        real_T q250Value(const std::string&amp; key, real_T default_value) const
+        {
+            auto it = connection_info_.params.find(key);
+            return (it != connection_info_.params.end()) ? static_cast&lt;real_T&gt;(it-&gt;second) : default_value;
+        }
+
+        virtual const SensorFactory* getSensorFactory() const override
+        {
+            return sensor_factory_.get();
+        }
+
+        static const AirSimSettings::MavLinkConnectionInfo&amp; getConnectionInfo(const AirSimSettings::MavLinkVehicleSetting&amp; vehicle_setting)
+        {
+            return vehicle_setting.connection_info;
+        }
+
+    private:
+        AirSimSettings::MavLinkConnectionInfo connection_info_;
+        std::shared_ptr&lt;const SensorFactory&gt; sensor_factory_;
+    };
+}
+} //namespace
+#endif
+&#x27;@
+
+Set-Content -Path $f -Value $code -Encoding ASCII</pre><button class="copy">Copy</button></div>
+<p><b>③ Check it worked:</b></p>
+<div class="cmdbox"><pre class="cmd">Select-String -Path $f -Pattern &quot;setupFrameQ250&quot;</pre><button class="copy">Copy</button></div>
+<div class="tw"><table><tr><th>You see</th><th>Means</th></tr>
+<tr class="hl"><td>A few lines containing <code>setupFrameQ250</code></td><td>✅ New file in place, original saved as <code>ArduCopterParams.hpp.original</code></td></tr>
+<tr><td>Nothing printed</td><td>The write didn't happen: run ① and ② again in the same PowerShell window (<code>$f</code> must be set)</td></tr>
+<tr><td>"Cannot find path"</td><td>AirSim isn't in <code>C:\AirSim</code>: do steps 3–4 first</td></tr></table></div>
+<p><b>To undo</b> (back to the original AirSim), in PowerShell after ①, then rebuild (5.2):</p>
+<div class="cmdbox"><pre class="cmd">Copy-Item &quot;$f.original&quot; $f -Force</pre><button class="copy">Copy</button></div>
+<details><summary>What the new code does (for the thesis method section)</summary>
+<div class="tw"><table><tr><th>Part</th><th>Original AirSim</th><th>New file</th></tr>
+<tr><td><code>setupParams()</code></td><td>Always the generic F450 ("Only Generic for now")</td><td><code>"Model": "Q250"</code> → <code>setupFrameQ250()</code>; anything else → the F450, unchanged</td></tr>
+<tr><td><code>setupFrameQ250()</code></td><td>—</td><td>Same structure as AirSim's F450 function; every number read from settings.json <code>"Parameters"</code> (default used if a key is missing)</td></tr>
+<tr><td>Max thrust</td><td>F450: 4.18 N per motor</td><td>Sets <code>max_rpm</code> so AirSim's own thrust formula gives exactly <code>Q250_THRUST_N</code></td></tr>
+<tr><td>Inertia</td><td>Box + 4 motors (AirSim's method)</td><td>Same method, with your block size, motor weight and arm length</td></tr>
+<tr><td>Motor delay</td><td>0.005 s</td><td><code>Q250_MOTOR_TC_S</code></td></tr></table></div></details></div>
+<div class="step s3"><div class="sh"><span class="num">5.2</span><span class="tt">Rebuild once</span><span class="meta"><b>Developer Command Prompt for VS 2022</b> · ~30–60 min</span></div>
+<div class="cmdbox"><pre class="cmd">cd C:\AirSim
+
+build.cmd
+
+cd C:\AirSim\Unreal\Environments\Blocks
+
+package.bat C:\AirSimBuilds &quot;&quot; 4.27</pre><button class="copy">Copy</button></div>
+<p><b>Expected:</b> same messages as steps 3 and 4.1. Your <code>run_small.bat</code> stays.</p></div>
+<div class="step s3"><div class="sh"><span class="num">5.3</span><span class="tt">Make two settings files: F450 and 5-inch</span><span class="meta"><b>PowerShell</b> · once</span></div>
+<p>Your current <code>settings.json</code> stays as the F450 file. The 5-inch file is the same, plus two items inside <code>"Copter"</code>: <code>"Model": "Q250"</code> and <code>"Parameters"</code>. The numbers below are <b>starting estimates</b>; you replace them with yours after step 16.</p>
+<p><b>① Folder, and back up your current file as the F450 file:</b></p>
+<div class="cmdbox"><pre class="cmd">$d = &quot;$env:USERPROFILE\Documents\AirSim&quot;
+
+if (-not (Test-Path &quot;$d\settings_F450.json&quot;)) { Copy-Item &quot;$d\settings.json&quot; &quot;$d\settings_F450.json&quot; }</pre><button class="copy">Copy</button></div>
+<p><b>② Write the 5-inch file</b> (your exact settings + the two items):</p>
+<div class="cmdbox"><pre class="cmd">$q250 = @&#x27;
+{
+  &quot;SettingsVersion&quot;: 1.2,
+  &quot;SimMode&quot;: &quot;Multirotor&quot;,
+  &quot;Vehicles&quot;: {
+    &quot;Copter&quot;: {
+      &quot;VehicleType&quot;: &quot;ArduCopter&quot;,
+      &quot;UseSerial&quot;: false,
+      &quot;LocalHostIp&quot;: &quot;172.28.0.1&quot;,
+      &quot;UdpIp&quot;: &quot;172.28.15.216&quot;,
+      &quot;UdpPort&quot;: 9003,
+      &quot;ControlPort&quot;: 9002,
+      &quot;X&quot;: 0, &quot;Y&quot;: 0, &quot;Z&quot;: 0,
+      &quot;Model&quot;: &quot;Q250&quot;,
+      &quot;Parameters&quot;: {
+        &quot;Q250_MASS_KG&quot;: 0.5445,
+        &quot;Q250_ARM_M&quot;: 0.125,
+        &quot;Q250_MOTOR_KG&quot;: 0.070,
+        &quot;Q250_PROP_D_M&quot;: 0.127,
+        &quot;Q250_THRUST_N&quot;: 8.1,
+        &quot;Q250_MOTOR_TC_S&quot;: 0.02,
+        &quot;Q250_BODY_X_M&quot;: 0.074,
+        &quot;Q250_BODY_Y_M&quot;: 0.033,
+        &quot;Q250_BODY_Z_M&quot;: 0.07
+      },
+      &quot;Sensors&quot;: {
+        &quot;Imu&quot;:          { &quot;SensorType&quot;: 2, &quot;Enabled&quot;: true },
+        &quot;Gps&quot;:          { &quot;SensorType&quot;: 3, &quot;Enabled&quot;: true },
+        &quot;Barometer&quot;:    { &quot;SensorType&quot;: 1, &quot;Enabled&quot;: true },
+        &quot;Magnetometer&quot;: { &quot;SensorType&quot;: 4, &quot;Enabled&quot;: true },
+        &quot;Distance1&quot;: {
+          &quot;SensorType&quot;: 5,
+          &quot;Enabled&quot;: true,
+          &quot;Yaw&quot;: 0, &quot;Pitch&quot;: -90, &quot;Roll&quot;: 0,
+          &quot;MinDistance&quot;: 0.2,
+          &quot;MaxDistance&quot;: 10,
+          &quot;DrawDebugPoints&quot;: true,
+          &quot;ExternalController&quot;: true
+        }
+      }
+    }
+  }
+}
+&#x27;@
+
+Set-Content -Path &quot;$d\settings_Q250.json&quot; -Value $q250 -Encoding ASCII</pre><button class="copy">Copy</button></div>
+<div class="note"><b>Why <code>&quot;Z&quot;: 0</code>:</b> X, Y, Z are measured from the map's <b>PlayerStart</b> in NED (North-East-<b>Down</b>), so <b>positive Z = down</b>. Your old <code>&quot;Z&quot;: 1.5</code> spawned the drone 1.5 m <b>under</b> the Blocks floor (invisible, "Collision with Ground_2"). <code>0</code> puts it on the floor; <code>-1</code> would drop it in from 1 m up. Use <code>0</code> in <code>settings.json</code> and <code>settings_F450.json</code> too. It does not change the flight results: the scripts take off to the test height themselves.</div>
+<p><b>③ Switch drones</b> (paste one, then restart AirSim):</p>
+<p>5-inch:</p>
+<div class="cmdbox"><pre class="cmd">Copy-Item &quot;$env:USERPROFILE\Documents\AirSim\settings_Q250.json&quot; &quot;$env:USERPROFILE\Documents\AirSim\settings.json&quot; -Force</pre><button class="copy">Copy</button></div>
+<p>F450 (all your past training):</p>
+<div class="cmdbox"><pre class="cmd">Copy-Item &quot;$env:USERPROFILE\Documents\AirSim\settings_F450.json&quot; &quot;$env:USERPROFILE\Documents\AirSim\settings.json&quot; -Force</pre><button class="copy">Copy</button></div>
+<div class="note"><b>The file above holds YOUR drone (measured 30 Oct – 8 Nov 2026).</b> Two numbers changed on 8 Nov: <code>Q250_THRUST_N</code> 6.68 → <b>8.1</b> and <code>Q250_MOTOR_KG</code> 0.033 → <b>0.070</b> (see the table). Already have the file? Open <code>Documents\AirSim\settings_Q250.json</code> in Notepad, change only those two numbers, save, run the 5-inch switch command below, restart AirSim. The example drone (550 g, 150 × 50 × 70 mm, <code>MOT_THST_HOVER</code> 0.25) is only the default inside <code>ArduCopterParams.hpp</code> and the worked example in steps 15–16.</div>
+<div class="tw"><table><tr><th>Key</th><th>Unit</th><th>Comes from (step 15)</th><th>Formula</th><th>Example (code default)</th><th>YOUR drone</th></tr>
+<tr><td><code>Q250_MASS_KG</code></td><td>kg</td><td>A · drone ready to fly</td><td>grams ÷ 1000</td><td>0.55</td><td><b>0.5445</b> (544.5 g, weighed)</td></tr>
+<tr><td><code>Q250_ARM_M</code></td><td>m</td><td>B · diagonal</td><td>mm ÷ 2 ÷ 1000</td><td>0.125</td><td><b>0.125</b> (250 mm, measured)</td></tr>
+<tr><td><code>Q250_MOTOR_KG</code></td><td>kg</td><td>C · motor + prop + nut</td><td>grams ÷ 1000</td><td>0.033</td><td><b>0.070</b> (8 Nov). Real part: 0.033 (HSKRC 2205 26 g + YSIDO 5045 3-blade 5.7 g + nut 1.5 g). 0.070 is an <b>equivalent</b> value: it moves the arm, plate and wire weight the box leaves out to the arm tips, so the inertia comes out ≈ 2× (finding F5). Total mass stays 544.5 g</td></tr>
+<tr><td><code>Q250_PROP_D_M</code></td><td>m</td><td>Prop size (5045 = 5 inch)</td><td>5 × 0.0254</td><td>0.127</td><td><b>0.127</b></td></tr>
+<tr><td><code>Q250_THRUST_N</code></td><td>N</td><td>A + <code>MOT_THST_HOVER</code> (step 11)</td><td>mass_kg × 9.81 ÷ (4 × MOT_THST_HOVER)</td><td>5.4</td><td><b>8.1</b> (8 Nov, calibrated): with 6.68 N the twin hovered at 18 %, so 6.68 × 0.18 ÷ 0.149 = 8.1 makes it hover at your real 0.149 (finding F3). Thrust-to-weight ≈ 6</td></tr>
+<tr><td><code>Q250_MOTOR_TC_S</code></td><td>s</td><td>Motor delay, from your AutoTune log (I measure it)</td><td>—</td><td>0.02</td><td>0.02 (estimate until the AutoTune log)</td></tr>
+<tr><td><code>Q250_BODY_X_M</code> / <code>_Y_M</code> / <code>_Z_M</code></td><td>m</td><td>D · centre block L / W / H</td><td>mm ÷ 1000</td><td>0.15 / 0.05 / 0.07</td><td><b>0.074 / 0.033 / 0.07</b> (battery 74 × 33 mm is the widest part; 70 mm bottom plate to battery top)</td></tr></table></div>
+<p>With these numbers AirSim's 5-inch has roll / pitch / yaw inertia ≈ <b>0.00249 / 0.00259 / 0.00452 kg·m²</b> (F450: 0.0067 / 0.0080 / 0.0143). That matches the SITL frame that flies steady with your real gains (0.0025 / 0.0028 / 0.0046, Throw &amp; Fly guide). With the old 0.033 it was 0.00132 / 0.00147 / 0.00229: half, and the real gains make that one shake (finding F5).</p>
+<div class="tw"><table><tr><th>After the change, take off in the twin (5.5)</th><th>Means</th><th>Do</th></tr>
+<tr class="hl"><td>Steady hover, throttle ≈ 15 %</td><td>✅ Twin = your drone (thrust and inertia). <b>Your result 8 Nov: throttle 15, steady</b></td><td>Impact test (5.7)</td></tr>
+<tr><td>Fast shaking (buzz, roll/pitch rates 1–3 rad/s)</td><td>Inertia still too low for the real gains</td><td>Send me the run output: next value 0.085</td></tr>
+<tr><td>Throttle ≈ 18 %</td><td>The old 6.68 is still in the file</td><td>Check the file, restart AirSim</td></tr></table></div>
+
+<div class="warn"><b>WSL IPs:</b> <code>LocalHostIp</code> and <code>UdpIp</code> are copied from your current file. If WSL's IP changes, fix them in <b>both</b> files.</div></div>
+<div class="step s3"><div class="sh"><span class="num">5.4</span><span class="tt">One SITL folder per drone</span><span class="meta">WSL · once</span></div>
+<p>SITL keeps all its parameters (gains, <code>MOT_THST_HOVER</code>, …) in a file <code>eeprom.bin</code> in the folder you start it from. One folder per drone = one parameter memory per drone, so the 5-inch never changes your F450 training settings. Like one notebook per drone.</p>
+<div class="tw"><table><tr><th>Folder</th><th>Drone</th><th>AirSim settings</th><th>Use</th></tr>
+<tr class="hl"><td><code>~/sitl_gps</code></td><td>F450</td><td><code>settings_F450.json</code></td><td>Stage 1–3 training: <b>do not change anything here</b></td></tr>
+<tr><td><code>~/sitl_q250</code></td><td>5-inch</td><td><code>settings_Q250.json</code></td><td>5-inch tests and the fine-tune</td></tr>
+<tr><td><code>~/sitl_f450</code></td><td>F450</td><td><code>settings_F450.json</code></td><td>F450 tests (e.g. learning <code>MOT_THST_HOVER</code>) without touching <code>~/sitl_gps</code></td></tr>
+<tr><td><code>~/sitl_f450_gazebo</code></td><td>F450</td><td>— (Gazebo)</td><td>Gazebo tests (renamed from <code>~/sitl_f450</code> on 28 Oct)</td></tr></table></div>
+<p><b>Always the matching pair:</b> AirSim settings and SITL folder of the same drone. The wrong folder gives the drone the other one's parameters.</p>
+<p><b>① Make the folders</b> (WSL):</p>
+<div class="cmdbox"><pre class="cmd">mkdir -p ~/sitl_q250
+
+mkdir -p ~/sitl_f450</pre><button class="copy">Copy</button></div>
+<p><b>② Start SITL from the drone's folder</b> (after switching settings with 5.3 ③ and starting <code>run_small.bat</code>). 5-inch:</p>
+<div class="cmdbox"><pre class="cmd">cd ~/sitl_q250
+
+sim_vehicle.py -v ArduCopter -f airsim-copter --console --map --sim-address=172.28.0.1 --out=127.0.0.1:14550</pre><button class="copy">Copy</button></div>
+<p>F450 test: the same, with <code>cd ~/sitl_f450</code>.</p>
+<p><b>③ First start of a new folder only:</b> a new folder starts with ArduPilot's AirSim defaults, which ask for a 300 Hz loop. AirSim on this PC gives about 222 Hz, so arming fails with <code>PreArm: Main loop slow (222Hz &lt; 300Hz)</code>. Set the same two values as your training folder, then reboot SITL. In MAVProxy:</p>
+<div class="cmdbox"><pre class="cmd">param set SCHED_LOOP_RATE 200
+
+param set ARMING_CHECK 0
+
+reboot</pre><button class="copy">Copy</button></div>
+<p><b>④ 5-inch only, once: load the 5-inch simulator parameters <code>q250_sim.parm</code>.</b> They make the simulator's ArduPilot match your real drone. In WSL, create the file (one paste, the whole box):</p>
+<div class="cmdbox"><pre class="cmd">cat &gt; ~/sitl_q250/q250_sim.parm &lt;&lt; &#x27;EOF&#x27;
+# 5-inch sim Q250 - simulator ArduPilot parameters (SITL in ~/sitl_q250 only, never ~/sitl_gps)
+# Real drone values (7 Nov 2026, firmware 4.6.0-dev): 544.5 g, MOT_THST_HOVER 0.149 (learned outdoors)
+# Rate/angle gains = the REAL drone's: roll = AutoTune (7 Nov), pitch = copied from roll, yaw = default
+SCHED_LOOP_RATE 200
+ARMING_CHECK 0
+MOT_SPIN_ARM 0
+MOT_SPIN_MIN 0
+MOT_SPIN_MAX 1
+MOT_THST_HOVER 0.149
+MOT_HOVER_LEARN 0
+ATC_RAT_RLL_P 0.065
+ATC_RAT_RLL_I 0.065
+ATC_RAT_RLL_D 0.0018
+ATC_ANG_RLL_P 23.457
+ATC_ACCEL_R_MAX 282459
+ATC_RAT_PIT_P 0.065
+ATC_RAT_PIT_I 0.065
+ATC_RAT_PIT_D 0.0018
+ATC_ANG_PIT_P 23.457
+ATC_ACCEL_P_MAX 282459
+EOF</pre><button class="copy">Copy</button></div>
+<p>Then in MAVProxy (SITL started from <code>~/sitl_q250</code>):</p>
+<div class="cmdbox"><pre class="cmd">param load q250_sim.parm
+
+reboot</pre><button class="copy">Copy</button></div>
+<div class="tw"><table><tr><th>Parameter</th><th>Value</th><th>Why</th></tr>
+<tr><td><code>SCHED_LOOP_RATE</code> / <code>ARMING_CHECK</code></td><td>200 / 0</td><td>Same as your training folder (③)</td></tr>
+<tr><td><code>MOT_SPIN_MIN</code> / <code>MOT_SPIN_ARM</code> / <code>MOT_SPIN_MAX</code></td><td>0 / 0 / 1</td><td>AirSim's thrust = motor signal × max thrust (no offset). With these, the simulator's throttle is on the <b>same scale</b> as the real drone's <code>MOT_THST_HOVER</code> (without them the 5-inch hovers at 11 % and learning stops at the floor 0.125, see 5.5–5.6)</td></tr>
+<tr><td><code>MOT_THST_HOVER</code> / <code>MOT_HOVER_LEARN</code></td><td>0.149 / 0</td><td>Your real learned hover value (8 Nov), fixed. The PPO's thrust is action × this value, so it must mean the same as on the real drone</td></tr>
+<tr><td><code>ATC_RAT_RLL/PIT</code> P / I / D · <code>ATC_ANG_RLL/PIT_P</code> · <code>ATC_ACCEL_R/P_MAX</code></td><td>0.065 / 0.065 / 0.0018 · 23.457 · 282459</td><td><b>Your real drone's gains</b> (roll AutoTune 7 Nov, pitch = roll). Same gains in both = ArduPilot behaves the same in both. Yaw stays default in both. (Until 7 Nov this file had stand-in gains 0.05 / 0.05 / 0.0006.)</td></tr></table></div>
+<div class="tw"><table><tr><th>You see (after take-off)</th><th>Do</th></tr>
+<tr class="hl"><td>Steady take-off and hover</td><td>✅ Keep these</td></tr>
+<tr><td>Fast wobble</td><td>Twin inertia too low for the real gains: check <code>Q250_MOTOR_KG</code> is 0.070 (5.3), not 0.033. <b>Do not lower the gains</b>: they must stay the real drone's</td></tr></table></div>
+<p>These are your <b>real</b> gains now. If you AutoTune pitch or yaw later, copy the new values in here too. After loading new gains, delete <code>models\nominal_gains.json</code> in <code>Q250_Airsim\Stage_3</code> if it exists (only a fine-tune with gain randomization writes it; the 5.7 test does not use it). Optional thesis check: run AutoTune in the simulator too; sim gains close to the real ones = the twin matches.</p></div>
+
+<div class="step s3"><div class="sh"><span class="num">5.5</span><span class="tt">Check AirSim really flies the 5-inch: live throttle</span><span class="meta">MAVProxy · 5 min per drone</span></div>
+<p>The throttle ArduPilot is using right now (<code>VFR_HUD</code>) shows the difference at once, without any learning. 5-inch in <code>~/sitl_q250</code>, then F450 in <code>~/sitl_f450</code>:</p>
+<div class="cmdbox"><pre class="cmd">mode guided
+
+arm throttle
+
+takeoff 10</pre><button class="copy">Copy</button></div>
+<p>After about 20 s at 10 m:</p>
+<div class="cmdbox"><pre class="cmd">status VFR_HUD</pre><button class="copy">Copy</button></div>
+<div class="tw"><table><tr><th><code>throttle</code> in the VFR_HUD line</th><th>Means</th></tr>
+<tr class="hl"><td>F450 about <b>51</b>, 5-inch about <b>15</b> with <code>q250_sim.parm</code> loaded and <code>Q250_THRUST_N</code> 8.1 (= your real hover 0.149)</td><td>✅ AirSim is flying YOUR 5-inch, on the same throttle scale as the real drone</td></tr>
+<tr><td>5-inch about <b>11</b> (measured 28 Oct, before <code>q250_sim.parm</code>)</td><td>Flying the 5-inch, but <code>MOT_SPIN_MIN</code> is still 0.15: load <code>q250_sim.parm</code> (5.4 ④)</td></tr>
+<tr><td>5-inch about <b>18</b></td><td>Thrust still 6.68 (measured 31 Oct): set 8.1 in 5.3</td></tr>
+<tr><td>Both about the same</td><td><code>settings.json</code> is still the F450 one, or the old <code>.exe</code> is running: check 5.3 ③ and that 5.2 finished</td></tr>
+<tr><td>AirSim shows a settings error at start</td><td>A comma or bracket is wrong: write the file again with 5.3 ②</td></tr></table></div>
+<p><b>Why 51 and 11:</b> F450 needs 1.0 kg × 9.81 ÷ (4 × 4.18 N) = 59 % of AirSim's motor signal; 5-inch 0.55 × 9.81 ÷ (4 × 5.4 N) = 25 %. ArduPilot's throttle starts at <code>MOT_SPIN_MIN</code> 0.15, so (0.59 − 0.15) ÷ 0.8 ≈ 55 % and (0.25 − 0.15) ÷ 0.8 ≈ 12 %. With <code>q250_sim.parm</code> (<code>MOT_SPIN_MIN 0</code>, <code>MAX 1</code>) there is no offset: the formula gives 0.5445 × 9.81 ÷ (4 × 8.1 N) = 16 %; the twin measured 18 % where the formula said 20 %, so expect ≈ 15 %.</p></div>
+
+<div class="step s3"><div class="sh"><span class="num">5.6</span><span class="tt">Learn <code>MOT_THST_HOVER</code> in the simulator</span><span class="meta">MAVProxy · the same procedure as on the real drone (step 11)</span></div>
+<div class="note"><b>How ArduPilot learns it</b> (Copter 4.4.4, <code>update_throttle_hover</code>): only while hovering in a mode with automatic height hold and the desired climb speed <b>exactly 0</b>: AltHold, Loiter, PosHold with the throttle stick centred. <b>Not in Stabilize</b> (manual throttle) and <b>in practice not in Guided</b> (the position controller always asks for a tiny climb speed, never exactly 0). It moves slowly (10-second time constant: 10 s ≈ 63 %, 30 s ≈ 95 %, 60 s ≈ 99.8 % of the way) and is <b>saved at disarm</b>. Like a notebook: written on a whiteboard while flying, copied into the notebook at disarm.</div>
+<div class="warn"><b>In <code>~/sitl_q250</code> with <code>q250_sim.parm</code> loaded, nothing is learned on purpose</b> (<code>MOT_HOVER_LEARN 0</code>, hover fixed at your real 0.149). The procedure below is how it was learned on 28 Oct and still works in <code>~/sitl_f450</code>; it is the same procedure as on the real drone (step 11).</div>
+<div class="tw"><table><tr><th>Command</th><th>Reads</th><th>Use</th></tr>
+<tr><td><code>param show MOT_THST_HOVER</code></td><td>MAVProxy's copy, made when SITL started</td><td>❌ Shows the old value</td></tr>
+<tr class="hl"><td><code>param fetch MOT_THST_HOVER</code></td><td>ArduPilot's current value</td><td>✅ Use this</td></tr></table></div>
+<p><b>① Note the start value</b> (a new folder shows <code>0.4610000</code>):</p>
+<div class="cmdbox"><pre class="cmd">param fetch MOT_THST_HOVER</pre><button class="copy">Copy</button></div>
+<p><b>② Take off in Stabilize with the simulated throttle stick</b> (<code>rc 3</code> = throttle channel, 1000 = bottom, 2000 = top):</p>
+<div class="cmdbox"><pre class="cmd">stabilize
+
+arm throttle
+
+rc 3 1500</pre><button class="copy">Copy</button></div>
+<p>5-inch: 1500 (it only needs ~11 %, so it climbs fast). F450: <code>rc 3 1600</code>. Let it climb a few metres.</p>
+<p><b>③ Switch to a learning mode and centre the stick:</b></p>
+<div class="cmdbox"><pre class="cmd">poshold
+
+rc 3 1500</pre><button class="copy">Copy</button></div>
+<p><b>④ Hover 60 s</b> without typing anything.</p>
+<p><b>⑤ Land</b> (it lands and disarms by itself; that saves the value):</p>
+<div class="cmdbox"><pre class="cmd">land</pre><button class="copy">Copy</button></div>
+<p><b>⑥ Read the learned value:</b></p>
+<div class="cmdbox"><pre class="cmd">param fetch MOT_THST_HOVER</pre><button class="copy">Copy</button></div>
+<div class="tw"><table><tr><th>Drone (folder)</th><th>Start</th><th>Learned (measured 28 Oct)</th><th>Means</th></tr>
+<tr><td>F450 (<code>~/sitl_f450</code>)</td><td>0.461</td><td><b>0.5127</b></td><td>✅ Matches the live 51 % (5.5)</td></tr>
+<tr><td>5-inch (<code>~/sitl_q250</code>)</td><td>0.461</td><td><b>0.1365</b> after ~10 s (measured); expect <b>0.125</b> after 60 s</td><td>✅ Its real need (~0.11) is below ArduPilot's floor 0.125, so it stops there</td></tr>
+<tr><td>Any</td><td>—</td><td>Exactly the start value</td><td>Did not learn: Stabilize or Guided instead of PosHold, stick not centred, or <code>param show</code> used</td></tr></table></div>
+<div class="note"><b>Notes:</b> (1) <code>~/sitl_gps</code> (training) keeps <code>MOT_THST_HOVER 0.56</code>: the value your Stage 3 PPO was trained and tested with (<code>impact_check.py</code> reads it at start-up and prints <code>hover thrust 0.56</code>; the PPO thrust = action × this value). Your scripts fly in Guided, which does not learn, so it stays 0.56. <b>Never do hover-learning flights in <code>~/sitl_gps</code></b> (it would drift to ~0.51 and change the training scale). Safety copy (SITL stopped): <code>cp ~/sitl_gps/eeprom.bin ~/sitl_gps/eeprom_F450_training.bin</code>. To put it back if changed: <code>param set MOT_THST_HOVER 0.56</code>. (2) The 5-inch stops at the floor 0.125 because the simulator's throttle starts at <code>MOT_SPIN_MIN</code> 0.15. The 5-inch simulator parameter file I prepare later sets <code>MOT_SPIN_MIN 0</code>, <code>MOT_SPIN_ARM 0</code>, <code>MOT_SPIN_MAX 1</code>; then the simulator's hover value equals the real drone's <code>MOT_THST_HOVER</code> (0.25 for the example drone, = 0.55 × 9.81 ÷ (4 × 5.4)).</div></div>
+
+<div class="step s3" id="s57"><div class="sh"><span class="num">5.7</span><span class="tt">Impact test on the 5″ twin: the F450-trained PPO, before vs after the 8 Nov fix</span><span class="meta">AirSim + SITL + PowerShell · 36 flights · ≈ 10 min</span></div>
+<p><b>Why:</b> the PPO was trained on the F450. This test asks: does it still recover the 5″ (no retraining), and is it as good as its teacher (attitude-rule)? It is the "before" result for the fine-tune decision. Both recoveries get the <b>same hits</b> (same seed), so the comparison is fair.</p>
+<div class="tw"><table><tr><th>Before you start</th><th>Check</th></tr>
+<tr><td>Twin numbers</td><td><code>settings_Q250.json</code>: <code>Q250_MASS_KG 0.5445</code>, <code>Q250_MOTOR_KG 0.070</code>, <code>Q250_THRUST_N 8.1</code> (5.3) and switched to it (5.3 ③)</td></tr>
+<tr><td>SITL</td><td>Started from <code>~/sitl_q250</code>; <code>param show ATC_RAT_RLL_P</code> = 0.065, <code>param show MOT_THST_HOVER</code> = 0.149 (5.4 ④)</td></tr>
+<tr><td>Hover check</td><td>5.5 passed: throttle ≈ 15, steady. Then <code>mode land</code> and wait for <code>Disarming motors</code>: the test takes off by itself</td></tr></table></div>
+<p><b>① Windows, in this order</b> (as 4.2): AirSim (<code>run_small.bat</code>) → WSL SITL from <code>~/sitl_q250</code> (5.4 ②) → PowerShell (your <code>airsimcode</code> environment) in the 5″ Stage 3 folder:</p>
+<div class="cmdbox"><pre class="cmd">cd C:\Users\lukas\Desktop\My_Project\AirSim_Project\reinforcement_learning\drone_recovery_v8_real_hardware\Q250_Airsim\Stage_3</pre><button class="copy">Copy</button></div>
+<p><b>② Run</b> (the final Round 1 model <code>models\stage3_checkpoints\gated_curriculum_policy.zip</code> is the default):</p>
+<div class="cmdbox"><pre class="cmd">py .\test_stage_3_gated_curriculum.py --repeats 2 --modes ppo-policy attitude-rule</pre><button class="copy">Copy</button></div>
+<p>3 hit types (flip, spin, bird) × 3 levels (EASY, MEDIUM, HARD) × 2 repeats × 2 recoveries = <b>36 flights</b>, start height 30 m, virtual ground 5 m (going below = FAILED), seed 1, yaw brake 0.5 s. At the end it flies back to the take-off point, lands and disarms. (31 Oct also ran <code>spin-stop-fast</code> = 54 flights; left out on 8 Nov, your choice.)</p>
+<div class="tw"><table><tr><th>Output</th><th>Where (in <code>Q250_Airsim\Stage_3</code>)</th><th>What</th></tr>
+<tr><td>Flight table</td><td><code>runs\test_stage_3\test_stage_3_&lt;date&gt;.csv</code> / <code>.json</code></td><td>One line per flight: turns, peak rate, recovery time, height loss, lowest, drift, spin stop</td></tr>
+<tr><td>Every step</td><td><code>runs\test_stage_3\test_stage_3_&lt;date&gt;_steps.csv</code></td><td>Tilt, rates, height, speed, distance at every step (for plots)</td></tr>
+<tr><td>Summary</td><td><code>analysis_results\test_stage3_&lt;date&gt;.json</code></td><td>Per level, per type, overall, PPO vs rule</td></tr>
+<tr><td>Thesis table</td><td><code>analysis_results\table_5_4_recovery_comparison.tex</code></td><td>LaTeX table (per level)</td></tr>
+<tr><td>Thesis figure</td><td><code>analysis_results\test_stage3_&lt;date&gt;_lowest.png</code></td><td>Average lowest height per level, PPO vs rule, 5 m line</td></tr></table></div>
+<h4>📌 Your result, 8 Nov 2026 (<code>test_stage_3_20261108_225656</code>, <code>test_stage3_20261108_225644</code>)</h4>
+<div class="tw"><table><tr><th>Level</th><th>Recovery</th><th>Flights</th><th>Recovered</th><th>Avg lowest</th><th>Worst</th><th>Avg loss</th><th>Avg time</th><th>Below 5 m</th></tr>
+<tr><td rowspan="2">EASY</td><td>ppo-policy</td><td>6</td><td>100 %</td><td>27.9 m</td><td>25.4 m</td><td>2.1 m</td><td>1.01 s</td><td>0</td></tr>
+<tr><td>attitude-rule</td><td>6</td><td>100 %</td><td>27.9 m</td><td>25.7 m</td><td>2.1 m</td><td>1.02 s</td><td>0</td></tr>
+<tr><td rowspan="2">MEDIUM</td><td>ppo-policy</td><td>6</td><td>100 %</td><td>28.5 m</td><td>27.0 m</td><td>1.5 m</td><td>1.09 s</td><td>0</td></tr>
+<tr><td>attitude-rule</td><td>6</td><td>100 %</td><td>27.8 m</td><td>25.4 m</td><td>2.2 m</td><td>1.16 s</td><td>0</td></tr>
+<tr><td rowspan="2">HARD</td><td>ppo-policy</td><td>6</td><td>100 %</td><td>26.3 m</td><td>23.4 m</td><td>3.7 m</td><td>1.22 s</td><td>0</td></tr>
+<tr><td>attitude-rule</td><td>6</td><td>100 %</td><td>26.2 m</td><td>23.1 m</td><td>3.8 m</td><td>1.12 s</td><td>0</td></tr>
+<tr class="hl"><td colspan="2"><b>All</b>: PPO vs rule</td><td>18 / 18</td><td>100 / 100 %</td><td>27.6 / 27.3 m</td><td>23.4 / 23.1 m</td><td>2.4 / 2.7 m</td><td>1.11 / 1.10 s</td><td>0 / 0</td></tr></table></div>
+<div class="tw"><table><tr><th>Type</th><th>Recovery</th><th>Avg loss</th><th>Avg time</th><th>Spin stop</th><th>Drift</th><th>Reading</th></tr>
+<tr><td rowspan="2">Flip</td><td>ppo-policy</td><td>4.1 m</td><td>0.43 s</td><td>0.23 s</td><td>5.0 m</td><td rowspan="2">PPO better: less height lost (HARD 4.9 vs 6.6 m)</td></tr>
+<tr><td>attitude-rule</td><td>5.0 m</td><td>0.51 s</td><td>0.17 s</td><td>5.8 m</td></tr>
+<tr><td rowspan="2">Spin</td><td>ppo-policy</td><td>0.0 m</td><td>1.68 s</td><td>0.84 s</td><td>3.6 m</td><td rowspan="2">PPO stops the spin faster, but climbs ≈ +3.6 m and drifts 3.6 m (rule 0.5 m / 0.6 m)</td></tr>
+<tr><td>attitude-rule</td><td>0.2 m</td><td>1.97 s</td><td>1.04 s</td><td>0.6 m</td></tr>
+<tr><td rowspan="2">Bird</td><td>ppo-policy</td><td>3.2 m</td><td>1.22 s</td><td>0.40 s</td><td>4.4 m</td><td rowspan="2">Equal at EASY/MEDIUM; at HARD PPO slower (1.46 vs 0.83 s) and loses more (6.1 vs 4.8 m)</td></tr>
+<tr><td>attitude-rule</td><td>3.0 m</td><td>0.83 s</td><td>0.40 s</td><td>4.3 m</td></tr></table></div>
+<div class="tw"><table><tr><th>Before vs after the 8 Nov twin fix</th><th>31 Oct (old twin: 6.68 N, hover 0.2, inertia ½, stand-in gains)</th><th>8 Nov (fixed twin: 8.1 N, 0.149, inertia ×2, your real gains)</th></tr>
+<tr><td>Recovered / below 5 m</td><td>all / 0</td><td><b>36/36 / 0</b></td></tr>
+<tr><td>Height lost, all hits: PPO / rule</td><td>2.9 / 2.9 m</td><td><b>2.4 / 2.7 m</b></td></tr>
+<tr><td>Flip HARD: PPO / rule</td><td>11.0 / 9.7 m</td><td><b>4.9 / 6.6 m</b></td></tr>
+<tr><td>PPO climbs above the start</td><td>2–8 m</td><td>Spin only: ≈ +3.6 m (flip and bird stay below the start)</td></tr>
+<tr><td>spin-stop-fast (loss)</td><td>4.8 m</td><td>not run</td></tr></table></div>
+<p><b>How "climb" and "drift" were measured (8 Nov):</b> from <code>_steps.csv</code>, highest point and final distance of each flight's recovery phase (the log ends when the flight counts as recovered). Drift = <code>drift_m</code> in the flight table.</p>
+<div class="tw"><table><tr><th>Your numbers (next time)</th><th>Means</th><th>Do</th></tr>
+<tr class="hl"><td>All recovered, 0 below 5 m, PPO within ≈ 1 m / 0.2 s of the rule</td><td>PPO works on this drone and equals its teacher</td><td>Keep Round 1; fine-tune only if the real throws show a gap (17)</td></tr>
+<tr><td>A case where PPO is clearly worse (≥ 2 m or ≥ 0.5 s, in both repeats)</td><td>A gap to fix</td><td>Candidate for the fine-tune: send me the CSV + JSON</td></tr>
+<tr><td>Any FAILED or below 5 m</td><td>Not safe on this drone yet</td><td>No real throws with PPO; send me the files</td></tr>
+<tr><td>Twin shakes / throttle not ≈ 15 before the test</td><td>Twin not matched</td><td>Back to 5.3–5.5 first</td></tr></table></div>
+<div class="note"><b>Read with care:</b> 2 flights per case. Differences under ≈ 1 m or 0.2 s are inside the spread between repeats (e.g. flip EASY PPO 0.58 / 0.42 s). For the thesis, report the overall numbers and the clear cases (flip HARD better; spin climb/drift and bird HARD worse), not small single-case gaps. More repeats (<code>--repeats 5</code>, 90 flights) make the small gaps decidable.</div>
+<div class="note"><b>📤 Send me:</b> the two summary tables it prints, plus <code>runs\test_stage_3\test_stage_3_&lt;date&gt;.csv</code>, <code>.json</code>, <code>_steps.csv</code> and <code>analysis_results\test_stage3_&lt;date&gt;.json</code>.</div></div>
+
+<!-- ================= PART 2 DRONE ================= -->
+<h2 id="d1"><span class="stage-tag thw">6</span>Parts</h2>
+<div class="tw"><table><tr><th>Part</th><th>Choice</th><th>Note</th></tr>
+<tr><td>Frame</td><td>Totem Q250</td><td>Check the FC mount takes 30.5 mm holes. Buy spare arms</td></tr>
+<tr><td>Motors</td><td><b>HSKRC 2205 1700KV</b> ×4</td><td>Label must include 4S. Check the arm holes fit</td></tr>
+<tr><td>Props</td><td><b>YSIDO 5045 3-blade</b>: 2 normal + 2 reversed, plus spares (plan was Gemfan 5045)</td><td>—</td></tr>
+<tr><td>ESC</td><td>JHEMCU Ruibet 45A 4-in-1 + its 1000 µF capacitor</td><td>DShot600, current sensor, no 5 V output</td></tr>
+<tr><td>Flight controller</td><td>Matek F405-HDTE</td><td>Stacks on the ESC (30.5 × 30.5 mm)</td></tr>
+<tr><td>Receiver / GPS / flow</td><td>ELRS · <b>Radiolink SE100</b> (u-blox <b>M8</b> inside: HW 00080000, ROM CORE 3.01) · MTF-01</td><td>—</td></tr>
+<tr><td>Companion</td><td><b>Raspberry Pi Zero 2 W</b> (aarch64, Debian 12, Python 3.11)</td><td>Runs the PPO at throw time</td></tr>
+<tr class="hl"><td>Pi power</td><td>5 V 3 A BEC</td><td>The FC's 5 V gives only 1.5 A</td></tr>
+<tr><td>Battery</td><td><b>4S 1500 mAh</b>, XT60 (<code>BATT_CAPACITY 1500</code>)</td><td>1700KV on 4S ≈ 3.6–4.4× its weight in thrust (estimate)</td></tr>
+<tr><td>Buzzer</td><td>5 V <b>active</b> buzzer</td><td>Tells you AutoTune finished, low battery, failsafes</td></tr>
+<tr><td>Tools</td><td>F1976 kitchen scale, ruler, soldering iron, heat-shrink</td><td>—</td></tr></table></div>
+
+<h2 id="d2"><span class="stage-tag thw">7</span>Build and wire · PROPS OFF, BATTERY OFF</h2>
+<div class="figure">
+<svg viewBox="0 0 900 450" width="100%" style="max-width:900px" role="img" aria-label="Top view of the Q250 with motor numbers, spin directions, prop types, the diagonal and the prop tip gap">
+<defs><marker id="m1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#c23a39"/></marker>
+<marker id="m2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#0f6e56"/></marker></defs>
+<g style="font-size:12.5px">
+<text x="220" y="16" text-anchor="middle" style="font-weight:700;fill:#1d2433">Top view · FRONT ↑</text>
+<line x1="110" y1="125" x2="330" y2="345" stroke="#b4b2a9" stroke-width="12" stroke-linecap="round"/><line x1="330" y1="125" x2="110" y2="345" stroke="#b4b2a9" stroke-width="12" stroke-linecap="round"/>
+<circle cx="110" cy="125" r="93" fill="#e6f1fb" fill-opacity="0.55" stroke="#185fa5" stroke-dasharray="4 3"/>
+<circle cx="330" cy="125" r="93" fill="#fbe5e4" fill-opacity="0.55" stroke="#c23a39" stroke-dasharray="4 3"/>
+<circle cx="110" cy="345" r="93" fill="#fbe5e4" fill-opacity="0.55" stroke="#c23a39" stroke-dasharray="4 3"/>
+<circle cx="330" cy="345" r="93" fill="#e6f1fb" fill-opacity="0.55" stroke="#185fa5" stroke-dasharray="4 3"/>
+<rect x="190" y="205" width="60" height="60" rx="6" fill="#f1efe8" stroke="#888"/><text x="236" y="222" text-anchor="middle" style="font-size:11px;fill:#1d2433">FC</text><text x="220" y="248" text-anchor="middle" style="font-size:16px;fill:#1d2433">↑</text>
+<circle cx="110" cy="125" r="16" fill="#fff" stroke="#1d2433"/><text x="110" y="130" text-anchor="middle" style="font-weight:700;fill:#1d2433">M4</text>
+<circle cx="330" cy="125" r="16" fill="#fff" stroke="#1d2433"/><text x="330" y="130" text-anchor="middle" style="font-weight:700;fill:#1d2433">M2</text>
+<circle cx="110" cy="345" r="16" fill="#fff" stroke="#1d2433"/><text x="110" y="350" text-anchor="middle" style="font-weight:700;fill:#1d2433">M3</text>
+<circle cx="330" cy="345" r="16" fill="#fff" stroke="#1d2433"/><text x="330" y="350" text-anchor="middle" style="font-weight:700;fill:#1d2433">M1</text>
+<text x="110" y="173" text-anchor="middle" style="fill:#185fa5;font-weight:700">↻ CW</text>
+<text x="330" y="173" text-anchor="middle" style="fill:#c23a39;font-weight:700">↺ CCW</text>
+<text x="110" y="307" text-anchor="middle" style="fill:#c23a39;font-weight:700">↺ CCW</text>
+<text x="330" y="307" text-anchor="middle" style="fill:#185fa5;font-weight:700">↻ CW</text>
+<line x1="203" y1="107" x2="237" y2="107" stroke="#0f6e56" stroke-width="2.5" marker-start="url(#m2)" marker-end="url(#m2)"/>
+<text x="220" y="150" text-anchor="middle" style="fill:#0f6e56;font-weight:700">tip gap</text>
+<line x1="122" y1="137" x2="318" y2="333" stroke="#c23a39" stroke-width="2" stroke-dasharray="6 4" marker-start="url(#m1)" marker-end="url(#m1)"/>
+<text x="250" y="295" style="fill:#c23a39;font-weight:700">diagonal</text>
+<text x="470" y="48" style="font-weight:700;fill:#1d2433">Motor → ESC pad (BetaFlight order)</text>
+<text x="470" y="70" style="fill:#444">M1 rear-right · M2 front-right · M3 rear-left · M4 front-left</text>
+<text x="470" y="102" style="font-weight:700;fill:#1d2433">Spin and prop (seen from above)</text>
+<text x="470" y="124" style="fill:#c23a39">Red: front-right + rear-left spin ↺ CCW → normal 5045 prop</text>
+<text x="470" y="144" style="fill:#185fa5">Blue: front-left + rear-right spin ↻ CW → reversed 5045 prop</text>
+<text x="470" y="164" style="fill:#444">Prop text faces up; the thick front edge leads the spin.</text>
+<text x="470" y="196" style="font-weight:700;fill:#c23a39">Diagonal (step 15)</text>
+<text x="470" y="216" style="fill:#444">Motor shaft front-left → motor shaft rear-right. Expect ~250 mm.</text>
+<text x="470" y="248" style="font-weight:700;fill:#0f6e56">Tip gap (optional check)</text>
+<text x="470" y="268" style="fill:#444">Turn two neighbouring props so the tips point at each other.</text>
+<text x="470" y="288" style="fill:#444">Measure tip to tip. Expect ~50 mm with 5″ props. Need ≥ 10 mm.</text>
+<text x="470" y="320" style="font-weight:700;fill:#1d2433">FC arrow points to the FRONT.</text>
+</g></svg></div>
+<div class="step hw"><div class="sh"><span class="num">7.1</span><span class="tt">Frame, motors, ESC</span><span class="meta">soldering iron</span></div>
+<ul class="ck">
+<li><label><input type="checkbox"> Assemble the Q250 frame.</label></li>
+<li><label><input type="checkbox"> Mount the four motors (screws short enough not to touch the windings). Spin each by hand: free.</label></li>
+<li><label><input type="checkbox"> Fit the JHEMCU 4-in-1 in the centre on its grommets, battery pads to the back.</label></li>
+<li><label><input type="checkbox"> Solder each motor's 3 wires to its pad group: <b>M1 rear-right, M2 front-right, M3 rear-left, M4 front-left</b>.</label></li>
+<li><label><input type="checkbox"> Solder the XT60 lead and the 1000 µF capacitor on the battery pads (capacitor stripe = −).</label></li>
+<li><label><input type="checkbox"> Solder the 5 V BEC input wires to the same battery pads.</label></li>
+</ul></div>
+<div class="step hw"><div class="sh"><span class="num">7.2</span><span class="tt">Flight controller</span><span class="meta">a wrong 8-pin cable can burn boards</span></div>
+<ul class="ck">
+<li><label><input type="checkbox"> Compare the pin labels next to the 8-pin socket on the ESC and on the F405-HDTE, pin by pin.</label></li>
+<li><label><input type="checkbox"> If any pin differs, move the wires in the plug so each label meets the same label.</label></li>
+<li><label><input type="checkbox"> Plug in the 8-pin cable and mount the F405-HDTE on top, <b>arrow pointing forward</b>.</label></li>
+</ul></div>
+<div class="step hw"><div class="sh"><span class="num">7.3</span><span class="tt">Wiring</span><span class="meta">TX always goes to RX</span></div>
+<div class="figure">
+<svg viewBox="0 0 980 640" width="100%" style="max-width:980px" role="img" aria-label="Wiring schematic: Raspberry Pi to TX3 RX3 (SERIAL2), ELRS to TX2 RX2 (SERIAL6), GPS to TX5 RX5 and I2C (SERIAL3), MTF-01 to TX1 RX1 (SERIAL1), buzzer to BZ+ BZ-, ESC via 8-pin cable, battery to ESC pads and BEC, BEC to Pi">
+<g style="font-size:12px">
+<!-- FC -->
+<rect x="390" y="160" width="200" height="245" rx="10" fill="#e6f1fb" stroke="#185fa5" stroke-width="2"/>
+<text x="490" y="182" text-anchor="middle" style="font-weight:700;fill:#0c447c">Matek F405-HDTE</text>
+<text x="490" y="198" text-anchor="middle" style="fill:#0c447c">arrow → front</text>
+<g style="font-family:Consolas,monospace;font-size:11.5px;fill:#0c447c">
+<text x="398" y="219">TX3</text><text x="398" y="239">RX3</text><text x="398" y="259">GND</text>
+<text x="398" y="309">TX2</text><text x="398" y="329">RX2</text><text x="398" y="349">5V</text><text x="398" y="369">GND</text>
+<text x="582" y="209" text-anchor="end">TX5</text><text x="582" y="226" text-anchor="end">RX5</text><text x="582" y="243" text-anchor="end">SDA</text><text x="582" y="260" text-anchor="end">SCL</text><text x="582" y="277" text-anchor="end">5V</text><text x="582" y="294" text-anchor="end">GND</text>
+<text x="582" y="329" text-anchor="end">TX1</text><text x="582" y="346" text-anchor="end">RX1</text><text x="582" y="363" text-anchor="end">5V</text><text x="582" y="380" text-anchor="end">GND</text>
+<text x="490" y="398" text-anchor="middle">ESC 8-pin</text></g>
+<!-- Pi -->
+<rect x="30" y="110" width="230" height="165" rx="10" fill="#f3eefb" stroke="#5e35b1" stroke-width="2"/>
+<text x="145" y="132" text-anchor="middle" style="font-weight:700;fill:#4527a0">Raspberry Pi (40-pin header)</text>
+<g style="font-family:Consolas,monospace;font-size:11.5px;fill:#4527a0">
+<text x="252" y="219" text-anchor="end">pin 8  GPIO14 TX</text><text x="252" y="239" text-anchor="end">pin 10 GPIO15 RX</text><text x="252" y="259" text-anchor="end">pin 6  GND</text>
+<text x="60" y="160">pin 2 5V</text><text x="60" y="176">pin 14 GND</text></g>
+<!-- Pi wires -->
+<line x1="260" y1="215" x2="390" y2="235" stroke="#185fa5" stroke-width="2"/>
+<line x1="260" y1="235" x2="390" y2="215" stroke="#185fa5" stroke-width="2"/>
+<line x1="260" y1="255" x2="390" y2="255" stroke="#444" stroke-width="2"/>
+<text x="325" y="207" text-anchor="middle" style="fill:#185fa5">TX ↔ RX crossed</text>
+<text x="325" y="191" text-anchor="middle" style="fill:#444">SERIAL2 · 921600</text>
+<!-- ELRS -->
+<rect x="60" y="295" width="200" height="90" rx="10" fill="#f1efe8" stroke="#888" stroke-width="2"/>
+<text x="110" y="320" text-anchor="middle" style="font-weight:700;fill:#1d2433">ELRS RX</text>
+<g style="font-family:Consolas,monospace;font-size:11.5px;fill:#1d2433"><text x="252" y="309" text-anchor="end">TX</text><text x="252" y="329" text-anchor="end">RX</text><text x="252" y="349" text-anchor="end">5V</text><text x="252" y="369" text-anchor="end">GND</text></g>
+<line x1="260" y1="305" x2="390" y2="325" stroke="#185fa5" stroke-width="2"/>
+<line x1="260" y1="325" x2="390" y2="305" stroke="#185fa5" stroke-width="2"/>
+<line x1="260" y1="345" x2="390" y2="345" stroke="#c23a39" stroke-width="2"/>
+<line x1="260" y1="365" x2="390" y2="365" stroke="#444" stroke-width="2"/>
+<text x="325" y="398" text-anchor="middle" style="fill:#444">SERIAL6 · RCIN (ELRS)</text>
+<!-- GPS -->
+<rect x="720" y="150" width="230" height="160" rx="10" fill="#e1f5ee" stroke="#0f6e56" stroke-width="2"/>
+<text x="835" y="172" text-anchor="middle" style="font-weight:700;fill:#085041">Radiolink SE100 (M8)</text>
+<text x="835" y="188" text-anchor="middle" style="fill:#085041">GPS + compass · arrow → front</text>
+<g style="font-family:Consolas,monospace;font-size:11.5px;fill:#085041"><text x="728" y="209">RX</text><text x="728" y="226">TX</text><text x="728" y="243">SDA</text><text x="728" y="260">SCL</text><text x="728" y="277">5V</text><text x="728" y="294">GND</text></g>
+<line x1="590" y1="205" x2="720" y2="205" stroke="#185fa5" stroke-width="2"/>
+<line x1="590" y1="222" x2="720" y2="222" stroke="#185fa5" stroke-width="2"/>
+<line x1="590" y1="239" x2="720" y2="239" stroke="#0f6e56" stroke-width="2"/>
+<line x1="590" y1="256" x2="720" y2="256" stroke="#0f6e56" stroke-width="2"/>
+<line x1="590" y1="273" x2="720" y2="273" stroke="#c23a39" stroke-width="2"/>
+<line x1="590" y1="290" x2="720" y2="290" stroke="#444" stroke-width="2"/>
+<text x="655" y="145" text-anchor="middle" style="fill:#444">SERIAL3 · GPS · 230400</text>
+<!-- MTF-01 -->
+<rect x="720" y="320" width="230" height="80" rx="10" fill="#e1f5ee" stroke="#0f6e56" stroke-width="2"/>
+<text x="835" y="342" text-anchor="middle" style="font-weight:700;fill:#085041">MTF-01 (facing down)</text>
+<g style="font-family:Consolas,monospace;font-size:11.5px;fill:#085041"><text x="728" y="329">RX</text><text x="728" y="346">TX</text><text x="728" y="363">5V</text><text x="728" y="380">GND</text></g>
+<line x1="590" y1="325" x2="720" y2="325" stroke="#185fa5" stroke-width="2"/>
+<line x1="590" y1="342" x2="720" y2="342" stroke="#185fa5" stroke-width="2"/>
+<line x1="590" y1="359" x2="720" y2="359" stroke="#c23a39" stroke-width="2"/>
+<line x1="590" y1="376" x2="720" y2="376" stroke="#444" stroke-width="2"/>
+<text x="835" y="395" text-anchor="middle" style="fill:#444">SERIAL1 · MAVLink1 · 115200</text>
+<!-- ESC -->
+<rect x="380" y="470" width="220" height="80" rx="10" fill="#fdf1d8" stroke="#a96a00" stroke-width="2"/>
+<text x="490" y="494" text-anchor="middle" style="font-weight:700;fill:#7a4b00">JHEMCU Ruibet 45A 4-in-1</text>
+<text x="490" y="512" text-anchor="middle" style="fill:#7a4b00">(under the FC)</text>
+<text x="490" y="530" text-anchor="middle" style="fill:#7a4b00">+ 1000 µF cap on battery pads</text>
+<line x1="490" y1="405" x2="490" y2="470" stroke="#a96a00" stroke-width="3"/>
+<text x="480" y="430" text-anchor="end" style="fill:#7a4b00">8-pin: VBAT, GND, CUR, M1–M4</text>
+<text x="480" y="446" text-anchor="end" style="fill:#c23a39;font-weight:700">check pin order first (1.3)</text>
+<!-- Motors -->
+<g style="font-size:11.5px">
+<circle cx="690" cy="470" r="20" fill="#fff" stroke="#1d2433"/><text x="690" y="474" text-anchor="middle" style="font-weight:700;fill:#1d2433">M4</text><text x="690" y="440" text-anchor="middle" style="fill:#444">front-left</text>
+<circle cx="770" cy="470" r="20" fill="#fff" stroke="#1d2433"/><text x="770" y="474" text-anchor="middle" style="font-weight:700;fill:#1d2433">M2</text><text x="770" y="440" text-anchor="middle" style="fill:#444">front-right</text>
+<circle cx="690" cy="560" r="20" fill="#fff" stroke="#1d2433"/><text x="690" y="564" text-anchor="middle" style="font-weight:700;fill:#1d2433">M3</text><text x="690" y="594" text-anchor="middle" style="fill:#444">rear-left</text>
+<circle cx="770" cy="560" r="20" fill="#fff" stroke="#1d2433"/><text x="770" y="564" text-anchor="middle" style="font-weight:700;fill:#1d2433">M1</text><text x="770" y="594" text-anchor="middle" style="fill:#444">rear-right</text></g>
+<line x1="600" y1="486" x2="670" y2="472" stroke="#a96a00" stroke-width="2"/>
+<path d="M600 498 H738 L756 484" fill="none" stroke="#a96a00" stroke-width="2"/>
+<line x1="600" y1="542" x2="670" y2="556" stroke="#a96a00" stroke-width="2"/>
+<path d="M600 532 H738 L756 546" fill="none" stroke="#a96a00" stroke-width="2"/>
+<text x="860" y="520" style="fill:#7a4b00">3 wires each</text><text x="860" y="536" style="fill:#7a4b00">(extended)</text>
+<!-- Battery -->
+<rect x="150" y="560" width="190" height="60" rx="10" fill="#fbe5e4" stroke="#c23a39" stroke-width="2"/>
+<text x="245" y="586" text-anchor="middle" style="font-weight:700;fill:#8e2321">4S LiPo · XT60</text>
+<text x="245" y="604" text-anchor="middle" style="fill:#8e2321">1500 mAh</text>
+<path d="M340 590 H360 V520 H380" fill="none" stroke="#c23a39" stroke-width="3"/>
+<text x="368" y="578" style="fill:#c23a39">+ / − to ESC battery pads</text>
+<!-- BEC -->
+<rect x="30" y="440" width="190" height="60" rx="10" fill="#fdf1d8" stroke="#a96a00" stroke-width="2"/>
+<text x="125" y="466" text-anchor="middle" style="font-weight:700;fill:#7a4b00">5 V 3 A BEC</text>
+<text x="125" y="484" text-anchor="middle" style="fill:#7a4b00">powers the Pi only</text>
+<path d="M125 500 V590 H150" fill="none" stroke="#c23a39" stroke-width="2"/>
+<text x="132" y="528" style="fill:#c23a39">BEC input</text><text x="132" y="544" style="fill:#c23a39">(battery, at ESC pads)</text>
+<path d="M45 440 V160 H58" fill="none" stroke="#c23a39" stroke-width="2"/>
+<path d="M38 440 V176 H58" fill="none" stroke="#444" stroke-width="2"/>
+<text x="16" y="420" transform="rotate(-90 16 420)" style="fill:#c23a39">5 V + GND → Pi pin 2 + pin 14</text>
+<!-- Buzzer -->
+<rect x="820" y="405" width="130" height="42" rx="10" fill="#f1efe8" stroke="#888" stroke-width="2"/>
+<text x="885" y="423" text-anchor="middle" style="font-weight:700;fill:#1d2433">5 V buzzer</text>
+<text x="885" y="439" text-anchor="middle" style="fill:#1d2433">+ → BZ+ · − → BZ−</text>
+<line x1="590" y1="400" x2="820" y2="420" stroke="#c23a39" stroke-width="2"/>
+<!-- legend -->
+<g transform="translate(30,40)"><line x1="0" y1="0" x2="30" y2="0" stroke="#185fa5" stroke-width="2"/><text x="36" y="4" style="fill:#1d2433">signal (TX → RX, always crossed)</text>
+<line x1="270" y1="0" x2="300" y2="0" stroke="#c23a39" stroke-width="2"/><text x="306" y="4" style="fill:#1d2433">power (+)</text>
+<line x1="400" y1="0" x2="430" y2="0" stroke="#444" stroke-width="2"/><text x="436" y="4" style="fill:#1d2433">ground</text>
+<line x1="510" y1="0" x2="540" y2="0" stroke="#0f6e56" stroke-width="2"/><text x="546" y="4" style="fill:#1d2433">I2C compass</text>
+<line x1="650" y1="0" x2="680" y2="0" stroke="#a96a00" stroke-width="3"/><text x="686" y="4" style="fill:#1d2433">ESC / motors</text></g>
+</g></svg></div>
+<ul class="ck">
+<li><label><input type="checkbox"> <b>ELRS:</b> TX → FC RX2, RX → FC TX2, 5V, GND (SERIAL6).</label></li>
+<li><label><input type="checkbox"> <b>GPS:</b> TX → FC RX5, RX → FC TX5, SDA → SDA, SCL → SCL, 5V, GND (SERIAL3 + I2C). Mount on a short mast, <b>arrow forward</b>.</label></li>
+<li><label><input type="checkbox"> <b>MTF-01:</b> TX → FC RX1, RX → FC TX1, 5V, GND (SERIAL1). Mount underneath, lens straight down, nothing blocking it.</label></li>
+<li><label><input type="checkbox"> <b>Pi:</b> pin 8 → FC RX3, pin 10 → FC TX3, pin 6 → FC GND (SERIAL2). Power: BEC 5 V → Pi pin 2, BEC GND → Pi pin 14 (not from the FC's 5 V pad: it gives only ~1.5 A, shared with ELRS, GPS, MTF-01, buzzer).</label></li>
+</ul>
+<div class="tw"><table><tr><th>Pads on the F405-HDTE</th><th>ArduPilot port (firmware board file <code>SERIAL_ORDER</code>)</th><th>Used for</th></tr>
+<tr><td>TX1 / RX1</td><td>SERIAL1</td><td>MTF-01</td></tr>
+<tr><td>TX3 / RX3</td><td>SERIAL2</td><td>Raspberry Pi</td></tr>
+<tr><td>TX5 / RX5</td><td>SERIAL3</td><td>GPS (+ compass on SDA/SCL)</td></tr>
+<tr><td>TX4 / RX4</td><td>SERIAL4</td><td>free</td></tr>
+<tr><td>TX6 / RX6</td><td>SERIAL5</td><td>free</td></tr>
+<tr><td>TX2 / RX2</td><td>SERIAL6</td><td>ELRS</td></tr></table></div>
+<ul class="ck">
+<li><label><input type="checkbox"> Buzzer: + → FC <b>BZ+</b>, − → FC <b>BZ−</b>. Test: start-up tune when the battery is plugged in, a tone when you arm. Silent = swapped wires or a passive buzzer.</label></li>
+<li><label><input type="checkbox"> Strap the battery so its middle sits under the FC. Tie down all wires.</label></li>
+</ul></div>
+<div class="step hw"><div class="sh"><span class="num">7.4</span><span class="tt">Smoke test</span><span class="meta">props OFF</span></div>
+<ul class="ck">
+<li><label><input type="checkbox"> Plug in a 4S battery. Check: FC, ESC, ELRS and GPS lights on, Pi boots, nothing hot.</label></li>
+<li><label><input type="checkbox"> Unplug.</label></li>
+</ul></div>
+
+<!-- ================= PART 3 FIRMWARE ================= -->
+<h2 id="f1"><span class="stage-tag t2">8</span>Build the firmware from the same ArduPilot as the simulator</h2>
+<div class="note"><b>Why build it yourself:</b> the real drone then runs <b>exactly</b> the ArduPilot your simulator runs (same version, same code). The board's ArduPilot name is <b>MatekF405-TE</b> (it covers the HDTE).</div>
+<div class="step s2"><div class="sh"><span class="num">8.1</span><span class="tt">What is in the firmware, and the one thing we add</span><span class="meta">checked by building Copter 4.4.4 for this board</span></div>
+<p>The F405 has only 1 MB of memory, so the standard MatekF405-TE build switches some drivers off. I built it and listed what is inside:</p>
+<div class="tw"><table><tr><th>Needed for this drone</th><th>Standard MatekF405-TE build</th><th>Our build</th></tr>
+<tr><td>MAVLink (Pi on SERIAL1, MTF-01 on SERIAL4)</td><td>✅ always in</td><td>✅</td></tr>
+<tr><td>ELRS (CRSF receiver protocol + telemetry)</td><td>✅ in</td><td>✅</td></tr>
+<tr><td>GPS (u-blox M10) + external compass</td><td>✅ in</td><td>✅</td></tr>
+<tr><td>MTF-01 <b>rangefinder</b> (<code>RNGFND1_TYPE 10</code>, MAVLink)</td><td>✅ in</td><td>✅</td></tr>
+<tr class="hl"><td>MTF-01 <b>optical flow</b> (<code>FLOW_TYPE 5</code>, MAVLink)</td><td>❌ <b>off</b> (the board file includes <code>save_some_flash.inc</code>, which sets <code>AP_OPTICALFLOW_ENABLED 0</code>; <code>FLOW_TYPE</code> doesn't even exist)</td><td>✅ <b>switched on</b> with a small extra file</td></tr>
+<tr><td>Guided_NoGPS (the Pi's catch mode), AutoTune, harmonic notch, Throw mode</td><td>✅ in</td><td>✅</td></tr>
+<tr><td>In-flight FFT notch tuning</td><td>❌ off (too big for 1 MB)</td><td>❌ off: we set the notch from your log</td></tr>
+<tr><td>Other flow drivers (PX4Flow, CXOF, PixArt…) and FlowHold mode</td><td>❌ off</td><td>❌ kept off, so it still fits</td></tr></table></div>
+<div class="note"><b>📌 Your result:</b> your drone runs <code>ArduCopter V4.6.0-dev (1e001fa0)</code> on MatekF405-TE, built from your dev <code>~/ardupilot</code> with optical flow on (FLOW_TYPE exists, flow works indoors). The 4.4.4 numbers below are from my first check build; the method is the same.</div>
+<p><b>Result of my test build:</b> ArduCopter V4.4.4, flash used 947,292 bytes, <b>35,744 bytes free</b> (standard build: 41,952 free). It fits.</p></div>
+<div class="step s2"><div class="sh"><span class="num">8.2</span><span class="tt">Build in WSL</span><span class="meta">the same ~/ardupilot folder you use for SITL · ~5–10 min · paste each box, press Enter</span></div>
+<p><b>① Go to your ArduPilot folder:</b></p>
+<div class="cmdbox"><pre class="cmd">cd ~/ardupilot</pre><button class="copy">Copy</button></div>
+<p><b>② Create the extra file that switches optical flow on</b> (one paste, the whole box):</p>
+<div class="cmdbox"><pre class="cmd">cat &gt; ~/q250_flow.hwdef &lt;&lt; &#x27;EOF&#x27;
+# Extra hwdef for the 5-inch PPO drone (Matek F405-HDTE, ArduCopter 4.4)
+# The standard MatekF405-TE build turns optical flow OFF to save flash
+# (include ../include/save_some_flash.inc: AP_OPTICALFLOW_ENABLED 0).
+# This turns it back ON for the MTF-01 (MAVLink flow) and keeps every
+# other flow driver and FlowHold mode OFF so the firmware still fits.
+undef AP_OPTICALFLOW_ENABLED
+define AP_OPTICALFLOW_ENABLED 1
+define AP_OPTICALFLOW_MAV_ENABLED 1
+define AP_OPTICALFLOW_CXOF_ENABLED 0
+define AP_OPTICALFLOW_HEREFLOW_ENABLED 0
+define AP_OPTICALFLOW_ONBOARD_ENABLED 0
+define AP_OPTICALFLOW_PIXART_ENABLED 0
+define AP_OPTICALFLOW_PX4FLOW_ENABLED 0
+define AP_OPTICALFLOW_UPFLOW_ENABLED 0
+define MODE_FLOWHOLD_ENABLED 0
+EOF</pre><button class="copy">Copy</button></div>
+<p><b>③ Configure for the F405 with that file, then build:</b></p>
+<div class="cmdbox"><pre class="cmd">./waf configure --board MatekF405-TE --extra-hwdef=$HOME/q250_flow.hwdef</pre><button class="copy">Copy</button></div>
+<div class="cmdbox"><pre class="cmd">./waf copter</pre><button class="copy">Copy</button></div>
+<p><b>④ Check the files:</b></p>
+<div class="cmdbox"><pre class="cmd">ls build/MatekF405-TE/bin/</pre><button class="copy">Copy</button></div>
+<p><b>⑤ Copy them to Windows Downloads:</b></p>
+<div class="cmdbox"><pre class="cmd">cp build/MatekF405-TE/bin/arducopter.apj build/MatekF405-TE/bin/arducopter_with_bl.hex /mnt/c/Users/lukas/Downloads/</pre><button class="copy">Copy</button></div>
+<p><b>⑥ Switch the folder back to the simulator</b> (so your SITL keeps working):</p>
+<div class="cmdbox"><pre class="cmd">./waf configure --board sitl</pre><button class="copy">Copy</button></div>
+<div class="tw"><table><tr><th>You see</th><th>Means / do</th></tr>
+<tr class="hl"><td>③ ends with <code>'copter' finished successfully</code> and a BUILD SUMMARY with Free Flash ≈ 35,000 bytes</td><td>✅ Built, fits in memory</td></tr>
+<tr class="hl"><td>④ lists <code>arducopter.apj</code> and <code>arducopter_with_bl.hex</code></td><td>✅ Go to ⑤, then step 9</td></tr>
+<tr><td>④ has <code>arducopter.apj</code> but <b>no</b> <code>arducopter_with_bl.hex</code></td><td>The <code>intelhex</code> Python module is missing (only needed for the first-time flash, 9B): run <code>python3 -m pip install --user intelhex</code>, then ③ again</td></tr>
+<tr><td>"arm-none-eabi-g++ not found"</td><td>Install the ARM compiler: see <a href="#x3">Troubleshooting</a></td></tr>
+<tr><td>"region flash overflowed"</td><td>Doesn't fit (should not happen with this file): send me the last 20 lines</td></tr>
+<tr><td>Path error on <code>/mnt/c/Users/lukas</code></td><td>Use your Windows user name in that path</td></tr></table></div>
+<p><b>After flashing (step 9):</b> in Mission Planner's Full Parameter List, <code>FLOW_TYPE</code> must exist. If it doesn't, the standard firmware was flashed instead of this one.</p></div>
+
+<h2 id="f2"><span class="stage-tag t2">9</span>Flash the flight controller</h2>
+<div class="tw"><table><tr><th>Does Mission Planner already connect and show "ArduCopter V4.x"?</th><th>Use</th></tr>
+<tr><td>✅ Yes (ArduPilot already on the board)</td><td><b>9A</b> below</td></tr>
+<tr><td>❌ No (new board, Betaflight or INAV)</td><td><b>9B</b> below (one time only)</td></tr></table></div>
+<div class="step s2"><div class="sh"><span class="num">9A</span><span class="tt">Board already has ArduPilot</span><span class="meta">Mission Planner → SETUP → Install Firmware</span></div>
+<ul class="ck">
+<li><label><input type="checkbox"> Connect USB (no battery). Don't press Connect.</label></li>
+<li><label><input type="checkbox"> Click <b>Load custom firmware</b> and choose <code>arducopter.apj</code> from Downloads.</label></li>
+<li><label><input type="checkbox"> Wait for "Upload Done". Unplug and replug USB.</label></li>
+</ul></div>
+<div class="step s2"><div class="sh"><span class="num">9B</span><span class="tt">First time: DFU mode</span><span class="meta">STM32CubeProgrammer (free from ST)</span></div>
+<ul class="ck">
+<li><label><input type="checkbox"> Install <b>STM32CubeProgrammer</b> (it installs the DFU driver).</label></li>
+<li><label><input type="checkbox"> Hold the <b>BOOT</b> button on the F405-HDTE, plug in USB, then release.</label></li>
+<li><label><input type="checkbox"> Windows Device Manager shows <b>STM32 BOOTLOADER</b> under Universal Serial Bus devices.</label></li>
+<li><label><input type="checkbox"> STM32CubeProgrammer: choose <b>USB</b> → <b>Connect</b> → <b>Open file</b> → <code>arducopter_with_bl.hex</code> → <b>Download</b>.</label></li>
+<li><label><input type="checkbox"> Unplug and replug USB (no BOOT button). From now on, updates use 9A.</label></li>
+</ul></div>
+<div class="step s2"><div class="sh"><span class="num">9C</span><span class="tt">Check the version</span><span class="meta">Mission Planner → Connect → Messages tab</span></div>
+<ul class="ck"><li><label><input type="checkbox"> The first message shows <b>the same "ArduCopter V4.4.x"</b> as step 1.</label></li></ul></div>
+
+<!-- ================= PART 4 SETUP ================= -->
+<h2 id="m1"><span class="stage-tag t1">10</span>Mission Planner set-up · PROPS OFF</h2>
+<div class="step s1"><div class="sh"><span class="num">10.1</span><span class="tt">Starting values for a 5″ on 4S</span><span class="meta">SETUP → Mandatory Hardware → Initial Tune Parameters</span></div>
+<ul class="ck">
+<li><label><input type="checkbox"> Prop size <b>5 inch</b>, battery <b>4S</b>, cell max <b>4.2 V</b>, cell min <b>3.3 V</b> → <b>Calculate</b> → <b>Write to FC</b>.</label></li>
+</ul></div>
+<div class="note"><b>Firmware vs parameters:</b> the firmware (step 8) decides which drivers and modes <b>exist</b>; I checked all of these are inside it: QMC5883L compass, SPL06 barometer, u-blox GPS, CRSF/ELRS, MAVLink flow + rangefinder, and the modes Stabilize, AltHold, Loiter, Land, Guided, Guided_NoGPS, AutoTune, PosHold, RTL, Throw, Brake. The <b>parameters</b> below decide how they are <b>used</b>, and are set in Mission Planner without rebuilding.</div>
+<div class="step s1"><div class="sh"><span class="num">10.2</span><span class="tt">All parameters to set</span><span class="meta">CONFIG → Full Parameter List → Write Params → reboot</span></div>
+<div class="tw"><table><tr><th>Group</th><th>Parameter</th><th>Value</th><th>Meaning</th></tr>
+<tr><td colspan="4"><b>📌 Your values</b>: this table shows your parameter file of 7 Nov (as flown). Where the first plan was different, the plan is in brackets.</td></tr>
+<tr><td rowspan="3">Frame</td><td><code>FRAME_CLASS</code> / <code>FRAME_TYPE</code></td><td>1 / 1</td><td>Quad X (plan: 12 BetaFlightX). Your log shows <code>Frame: QUAD/X</code> and it flies correctly, so keep it</td></tr>
+<tr><td><code>AHRS_ORIENTATION</code></td><td>0 (default)</td><td>FC arrow points forward</td></tr>
+<tr><td><code>MOT_PWM_TYPE</code></td><td>6</td><td>DShot600</td></tr>
+<tr><td rowspan="5">Motors</td><td><code>MOT_THST_HOVER</code> / <code>MOT_HOVER_LEARN</code></td><td>0.149 / 2</td><td>Learned outdoors (step 11)</td></tr>
+<tr><td><code>MOT_THST_EXPO</code></td><td>0.49</td><td>From Initial Tune Parameters (10.1)</td></tr>
+<tr><td><code>MOT_SPIN_MIN</code> / <code>MOT_SPIN_MAX</code></td><td>0.15 / 0.95</td><td>Defaults</td></tr>
+<tr><td><code>MOT_SPIN_ARM</code></td><td>0.1 (now) · <b>0 on throw days</b></td><td>Props idle when armed. For throws from the hand: 0 = props still until the catch. <b>Waiting for your OK</b></td></tr>
+<tr><td><code>SURFTRAK_MODE</code></td><td>1 (default)</td><td>Rangefinder height follows the floor indoors; you kept the default</td></tr>
+<tr><td>Pi (TX3/RX3)</td><td><code>SERIAL2_PROTOCOL</code> / <code>SERIAL2_BAUD</code></td><td>2 / 921</td><td>MAVLink2, 921600</td></tr>
+<tr><td>ELRS (TX2/RX2)</td><td><code>SERIAL6_PROTOCOL</code> · <code>RC_OPTIONS</code></td><td>23 · 3872</td><td>RC input (CRSF). Only ONE port may be 23. Your <code>RC_OPTIONS</code> 3872 works (log: <code>RC Protocol: CRSF</code>)</td></tr>
+<tr><td>GPS (TX5/RX5)</td><td><code>SERIAL3_PROTOCOL</code> / <code>SERIAL3_BAUD</code></td><td>5 / 230</td><td>GPS, 230400 (Radiolink SE100)</td></tr>
+<tr><td>Free (TX4/RX4, TX6/RX6)</td><td><code>SERIAL4_PROTOCOL</code> / <code>SERIAL5_PROTOCOL</code></td><td>-1 / -1</td><td>None</td></tr>
+<tr><td rowspan="4">MTF-01 (TX1/RX1)</td><td><code>SERIAL1_PROTOCOL</code> / <code>SERIAL1_BAUD</code></td><td>1 / 115</td><td>MAVLink1, 115200</td></tr>
+<tr><td><code>FLOW_TYPE</code></td><td>5</td><td>Flow over MAVLink</td></tr>
+<tr><td><code>RNGFND1_TYPE</code></td><td>10</td><td>Rangefinder over MAVLink</td></tr>
+<tr><td><code>RNGFND1_ORIENT</code> / <code>MIN_CM</code> / <code>MAX_CM</code></td><td>25 / 2 / 800</td><td>Down, 2 cm, 8 m (outdoors it reads only ≈ 3.9 m)</td></tr>
+<tr><td rowspan="2">Flight modes (CH8)</td><td><code>FLTMODE_CH</code></td><td>8</td><td>Mode switch channel (plan: CH5)</td></tr>
+<tr><td><code>FLTMODE1</code> … <code>FLTMODE6</code></td><td>0 / 2 / 16 / 0 / 0 / 5</td><td>Stabilize / AltHold / PosHold / Stabilize / Stabilize / Loiter</td></tr>
+<tr><td rowspan="4">Switches</td><td><code>RC5_OPTION</code></td><td>17 (now) → <b>0 on throw days</b></td><td>CH5 = <b>throw switch</b> (8 Nov decision): ArduPilot must ignore it, only the Pi reads it. On an AutoTune day set it back to 17 (and leave the Pi off)</td></tr>
+<tr><td><code>RC6_OPTION</code></td><td>90</td><td>EKF position source: CH6 <b>low = set 1 (indoor, MTF-01)</b>, <b>middle = set 2 (outdoor, GPS)</b>, high = set 3 (same as set 1). Choose it before plugging in the battery</td></tr>
+<tr><td><code>RC7_OPTION</code></td><td>81</td><td>Disarm: motors off at once, even in the air</td></tr>
+<tr><td><code>RC9_OPTION</code></td><td>154</td><td>Arm / disarm switch</td></tr>
+<tr><td>Arming</td><td><code>ARMING_CHECK</code></td><td>33032</td><td>GPS lock + battery + rangefinder (other checks off). Indoors in AltHold the GPS lock is not required while the fence is off (finding F9)</td></tr>
+<tr><td rowspan="5">Failsafes (4S)</td><td><code>FS_THR_ENABLE</code> / <code>FS_THR_VALUE</code></td><td>1 / 975</td><td>Radio lost → RTL (lands when there is no GPS position)</td></tr>
+<tr><td><code>BATT_LOW_VOLT</code> / <code>BATT_FS_LOW_ACT</code> / <code>BATT_LOW_TIMER</code></td><td>13.6 / 1 / 10</td><td>3.4 V per cell under load for 10 s → land (14.0 tripped on sag, 31 Oct)</td></tr>
+<tr><td><code>BATT_CRT_VOLT</code> / <code>BATT_FS_CRT_ACT</code></td><td>13.2 / 1</td><td>3.3 V per cell → land</td></tr>
+<tr><td><code>BATT_ARM_VOLT</code></td><td>14.7</td><td>Won't arm on a half-empty pack</td></tr>
+<tr><td><code>BATT_CAPACITY</code> / <code>BATT_FS_VOLTSRC</code></td><td>1500 / 0</td><td>Raw voltage. <b>A battery failsafe during AutoTune switches to LAND and loses the tune</b> (finding F4)</td></tr>
+<tr><td>Logging</td><td><code>LOG_BITMASK</code> / <code>INS_LOG_BAT_MASK</code></td><td>176126 / 0</td><td>Set 1 on <code>INS_LOG_BAT_MASK</code> only if you do the notch (12)</td></tr>
+<tr><td rowspan="4">Position (EKF3)</td><td>Set 1: <code>EK3_SRC1_POSXY / VELXY / POSZ / VELZ / YAW</code></td><td>0 / 5 / 2 / 0 / 1</td><td><b>Indoor:</b> MTF-01 flow for movement, rangefinder height, compass</td></tr>
+<tr><td>Set 2: <code>EK3_SRC2_…</code></td><td>3 / 3 / 1 / 3 / 1</td><td><b>Outdoor:</b> GPS position and speed, barometer height, compass</td></tr>
+<tr><td><code>EK3_SRC_OPTIONS</code></td><td>0</td><td>Use only the selected set (no FuseAllVelocities)</td></tr>
+<tr><td><code>AHRS_GPS_USE</code></td><td>0</td><td>Backup attitude only; EKF3 does not use it (finding F8)</td></tr>
+</table></div>
+<div class="figure">
+<svg viewBox="0 0 900 200" width="100%" style="max-width:900px" role="img" aria-label="Your transmitter switches: CH5 throw switch read by the Pi, CH6 EKF source low indoor middle outdoor, CH7 disarm, CH8 flight mode, CH9 arm and disarm">
+<g style="font-size:12px" text-anchor="middle">
+<text x="10" y="18" text-anchor="start" style="font-weight:700;fill:#1d2433">Your switches (8 Nov) · who reads them</text>
+<rect x="10" y="32" width="166" height="120" rx="8" fill="#fbe5e4" stroke="#c23a39"/><text x="93" y="54" style="font-weight:700;fill:#8e2321">CH5 · THROW</text><text x="93" y="74" style="fill:#8e2321">read by the Pi only</text><text x="93" y="94" style="fill:#8e2321">low = script off</text><text x="93" y="112" style="fill:#8e2321">high = ready to catch</text><text x="93" y="136" style="fill:#8e2321;font-size:11px">RC5_OPTION 0 · tune day 17</text>
+<rect x="188" y="32" width="166" height="120" rx="8" fill="#e6f1fb" stroke="#185fa5"/><text x="271" y="54" style="font-weight:700;fill:#0c447c">CH6 · POSITION</text><text x="271" y="74" style="fill:#0c447c">low = indoor (MTF-01)</text><text x="271" y="94" style="fill:#0c447c">middle = outdoor (GPS)</text><text x="271" y="112" style="fill:#0c447c">set before battery in</text><text x="271" y="136" style="fill:#0c447c;font-size:11px">RC6_OPTION 90</text>
+<rect x="366" y="32" width="166" height="120" rx="8" fill="#fdf1d8" stroke="#a96a00"/><text x="449" y="54" style="font-weight:700;fill:#7a4b00">CH7 · STOP</text><text x="449" y="74" style="fill:#7a4b00">disarm at once,</text><text x="449" y="94" style="fill:#7a4b00">even in the air</text><text x="449" y="112" style="fill:#7a4b00">your emergency stop</text><text x="449" y="136" style="fill:#7a4b00;font-size:11px">RC7_OPTION 81</text>
+<rect x="544" y="32" width="166" height="120" rx="8" fill="#ede7f6" stroke="#5e35b1"/><text x="627" y="54" style="font-weight:700;fill:#4527a0">CH8 · MODE</text><text x="627" y="74" style="fill:#4527a0">Stabilize / AltHold /</text><text x="627" y="94" style="fill:#4527a0">PosHold / Loiter</text><text x="627" y="112" style="fill:#4527a0">(FLTMODE1–6)</text><text x="627" y="136" style="fill:#4527a0;font-size:11px">FLTMODE_CH 8</text>
+<rect x="722" y="32" width="166" height="120" rx="8" fill="#d9f2e6" stroke="#1b8a5a"/><text x="805" y="54" style="font-weight:700;fill:#0f5e3c">CH9 · ARM</text><text x="805" y="74" style="fill:#0f5e3c">arm / disarm</text><text x="805" y="94" style="fill:#0f5e3c">(on the ground)</text><text x="805" y="136" style="fill:#0f5e3c;font-size:11px">RC9_OPTION 154</text>
+<text x="450" y="182" style="fill:#55555f">Two ways to abort a catch: CH7 = motors off · CH5 low = hand back to Loiter</text>
+</g></svg></div>
+<div class="note"><b>Battery check (4S, 5″):</b> land at about 3.5 V per cell under load (≈ 14.0 V on the HUD while hovering); after landing it should rest at 3.7–3.8 V per cell (14.8–15.2 V). Resting ≥ 15.0 V after a "low battery" = only voltage sag. Hover current reads 0.0 A = the ESC's CUR wire is not reaching the FC or <code>BATT_AMP_PERVLT</code> is wrong; calibrate: new <code>BATT_AMP_PERVLT</code> = old × (charger mAh put back ÷ HUD mAh used). Expected hover time with 1300–1500 mAh: about 4–6 min.</div>
+<div class="note"><b>Indoor or outdoor:</b> GPS gets no fix indoors, so indoors the drone uses the MTF-01 (set 1, CH6 low): flow camera for sideways movement, its rangefinder for the flow's scale. Needs a textured floor (not plain shiny tiles), good light, and stays within the rangefinder's 8 m. Outdoors use GPS (set 2, CH6 middle). Set the switch <b>before</b> plugging in the battery. A switch in flight works, but the height can jump 1.5–2 m (finding F7).</div></div>
+<div class="step s1"><div class="sh"><span class="num">10.3</span><span class="tt">Motor test and calibrations</span><span class="meta">battery ON, props OFF</span></div>
+<ul class="ck">
+<li><label><input type="checkbox"> Motor Test at 7 %: <b>A</b> = front-right ↺, <b>B</b> = rear-right ↻, <b>C</b> = rear-left ↺, <b>D</b> = front-left ↻ (↺ counter-clockwise, ↻ clockwise, seen from above). Wrong direction: swap any two of that motor's wires.</label></li>
+<li><label><input type="checkbox"> Accel Calibration (6 sides), then Calibrate Level.</label></li>
+<li><label><input type="checkbox"> <b>Compass</b> (SETUP → Mandatory Hardware → Compass): the list shows the GPS module's compass as <b>External</b> (the F405-HDTE has none of its own). Make sure <b>Use Compass 1</b> is ticked and it is first in the priority list.</label></li>
+<li><label><input type="checkbox"> Battery ON, drone outdoors away from metal and cars: <b>Onboard Mag Calibration → Start</b>, rotate the drone slowly on every side until it beeps and shows "success". Reboot. (Orientation is found automatically: <code>COMPASS_AUTO_ROT 2</code> is this board's default.)</label></li>
+<li><label><input type="checkbox"> Check the heading: point the drone's nose north (phone compass); Mission Planner's HUD heading reads about 0°.</label></li>
+<li><label><input type="checkbox"> <b>Flight modes</b> (SETUP → Mandatory Hardware → Flight Modes): flip the CH8 switch through its positions; the highlighted slot changes and shows the mode from the 10.2 table.</label></li>
+<li><label><input type="checkbox"> <b>Stick check</b> in Radio Calibration: roll right → CH1 up, pitch forward → CH2 down, throttle up → CH3 up, yaw right → CH4 up. If a channel moves the wrong way, reverse it on the transmitter, not in ArduPilot.</label></li>
+<li><label><input type="checkbox"> Radio Calibration: every stick and switch to both ends.</label></li>
+<li><label><input type="checkbox"> Battery Monitor: type the multimeter voltage into "Measured battery voltage".</label></li>
+<li><label><input type="checkbox"> Outdoors with GPS fix (CH6 <b>middle</b>): no red pre-arm messages. Arm in AltHold → motors idle; CH7 (disarm) → motors stop.</label></li>
+<li><label><input type="checkbox"> Indoors (CH6 <b>low</b> before plugging in): DATA → <b>Status</b> tab → <code>opt_qua</code> (flow quality) goes above 0 when the drone is held over a textured floor in good light, and <code>rangefinder1</code> shows the height. Then flip the mode switch to Loiter while disarmed: no "requires position" message = the indoor position works. Back to AltHold.</label></li>
+<li><label><input type="checkbox"> Save parameters as <code>q250_10_bench.param</code>.</label></li>
+</ul>
+<div class="note"><b>📤 Send me:</b> <code>q250_10_bench.param</code>.<br><b>Where:</b> CONFIG → Full Parameter List → <b>Refresh Params</b> → Save → name it <code>q250_10_bench.param</code>. <a href="#x0">Where and how to get it: step 16.0 →</a></div></div>
+
+<h2 id="m2"><span class="stage-tag t1">11</span>First hover · AltHold, then Loiter</h2>
+<div class="step s1"><div class="sh"><span class="num">11</span><span class="tt">2 minutes, 1.5–2 m high</span><span class="meta">outdoor (calm, CH6 middle = GPS) or indoor (CH6 low = MTF-01) · full battery, props ON</span></div>
+<div class="note"><b>What this hover measures:</b> <code>MOT_THST_HOVER</code> = the throttle (0 to 1) the drone needs to hover. You don't measure it with a tool: ArduPilot <b>learns it by itself</b> while the drone hovers, and saves it when you disarm. Like a car's cruise control learning how much gas holds a steady speed.</div>
+<div class="tw"><table><tr><th>Learning rule (Copter 4.4.4)</th><th>Means for you</th></tr>
+<tr><td><code>MOT_HOVER_LEARN</code> = 2 (default): learn, save at disarm</td><td>Check it once (first box below)</td></tr>
+<tr><td>Learns only in AltHold, Loiter, PosHold (stick centred)</td><td><b>Stabilize does not count</b> (manual throttle); <b>Guided does not learn in practice</b> (see 5.6)</td></tr>
+<tr><td>Learns only when level (under 5° tilt) and not climbing or descending</td><td>Throttle stick centred. A correction over 5° only <b>pauses</b> the learning; it continues when level again</td></tr>
+<tr><td>Learns slowly (10-second time constant): 30 s ≈ 95 %, 60 s ≈ 99.8 %</td><td>Hover steadily for at least 60 s (the 2 minutes below are plenty)</td></tr>
+<tr><td>Starts from 0.35 (or the last saved value)</td><td>Still exactly <b>0.35</b> after the hover = it did not learn</td></tr></table></div>
+<ul class="ck">
+<li><label><input type="checkbox"> Before flying: CONFIG → Full Parameter List → search <code>MOT_HOVER_LEARN</code> → it must show <b>2</b>. If not: type 2 → Write Params.</label></li>
+<li><label><input type="checkbox"> Fit props: normal props on front-right and rear-left, reversed on front-left and rear-right. Tighten the nuts.</label></li>
+<li><label><input type="checkbox"> Mode <b>AltHold</b> (CH8 mode switch) → arm → take off to 1.5–2 m (not lower: below ~0.3 m the floor effect makes the value too low) → throttle stick to the <b>centre</b>.</label></li>
+<li><label><input type="checkbox"> Hover <b>10–20 s</b> in AltHold: check it is steady.</label></li>
+<li><label><input type="checkbox"> <b>Optional, more stable:</b> if it holds still (outdoor: the map position looks right; indoor: CH6 was low at power-up), switch CH8 to <b>Loiter</b> (position hold: it stays level by itself, so less tilting). If it starts circling in growing loops, switch back to AltHold at once, finish the hover there, and fix the compass before step 14.</label></li>
+<li><label><input type="checkbox"> Hover <b>2 minutes</b> in total, small corrections only. Both modes learn, so the value is valid either way.</label></li>
+<li><label><input type="checkbox"> Mode <b>Land</b> → disarm. Touch the motors: warm is fine.</label></li>
+<li><label><input type="checkbox"> Download the log as <code>q250_11_hover.bin</code>. Refresh Params and read <code>MOT_THST_HOVER</code>.</label></li>
+</ul>
+<div class="tw"><table><tr><th>You see</th><th>Do</th></tr>
+<tr class="hl"><td>Steady hover, <code>MOT_THST_HOVER</code> ≈ 0.18–0.35 (not exactly 0.35)</td><td>✅ Send the log</td></tr>
+<tr><td><code>MOT_THST_HOVER</code> still exactly 0.35</td><td>Did not learn: check <code>MOT_HOVER_LEARN</code> = 2, the mode (AltHold/Loiter, not Stabilize or Guided), at least 60 s of steady hover, and that you pressed <b>Refresh Params</b> after disarm</td></tr>
+<tr><td>Exactly 0.125</td><td>Stuck at ArduPilot's lower limit: send me the log before AutoTune</td></tr>
+<tr><td>Over 0.5</td><td>Underpowered: check props and battery before flying further</td></tr>
+<tr><td>Fast wobble, buzzing, hot motors</td><td>Land at once; send the log anyway</td></tr>
+<tr><td>Flips on take-off</td><td>Motor order, direction or prop type wrong: redo 10.3</td></tr></table></div>
+<div class="note"><b>📌 Your result (6–7 Nov):</b> <code>MOT_THST_HOVER</code> = <b>0.149</b>, learned outdoors (hover logs: outdoor 0.141–0.149, indoor 0.150 / 0.158). Below the 0.18–0.35 range in the table above: your drone is stronger than the first estimate (thrust-to-weight ≈ 6), which is fine. Indoors the saved value does not learn with <code>SURFTRAK_MODE 1</code> (finding F2), so learn it outdoors. 0.149 is now used everywhere: twin, SITL and the Pi scripts.</div>
+<div class="note"><b>📤 Send me:</b> <code>q250_11_hover.bin</code> + the <code>MOT_THST_HOVER</code> value. I send back the notch values.<br><b>Where:</b> log = DATA → DataFlash Logs → Download (newest) → rename. Value = CONFIG → Full Parameter List → <b>Refresh Params</b> → search <code>MOT_THST_HOVER</code>. <a href="#x0">Where and how to get it: step 16.0 →</a></div></div>
+
+<h2 id="m3"><span class="stage-tag t1">12</span>Notch hover</h2>
+<div class="step s1"><div class="sh"><span class="num">12</span><span class="tt">Enter my values, hover again</span><span class="meta">CONFIG → Full Parameter List</span></div>
+<ul class="ck">
+<li><label><input type="checkbox"> <code>INS_HNTCH_ENABLE 1</code> → Write → reboot.</label></li>
+<li><label><input type="checkbox"> Enter <code>INS_HNTCH_MODE 1</code> and my <code>INS_HNTCH_FREQ</code>, <code>INS_HNTCH_BW</code>, <code>INS_HNTCH_REF</code>. Set <code>INS_LOG_BAT_OPT 4</code>. Write.</label></li>
+<li><label><input type="checkbox"> Fly the same 2-minute hover as step 11. Save the log as <code>q250_12_notch.bin</code>.</label></li>
+</ul>
+<div class="note"><b>📌 Status 8 Nov:</b> not done (<code>INS_HNTCH_ENABLE 0</code>). The drone flies steady without it, so it is optional; do it if the motors get hot or the logs show vibration.</div>
+<div class="note"><b>📤 Send me:</b> <code>q250_12_notch.bin</code>.<br><b>Where:</b> DATA → DataFlash Logs → Download (newest) → rename. <a href="#x0">Where and how to get it: step 16.0 →</a></div></div>
+
+<h2 id="m4"><span class="stage-tag t2">13</span>AutoTune</h2>
+<div class="note"><b>Which axes:</b> <code>AUTOTUNE_AXES</code> is a sum: <b>1</b> roll + <b>2</b> pitch + <b>4</b> yaw (default 7 = all three). Plan was two flights; <b>your 7 Nov flights showed one axis per battery</b> (roll alone used a full pack). So: AXES 1 (roll), then 2 (pitch), then 4 (yaw), a new full battery each:</div>
+<div class="tw"><table><tr><th>Flight</th><th><code>AUTOTUNE_AXES</code></th><th>Tunes</th><th>Why</th></tr>
+<tr><td>13</td><td><b>1</b>, then <b>2</b></td><td>Roll, then pitch (one battery each)</td><td>Most important: the PPO sends lean angles, ArduPilot's roll/pitch loop turns them into motion</td></tr>
+<tr><td>13b</td><td><b>4</b></td><td>Yaw</td><td>The spin recovery uses the yaw brake, so yaw should not stay on default gains</td></tr></table></div>
+<p><b>Set it:</b> CONFIG → Full Parameter List → search <code>AUTOTUNE_AXES</code> → type the number → <b>Write Params</b>. The AutoTune switch is <b>CH5</b> (<code>RC5_OPTION 17</code>). CH5 becomes the throw switch, so on an AutoTune day set <code>RC5_OPTION</code> to 17, and back to 0 for throw days.</p>
+<div class="note"><b>📌 Your result (7 Nov):</b> roll finished and was entered by hand from the log: <code>ATC_RAT_RLL_P 0.065</code>, <code>_I 0.065</code>, <code>_D 0.0018</code>, <code>ATC_ANG_RLL_P 23.457</code>, <code>ATC_ACCEL_R_MAX 282459</code>. Pitch: the same values copied from roll. Yaw: default (P 0.18, I 0.018). Flight is stable, so you stopped here. A partial tune was lost when the battery failsafe switched to LAND (finding F4). If PPO's spin recovery drifts on real throws, yaw AutoTune (13b) is the first thing to do.</div>
+<div class="note"><b>Which mode to start from</b> (checked in the Copter 4.4.4 source): AutoTune starts from the mode you are in when you flip the switch.</div>
+<div class="tw"><table><tr><th>Mode when you flip AutoTune ON</th><th>During the tune</th><th>Use</th></tr>
+<tr class="hl"><td><b>Loiter</b> (CH8)</td><td>Holds height <b>and</b> slowly pulls back to the start point</td><td>✅ Recommended</td></tr>
+<tr><td>AltHold (CH8)</td><td>Holds height only: you correct the drift yourself</td><td>OK</td></tr></table></div>
+<p><b>The pull-back is deliberately weak</b> so it doesn't spoil the tune: about 1° of lean for every 2 m of drift (10° only at 20 m). A few metres of drift come back slowly. Steer whenever needed: stick input only <b>pauses</b> the tune ("AutoTune: pilot overrides active"), it doesn't break it. It works with GPS (outdoor) and with the MTF-01 (indoor).</p>
+<div class="tw"><table><tr><th></th><th>Outdoor (CH6 middle = GPS)</th><th>Indoor (CH6 low = MTF-01)</th></tr>
+<tr><td>Where</td><td>Open field, calm day</td><td>A large hall, not a room: the drone twitches about 20° and drifts; a 5×5 m space is too small and you would be steering most of the time</td></tr>
+<tr><td>Height</td><td>5–10 m</td><td>2–3 m (well under the ceiling, within the MTF-01's 8 m)</td></tr>
+<tr><td>Before AutoTune</td><td>GPS fix, ≥ 10 satellites</td><td>Step 11 or 14 showed Loiter holds still indoors</td></tr></table></div>
+<p><b>How you know it finished:</b> the twitching <b>stops</b> and it just hovers, and the buzzer plays a loud "finished" tone (success) or a low "negative" tone (failed); you only hear these while armed. The log then shows <code>AutoTune: Success</code> and <code>AutoTune: Saved gains for …</code> (check after landing, step 16.0 ①). How long: a few minutes per axis (the ArduPilot wiki gives no fixed time; wind and stick input make it longer).</p>
+<div class="step s2"><div class="sh"><span class="num">13</span><span class="tt">Roll and pitch</span><span class="meta">calm day, full battery, <code>AUTOTUNE_AXES 1</code>, then <code>2</code></span></div>
+<ul class="ck">
+<li><label><input type="checkbox"> Set <code>AUTOTUNE_AXES</code> = <b>1</b> (roll; next battery <b>2</b> = pitch) → Write Params.</label></li>
+<li><label><input type="checkbox"> AltHold → arm → climb to the height in the table above (outdoor 5–10 m, indoor 2–3 m) → throttle centred.</label></li>
+<li><label><input type="checkbox"> Switch CH8 to <b>Loiter</b> and wait until it holds still. (Or stay in AltHold.)</label></li>
+<li><label><input type="checkbox"> AutoTune switch <b>ON</b>. Hands off; steer only when it drifts too far.</label></li>
+<li><label><input type="checkbox"> Wait until the twitching <b>stops</b> and the buzzer plays the loud "finished" tone (= <code>AutoTune: Success</code>). A low "negative" tone = failed: land and send me the log.</label></li>
+<li><label><input type="checkbox"> Land <b>with the switch still ON</b>, then disarm: this saves the gains.</label></li>
+<li><label><input type="checkbox"> Switch OFF. Save <code>q250_13_autotune.param</code> and the log <code>q250_13_autotune.bin</code>.</label></li>
+</ul>
+<p>Battery low before it finishes: land <b>yourself</b> with the switch ON, before the battery failsafe does (a failsafe LAND leaves AutoTune and nothing is saved), disarm (finished axes are saved), new battery, set <code>AUTOTUNE_AXES</code> to the missing axis (1 roll, 2 pitch), repeat.</p>
+<div class="note"><b>📤 Send me:</b> <code>q250_13_autotune.param</code> + <code>q250_13_autotune.bin</code>. <b>This .param is the most important file:</b> the simulator's ArduPilot gets these exact gains.<br><b>Where:</b> .param = CONFIG → Full Parameter List → <b>Refresh Params</b> first (else it saves the old gains) → Save. Log = DATA → DataFlash Logs → Download (newest) → rename. <a href="#x0">Where and how to get it: step 16.0 →</a></div></div>
+<div class="step s2"><div class="sh"><span class="num">13b</span><span class="tt">Yaw</span><span class="meta">new full battery, <code>AUTOTUNE_AXES 4</code></span></div>
+<ul class="ck">
+<li><label><input type="checkbox"> Set <code>AUTOTUNE_AXES</code> = <b>4</b> → Write Params.</label></li>
+<li><label><input type="checkbox"> Same as step 13: AltHold → climb (outdoor 5–10 m, indoor 2–3 m) → Loiter → AutoTune switch <b>ON</b> → wait until the twitching stops and the buzzer plays the "finished" tone.</label></li>
+<li><label><input type="checkbox"> Land <b>with the switch still ON</b>, then disarm: this saves the yaw gains.</label></li>
+<li><label><input type="checkbox"> Switch OFF. Save <code>q250_13b_yaw.param</code> and the log <code>q250_13b_yaw.bin</code>.</label></li>
+</ul>
+<div class="note"><b>📤 Send me:</b> <code>q250_13b_yaw.param</code> + <code>q250_13b_yaw.bin</code>. This .param has the final gains for all three axes.<br><b>Where:</b> same as step 13 (Refresh Params → Save; DataFlash Logs → Download). <a href="#x0">Where and how to get it: step 16.0 →</a></div></div>
+
+<h2 id="m5"><span class="stage-tag t2">14</span>Loiter</h2>
+<div class="step s2"><div class="sh"><span class="num">14</span><span class="tt">Position hold</span><span class="meta">outdoor: CH6 middle, GPS fix, ≥ 10 satellites · indoor: CH6 low, MTF-01</span></div>
+<p>Do it where you will fly the throw tests (outdoor, indoor, or both: one log each, e.g. <code>q250_14_loiter.bin</code> and <code>q250_14_loiter_indoor.bin</code>).</p>
+<ul class="ck">
+<li><label><input type="checkbox"> AltHold to 2–3 m (indoor: 1.5–2 m) → mode <b>Loiter</b> → hands off for 2 minutes.</label></li>
+<li><label><input type="checkbox"> 3 short stick moves: it stops and holds each new spot.</label></li>
+<li><label><input type="checkbox"> Land, disarm, save <code>q250_14_loiter.bin</code>.</label></li>
+</ul>
+<div class="tw"><table><tr><th>You see</th><th>Do</th></tr>
+<tr class="hl"><td>Holds within ~1–2 m</td><td>✅ Done</td></tr>
+<tr><td>Circles slowly</td><td>Redo compass calibration away from metal; GPS arrow forward</td></tr>
+<tr><td>Indoor: drifts off steadily, or wobbles back and forth</td><td>Flow scale or direction is off: land and send me the log. I check the flow against the gyro and send <code>FLOW_FXSCALER</code> / <code>FLOW_FYSCALER</code> (or <code>FLOW_ORIENT_YAW</code>)</td></tr>
+<tr><td>Indoor: Loiter refused ("requires position")</td><td>CH6 was not low at power-up, or <code>opt_qua</code> is 0 (floor too plain or too dark): check step 10.3</td></tr></table></div>
+<div class="note"><b>📌 Your result (6–7 Nov):</b> position hold works indoors on the MTF-01 (AltHold take-off, then hold) and outdoors on GPS. Every log shows the <b>left motors 36–50 PWM higher</b> than the right: the drone is left-heavy (finding F10). Move the battery or Pi a little to the right, or check the balance on two fingers under the arms.</div>
+<div class="note"><b>📤 Send me:</b> <code>q250_14_loiter.bin</code> (and <code>q250_14_loiter_indoor.bin</code> if you flew indoors) and "Loiter OK".<br><b>Where:</b> DATA → DataFlash Logs → Download (newest) → rename. <a href="#x0">Where and how to get it: step 16.0 →</a></div></div>
+
+<h2 id="m6"><span class="stage-tag t2">15</span>Weigh and measure: 4 numbers</h2>
+<div class="note"><b>📌 Your result (30–31 Oct):</b> A <b>544.5 g</b> · B <b>250 mm</b> · C <b>33 g</b> (spec; weigh one to confirm) · D <b>74 × 33 × 70 mm</b>. <b>Lesson (7 Nov):</b> these give an inertia about half the real one, because the box leaves out plates, arms, Pi, GPS mast and wires. The twin now uses <code>Q250_MOTOR_KG</code> 0.070 to make up for it (5.3, finding F5). Keep measuring A–D the same way for the record; the 0.070 stays.</div>
+<div class="note"><b>What these are for:</b> AirSim builds the 5-inch from these numbers. <b>A</b> is how heavy it is, <b>B</b> how long the arms are, <b>C</b> how much weight sits at each arm tip, <b>D</b> the size of the heavy middle part. B, C and D together decide how easily it spins: the most important difference between the 5-inch and the F450.</div>
+<div class="figure">
+<svg viewBox="0 0 900 540" width="100%" style="max-width:900px" role="img" aria-label="Four measurements with the example values and the settings they become: A drone ready to fly on a scale; B diagonal from front-left motor shaft to rear-right motor shaft; C one motor with prop and nut on the scale; D centre block length, width and height, without arms and props">
+<defs><marker id="w1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#c23a39"/></marker>
+<marker id="w2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#185fa5"/></marker></defs>
+<g style="font-size:12.5px">
+<!-- A -->
+<text x="20" y="22" style="font-weight:700;fill:#1d2433">A · Drone ready to fly</text>
+<rect x="40" y="170" width="160" height="22" rx="4" fill="#f1efe8" stroke="#888"/><text x="120" y="186" text-anchor="middle" style="fill:#1d2433;font-family:Consolas,monospace">550 g</text>
+<path d="M80 170 Q120 140 160 170 Z" fill="#e6f1fb" stroke="#185fa5"/><text x="120" y="210" text-anchor="middle" style="fill:#444">bowl on the scale, TARE first</text>
+<line x1="60" y1="150" x2="180" y2="150" stroke="#888" stroke-width="5"/><rect x="100" y="136" width="40" height="18" rx="3" fill="#b4b2a9"/>
+<ellipse cx="60" cy="144" rx="22" ry="4" fill="#fbe5e4" stroke="#c23a39"/><ellipse cx="180" cy="144" rx="22" ry="4" fill="#fbe5e4" stroke="#c23a39"/>
+<text x="20" y="232" style="fill:#444">Everything fitted: battery, props,</text><text x="20" y="248" style="fill:#444">GPS, MTF-01, Pi, BEC, straps.</text>
+<text x="20" y="272" style="fill:#3b6d11;font-weight:700;font-family:Consolas,monospace">Q250_MASS_KG = 0.55</text><text x="20" y="288" style="fill:#3b6d11">550 ÷ 1000</text>
+<!-- B -->
+<text x="250" y="22" style="font-weight:700;fill:#1d2433">B · Diagonal, motor shaft to motor shaft</text>
+<line x1="290" y1="60" x2="430" y2="200" stroke="#b4b2a9" stroke-width="9" stroke-linecap="round"/><line x1="430" y1="60" x2="290" y2="200" stroke="#b4b2a9" stroke-width="9" stroke-linecap="round"/>
+<circle cx="290" cy="60" r="13" fill="#fff" stroke="#1d2433"/><circle cx="430" cy="60" r="13" fill="#fff" stroke="#1d2433"/><circle cx="290" cy="200" r="13" fill="#fff" stroke="#1d2433"/><circle cx="430" cy="200" r="13" fill="#fff" stroke="#1d2433"/>
+<circle cx="290" cy="60" r="3" fill="#1d2433"/><circle cx="430" cy="200" r="3" fill="#1d2433"/>
+<line x1="293" y1="63" x2="427" y2="197" stroke="#c23a39" stroke-width="2.5" marker-start="url(#w1)" marker-end="url(#w1)"/>
+<text x="372" y="122" style="fill:#c23a39;font-weight:700">250 mm</text>
+<text x="290" y="40" text-anchor="middle" style="fill:#444">front-left</text><text x="430" y="226" text-anchor="middle" style="fill:#444">rear-right</text>
+<text x="250" y="248" style="fill:#444">Centre of one shaft to centre of the opposite</text><text x="250" y="264" style="fill:#444">shaft. Props OFF. Ruler or tape.</text>
+<text x="250" y="284" style="fill:#3b6d11;font-weight:700;font-family:Consolas,monospace">Q250_ARM_M = 0.125</text><text x="420" y="284" style="fill:#3b6d11">250 ÷ 2 ÷ 1000 (one arm)</text>
+<!-- C -->
+<text x="600" y="22" style="font-weight:700;fill:#1d2433">C · One motor + prop + nut</text>
+<rect x="640" y="170" width="160" height="22" rx="4" fill="#f1efe8" stroke="#888"/><text x="720" y="186" text-anchor="middle" style="fill:#1d2433;font-family:Consolas,monospace">33 g</text>
+<rect x="700" y="132" width="40" height="34" rx="5" fill="#b4b2a9" stroke="#888"/><line x1="720" y1="132" x2="720" y2="118" stroke="#1d2433" stroke-width="3"/>
+<ellipse cx="720" cy="116" rx="62" ry="6" fill="#fbe5e4" stroke="#c23a39"/><circle cx="720" cy="112" r="5" fill="#1d2433"/>
+<text x="600" y="232" style="fill:#444">A spare motor with a prop and nut on it, or</text><text x="600" y="248" style="fill:#444">unscrew one (with its short wires). Not the arm.</text>
+<text x="600" y="272" style="fill:#3b6d11;font-weight:700;font-family:Consolas,monospace">Q250_MOTOR_KG = 0.033</text><text x="600" y="288" style="fill:#3b6d11">33 ÷ 1000</text>
+<!-- D -->
+<text x="20" y="310" style="font-weight:700;fill:#1d2433">D · Centre block: the heavy middle part only (no arms, props, GPS mast, antennas)</text>
+<text x="150" y="328" text-anchor="middle" style="fill:#444">Top view (front ↑)</text>
+<rect x="105" y="340" width="90" height="110" rx="6" fill="#e6f1fb" stroke="#185fa5" stroke-width="2"/>
+<text x="150" y="380" text-anchor="middle" style="fill:#0c447c">stack</text><text x="150" y="398" text-anchor="middle" style="fill:#0c447c">battery</text><text x="150" y="416" text-anchor="middle" style="fill:#0c447c">Pi</text>
+<line x1="60" y1="340" x2="105" y2="345" stroke="#b4b2a9" stroke-width="7"/><line x1="240" y1="340" x2="195" y2="345" stroke="#b4b2a9" stroke-width="7"/>
+<line x1="60" y1="455" x2="105" y2="445" stroke="#b4b2a9" stroke-width="7"/><line x1="240" y1="455" x2="195" y2="445" stroke="#b4b2a9" stroke-width="7"/>
+<line x1="215" y1="340" x2="215" y2="450" stroke="#185fa5" stroke-width="2" marker-start="url(#w2)" marker-end="url(#w2)"/><text x="222" y="400" style="fill:#185fa5;font-weight:700">L 150</text>
+<line x1="105" y1="462" x2="195" y2="462" stroke="#185fa5" stroke-width="2" marker-start="url(#w2)" marker-end="url(#w2)"/><text x="150" y="482" text-anchor="middle" style="fill:#185fa5;font-weight:700">W 50</text>
+<text x="340" y="328" style="fill:#444">Side view</text>
+<rect x="340" y="420" width="160" height="6" fill="#b4b2a9"/><text x="510" y="427" style="fill:#444">bottom plate</text>
+<rect x="370" y="380" width="100" height="40" rx="4" fill="#e6f1fb" stroke="#185fa5" stroke-width="2"/><text x="420" y="404" text-anchor="middle" style="fill:#0c447c">stack + Pi</text>
+<rect x="370" y="350" width="100" height="30" rx="4" fill="#fdf1d8" stroke="#a96a00"/><text x="420" y="370" text-anchor="middle" style="fill:#7a4b00">battery</text>
+<line x1="420" y1="350" x2="420" y2="330" stroke="#888" stroke-dasharray="3 3"/><text x="428" y="338" style="fill:#888">GPS mast: not counted</text>
+<line x1="490" y1="350" x2="490" y2="426" stroke="#185fa5" stroke-width="2" marker-start="url(#w2)" marker-end="url(#w2)"/><text x="497" y="392" style="fill:#185fa5;font-weight:700">H 70</text>
+<text x="600" y="350" style="font-weight:700;fill:#185fa5">L</text><text x="616" y="350" style="fill:#444">= front to back of the middle block</text>
+<text x="600" y="374" style="font-weight:700;fill:#185fa5">W</text><text x="616" y="374" style="fill:#444">= left to right of the middle block</text>
+<text x="600" y="398" style="font-weight:700;fill:#185fa5">H</text><text x="616" y="398" style="fill:#444">= bottom plate to top of the battery</text>
+<text x="600" y="430" style="fill:#444">Measure the outside of everything stacked</text><text x="600" y="446" style="fill:#444">in the middle. Numbers in mm. Rough is fine (±5 mm).</text>
+<text x="600" y="474" style="fill:#3b6d11;font-weight:700;font-family:Consolas,monospace">Q250_BODY_X_M = 0.15  (L 150)</text><text x="600" y="492" style="fill:#3b6d11;font-weight:700;font-family:Consolas,monospace">Q250_BODY_Y_M = 0.05  (W 50)</text><text x="600" y="510" style="fill:#3b6d11;font-weight:700;font-family:Consolas,monospace">Q250_BODY_Z_M = 0.07  (H 70)</text><text x="600" y="528" style="fill:#3b6d11">each: mm ÷ 1000</text>
+</g></svg></div>
+<div class="step s2"><div class="sh"><span class="num">15</span><span class="tt">Measure A, B, C, D</span><span class="meta">F1976 kitchen scale (press TARE with the bowl on it) · ruler</span></div>
+<ul class="ck">
+<li><label><input type="checkbox"> <b>A · Drone ready to fly:</b> bowl on the scale → TARE → drone on the bowl with everything fitted. Write down the grams.</label></li>
+<li><label><input type="checkbox"> <b>B · Diagonal:</b> props off, ruler from the centre of the front-left motor shaft to the centre of the rear-right motor shaft. Write down the mm.</label></li>
+<li><label><input type="checkbox"> <b>C · Motor + prop + nut:</b> one motor with a prop and nut screwed on (a spare, or unscrew one from the arm). TARE, weigh, write down the grams.</label></li>
+<li><label><input type="checkbox"> <b>D · Centre block:</b> measure the outside of the middle block (stack + battery + Pi), not arms, props, GPS mast or antennas: L front-to-back, W left-to-right, H bottom plate to top of battery. Write down the mm.</label></li>
+</ul>
+<div class="tw"><table><tr><th>Number</th><th>Example (= starting estimate)</th><th>Becomes in settings_Q250.json</th><th>Typical for this build</th><th>Check</th></tr>
+<tr><td>A · Drone ready to fly</td><td>550 g</td><td><code>Q250_MASS_KG</code> 0.55</td><td>500–600 g</td><td>Over 650 g: tell me before flying</td></tr>
+<tr><td>B · Diagonal</td><td>250 mm</td><td><code>Q250_ARM_M</code> 0.125</td><td>~250 mm (Q250)</td><td>Way off: you measured edge to edge, not shaft to shaft</td></tr>
+<tr><td>C · Motor + prop + nut</td><td>33 g</td><td><code>Q250_MOTOR_KG</code> 0.033</td><td>30–38 g</td><td>Over 45 g: the arm or wires were included</td></tr>
+<tr><td>D · L × W × H</td><td>150 × 50 × 70 mm</td><td><code>Q250_BODY_X_M</code> / <code>_Y_M</code> / <code>_Z_M</code> 0.15 / 0.05 / 0.07</td><td>L 100–150, W 40–70, H 40–80</td><td>L over 200: the arms were included</td></tr></table></div></div>
+
+<!-- ================= PART 5 SEND ================= -->
+<h2 id="x1"><span class="stage-tag t3">16</span>Send me: the complete list</h2>
+<div class="note"><b>📌 Received by 8 Nov:</b> parameter files (6–7 Nov, incl. <code>tune_partial_param.param</code>), hover log <code>q250_11_hover.bin</code>, flight logs of 7 Nov (09:21, 11:52, 16:30), AutoTune log, measurements A–D, GPS chip line, Pi details, the 31 Oct twin test and the 8 Nov SITL throw test. <b>Still open:</b> notch log (12), pitch/yaw AutoTune (13, optional), charger mAh vs log mAh (battery current check), Pi on/off GPS noise test.</div>
+<div class="step s3" id="x0"><div class="sh"><span class="num">16.0</span><span class="tt">Where and how to get each file and value</span><span class="meta">Mission Planner, drone on USB, battery OFF</span></div>
+<p><b>① Flight logs (<code>.bin</code>): steps 11, 12, 13, 13b, 14.</b> One flight = one log: download straight after each flight so they don't mix up.</p>
+<div class="tw"><table><tr><th>Way</th><th>Do</th></tr>
+<tr class="hl"><td><b>A · USB</b> (easiest)</td><td>Battery off → USB → <b>Connect</b> → <b>DATA</b> tab → <b>DataFlash Logs</b> tab (lower left) → <b>Download DataFlash Log Via Mavlink</b> → tick the <b>newest</b> (highest number, today's date and time) → Download. It lands in <code>C:\Users\lukas\Documents\Mission Planner\logs\QUADROTOR\1\</code> named by date and time (e.g. <code>2026-10-28 11-40-00.bin</code>). Copy it and rename it as the step says (e.g. <code>q250_11_hover.bin</code>).</td></tr>
+<tr><td><b>B · SD card</b> (faster for long logs)</td><td>Take the SD card out of the F405-HDTE → on the PC open <code>APM\LOGS\</code> → the <b>highest number</b> (e.g. <code>00000012.BIN</code>) is the newest flight → copy and rename.</td></tr></table></div>
+<p><b>② Parameter files (<code>.param</code>): steps 10, 13, 13b.</b> Connect → <b>CONFIG</b> tab → <b>Full Parameter List</b> → <b>Refresh Params</b> first (without it you save old values: matters most after AutoTune) → <b>Save</b> (right-hand buttons) → choose a folder → type the name (e.g. <code>q250_13_autotune.param</code>) → Save.</p>
+<p><b>③ Single values</b> (paste as text):</p>
+<div class="tw"><table><tr><th>Value</th><th>Where</th></tr>
+<tr><td><code>MOT_THST_HOVER</code> (real drone)</td><td>CONFIG → Full Parameter List → <b>Refresh Params</b> → type <code>MOT_THST_HOVER</code> in the search box</td></tr>
+<tr><td>Firmware version on the drone</td><td><b>DATA</b> tab → <b>Messages</b> tab (under the HUD): the line <code>ArduCopter V4.6.0-dev (1e001fa0)</code></td></tr>
+<tr><td><code>MOT_THST_HOVER</code> (simulator, step 5.6)</td><td>MAVProxy window, after PosHold hover + land: <code>param fetch MOT_THST_HOVER</code> (not <code>param show</code>: that shows the old start-up copy)</td></tr>
+<tr><td>Measurements A–D</td><td>Kitchen scale and ruler, as in the step 15 figure → into the sheet (16.1)</td></tr></table></div>
+<p><b>④ PC files</b> (attach):</p>
+<div class="tw"><table><tr><th>File</th><th>Where</th></tr>
+<tr><td><code>settings.json</code></td><td><code>C:\Users\lukas\Documents\AirSim\settings.json</code></td></tr>
+<tr><td>impact_check CSV + summary</td><td><code>Stage_3\runs\impact_check\</code> (newest CSV); summary table = copy from the PowerShell window</td></tr></table></div>
+<p><b>⑤ How to send:</b> attach the files in the chat (like the impact_check CSV); paste single values and the 16.1 sheet as text.</p></div>
+<div class="step s3"><div class="sh"><span class="num">16.1</span><span class="tt">The sheet: filled in with YOUR drone (8 Nov)</span><span class="meta">copy, replace the example values with yours, paste into your message</span></div>
+<div class="cmdbox"><pre class="cmd">5-INCH DRONE SHEET
+Motors: HSKRC 2205 1700KV   Props: YSIDO 5045 3-blade   Battery: 4S 1500 mAh
+ArduPilot on drone (Messages tab, step 9C): ArduCopter V4.6.0-dev (1e001fa0)
+A  Drone ready to fly:        544.5 g
+B  Diagonal motor to motor:   250 mm
+C  One motor + prop + nut:     33 g
+D  Centre block L x W x H:    74 x 33 x 70 mm
+MOT_THST_HOVER (step 11):     0.149</pre><button class="copy">Copy</button></div>
+<p>The two version/part lines tell me which drone and firmware the numbers belong to (for the thesis record).</p></div>
+<div class="step s3"><div class="sh"><span class="num">16.2</span><span class="tt">The files</span><span class="meta">attach them to your message</span></div>
+<div class="tw"><table><tr><th>File</th><th>What it is</th><th>How you made it</th><th>What I use it for</th></tr>
+<tr><td><code>q250_10_bench.param</code></td><td>All drone settings after set-up</td><td>Step 10.3: Full Parameter List → Save</td><td>Check the set-up before flying</td></tr>
+<tr><td><code>q250_11_hover.bin</code></td><td>Flight log of the 2-min hover</td><td>Step 11: DataFlash Logs → Download</td><td>Vibration → your notch values</td></tr>
+<tr><td><code>q250_12_notch.bin</code></td><td>Hover log with the notch on</td><td>Step 12</td><td>Check the notch works</td></tr>
+<tr><td><code>q250_13_autotune.param</code></td><td>All settings after AutoTune</td><td>Step 13: Full Parameter List → Save</td><td><b>The simulator's ArduPilot gets these gains</b></td></tr>
+<tr><td><code>q250_13_autotune.bin</code></td><td>Flight log of AutoTune</td><td>Step 13</td><td>Motor delay (<code>Q250_MOTOR_TC_S</code>)</td></tr>
+<tr><td><code>q250_13b_yaw.param</code></td><td>All settings after the yaw AutoTune (final gains, all 3 axes)</td><td>Step 13b: Full Parameter List → Save</td><td><b>The simulator's ArduPilot gets these gains</b></td></tr>
+<tr><td><code>q250_13b_yaw.bin</code></td><td>Flight log of the yaw AutoTune</td><td>Step 13b</td><td>Check the yaw tune</td></tr>
+<tr><td><code>q250_14_loiter.bin</code> (+ <code>_indoor</code>)</td><td>Flight log of Loiter</td><td>Step 14</td><td>Confirms position hold for the hand-over after a catch</td></tr></table></div></div>
+<div class="step s3"><div class="sh"><span class="num">16.3</span><span class="tt">What I send back (worked example from the sheet above)</span><span class="meta">you put these in <code>settings_Q250.json</code> (step 5.3)</span></div>
+<div class="tw"><table><tr><th>Key</th><th>Calculation</th><th>Value</th></tr>
+<tr><td><code>Q250_MASS_KG</code></td><td>550 ÷ 1000</td><td>0.55</td></tr>
+<tr><td><code>Q250_ARM_M</code></td><td>250 ÷ 2 ÷ 1000</td><td>0.125</td></tr>
+<tr><td><code>Q250_MOTOR_KG</code></td><td>33 ÷ 1000</td><td>0.033</td></tr>
+<tr><td><code>Q250_PROP_D_M</code></td><td>5 × 0.0254</td><td>0.127</td></tr>
+<tr><td><code>Q250_THRUST_N</code></td><td>0.55 × 9.81 ÷ (4 × 0.25)</td><td>5.40 (= 550 g per motor, thrust-to-weight 4.0)</td></tr>
+<tr><td><code>Q250_MOTOR_TC_S</code></td><td>from the AutoTune log</td><td>0.02 until measured</td></tr>
+<tr><td><code>Q250_BODY_X_M</code> / <code>Y</code> / <code>Z</code></td><td>150, 50, 70 ÷ 1000</td><td>0.15 / 0.05 / 0.07</td></tr></table></div>
+<div class="note"><b>One example drone everywhere:</b> 550 g, 250 mm diagonal, 33 g per motor + prop + nut, centre block 150 × 50 × 70 mm, <code>MOT_THST_HOVER</code> 0.25. These are the starting estimates in 5.3 and in <code>ArduCopterParams.hpp</code>, the example in the step 15 figure, and the worked example in 16.3 (16.1 now holds your real numbers). Your measured numbers replace them.</div>
+<p>With these numbers AirSim's 5-inch has roll / pitch / yaw inertia ≈ 0.0014 / 0.0021 / 0.0029 kg·m² (the F450 has 0.0067 / 0.0080 / 0.0143), so it spins about 4–5× more easily, as the real one does.</p></div>
+<p>And for the training side (once, any time):</p>
+<div class="tw"><table><tr><th>File</th><th>Why</th></tr>
+<tr><td><code>drone_flip_recovery_env_injector_gated.py</code></td><td>I add the 5″ randomization to it</td></tr>
+<tr><td>Your Stage 3 training script</td><td>The fine-tune copies its settings</td></tr>
+<tr><td>The PPO model to start from (e.g. <code>round1_final.zip</code>)</td><td>Starting point</td></tr>
+<tr><td><code>settings.json</code> + the SITL parameter file you train with (if any)</td><td>Same AirSim and SITL set-up</td></tr></table></div>
+<div class="note"><b>Two settings stay different on purpose in the simulator's ArduPilot:</b> <code>FRAME_TYPE 1</code> (AirSim's drone uses the standard X motor order; your real drone uses 12) and <code>MOT_THST_EXPO 0</code> (AirSim's thrust is already straight-line; ArduPilot's own AirSim file uses 0). I handle both when I prepare the simulator's parameter file.</div>
+
+<h2 id="x2"><span class="stage-tag t3">17</span>What happens next (8 Nov plan)</h2>
+<div class="analogy"><b>Where we are:</b> the driver (PPO) has passed the simulator driving test on a copy of your car (SITL throws, 27/27). Before the real road we check the real car (battery, balance), fit the dashboard (<code>throw_real.py</code> on the Pi) and start in an empty car park (gentle drops) before the motorway (hard throws).</div>
+<div class="tw"><table><tr><th>#</th><th>Who</th><th>What</th><th>Expected result</th><th>If not</th></tr>
+<tr><td>1</td><td>You</td><td>Hardware checks: the 7 Nov pack (12.36 V) for puffing · balance (left-heavy, F10) · <code>MOT_SPIN_ARM 0</code> on throw days: <b>your OK, 8 Nov ✅</b></td><td>Flat pack; motors within ≈ 20 PWM left vs right</td><td>Puffed: retire the pack. Still left-heavy: move battery/Pi right</td></tr>
+<tr><td>2</td><td>You</td><td>Set <code>RC5_OPTION 0</code> (CH5 = throw switch, read only by the Pi)</td><td>Flipping CH5 does nothing in Mission Planner's messages. <b>Done 8 Nov ✅</b></td><td>"AutoTune" appears: RC5_OPTION is still 17</td></tr>
+<tr><td>3</td><td>Me</td><td><code>throw_real.py</code> + its guide (wiring, bench test props OFF, test ladder). Same detection and catch as the SITL test</td><td><b>Done 8 Nov ✅</b>: version (d), autostart on battery, Throw &amp; Fly guide Part C</td><td>—</td></tr>
+<tr><td>4</td><td>You</td><td>Bench test, props OFF: CH5 low/high, throw detection by hand, CH7 stop</td><td>Script reacts only with CH5 high; CH7 stops the motors at once. <b>Done 8 Nov ✅</b> (<code>--check</code>, props-off outdoors, arm again after CH5)</td><td>Send me the Pi printout</td></tr>
+<tr><td>5</td><td>You</td><td>Real throws, outdoor, CH6 middle (GPS), field ≥ 15 × 15 m: hover check + 3 practice take-overs, then <b>3 gentle up throws with PPO first</b> (your choice 8 Nov), then wrist-flick throws, then the rule for comparison. Steps: Throw &amp; Fly guide C6 / C6c</td><td>Caught in ≈ 0.4–1 s, GUIDED hold 10 s, then LAND and disarm</td><td>A PPO throw fails: repeat that throw with the rule. Rule OK = network issue, rule fails too = hardware. Send <code>runs/</code> + <code>.bin</code></td></tr>
+<tr><td>6</td><td>You (in parallel)</td><td>Twin: 8 Nov numbers (5.3, 5.4) → check 5.5 → impact test <a href="#s57">5.7</a></td><td><b>Done 8 Nov ✅</b>: throttle 15 steady; 36/36 recovered, PPO = rule overall (F12)</td><td>—</td></tr>
+<tr><td>7</td><td>Me / you</td><td>Fine-tune decision from rows 5 and 6. Row 6 gaps: spin climb (+3.6 m) and drift (3.6 m), bird HARD (+0.6 s). Flip HARD gap of 31 Oct is gone</td><td>Fine-tune only if the real throws show a gap too</td><td>No gap = no fine-tune; thesis claim = "PPO matches its teacher, beats ArduPilot Throw mode ≈ 4×"</td></tr></table></div>
+<div class="warn"><b>Throw days, fixed rules:</b> CH6 middle (GPS) chosen before the battery goes in · height limits measured from the throw spot (F7) · CH7 = instant disarm (last resort) · take over any time = stick middle, then CH8 PosHold (CH5 OFF in the air is <b>not</b> a take-over: the Pi holds 10 s and lands) · never let the battery failsafe be the reason to land.</div>
+
+<h2 id="x3">Troubleshooting</h2>
+<div class="tw"><table><tr><th>Problem</th><th>Fix</th></tr>
+<tr><td><code>arm-none-eabi-g++ not found</code> (step 8)</td><td>In WSL: run ArduPilot's installer, then reopen WSL (commands below)</td></tr>
+<tr><td>SITL won't build after step 8</td><td><code>./waf configure --board sitl</code> then <code>./waf copter</code></td></tr>
+<tr><td>No STM32 BOOTLOADER in Device Manager (9B)</td><td>Hold BOOT before plugging USB; try another USB cable (some are charge-only)</td></tr>
+<tr><td>Pre-arm "Compass not calibrated"</td><td>Redo compass outdoors; disable unused internal compasses</td></tr>
+<tr><td>No RC input</td><td><code>SERIAL6_PROTOCOL 23</code> (ELRS on TX2/RX2) and no other port at 23, <code>RC_OPTIONS</code> includes 8192, TX/RX crossed</td></tr>
+<tr><td>GPS: No GPS (not "No Fix")</td><td>DATA → Status <code>gpsstatus</code> 0 = not detected: GPS TX → FC RX5, RX → TX5; <code>SERIAL3_PROTOCOL 5</code>, <code>SERIAL4_PROTOCOL -1</code>, reboot. "No Fix" indoors is normal (1 = detected)</td></tr>
+<tr><td>Messages tab full of "Sending unknown message (44)"</td><td>Harmless. Seen in your 4.6.0-dev logs (message 44 = camera, left out on the F405). Your SITL is the same dev code, so nothing to reflash</td></tr>
+<tr><td>SITL: <code>Connection refused</code>, and the SITL log shows <code>PANIC: failed to load</code> a frame <code>.json</code></td><td>Your dev ArduPilot won't read the file from the home folder: copy it to <code>~/ardupilot/Tools/autotest/models/</code> and start with <code>--model quad:@ROMFS/models/q250.json</code> (Throw &amp; Fly guide A1/B3)</td></tr>
+<tr><td><code>MOT_THST_HOVER</code> does not change indoors</td><td>Surface tracking (<code>SURFTRAK_MODE 1</code>) blocks learning. Learn it outdoors (finding F2)</td></tr>
+<tr><td>AutoTune gains gone after landing</td><td>Landed by the battery failsafe (LAND mode) or disarmed with the switch off. Land yourself with the switch ON before the pack is low (finding F4)</td></tr>
+<tr><td>Height jumps 1.5–2 m after flipping CH6</td><td>Normal for a source switch (rangefinder ↔ barometer height). Switch on the ground, before the battery goes in (F7)</td></tr>
+<tr><td>Motors stutter</td><td><code>MOT_PWM_TYPE 5</code> (DShot300)</td></tr>
+<tr><td><code>build.cmd</code> hangs at <code>Generating files for Blocks.uproject</code> (Ctrl+C does nothing, no pop-up)</td><td>Caused by an earlier <code>UnrealVersionSelector.exe -fileassociations</code>. Close the window (X): AirSim is already built. <b>Undo it</b> (PowerShell as Administrator): <code>Remove-Item -Path 'Registry::HKEY_CLASSES_ROOT\Unreal.ProjectFile\shell\rungenproj' -Recurse</code>. Check: <code>reg query "HKCR\Unreal.ProjectFile\shell\rungenproj"</code> → "unable to find" = back to the harmless message. If you changed <code>GenerateProjectFiles.bat</code>, restore it: <code>Copy-Item "C:\AirSim\Unreal\Environments\Blocks\GenerateProjectFiles.bat.original" "C:\AirSim\Unreal\Environments\Blocks\GenerateProjectFiles.bat" -Force</code></td></tr>
+<tr><td>Want <code>Blocks.sln</code> anyway (optional)</td><td>Make it directly, with visible progress (Developer Command Prompt): <code>"C:\Program Files\Epic Games\UE_4.27\Engine\Binaries\DotNET\UnrealBuildTool.exe" -projectfiles -project="C:\AirSim\Unreal\Environments\Blocks\Blocks.uproject" -game -rocket -progress</code> → ends with "Writing project files... 100%" (3 warnings about <code>Shell32.lib</code>, <code>dinput8.lib</code>, <code>dxguid.lib</code> are harmless)</td></tr>
+<tr><td><code>package.bat</code> keeps failing (step 4.1)</td><td>Run Blocks inside the editor instead: open <code>Blocks.sln</code> in <b>Visual Studio 2022</b> → choose <b>DebugGame Editor</b> + <b>Win64</b> in the top drop-downs → F5 → the Unreal Editor opens → press <b>Play</b>. Then do 4.2 windows 2–3 as normal. Send me the error text.</td></tr></table></div>
+<div class="cmdbox"><pre class="cmd">cd ~/ardupilot
+
+Tools/environment_install/install-prereqs-ubuntu.sh -y
+
+. ~/.profile</pre><button class="copy">Copy</button></div>
+<footer>5-inch sim-to-real guide · updated 8 Nov 2026 · drone ArduCopter V4.6.0-dev (1e001fa0) · Matek F405-HDTE (target MatekF405-TE) · AirSim from source (Unreal 4.27, VS 2022) · sources: AirSim docs build_windows / unreal_blocks, ArduPilot "Loading firmware onto boards without existing ArduPilot firmware", ArduPilot Tools/autotest/default_params/airsim-quadX.parm.</footer>
+</main>
+</div>
+<script>
+document.getElementById("themeBtn").onclick=()=>{const c=document.documentElement.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");const n=c==="dark"?"light":"dark";document.documentElement.setAttribute("data-theme",n);try{localStorage.setItem("guideTheme",n)}catch(e){}};
+try{const t=localStorage.getItem("guideTheme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}
+document.querySelectorAll(".cmdbox button.copy").forEach(b=>b.onclick=()=>{const t=b.parentElement.querySelector("pre").innerText;const d=()=>{b.textContent="Copied";setTimeout(()=>b.textContent="Copy",1200)};try{navigator.clipboard.writeText(t).then(d,()=>{})}catch(e){}});
+(function(){const L=[...document.querySelectorAll("nav.side a")],S=L.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);addEventListener("scroll",()=>{let c=S[0];for(const s of S)if(s.getBoundingClientRect().top<120)c=s;L.forEach(a=>a.classList.toggle("active",a.getAttribute("href")==="#"+c.id))},{passive:true})})();
+</script>
+</body>
+</html>
+
+</body></html>

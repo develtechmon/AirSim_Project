@@ -1,0 +1,866 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stage 2 Final Guide</title>
+<style>
+/* =====================================================================
+   THEME TOKENS  (edit colours here only)
+   ===================================================================== */
+:root{
+  color-scheme:light;
+  --bg:#f6f6f4; --surface:#fcfcfb; --surface-2:#f0efec; --border:#dcdad3;
+  --text:#1a1a19; --text-2:#52514e; --muted:#7a7972;
+  --accent:#2a78d6; --accent-soft:#e3eefb;
+  --good:#1b7f3b; --good-soft:#e2f3e7; --warn:#a96a00; --warn-soft:#fdf1d8; --bad:#c23a39; --bad-soft:#fbe5e4;
+  --code-bg:#f0efec;
+  /* controller colours: one colour per controller, same everywhere */
+  --c-ppo:#2a78d6; --c-bc:#eb6834; --c-rule:#1baf7a; --c-ssf:#eda100; --c-ap:#e87ba4;
+  --s1:#2f5ea8; --s2:#2e7d4f; --s3:#b83232;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#121211; --surface:#1a1a19; --surface-2:#242422; --border:#3a3936;
+    --text:#f0efec; --text-2:#c3c2b7; --muted:#9a998f;
+    --accent:#3987e5; --accent-soft:#1d2a3b;
+    --good:#5cc97f; --good-soft:#16281c; --warn:#e3a53a; --warn-soft:#2c2414; --bad:#ef7473; --bad-soft:#2e1717;
+    --code-bg:#242422;
+    --c-ppo:#3987e5; --c-bc:#d95926; --c-rule:#199e70; --c-ssf:#c98500; --c-ap:#d55181;
+    --s1:#6d9be0; --s2:#5fb383; --s3:#e06a6a;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#121211; --surface:#1a1a19; --surface-2:#242422; --border:#3a3936;
+  --text:#f0efec; --text-2:#c3c2b7; --muted:#9a998f;
+  --accent:#3987e5; --accent-soft:#1d2a3b;
+  --good:#5cc97f; --good-soft:#16281c; --warn:#e3a53a; --warn-soft:#2c2414; --bad:#ef7473; --bad-soft:#2e1717;
+  --code-bg:#242422;
+  --c-ppo:#3987e5; --c-bc:#d95926; --c-rule:#199e70; --c-ssf:#c98500; --c-ap:#d55181;
+  --s1:#6d9be0; --s2:#5fb383; --s3:#e06a6a;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 "Segoe UI",Calibri,system-ui,-apple-system,Arial,sans-serif}
+a{color:var(--accent)}
+code,pre{font-family:Consolas,"Cascadia Mono",Menlo,monospace}
+code{background:var(--code-bg);padding:1px 5px;border-radius:4px;font-size:13px;word-break:break-word}
+/* layout */
+.layout{display:grid;grid-template-columns:270px minmax(0,1fr);min-height:100vh}
+nav.side{position:sticky;top:0;height:100vh;overflow:auto;background:var(--surface);border-right:1px solid var(--border);padding:16px 12px 40px}
+nav.side .brand{font-weight:700;font-size:15px;margin:0 6px 2px}
+nav.side .sub{font-size:12px;color:var(--muted);margin:0 6px 12px}
+nav.side a{display:block;text-decoration:none;color:var(--text-2);padding:4px 8px;border-radius:6px;font-size:13.5px}
+nav.side a.l2{padding-left:22px;font-size:12.5px}
+nav.side a:hover{background:var(--surface-2)}
+nav.side a.active{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav.side .grp{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:14px 8px 4px}
+main{padding:24px 40px 80px;max-width:1180px}
+.topbar{display:flex;gap:10px;align-items:center;justify-content:flex-end;margin-bottom:6px}
+button,.btn{font:inherit;font-size:13px;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:7px;padding:5px 11px;cursor:pointer}
+button:hover{background:var(--surface-2)}
+button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+h1{font-size:28px;margin:4px 0 2px;line-height:1.2}
+h2{font-size:22px;margin:46px 0 10px;padding-top:10px;border-top:2px solid var(--border)}
+h3{font-size:17px;margin:28px 0 8px}
+h4{font-size:15px;margin:18px 0 6px}
+.lead{color:var(--text-2);font-size:15.5px;margin:4px 0 16px}
+.stage-tag{display:inline-block;color:#fff;border-radius:5px;padding:1px 8px;font-size:13px;font-weight:700;margin-right:8px;vertical-align:2px}
+.t1{background:var(--s1)}.t2{background:var(--s2)}.t3{background:var(--s3)}.thw{background:#5b5b66}
+/* tables */
+.tw{overflow-x:auto;margin:8px 0 14px}
+table{border-collapse:collapse;width:100%;font-size:13.5px;background:var(--surface)}
+th,td{border:1px solid var(--border);padding:5px 8px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.hl td{background:var(--accent-soft);font-weight:600}
+/* callouts */
+.note,.warn,.ok,.bad{border-left:4px solid;border-radius:6px;padding:9px 13px;margin:12px 0;font-size:14px}
+.note{border-color:var(--accent);background:var(--accent-soft)}
+.ok{border-color:var(--good);background:var(--good-soft)}
+.warn{border-color:var(--warn);background:var(--warn-soft)}
+.bad{border-color:var(--bad);background:var(--bad-soft)}
+.note b:first-child,.warn b:first-child,.ok b:first-child,.bad b:first-child{display:inline}
+.analogy{border:1px dashed var(--border);border-radius:8px;padding:9px 13px;margin:12px 0;font-size:14px;background:var(--surface)}
+.analogy::before{content:"Analogy  ";font-weight:700;color:var(--accent)}
+/* status chips */
+.chip{display:inline-block;font-size:11.5px;font-weight:700;border-radius:10px;padding:1px 8px;white-space:nowrap}
+.done{background:var(--good-soft);color:var(--good)}.run{background:var(--warn-soft);color:var(--warn)}.todo{background:var(--surface-2);color:var(--muted)}.fail{background:var(--bad-soft);color:var(--bad)}
+/* steps */
+.step{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin:12px 0}
+.step>.sh{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.step>.sh .num{background:var(--s3);color:#fff;border-radius:6px;font-weight:700;font-size:12.5px;padding:1px 8px}
+.step.s1 .num{background:var(--s1)}.step.s2 .num{background:var(--s2)}.step.hw .num{background:#5b5b66}
+.step>.sh .tt{font-weight:700;font-size:15.5px}
+.step>.sh .meta{margin-left:auto;font-size:12.5px;color:var(--muted)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:900px){.cols{grid-template-columns:1fr}}
+/* command block */
+.cmdbox{position:relative;margin:8px 0}
+pre.cmd{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:10px 70px 10px 12px;margin:0;font-size:13px;white-space:pre-wrap;word-break:break-all}
+.cmdbox button{position:absolute;top:6px;right:6px;font-size:12px;padding:2px 9px}
+details{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;margin:10px 0}
+details>summary{cursor:pointer;font-weight:600;font-size:14px}
+details[open]>summary{margin-bottom:6px}
+/* diagrams */
+.dgwrap{background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px;overflow:hidden;margin:10px 0}
+.dgwrap .dg{transform-origin:0 0}
+.dgwrap table{background:#fff;width:auto}.dgwrap th,.dgwrap td{color:#1d2433}
+.figure{background:#fff;border:1px solid var(--border);border-radius:10px;padding:8px;margin:10px 0;text-align:center}
+.figure img{max-width:100%;height:auto}
+.cap{font-size:12.5px;color:var(--muted);margin:4px 2px 12px}
+/* charts */
+.chart{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin:10px 0}
+.chart .ct{font-weight:700;font-size:14.5px}
+.chart .cs{font-size:12.5px;color:var(--muted);margin-bottom:6px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12.5px;color:var(--text-2);margin:4px 0 2px}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+.tip{position:fixed;pointer-events:none;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:7px;padding:6px 9px;font-size:12.5px;box-shadow:0 4px 14px rgba(0,0,0,.15);z-index:50;display:none;max-width:280px}
+svg text{fill:var(--text-2);font-size:11.5px}
+svg .axis{stroke:var(--border)}
+svg .grid{stroke:var(--border);stroke-dasharray:2 3}
+.charttable{display:none}
+.charttable.show{display:block}
+/* replay */
+.replay{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;margin:14px 0}
+.rp-controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+.rp-controls select{font:inherit;font-size:13px;padding:4px 6px;border-radius:7px;border:1px solid var(--border);background:var(--surface);color:var(--text);max-width:100%}
+.rp-controls input[type=range]{flex:1;min-width:160px}
+.rp-time{font-variant-numeric:tabular-nums;font-size:13px;color:var(--text-2);min-width:120px}
+#rpStage{width:100%;height:auto;display:block;background:linear-gradient(var(--surface-2),var(--surface));border-radius:10px}
+.rp-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:10px}
+.rp-card{border:1px solid var(--border);border-radius:8px;padding:6px 9px;font-size:12.5px;border-top:4px solid}
+.rp-card b{font-size:13px}
+/* timeline (who flies) */
+.tl{position:relative;height:56px;border-radius:9px;overflow:hidden;display:flex;margin:8px 0 4px;border:1px solid var(--border)}
+.tl div{display:flex;align-items:center;justify-content:center;color:#fff;font-size:12.5px;font-weight:700;text-align:center;padding:0 4px}
+.tl .cursor{position:absolute;top:0;bottom:0;width:3px;background:var(--text);left:0;transition:left .1s linear;padding:0}
+.tl-cap{min-height:44px;font-size:14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 12px}
+/* stat tiles */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:12px 0}
+.tile{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+.tile .v{font-size:24px;font-weight:700;line-height:1.1}
+.tile .k{font-size:12.5px;color:var(--muted)}
+/* explorer */
+.explorer{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin:10px 0}
+.explorer label{font-size:13px;color:var(--text-2)}
+.explorer input[type=range]{width:100%}
+.ex-out{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:8px}
+.ex-out div{background:var(--surface-2);border-radius:8px;padding:6px 10px;font-size:13px}
+.ex-out b{display:block;font-size:18px}
+.bar-h{height:14px;border-radius:4px;display:inline-block;vertical-align:middle}
+/* hardware block diagram (editable HTML) */
+.hw{background:#fff;color:#1d2433;border:1px solid var(--border);border-radius:10px;padding:14px;margin:10px 0;overflow-x:auto}
+.hw-grid{display:grid;grid-template-columns:1fr 46px 1.25fr 46px 1fr;gap:0;min-width:860px;align-items:center}
+.hw-col{display:flex;flex-direction:column;gap:12px}
+.hwb{border:2px solid #5b5b66;border-radius:10px;padding:8px 10px;background:#f7f7f9;font-size:13px;line-height:1.35}
+.hwb h5{margin:0 0 3px;font-size:14px;color:#2c2c38}
+.hwb.fc{border-color:#b83232;background:#fbeeee}.hwb.fc h5{color:#b83232}
+.hwb.pi{border-color:#2f5ea8;background:#eef3fb}.hwb.pi h5{color:#2f5ea8}
+.hwb.sens{border-color:#2e7d4f;background:#edf7f0}.hwb.sens h5{color:#2e7d4f}
+.hwb.pwr{border-color:#a96a00;background:#fdf6e6}.hwb.pwr h5{color:#a96a00}
+.hwb .lbl{display:inline-block;background:#fff;border:1px solid #c9ced8;border-radius:4px;padding:0 5px;font-size:11.5px;font-family:Consolas,monospace;margin:1px 0}
+.hw-arrow{text-align:center;font-size:22px;color:#555}
+.hw-bottom{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:14px;min-width:860px}
+/* flow */
+.flow{display:flex;flex-direction:column;align-items:center;gap:0;margin:10px 0}
+.fb{background:var(--surface);border:2px solid var(--border);border-radius:10px;padding:8px 14px;max-width:640px;width:100%;text-align:center;font-size:13.5px}
+.fb.pilot{border-color:var(--c-ssf)}.fb.pi{border-color:var(--c-ppo)}.fb.ap{border-color:var(--c-rule)}.fb.dec{border-color:var(--c-ap);border-style:dashed}
+.fb b{display:block}
+.fa{font-size:18px;color:var(--muted);line-height:1.3}
+.flow-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;justify-content:center;margin-bottom:8px}
+.flow-legend span{border:2px solid;border-radius:6px;padding:0 6px}
+footer{margin-top:60px;font-size:12px;color:var(--muted)}
+@media (max-width:860px){.layout{grid-template-columns:1fr}nav.side{position:relative;height:auto}main{padding:16px}}
+</style>
+
+<style>
+:root{--k-pid:#eda100;--k-s1:#1baf7a;--k-ap:#eb6834;--k-ppo:#2a78d6}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--k-pid:#c98500;--k-s1:#199e70;--k-ap:#d95926;--k-ppo:#3987e5}}
+:root[data-theme="dark"]{--k-pid:#c98500;--k-s1:#199e70;--k-ap:#d95926;--k-ppo:#3987e5}
+button.tbl{margin-top:6px}
+main{min-width:0}
+@media (max-width:860px){.cols{grid-template-columns:minmax(0,1fr)}}
+#rpStage{background:var(--surface-2)}
+.figure svg text{fill:var(--text-2)}
+</style>
+</head>
+<body>
+<div class="tip" id="tip"></div>
+<div class="layout">
+<nav class="side" id="nav">
+  <div class="brand">Stage 2 · Final guide</div>
+  <div class="sub">Hover in wind (gust rejection) · ArduPilot SITL + AirSim · run1</div>
+  <div class="grp">Start here</div>
+  <a href="#glance">0. At a glance</a>
+  <a href="#method">1. How Stage 2 works</a>
+  <a class="l2" href="#loop">Training loop</a>
+  <a class="l2" href="#s23">Stage 2 and Stage 3</a>
+  <a href="#setup">2. Folders, files, glossary</a>
+  <div class="grp">Run in order</div>
+  <a href="#r0">3.0 Start the simulator</a>
+  <a href="#r1">3.1 Train PPO (warm)</a>
+  <a href="#r2">3.2 Quick tests</a>
+  <a href="#r3">3.3 Statistics (thesis table)</a>
+  <a href="#r4">3.4 Analysis + summary</a>
+  <a href="#r5">3.5 Repeat check</a>
+  <div class="grp">Results</div>
+  <a href="#res-train">4.1 Training</a>
+  <a href="#res-gust">4.2 Gusts: who holds best</a>
+  <a href="#res-ep">4.3 Every episode</a>
+  <a href="#replay">4.4 How PPO wins (replay)</a>
+  <a href="#res-const">4.5 Constant wind</a>
+  <a href="#res-rep">4.6 Reproducibility</a>
+  <div class="grp">Discussion</div>
+  <a href="#disc">5. Findings &amp; discussion</a>
+  <a class="l2" href="#limits">Limitations</a>
+  <a href="#thesis">6. Thesis figures: which file</a>
+  <div class="grp">Reference</div>
+  <a href="#hw">7. Next: real drone</a>
+  <a href="#trouble">8. Troubleshooting</a>
+  <a href="#repro">9. Reproducibility checklist</a>
+</nav>
+<main>
+<div class="topbar">
+  <span style="font-size:12px;color:var(--muted)">Built 22 Oct 2026 from your result files</span>
+  <button id="themeBtn" title="Switch light / dark">◐ Theme</button>
+</div>
+<h1><span class="stage-tag t2">STAGE 2</span>Hover in wind: final guide<br><span style="font-size:19px;color:var(--text-2);font-weight:500">Stage 1 network → PPO in gusts → tested against Stage 1, PID teacher and stock ArduPilot</span></h1>
+<p class="lead">How Stage 2 was run, the exact commands, what every step produced in your run, and what the results mean. All numbers come from your files: <code>stage2_statistics_20261022_161620</code> (main), <code>…_164145</code> (repeat), <code>episodes.csv</code> and <code>training_info.json</code>.</p>
+
+<!-- ================================================================ -->
+<h2 id="glance">0. At a glance</h2>
+<div class="tiles">
+  <div class="tile"><div class="k">Gust error (RMSE), PPO vs stock ArduPilot</div><div class="v">0.198 vs 0.316 m</div><div class="k">37% lower · 10 of 10 episodes · p = 0.002</div></div>
+  <div class="tile"><div class="k">Time within 0.5 m of the target</div><div class="v">96% vs 91%</div><div class="k">Stage 1: 84% · PID teacher: 85%</div></div>
+  <div class="tile"><div class="k">Back on target after a big push</div><div class="v">1.5 s vs 2.6 s</div><div class="k">PPO vs ArduPilot · pushed past 0.5 m: 9 vs 16 times</div></div>
+  <div class="tile"><div class="k">Learning (500k steps, 979 episodes)</div><div class="v">0.38 → 0.14 m</div><div class="k">mean distance, first vs last 50 episodes</div></div>
+</div>
+<div class="ok"><b>Verdict.</b> Stage 2 PPO rejects wind <b>gusts</b> better than every other controller, including stock ArduPilot, in every paired episode, and the result holds in a repeat session. Under <b>constant</b> wind there is no real difference. PPO learned to recover from changing wind, which is exactly what it trained on.</div>
+
+<!-- ================================================================ -->
+<h2 id="method">1. How Stage 2 works</h2>
+<p>Stage 1 taught the network to hover by copying a teacher in calm air. Stage 2 takes <b>that same network</b> and lets it practise in gusty wind with reinforcement learning (PPO), so it learns what the teacher never showed it: how to get back to the target quickly after a gust.</p>
+<div class="analogy">Stage 1 is a learner driver who passed the test on a quiet road by copying the instructor. Stage 2 is the same driver practising on a windy coastal road with no instructor. They start with everything they already know (warm start), and every second spent off the lane costs points, so they learn to correct faster.</div>
+
+<div class="figure" style="background:var(--surface)">
+<svg viewBox="0 0 860 300" width="100%" role="img" aria-label="Drone pushed by a gust, network sends velocity commands back to the target" style="max-width:860px">
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker>
+    <marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--k-ppo)"/></marker>
+  </defs>
+  <!-- ground -->
+  <line x1="20" y1="270" x2="840" y2="270" stroke="var(--border)" stroke-width="2"/>
+  <text x="24" y="290" font-size="12">ground</text>
+  <!-- wind -->
+  <g stroke="var(--muted)" stroke-width="2.5" fill="none" marker-end="url(#ah)">
+    <path d="M40,95 C80,85 110,105 160,95"/><path d="M30,130 C80,120 120,140 175,130"/><path d="M45,165 C85,155 115,175 160,165"/>
+  </g>
+  <text x="40" y="70" font-size="13" font-weight="700" style="fill:var(--text)">Gust (new one every 1–3 s)</text>
+  <text x="40" y="200" font-size="12">0–20 AirSim setting · random direction</text>
+  <!-- target + ring -->
+  <line x1="420" y1="120" x2="420" y2="270" stroke="var(--border)" stroke-dasharray="4 4"/>
+  <circle cx="420" cy="130" r="62" fill="none" stroke="var(--good)" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <text x="420" y="58" text-anchor="middle" font-size="12" style="fill:var(--good)">0.5 m "holding" ring</text>
+  <path d="M410,130 h20 M420,120 v20" stroke="var(--text)" stroke-width="2"/>
+  <text x="420" y="285" text-anchor="middle" font-size="12">target: home, 2 m high</text>
+  <!-- ghost drone at target -->
+  <g opacity=".25"><rect x="398" y="125" width="44" height="10" rx="4" fill="var(--text)"/></g>
+  <!-- pushed drone -->
+  <g transform="translate(520,140) rotate(-12)">
+    <rect x="-26" y="-6" width="52" height="12" rx="5" fill="var(--k-ppo)"/>
+    <rect x="-38" y="-12" width="22" height="4" rx="2" fill="var(--text-2)"/><rect x="16" y="-12" width="22" height="4" rx="2" fill="var(--text-2)"/>
+    <line x1="-27" y1="-8" x2="-27" y2="-4" stroke="var(--text-2)" stroke-width="2"/><line x1="27" y1="-8" x2="27" y2="-4" stroke="var(--text-2)" stroke-width="2"/>
+  </g>
+  <text x="520" y="185" text-anchor="middle" font-size="12" style="fill:var(--text)">pushed off target</text>
+  <path d="M500,150 C470,165 450,160 432,140" stroke="var(--k-ppo)" stroke-width="2.5" fill="none" marker-end="url(#ahb)"/>
+  <text x="470" y="215" text-anchor="middle" font-size="12" style="fill:var(--k-ppo)">velocity command back</text>
+  <!-- brain box -->
+  <rect x="640" y="70" width="200" height="150" rx="10" fill="var(--surface-2)" stroke="var(--border)"/>
+  <text x="740" y="94" text-anchor="middle" font-size="13" font-weight="700" style="fill:var(--text)">Network (20 times/s)</text>
+  <text x="652" y="118" font-size="12">IN (13): offset from target,</text>
+  <text x="652" y="134" font-size="12">velocity, attitude, turn rates</text>
+  <text x="652" y="160" font-size="12">OUT (3): velocity N, E, D</text>
+  <text x="652" y="176" font-size="12">→ ArduPilot GUIDED</text>
+  <text x="652" y="202" font-size="12">13 → 256 → 256 → 128 → 3</text>
+  <path d="M640,145 L560,145" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="4 3" fill="none" marker-end="url(#ah)"/>
+</svg>
+<div class="cap">Stage 2's job: hold a fixed point in the air while gusts push the drone away. The network only chooses velocity commands; ArduPilot's own inner loops still fly the motors.</div>
+</div>
+
+<h3 id="loop">1a. The pipeline</h3>
+<div class="flow">
+  <div class="fb ap"><b>Stage 1 (finished)</b><code>stage1_ppo_init.zip</code> + <code>obs_norm.npz</code>: the hover network and its input scaling</div><div class="fa">▼</div>
+  <div class="fb"><b>Warm start check</b>PPO is loaded with the Stage 1 weights; its action must equal Stage 1's exactly → <b>PASS (difference 0.0)</b></div><div class="fa">▼</div>
+  <div class="fb pi"><b>PPO training in wind</b> (<code>train_stage2_disturbance.py</code>) · 500k steps · about 8.5 h<br>first 20,000 steps: only the critic learns (protects the Stage 1 behaviour)</div><div class="fa">▼</div>
+  <div class="fb"><b>Final network</b><code>models\warm\hover_disturbance_policy.zip</code></div><div class="fa">▼</div>
+  <div class="fb dec"><b>Tests in identical wind</b> PPO vs Stage 1 vs PID teacher vs <b>stock ArduPilot</b> (same seeds) → statistics → analysis → summary</div><div class="fa">▼</div>
+  <div class="fb" style="border-color:#5b5b66"><b>Real drone (next)</b> <code>export_onnx.py</code> → <code>warm.onnx</code> → Raspberry Pi → fan test</div>
+</div>
+
+<h4>One training episode (25 s)</h4>
+<div class="tw"><table>
+<tr><th>Step</th><th>What happens</th><th>Why</th></tr>
+<tr><td>1. Reset</td><td>Wind off. The teacher flies the drone to a random start within ±1 m (±0.3 m height) of the target.</td><td>Every episode starts slightly off target, so the network must also learn to approach.</td></tr>
+<tr><td>2. Wind on</td><td>A gust of random direction and strength 0–20 (vertical part ×0.3); a new gust every 1–3 s.</td><td>Changing wind, like real outdoor air.</td></tr>
+<tr><td>3. Fly</td><td>500 steps at 20 Hz. Each step: read 13 inputs → network → velocity N/E/D (sent limit 2 m/s sideways, 1 m/s vertical).</td><td>Same interface as Stage 1, so the weights fit exactly.</td></tr>
+<tr><td>4. Score</td><td><code>reward = +1 − distance − 0.1·speed − 0.01·|action|²</code>; −50 and stop if &gt; 4 m away, height &lt; 0.5 m or &gt; 5 m, or tilt &gt; 60°.</td><td>Every metre off target costs points every step, so getting back fast pays.</td></tr>
+<tr><td>5. Learn</td><td>Every 2048 steps PPO updates the network (a few seconds). Meanwhile the <b>safety pilot</b> turns the wind off and holds the drone; the interrupted episode is marked <code>update_pause</code> and not counted.</td><td>The drone is never left without commands.</td></tr>
+</table></div>
+
+<details><summary>Network, PPO settings and the fixes compared with the original AirSim Stage 2</summary>
+<div class="cols"><div class="tw"><table>
+<tr><th>Setting</th><th>Value</th></tr>
+<tr><td>Network</td><td>13 → 256 → 256 → 128 → 3, ReLU (actor and critic)</td></tr>
+<tr><td>Learning rate</td><td>3×10⁻⁵</td></tr>
+<tr><td>n_steps / batch / epochs</td><td>2048 / 64 / 10</td></tr>
+<tr><td>γ / λ / clip</td><td>0.99 / 0.95 / 0.2</td></tr>
+<tr><td>target_kl</td><td>0.05</td></tr>
+<tr><td>Exploration std</td><td>0.30 m/s (log std −1.2), no entropy bonus</td></tr>
+<tr><td>Critic warm-up</td><td>20,000 steps (actor frozen)</td></tr>
+<tr><td>Seed</td><td>0</td></tr>
+</table></div>
+<div class="tw"><table>
+<tr><th>Original AirSim Stage 2</th><th>Here</th></tr>
+<tr><td>Stage 1 weights loaded under wrong names with <code>strict=False</code>: <b>nothing loaded</b> (really a cold start)</td><td>Weights copied layer by layer, checked: PASS</td></tr>
+<tr><td>Tanh in PPO, ReLU in Stage 1</td><td>ReLU, same layers</td></tr>
+<tr><td>VecNormalize learned new input scaling</td><td>Stage 1's <code>obs_norm.npz</code> reused</td></tr>
+<tr><td>Exploration std 1.0 m/s + entropy bonus</td><td>0.30 m/s, no bonus</td></tr>
+<tr><td>Huge rewards (value loss ~10⁶)</td><td>About −3 to +1 per step</td></tr>
+</table></div></div>
+</details>
+
+<h3 id="s23">1b. Stage 2 and Stage 3: how they fit together</h3>
+<div class="warn"><b>Read this carefully.</b> Stage 1 → Stage 2 is a real weight transfer. <b>Stage 2 → Stage 3 is not.</b> Stage 3 is trained <b>on its own</b>, starting from its own teacher (attitude rule → BC → PPO). The two networks are combined <b>at flight time</b> by switching between them.</div>
+<div class="tw"><table>
+<tr><th></th><th>Stage 2 network</th><th>Stage 3 network</th></tr>
+<tr><td>Job</td><td>hold position, reject gusts</td><td>recover from impact, flip or spin</td></tr>
+<tr><td>Commands</td><td>velocity N/E/D (GUIDED)</td><td>roll, pitch, thrust (attitude target)</td></tr>
+<tr><td>Inputs</td><td>offset, velocity, quaternion, rates</td><td>down vector, rates, height change, speeds, previous action</td></tr>
+<tr><td>Rate</td><td>20 Hz</td><td>50 Hz</td></tr>
+<tr><td>Starts from</td><td>Stage 1 weights (transfer)</td><td>its own BC network (standalone)</td></tr>
+</table></div>
+<p>Inputs, outputs and loop rates are all different, so Stage 2 weights cannot be poured into Stage 3. Copying them would also not keep the gust skill. Instead, both run on the drone and hand over control to each other:</p>
+<div class="flow">
+  <div class="fb pi"><b>Normal flight</b> Stage 2 network holds position and rejects gusts</div><div class="fa">▼ impact detected: ‖ω‖ &gt; 3 rad/s or tilt &gt; 60°</div>
+  <div class="fb" style="border-color:var(--s3)"><b>Recovery</b> Stage 3 network stops the spin, levels the drone and saves height</div><div class="fa">▼ calm again: ω &lt; 1.2 rad/s, tilt &lt; 30°, falling &lt; 1 m/s</div>
+  <div class="fb pi"><b>Back to normal flight</b> Stage 2 network flies back to the target</div>
+</div>
+<div class="analogy">A car with two specialists: a cruise-control system for wind on the motorway (Stage 2) and an anti-skid system for a spin-out (Stage 3). You don't merge them into one brain; the car switches to the right one at the right moment.</div>
+<p><span class="chip todo">PENDING</span> The switching script (Stage 2 + Stage 3 on one drone) is planned after the Stage 3 rerun.</p>
+
+<!-- ================================================================ -->
+<h2 id="setup">2. Folders, files, glossary</h2>
+<div class="cols">
+<div>
+<h4>Stage_2 folder (PC)</h4>
+<pre class="cmd" style="padding-right:12px">Stage_2\
+   train_stage2_disturbance.py      3.1  PPO training
+   test_stage2_policy.py            3.2  quick test, one controller
+   collect_stage2_statistics.py     3.3  all controllers, identical wind
+   analyze_stage2_statistics.py     3.4  paired tests + gust recovery
+   make_stage2_summary.py           3.4  report card (Markdown + curve)
+   export_onnx.py                   7    network -> .onnx for the Pi
+   drone_hover_disturbance_env.py   environment (wind, reward, ArduPilot baseline)
+   ap_link.py · pid_expert.py · wind_check.py
+   Hardware\                        everything the Pi needs (README.txt)
+   runs\run1\
+      models\warm\                  hover_disturbance_policy.zip, training_info.json
+      logs\stage2\warm\             episodes.csv (learning curve), tb\
+      results\
+         statistics\                stage2_statistics_*  + stage2_analysis_*
+         summary\                   STAGE2_SUMMARY_run1.md, learning_curves_*.png
+         warm_test\                 test_stage2_warm_*
+         stage1_test\               test_stage1_*
+         ardupilot_test\            test_ardupilot_*
+         old\                       superseded files (18 Oct statistics)</pre>
+</div>
+<div>
+<h4>Glossary (same names as the printouts)</h4>
+<div class="tw"><table>
+<tr><th>Name</th><th>Meaning</th></tr>
+<tr><td><b>PPO warm</b></td><td>Stage 2 network, started from Stage 1 (the main result)</td></tr>
+<tr><td><b>Stage 1 (BC)</b></td><td>Stage 1 network alone, never trained in wind ("before")</td></tr>
+<tr><td><b>PID teacher</b></td><td>Stage 1's teacher (actually P-only on position and velocity)</td></tr>
+<tr><td><b>Stock ArduPilot</b></td><td>No network: ArduPilot is given the hover point and holds it with its own position controller (the one PosHold/Loiter use), default SITL tuning</td></tr>
+<tr><td><b>RMSE</b></td><td>root-mean-square <b>3D</b> distance to the target over the episode (m)</td></tr>
+<tr><td><b>Dist</b></td><td>mean <b>horizontal</b> distance to the target (m), as in the paper</td></tr>
+<tr><td><b>Max</b></td><td>biggest horizontal push in an episode (m), averaged over episodes</td></tr>
+<tr><td><b>Held %</b></td><td>share of time within 0.5 m (3D) of the target</td></tr>
+<tr><td><b>Success</b></td><td>episode ran its full 25 s with no safety stop</td></tr>
+<tr><td><b>Wind 0–20</b></td><td>AirSim wind <b>setting</b>, not real m/s. 20 ≈ 14° lean, 0.6–0.7 m drift per gust (<code>wind_check.py</code>)</td></tr>
+<tr><td><b>Session</b></td><td>one continuous simulator run; compare controllers only within one session</td></tr>
+</table></div>
+</div></div>
+
+<!-- ================================================================ -->
+<h2 id="r0">3. How to run (in order)</h2>
+<div class="note"><b>Before any flying script:</b> start AirSim, then ArduPilot SITL in <b>GPS mode</b> (your usual launch), wait until it is ready, then run the script from the <code>Stage_2\</code> folder. Steps 3.4 need no simulator.</div>
+
+<div class="step s2" id="sitl"><div class="sh"><span class="num">SIM</span><span class="tt">Start AirSim + ArduPilot SITL (WSL)</span><span class="meta">≈ 2 min · before every flying script</span></div>
+<p><b>Order:</b> AirSim (Windows) → SITL (WSL) → script (PowerShell). Keep both windows open while the script runs.</p>
+<p><b>1. Windows:</b> start AirSim (your <code>WindowsNoEditor</code> build) and wait until the drone is shown.</p>
+<p><b>2. WSL (Ubuntu terminal):</b> start SITL from the <b>GPS folder</b> <code>~/sitl_gps</code>, not from <code>~/ardupilot</code>.</p>
+<div class="warn"><b>Why the folder matters:</b> SITL saves its parameters (<code>eeprom.bin</code>) in the folder you start it from. <code>~/ardupilot</code> holds the <b>optical-flow</b> setup; <code>~/sitl_gps</code> holds the <b>GPS</b> setup used for Stages 1–3. Like two save files in a game: the folder decides which drone you load.</div>
+<p>First time only (creates the GPS folder; SITL starts there with default parameters):</p>
+<div class="cmdbox"><pre class="cmd">mkdir ~/sitl_gps</pre><button class="copy">Copy</button></div>
+<p>Every time:</p>
+<div class="cmdbox"><pre class="cmd">cd ~/sitl_gps</pre><button class="copy">Copy</button></div>
+<div class="cmdbox"><pre class="cmd">sim_vehicle.py -v ArduCopter -f airsim-copter --console --map --sim-address=172.28.0.1 --out=127.0.0.1:14550</pre><button class="copy">Copy</button></div>
+<p><b>3. Wait until you see:</b></p>
+<div class="tw"><table><tr><th>Line in the WSL terminal / console</th><th>Means</th></tr>
+<tr><td><code>Bind SITL sensor input at 172.28.0.1:9003</code></td><td>SITL found AirSim's sensor port</td></tr>
+<tr><td><code>AirSim control interface set to 172.28.0.1:9002</code></td><td>motor commands go to AirSim</td></tr>
+<tr><td><code>Received 463 parameters</code></td><td>MAVProxy is talking to ArduPilot</td></tr>
+<tr><td><code>STABILIZE&gt;</code> prompt</td><td>SITL is running</td></tr>
+<tr><td><code>EKF3 IMU0 is using GPS</code></td><td>GPS ready: now you can run the script</td></tr></table></div>
+<p><b>4. First time only</b> in <code>~/sitl_gps</code> (typed at the <code>STABILIZE&gt;</code> prompt; saved in that folder afterwards):</p>
+<div class="cmdbox"><pre class="cmd">param set SCHED_LOOP_RATE 200</pre><button class="copy">Copy</button></div>
+<div class="cmdbox"><pre class="cmd">param set ARMING_CHECK 0</pre><button class="copy">Copy</button></div>
+<p><b>5. PowerShell:</b> open it in the <code>Stage_2\</code> folder and run the step's script (scripts connect on <code>tcp:127.0.0.1:5762</code>).</p>
+<div class="warn"><b>If SITL waits forever / no "Bind SITL" line:</b> the Windows IP changed (it can change after a reboot). Windows IP: <code>ipconfig</code> → adapter <b>vEthernet (WSL)</b> → IPv4 (e.g. 172.28.0.1). WSL IP: <code>ip addr show eth0</code> (e.g. 172.28.15.216). Put the Windows IP in <code>--sim-address=</code> and in AirSim <code>settings.json</code> <code>LocalHostIp</code>; put the WSL IP in <code>UdpIp</code> (<code>UdpPort</code> 9003, <code>ControlPort</code> 9002). Restart AirSim after editing <code>settings.json</code>.</div></div>
+
+<div class="step s2"><div class="sh"><span class="num">3.0</span><span class="tt">Optional: check that the wind pushes the drone</span><span class="meta">2 min · simulator</span></div>
+<div class="cmdbox"><pre class="cmd">py .\wind_check.py --wind 20</pre><button class="copy">Copy</button></div>
+<p><b>Expected:</b> tilt about 0–2° without wind, about 14° at setting 20, and a push of 0.6–0.7 m with zero-velocity commands. If the tilt does not rise, AirSim wind is not reaching the drone; fix that before training.</p></div>
+
+<div class="step s2" id="r1"><div class="sh"><span class="num">3.1</span><span class="tt">Train PPO in wind (warm start)</span><span class="meta">≈ 8.5 h · simulator</span></div>
+<div class="cmdbox"><pre class="cmd">py .\train_stage2_disturbance.py --init warm</pre><button class="copy">Copy</button></div>
+<p>After a power cut or Ctrl+C, continue from the newest checkpoint (saved every 25,000 steps):</p>
+<div class="cmdbox"><pre class="cmd">py .\train_stage2_disturbance.py --init warm --resume</pre><button class="copy">Copy</button></div>
+<p>Watch live (optional, second window):</p>
+<div class="cmdbox"><pre class="cmd">tensorboard --logdir runs</pre><button class="copy">Copy</button></div>
+<div class="tw"><table><tr><th>Check</th><th>Expected</th><th>Your run</th></tr>
+<tr><td>Warm start line at the start</td><td>PASS, max action difference &lt; 1e-5</td><td class="n"><span class="chip done">PASS</span> 0.0</td></tr>
+<tr><td>Finished</td><td>~500k steps</td><td class="n">501,760 steps · 979 episodes · 8 h 29 min</td></tr>
+<tr><td>Last 50 episodes</td><td>success ≥ 80%, distance falling</td><td class="n">100% · 0.14 m</td></tr></table></div>
+<p><b>Output:</b> <code>runs\run1\models\warm\hover_disturbance_policy.zip</code>, <code>training_info.json</code>, <code>logs\stage2\warm\episodes.csv</code>.</p>
+<p style="font-size:13px;color:var(--muted)">Cold start (<code>--init cold</code>) was not run. It is optional and only answers "does the warm start learn faster?".</p></div>
+
+<div class="step s2" id="r2"><div class="sh"><span class="num">3.2</span><span class="tt">Quick tests: one controller at a time</span><span class="meta">≈ 5–6 min each · simulator</span></div>
+<div class="cmdbox"><pre class="cmd">py .\test_stage2_policy.py --model warm
+
+py .\test_stage2_policy.py --model stage1
+
+py .\test_stage2_policy.py --model ardupilot</pre><button class="copy">Copy</button></div>
+<p>10 episodes × 25 s, gusts 0–20 (the default; check the printout says <code>Wind strength: 0-20.0</code>). Saved to <code>results\warm_test\</code>, <code>stage1_test\</code> and <code>ardupilot_test\</code>. These are standalone checks for your own confidence; the thesis numbers come from step 3.3.</p></div>
+
+<div class="step s2" id="r3"><div class="sh"><span class="num">3.3</span><span class="tt">Statistics: all controllers in identical wind (THE thesis table)</span><span class="meta">≈ 40 min · simulator</span></div>
+<div class="cmdbox"><pre class="cmd">py .\collect_stage2_statistics.py</pre><button class="copy">Copy</button></div>
+<div class="tw"><table><tr><th>Part</th><th>Conditions</th><th>Per controller</th></tr>
+<tr><td>A</td><td>gusts 0–20, seeds 2000–2009</td><td>10 episodes</td></tr>
+<tr><td>B</td><td>constant wind 5 / 10 / 15 / 20, random direction</td><td>2 episodes each</td></tr></table></div>
+<div class="warn"><b>Run all controllers in one go.</b> The simulator drifts slightly between sessions (section 4.6). Controllers flown in the same session are compared fairly; mixing sessions is not fair.</div>
+<p><b>Output:</b> <code>results\statistics\stage2_statistics_&lt;date&gt;.json / .pkl / _report.txt</code>. Your main file: <code>stage2_statistics_20261022_161620</code>.</p></div>
+
+<div class="step s2" id="r4"><div class="sh"><span class="num">3.4</span><span class="tt">Analysis and summary</span><span class="meta">seconds · no simulator</span></div>
+<div class="cmdbox"><pre class="cmd">py .\analyze_stage2_statistics.py
+
+py .\make_stage2_summary.py</pre><button class="copy">Copy</button></div>
+<div class="tw"><table><tr><th>Script</th><th>Gives</th><th>Saved to</th></tr>
+<tr><td><code>analyze_stage2_statistics.py</code></td><td>paired wins + Wilcoxon p, pushes and time back on target, constant-wind test, repeat-session check (sections 4.3–4.6)</td><td><code>results\statistics\stage2_analysis_&lt;date&gt;.txt / .json</code></td></tr>
+<tr><td><code>make_stage2_summary.py</code></td><td>report card: transfer check, training, wind table, "better than ArduPilot"</td><td><code>results\summary\</code></td></tr></table></div></div>
+
+<div class="step s2" id="r5"><div class="sh"><span class="num">3.5</span><span class="tt">Repeat check: is the PPO result reproducible?</span><span class="meta">≈ 10 min · simulator</span></div>
+<div class="cmdbox"><pre class="cmd">py .\collect_stage2_statistics.py --models warm</pre><button class="copy">Copy</button></div>
+<p>Then run <code>py .\analyze_stage2_statistics.py</code> again; it finds the warm-only file by itself (part D). <b>Your repeat:</b> <code>stage2_statistics_20261022_164145</code>, PPO RMSE 0.226 m, still better than every other controller in 10/10 episodes.</p></div>
+
+<!-- ================================================================ -->
+<h2 id="res-train">4. Results</h2>
+<h3>4.1 Training: PPO learns to stay closer</h3>
+<div class="chart"><div class="ct">Mean distance to the target during training</div>
+<div class="cs">3D distance per episode (light dots, every third episode) and rolling mean of 20 episodes (line). Source: <code>logs\stage2\warm\episodes.csv</code></div>
+<div id="chLearn"></div>
+<button class="tbl" data-t="tLearn">Show table</button><div class="charttable" id="tLearn"></div></div>
+<div class="chart"><div class="ct">Time within 0.5 m during training</div>
+<div class="cs">Held %, rolling mean of 20 episodes</div><div id="chHold"></div></div>
+<div class="tw"><table><tr><th>Training</th><th class="n">First 50 episodes</th><th class="n">Last 50 episodes</th><th>Change</th></tr>
+<tr><td>Mean distance (3D)</td><td class="n">0.38 m</td><td class="n">0.14 m</td><td>−63%</td></tr>
+<tr><td>Held within 0.5 m</td><td class="n">76%</td><td class="n">96%</td><td>+20 points</td></tr>
+<tr><td>Episode return</td><td class="n">286</td><td class="n">417</td><td>+46%</td></tr>
+<tr><td>Success (full 25 s)</td><td class="n">100%</td><td class="n">100%</td><td>no change: Stage 1 already survives</td></tr></table></div>
+<div class="note"><b>Why the success curve is flat at 100%:</b> the warm start already survives every gust, so success cannot show learning. <b>Distance</b> is the learning curve to use in the thesis. The first training episodes are a little worse than the Stage 1 test (0.38 vs 0.31 m, both 3D) because training adds exploration noise (std 0.30 m/s); tests use the noise-free action. Likewise, the last 50 training episodes (0.14 m) are close to the final test (0.13 m, 3D).</div>
+
+<h3 id="res-gust">4.2 Gusts 0–20: who holds position best</h3>
+<div class="legend" id="lgCtrl"></div>
+<div class="cols">
+<div class="chart"><div class="ct">Gust error, RMSE (m)</div><div class="cs">10 episodes, same seeds · lower is better</div><div id="chRmse"></div></div>
+<div class="chart"><div class="ct">Time within 0.5 m (%)</div><div class="cs">higher is better</div><div id="chHeld"></div></div>
+</div>
+<div class="tw"><table id="tGust"><tr><th>Controller</th><th class="n">Success</th><th class="n">RMSE (m)</th><th class="n">Dist (m)</th><th class="n">Max push (m)</th><th class="n">Worst (m)</th><th class="n">End (m)</th><th class="n">Held %</th></tr>
+<tr><td>PID teacher</td><td class="n">100%</td><td class="n">0.358</td><td class="n">0.252</td><td class="n">0.840</td><td class="n">1.218</td><td class="n">0.241</td><td class="n">85</td></tr>
+<tr><td>Stage 1 (BC)</td><td class="n">100%</td><td class="n">0.367</td><td class="n">0.262</td><td class="n">0.822</td><td class="n">1.131</td><td class="n">0.270</td><td class="n">84</td></tr>
+<tr><td>Stock ArduPilot</td><td class="n">100%</td><td class="n">0.316</td><td class="n">0.216</td><td class="n">0.835</td><td class="n">1.208</td><td class="n">0.210</td><td class="n">91</td></tr>
+<tr class="hl"><td>PPO warm</td><td class="n">100%</td><td class="n">0.198</td><td class="n">0.111</td><td class="n">0.766</td><td class="n">1.124</td><td class="n">0.076</td><td class="n">96</td></tr></table></div>
+<p class="cap">Source: <code>results\statistics\stage2_statistics_20261022_161620_report.txt</code>, TABLE 1. Mean wind 6.8, peak 18.5 (AirSim setting).</p>
+<div class="tw"><table><tr><th>PPO warm vs</th><th class="n">RMSE</th><th class="n">Dist</th><th class="n">Held %</th><th>Paired episodes (Wilcoxon)</th></tr>
+<tr><td>Stage 1 (effect of Stage 2)</td><td class="n">−46%</td><td class="n">−58%</td><td class="n">+12.5 pts</td><td>10/10 better, p = 0.002</td></tr>
+<tr><td>PID teacher</td><td class="n">−45%</td><td class="n">−56%</td><td class="n">+11.3 pts</td><td>10/10 better, p = 0.002</td></tr>
+<tr class="hl"><td>Stock ArduPilot</td><td class="n">−37%</td><td class="n">−49%</td><td class="n">+5.7 pts</td><td>RMSE 10/10, held 9/10 (p = 0.004)</td></tr></table></div>
+
+<h3 id="res-ep">4.3 Every episode, not just the average</h3>
+<p>An average can hide a few lucky episodes. Because every controller flew the <b>same 10 gust sequences</b>, each episode is a fair head-to-head.</p>
+<div class="chart"><div class="ct">Gust RMSE per episode (m)</div><div class="cs">episode 1–10 = seeds 2000–2009 · lower is better · PPO is lowest in all 10</div><div class="legend" id="lgEp"></div><div id="chEp"></div>
+<button class="tbl" data-t="tEp">Show table</button><div class="charttable" id="tEp"></div></div>
+<div class="analogy">Four drivers race on the same 10 tracks with the same weather. If one driver wins all 10 races, that is not luck. With 10 pairs, a 10-out-of-10 sweep gives p = 0.002, the strongest result a 10-episode test can give.</div>
+
+<h3 id="replay">4.4 How PPO wins: it gets back faster</h3>
+<p>Pick an episode and press play. All four controllers fly the <b>same gusts</b>. Each lane shows how far the drone is from the target (the cross); the green band is the 0.5 m "holding" zone. Only the distance is recorded, so the drones are drawn on one line, pushed to the right by that distance. The first 2–3 s are the drone arriving from its random start point; the gust response is everything after that. Click the chart to jump to a moment.</p>
+<div class="replay">
+  <div class="rp-controls">
+    <select id="rpEp"></select>
+    <button id="rpPlay">▶ Play</button>
+    <select id="rpSpeed"><option value="1">1×</option><option value="2" selected>2×</option><option value="4">4×</option></select>
+    <input type="range" id="rpSlider" min="0" max="499" value="0">
+    <span class="rp-time" id="rpTime">t = 0.0 s</span>
+  </div>
+  <svg id="rpStage" viewBox="0 0 900 250"></svg>
+  <div id="chTrace"></div>
+  <div class="legend" id="lgTrace"></div>
+</div>
+<div class="tw"><table><tr><th>Gusts, all 10 episodes</th><th class="n">PID teacher</th><th class="n">Stage 1</th><th class="n">Stock ArduPilot</th><th class="n">PPO warm</th></tr>
+<tr><td>Biggest push per episode (mean)</td><td class="n">0.84 m</td><td class="n">0.82 m</td><td class="n">0.84 m</td><td class="n">0.77 m</td></tr>
+<tr><td>Times pushed past 0.5 m</td><td class="n">26</td><td class="n">24</td><td class="n">16</td><td class="n"><b>9</b></td></tr>
+<tr><td>Time from &gt; 0.5 m back to &lt; 0.25 m</td><td class="n">1.9 s</td><td class="n">2.2 s</td><td class="n">2.6 s</td><td class="n"><b>1.5 s</b></td></tr></table></div>
+<div class="ok"><b>Reading.</b> The biggest push is about the same for everyone (PPO vs ArduPilot: 7/10, p = 0.06, not significant): a strong gust moves any drone. The difference is what happens next. PPO crosses the 0.5 m line far less often and comes back about 1 s sooner, so it spends more of every episode close to the target.</div>
+<div class="analogy">Every goalkeeper gets hit by the same shot. PPO is the keeper who is back on the line first, and who lets the ball past the line less often.</div>
+
+<h3 id="res-const">4.5 Constant wind: no real difference</h3>
+<div class="chart"><div class="ct">Constant wind, RMSE (m)</div><div class="cs">2 episodes per strength · random direction · lower is better</div><div class="legend" id="lgConst"></div><div id="chConst"></div>
+<button class="tbl" data-t="tConst">Show table</button><div class="charttable" id="tConst"></div></div>
+<div class="tw"><table><tr><th>Constant wind (8 paired episodes)</th><th class="n">RMSE PPO vs other</th><th>PPO better in</th><th class="n">p</th><th>Meaning</th></tr>
+<tr><td>vs Stage 1</td><td class="n">0.233 vs 0.255 m</td><td>8/8</td><td class="n">0.008</td><td>small but consistent gain</td></tr>
+<tr><td>vs PID teacher</td><td class="n">0.233 vs 0.231 m</td><td>5/8</td><td class="n">1.0</td><td>no difference</td></tr>
+<tr><td>vs Stock ArduPilot</td><td class="n">0.233 vs 0.240 m</td><td>5/8</td><td class="n">0.74</td><td>no difference</td></tr></table></div>
+<p>In a steady push, every controller settles at about the same small offset. ArduPilot's inner velocity loop removes a steady push for all of them. PPO trained on <b>changing</b> wind, and that is where it is better. The honest claim is "better gust rejection", not "better in all wind".</p>
+
+<h3 id="res-rep">4.6 Reproducibility: same result in a second session</h3>
+<div class="chart"><div class="ct">PPO gust RMSE per episode: session 1 vs session 2 (m)</div><div class="cs">same model, same seeds, two separate simulator sessions on 22 Oct · stock ArduPilot (session 1) shown for reference</div><div class="legend" id="lgRep"></div><div id="chRep"></div></div>
+<div class="tw"><table><tr><th>PPO warm, gusts</th><th class="n">RMSE</th><th class="n">Dist</th><th class="n">Held %</th><th>vs ArduPilot (0.316 m)</th><th>Use</th></tr>
+<tr class="hl"><td>Session 1: 22 Oct, all controllers (<code>…161620</code>)</td><td class="n">0.198</td><td class="n">0.111</td><td class="n">96.3</td><td>10/10</td><td>main table</td></tr>
+<tr><td>Session 2: 22 Oct, PPO only (<code>…164145</code>)</td><td class="n">0.226</td><td class="n">0.153</td><td class="n">95.9</td><td>10/10</td><td>reproducibility line</td></tr>
+<tr><td>Both sessions pooled (20 episodes)</td><td class="n">0.212 ± 0.067</td><td class="n"></td><td class="n"></td><td></td><td>mean ± std</td></tr>
+<tr><td>18 Oct statistics (old layout)</td><td class="n">0.324</td><td class="n">0.217</td><td class="n">94</td><td>n/a</td><td><span class="chip fail">SUPERSEDED</span></td></tr></table></div>
+<div class="note"><b>What the repeat shows.</b> Session 2 was worse in <b>all 10</b> episodes, each by 0.013–0.041 m. A shift that is the same sign every time comes from the simulator session (like a scale that reads slightly heavy), not from the policy. PPO's lead over ArduPilot (0.09–0.12 m) is three to four times bigger than this drift.</div>
+<div class="warn"><b>18 Oct file.</b> PID and Stage 1 matched today within ±0.01 m, but PPO was 0.13 m worse, about four times today's session drift. The cause is unknown. That run was made before later script changes, and today's numbers match what PPO achieved at the end of training (last 50 episodes: horizontal distance 0.105 m, held 96%). Keep the file in <code>results\old\</code> and do not use it.</div>
+
+<!-- ================================================================ -->
+<h2 id="disc">5. Findings and discussion</h2>
+<div class="tw"><table><tr><th>#</th><th>Finding</th><th>Evidence</th></tr>
+<tr><td>F1</td><td><b>The warm start transfers Stage 1 exactly.</b> PPO begins as the Stage 1 hover network, with no lost skill.</td><td>max action difference 0.0 (<code>training_info.json</code>)</td></tr>
+<tr><td>F2</td><td><b>PPO improves on Stage 1 in wind.</b> Mean distance in training fell 63%, and in the test RMSE fell 46% against Stage 1.</td><td>0.38 → 0.14 m; 0.367 → 0.198 m; 10/10, p = 0.002</td></tr>
+<tr><td>F3</td><td><b>PPO rejects gusts better than stock ArduPilot.</b> 37% lower RMSE, 96% vs 91% time within 0.5 m.</td><td>10/10 paired episodes, p = 0.002; repeated in session 2</td></tr>
+<tr><td>F4</td><td><b>The mechanism is faster recovery, not a smaller push.</b></td><td>back on target 1.5 vs 2.6 s; past 0.5 m 9 vs 16 times; peak push similar (p = 0.06)</td></tr>
+<tr><td>F5</td><td><b>No gain in constant wind</b> over ArduPilot or the PID teacher.</td><td>5/8, p = 0.74 and p = 1.0</td></tr>
+<tr><td>F6</td><td><b>The original AirSim Stage 2 never loaded Stage 1</b> (wrong layer names + <code>strict=False</code>). Corrected here and verified.</td><td>transfer check PASS; section 1a</td></tr></table></div>
+
+<h4>Why PPO recovers faster</h4>
+<ul>
+<li><b>The reward pays for every second near the target.</b> Distance is penalised every step, so a quick return is worth more than a gentle one. The teacher it started from never had that pressure.</li>
+<li><b>It reads the drone's tilt and turn rates</b> (quaternion and p, q, r are inputs). A gust tilts the drone before it has moved far, so the network can start correcting early. The PID teacher only looks at position and velocity, and only proportionally.</li>
+<li><b>Stock ArduPilot is tuned to be smooth.</b> Its position controller limits acceleration and jerk for comfortable flight. That is good for a camera drone, but it makes the return after a gust slower. This is a likely explanation, not tested here (we did not vary ArduPilot's tuning).</li>
+<li><b>Why no gain in constant wind:</b> a steady push is cancelled by ArduPilot's inner velocity loop under every controller, so all four end at a similar small offset. PPO's training wind changed every 1–3 s, so its learned skill is the response to change.</li>
+</ul>
+
+<h4>What this means for the project</h4>
+<div class="tw"><table><tr><th>For</th><th>Meaning</th></tr>
+<tr><td>Thesis claim</td><td>"Curriculum-trained PPO rejects wind gusts better than its imitation-learned starting point and than stock ArduPilot position hold (−37% RMSE), mainly by recovering faster after each gust; under steady wind it matches the stock controller."</td></tr>
+<tr><td>Stage 3</td><td>Stage 2 is the normal-flight brain in the switching system (section 1b). Its weights are not used to train Stage 3.</td></tr>
+<tr><td>Real drone</td><td>The gust advantage is what to test with the fan: switch the fan on and off (a gust), not only a steady fan.</td></tr></table></div>
+
+<h3 id="limits">Limitations (state these in the thesis)</h3>
+<div class="tw"><table><tr><th>Limitation</th><th>Why it matters</th><th>How handled / next</th></tr>
+<tr><td>Wind is an AirSim setting, not m/s</td><td>Cannot claim "survives 20 m/s"</td><td>Calibrated by lean angle (20 ≈ 14°); the real fan test measures real m/s</td></tr>
+<tr><td>ArduPilot with default SITL tuning</td><td>A retuned controller could do better</td><td>Stated as "stock"; a tuned baseline is possible future work</td></tr>
+<tr><td>Simulation only</td><td>Sim-to-real gap</td><td>ONNX export + fan test on the real drone (section 7)</td></tr>
+<tr><td>10 gust + 8 constant episodes, one training seed</td><td>Small sample</td><td>Paired design + exact Wilcoxon; repeat session agrees</td></tr>
+<tr><td>Session drift (0.01–0.04 m)</td><td>Cross-session numbers shift</td><td>Main table from one session; repeat reported separately</td></tr>
+<tr><td>Cold start not run</td><td>"Warm learns faster than cold" untested</td><td>Optional: <code>--init cold</code> (about 8.5 h)</td></tr>
+<tr><td>Fixed heading, 2 m hover point</td><td>Narrow test condition</td><td>The Pi refuses to fly more than 20° off the training heading</td></tr>
+<tr><td>18 Oct PPO result unexplained</td><td>Reproducibility question</td><td>Superseded; two 22 Oct sessions agree</td></tr></table></div>
+
+<!-- ================================================================ -->
+<h2 id="thesis">6. Thesis figures and tables: which file</h2>
+<div class="tw"><table><tr><th>#</th><th>Figure / table</th><th>Data file</th><th>Made by</th></tr>
+<tr><td>F2.1</td><td>Stage 2 pipeline + training loop (section 1)</td><td>this guide</td><td>diagram</td></tr>
+<tr><td>F2.2</td><td>Learning curve: mean distance vs timesteps (use the distance panel only)</td><td><code>logs\stage2\warm\episodes.csv</code> (<code>mean_dist_m</code>)</td><td><code>make_stage2_summary.py</code> → <code>summary\learning_curves_warm_vs_cold.png</code> (retitle: "warm start")</td></tr>
+<tr><td>T2.1</td><td>Training settings + warm-start check</td><td><code>models\warm\training_info.json</code></td><td><code>train_stage2_disturbance.py</code></td></tr>
+<tr><td>T2.2</td><td><b>Main table:</b> gusts, 4 controllers</td><td><code>statistics\stage2_statistics_20261022_161620_report.txt</code> TABLE 1</td><td><code>collect_stage2_statistics.py</code></td></tr>
+<tr><td>F2.3</td><td>Gust RMSE per episode, 4 controllers (section 4.3)</td><td><code>…161620.pkl</code> → <code>gust</code> → <code>ep_rmse</code></td><td>this guide / your plotting</td></tr>
+<tr><td>T2.3</td><td>Paired test results (wins, p)</td><td><code>statistics\stage2_analysis_&lt;date&gt;.txt</code> part A</td><td><code>analyze_stage2_statistics.py</code></td></tr>
+<tr><td>F2.4</td><td>Distance vs time, one gust episode (section 4.4, seed 2004)</td><td><code>…161620.pkl</code> → <code>gust[4]</code> → <code>ep_dist_trace</code></td><td>this guide</td></tr>
+<tr><td>T2.4</td><td>How PPO wins: pushes, time back, biggest push</td><td><code>stage2_analysis_&lt;date&gt;.txt</code> part B</td><td><code>analyze_stage2_statistics.py</code></td></tr>
+<tr><td>F2.5 / T2.5</td><td>Constant wind 5/10/15/20</td><td><code>…161620_report.txt</code> TABLE 2 + analysis part C</td><td>both scripts</td></tr>
+<tr><td>T2.6</td><td>Reproducibility (two sessions)</td><td><code>…161620.pkl</code> + <code>…164145.pkl</code>; analysis part D</td><td><code>analyze_stage2_statistics.py</code></td></tr>
+<tr><td>F2.6</td><td>Real drone, fan on/off</td><td><code>Hardware\results\real_*</code></td><td><code>real_fan_test.py</code> <span class="chip todo">PENDING</span></td></tr></table></div>
+
+<!-- ================================================================ -->
+<h2 id="hw">7. Next: real drone (fan test)</h2>
+<p>Full steps are in <code>Stage_2\Hardware\README.txt</code>. In short:</p>
+<div class="flow">
+  <div class="fb"><b>PC, in Stage_2\</b> <code>py .\export_onnx.py</code> and <code>py .\export_onnx.py --model stage1</code> → <code>runs\run1\onnx\warm.onnx</code>, <code>stage1.onnx</code> (each must print PASS)</div><div class="fa">▼ copy <code>onnx\</code> into <code>Hardware\runs\run1\onnx\</code>, then <code>Hardware\</code> to the Pi as <code>~/Stage_2/</code></div>
+  <div class="fb pi"><b>Pi, once</b> <code>pip3 install numpy pymavlink onnxruntime</code> · link check (props off): <code>python3 real_fan_test.py --check</code></div><div class="fa">▼ you take off in AltHold → PosHold → switch to GUIDED: the Pi flies 25 s</div>
+  <div class="fb pilot"><b>Tests</b> warm, fan off · warm, fan on · stage1, fan on (same fan position) · flip away from GUIDED at any time to take control</div><div class="fa">▼</div>
+  <div class="fb"><b>Back to the PC</b> copy <code>runs/run1/results/real_*</code> into <code>Stage_2\Hardware\results\</code></div>
+</div>
+<div class="note"><b>Test gusts, not just a steady fan.</b> Section 4.5 shows PPO's advantage is in changing wind. Switching the fan on and off (or moving it) is the real-world version of the result to confirm. On the PC, install <code>pip install onnx onnxruntime</code> first if the export says "No module named onnx".</div>
+
+<!-- ================================================================ -->
+<h2 id="trouble">8. Troubleshooting</h2>
+<div class="tw"><table><tr><th>Symptom</th><th>Cause</th><th>Fix</th></tr>
+<tr><td>Test printout says <code>Wind strength: 0-0.0</code></td><td><code>--wind-strength 0</code> was typed</td><td>Run without it (default is 20)</td></tr>
+<tr><td>Summary shows an empty wind table</td><td>No statistics file in <code>results\statistics\</code></td><td>Run 3.3 first, or move the file into <code>statistics\</code></td></tr>
+<tr><td><code>cold … SKIPPED</code> in statistics</td><td>Cold start never trained</td><td>Normal, ignore</td></tr>
+<tr><td>Numbers differ from a previous day</td><td>Session drift</td><td>Compare only within one session (3.3 runs all together)</td></tr>
+<tr><td>Training stopped (power cut)</td><td>—</td><td><code>py .\train_stage2_disturbance.py --init warm --resume</code></td></tr>
+<tr><td>Episodes marked <code>update_pause</code></td><td>PPO update; the safety pilot held the drone</td><td>Normal: not counted as success or failure</td></tr>
+<tr><td><code>No module named onnx</code></td><td>PC missing export packages</td><td><code>pip install onnx onnxruntime</code></td></tr>
+<tr><td><code>export_onnx.py: ModuleNotFoundError</code></td><td>Run inside <code>Hardware\</code></td><td>Run it in <code>Stage_2\</code></td></tr></table></div>
+
+<!-- ================================================================ -->
+<h2 id="repro">9. Reproducibility checklist</h2>
+<div class="tw"><table><tr><th>Item</th><th>Value</th></tr>
+<tr><td>Simulator / firmware</td><td>ArduPilot SITL 4.4.0-dev (ArduCopter, GPS mode) + AirSim, <code>tcp:127.0.0.1:5762</code></td></tr>
+<tr><td>Software</td><td>Python 3.9, Stable-Baselines3 2.3.2, PyTorch (CPU); export: onnx + onnxruntime</td></tr>
+<tr><td>Stage 1 input</td><td><code>..\Stage_1\runs\run1\models\stage1_ppo_init.zip</code> + <code>obs_norm.npz</code></td></tr>
+<tr><td>Training</td><td>500,000 steps requested (501,760 done), seed 0, settings in <code>training_info.json</code></td></tr>
+<tr><td>Test seeds</td><td>quick test 1000+, gusts 2000–2009, constant wind 3000+</td></tr>
+<tr><td>Main result</td><td><code>stage2_statistics_20261022_161620</code>, all 4 controllers, one session</td></tr>
+<tr><td>Repeat</td><td><code>stage2_statistics_20261022_164145</code>, PPO only</td></tr>
+<tr><td>Statistics</td><td>paired per seed; exact two-sided Wilcoxon signed-rank (<code>analyze_stage2_statistics.py</code>)</td></tr>
+<tr><td>Wind calibration</td><td><code>wind_check.py</code>: setting 20 ≈ 14° lean</td></tr></table></div>
+
+<footer>Stage 2 final guide · ArduPilot SITL + AirSim · data: run1, 18–22 Oct 2026</footer>
+</main></div>
+<script>
+const DATA = {"learn":{"t":[10741,12789,14837,16885,18933,20981,23029,25077,27125,29173,31221,33269,35317,37365,39413,41461,43509,45557,47605,49653,51701,53749,55797,57845,59893,61941,63989,66037,68085,70133,72181,74229,76277,78325,80373,82421,84469,86517,88565,90613,92661,94709,96757,98805,100853,102901,104949,106997,109045,111093,113141,115189,117237,119285,121333,123381,125429,127477,129525,131573,133621,135669,137717,139765,141813,143861,145909,147957,150005,152053,154101,156149,158197,160245,162293,164341,166389,168437,170485,172533,175081,177129,179177,181225,183273,185321,187369,189417,191465,193513,195561,197609,199657,201705,203753,205801,207849,209897,211945,213993,216041,218089,220137,222185,224233,226281,228329,230377,232425,234473,236521,238569,240617,242665,244713,246761,248809,250857,252905,254953,257001,259049,261097,263145,265193,267241,269289,271337,273385,275433,277481,279529,281577,283625,285673,287721,289769,291817,293865,295913,297961,300009,302057,304105,306153,308201,310249,312297,314345,316393,318441,320489,322537,324585,326633,328681,330729,332777,334825,336873,339421,341469,343517,345565,347613,349661,351709,353757,355805,357853,359901,361949,363997,366045,368093,370141,372189,374237,376285,378333,380381,382429,384477,386525,388573,390621,392669,394717,396765,398813,400861,402909,404957,407005,409053,411101,413149,415197,417245,419293,421341,423389,425437,427485,429533,431581,433629,435677,437725,439773,441821,443869,445917,447965,450013,452061,454109,456157,458205,460253,462301,464349,466397,468445,470493,472541,474589,476637,478685,480733,482781,484829,486877,488925,490973,493021,495069,497117,499165,501713],"dist":[0.37,0.36,0.364,0.367,0.381,0.376,0.393,0.377,0.381,0.383,0.391,0.381,0.361,0.353,0.35,0.323,0.314,0.314,0.316,0.3,0.312,0.318,0.326,0.324,0.334,0.335,0.323,0.338,0.318,0.311,0.308,0.3,0.279,0.282,0.279,0.276,0.272,0.263,0.267,0.261,0.244,0.258,0.267,0.274,0.273,0.301,0.304,0.299,0.291,0.291,0.275,0.27,0.271,0.272,0.267,0.272,0.269,0.288,0.284,0.287,0.276,0.278,0.267,0.278,0.277,0.289,0.286,0.273,0.255,0.253,0.244,0.253,0.253,0.254,0.256,0.251,0.233,0.236,0.237,0.239,0.23,0.228,0.22,0.224,0.226,0.219,0.228,0.228,0.221,0.207,0.224,0.222,0.227,0.227,0.226,0.217,0.212,0.196,0.19,0.183,0.18,0.178,0.185,0.185,0.193,0.199,0.206,0.201,0.21,0.217,0.213,0.211,0.215,0.208,0.196,0.195,0.196,0.204,0.193,0.19,0.188,0.182,0.168,0.177,0.184,0.185,0.185,0.188,0.186,0.184,0.181,0.176,0.176,0.174,0.175,0.17,0.172,0.174,0.168,0.163,0.168,0.171,0.167,0.178,0.176,0.184,0.186,0.188,0.181,0.178,0.169,0.161,0.163,0.161,0.168,0.164,0.167,0.165,0.163,0.159,0.154,0.148,0.156,0.157,0.159,0.163,0.166,0.166,0.162,0.163,0.167,0.169,0.163,0.164,0.163,0.162,0.159,0.165,0.167,0.166,0.162,0.157,0.159,0.155,0.156,0.155,0.161,0.157,0.161,0.157,0.155,0.152,0.147,0.137,0.142,0.143,0.145,0.143,0.144,0.142,0.144,0.142,0.146,0.149,0.157,0.154,0.161,0.158,0.159,0.156,0.156,0.149,0.159,0.159,0.156,0.157,0.16,0.149,0.146,0.149,0.147,0.143,0.144,0.147,0.141,0.142,0.141,0.141,0.139,0.138,0.136,0.145,0.145,0.145,0.144,0.142,0.14,0.136,0.134,0.134],"hold":[76.7,77.5,77.9,76.6,76.0,76.8,74.0,75.6,75.4,73.9,73.0,75.7,78.3,79.4,81.1,84.6,84.9,84.9,84.7,86.0,84.6,84.5,84.0,84.9,83.3,83.8,85.4,82.9,84.9,85.6,85.8,86.7,89.7,89.3,90.1,90.1,90.2,90.7,90.0,90.9,91.9,89.8,88.5,88.0,88.7,85.5,85.8,87.0,87.9,87.4,89.6,90.1,89.7,89.5,89.9,89.7,89.5,87.3,87.8,87.8,88.6,88.8,89.9,88.0,86.8,85.4,85.4,87.6,90.1,91.6,93.4,92.7,91.9,92.0,91.9,91.8,93.3,93.2,93.1,92.4,93.3,94.1,94.7,93.6,93.2,93.0,91.8,91.7,92.4,93.8,92.9,93.4,92.9,93.2,93.3,93.9,93.6,94.5,94.9,95.0,95.2,95.6,95.4,95.4,95.1,95.3,95.1,95.7,95.0,94.3,94.5,94.6,94.6,95.2,96.4,95.9,95.9,95.1,95.2,94.9,95.3,95.5,96.1,96.3,96.3,95.8,95.6,95.5,94.9,94.3,94.5,94.4,94.3,94.5,95.0,95.4,95.6,95.7,96.2,96.2,96.3,96.6,96.6,95.7,96.0,95.1,94.5,94.7,94.9,95.0,95.3,95.6,94.9,95.2,94.8,94.8,94.7,94.9,95.2,95.3,95.7,95.8,95.5,95.9,96.1,95.9,96.0,96.2,96.3,96.2,96.1,96.0,95.8,95.4,95.2,95.3,95.3,95.5,95.3,95.4,95.7,96.0,95.6,96.0,96.1,95.9,95.6,95.9,95.7,95.7,95.6,95.6,95.7,96.1,96.1,95.9,96.1,96.1,96.1,96.2,96.3,96.4,96.4,96.7,96.0,96.0,95.6,95.5,94.8,94.8,95.1,95.3,95.0,95.4,96.2,95.9,96.0,96.4,96.5,95.9,95.8,95.7,95.4,95.3,95.5,95.4,95.8,96.3,96.3,96.6,96.7,95.6,95.4,95.0,94.7,94.8,95.3,95.7,95.8,96.1],"ret":[289.9,295.8,292.9,291.6,283.0,286.1,276.4,285.7,283.1,282.3,278.1,283.7,295.3,300.2,302.1,317.4,322.8,322.8,321.9,331.0,324.4,321.3,317.0,318.0,312.5,311.8,318.2,310.1,321.0,324.7,326.1,330.4,341.6,340.1,341.1,342.6,344.6,349.5,346.9,350.4,359.9,351.9,347.0,342.9,344.7,328.8,327.7,330.7,335.4,334.6,343.2,345.8,345.4,344.6,347.8,344.7,346.7,335.7,337.7,335.7,341.8,340.9,347.1,341.2,341.3,335.3,337.0,344.0,353.9,355.0,360.2,355.0,354.8,354.5,352.7,355.3,365.2,363.3,362.8,361.8,366.5,367.8,372.6,370.5,369.6,373.5,368.7,368.2,372.2,379.3,370.2,371.0,368.2,368.4,369.1,373.8,376.3,385.2,388.2,391.8,393.9,395.3,391.4,391.5,387.1,383.4,379.5,382.7,377.6,373.3,376.2,377.5,374.6,378.5,385.3,386.3,385.2,380.8,386.9,388.3,389.1,392.5,400.5,395.3,391.3,391.0,390.9,389.1,389.7,390.6,392.4,395.6,396.0,397.6,396.6,399.0,397.7,396.8,399.7,403.0,399.8,398.3,400.4,394.1,395.4,391.1,389.6,388.6,392.3,394.3,399.1,403.6,402.7,404.2,399.9,402.5,400.3,401.3,402.5,405.1,408.3,411.7,407.6,406.0,405.2,403.0,401.3,401.3,403.8,402.9,400.7,399.4,403.1,402.6,402.9,403.3,405.6,401.9,400.9,401.6,404.0,406.4,405.1,407.6,407.2,407.8,404.5,406.5,403.5,406.0,406.8,408.3,411.4,417.9,414.7,413.8,413.0,414.0,413.0,415.0,414.0,414.8,412.8,410.9,406.6,408.0,404.7,406.5,406.4,407.3,407.1,411.4,405.2,404.9,406.6,405.3,403.6,409.9,411.6,410.2,411.2,414.0,413.5,412.1,415.2,414.8,415.4,415.7,416.4,416.7,418.3,413.0,412.9,413.0,413.7,414.8,415.9,417.6,418.6,418.5],"raw_t":[500,2549,4049,5597,7145,8693,10193,11741,13289,14837,16337,17885,19433,20981,22481,24029,25577,27125,28625,30173,31721,33269,34769,36317,37865,39413,40913,42461,44009,45557,47057,48605,50153,51701,53201,54749,56297,57845,59345,60893,62441,63989,65489,67037,68585,70133,71633,73181,74729,76277,77777,79325,80873,82421,83921,85469,87017,88565,90065,91613,93161,94709,96209,97757,99305,100853,102353,103901,105449,106997,108497,110045,111593,113141,114641,116189,117737,119285,120785,122333,123881,125429,126929,128477,130025,131573,133073,134621,136169,137717,139217,140765,142313,143861,145361,146909,148457,150005,151505,153053,154601,156149,157649,159197,160745,162293,163793,165341,166889,168437,169937,171485,173033,174581,176081,177629,179177,180725,182225,183773,185321,186869,188369,189917,191465,193013,194513,196061,197609,199157,200657,202205,203753,205301,206801,208349,209897,211445,212945,214493,216041,217589,219089,220637,222185,223733,225233,226781,228329,229877,231377,232925,234473,236021,237521,239069,240617,242165,243665,245213,246761,248309,249809,251357,252905,254453,255953,257501,259049,260597,262097,263645,265193,266741,268241,269789,271337,272885,274385,275933,277481,279029,280529,282077,283625,285173,286673,288221,289769,291317,292817,294365,295913,297461,298961,300509,302057,303605,305105,306653,308201,309749,311249,312797,314345,315893,317393,318941,320489,322037,323537,325085,326633,328181,329681,331229,332777,334325,335825,337373,338921,340469,341969,343517,345065,346613,348113,349661,351209,352757,354257,355805,357353,358901,360401,361949,363497,365045,366545,368093,369641,371189,372689,374237,375785,377333,378833,380381,381929,383477,384977,386525,388073,389621,391121,392669,394217,395765,397265,398813,400361,401909,403409,404957,406505,408053,409553,411101,412649,414197,415697,417245,418793,420341,421841,423389,424937,426485,427985,429533,431081,432629,434129,435677,437225,438773,440273,441821,443369,444917,446417,447965,449513,451061,452561,454109,455657,457205,458705,460253,461801,463349,464849,466397,467945,469493,470993,472541,474089,475637,477137,478685,480233,481781,483281,484829,486377,487925,489425,490973,492521,494069,495569,497117,498665,500213,501713],"raw_dist":[0.408,0.248,0.367,0.457,0.222,0.323,0.23,0.307,0.421,0.279,0.39,0.365,0.373,0.382,0.511,0.292,0.357,0.303,0.458,0.479,0.282,0.485,0.269,0.333,0.433,0.445,0.239,0.255,0.222,0.291,0.317,0.351,0.407,0.285,0.344,0.256,0.383,0.293,0.507,0.428,0.265,0.265,0.378,0.311,0.305,0.327,0.317,0.234,0.304,0.318,0.213,0.271,0.353,0.348,0.174,0.212,0.182,0.255,0.226,0.33,0.255,0.367,0.307,0.331,0.281,0.275,0.314,0.319,0.282,0.198,0.199,0.302,0.222,0.278,0.306,0.306,0.335,0.211,0.22,0.332,0.299,0.254,0.269,0.302,0.27,0.211,0.264,0.265,0.302,0.231,0.365,0.252,0.268,0.249,0.228,0.194,0.265,0.301,0.285,0.196,0.409,0.221,0.229,0.195,0.273,0.285,0.228,0.211,0.188,0.3,0.23,0.298,0.211,0.141,0.14,0.203,0.192,0.32,0.318,0.177,0.16,0.251,0.208,0.221,0.255,0.193,0.38,0.206,0.209,0.257,0.302,0.239,0.177,0.186,0.202,0.094,0.177,0.242,0.096,0.167,0.177,0.174,0.154,0.216,0.226,0.255,0.278,0.216,0.208,0.101,0.205,0.265,0.288,0.188,0.207,0.176,0.122,0.23,0.238,0.191,0.145,0.179,0.209,0.168,0.171,0.219,0.206,0.146,0.207,0.152,0.227,0.197,0.234,0.191,0.163,0.144,0.154,0.217,0.144,0.235,0.164,0.169,0.139,0.166,0.19,0.205,0.145,0.132,0.185,0.199,0.167,0.203,0.15,0.161,0.161,0.148,0.184,0.151,0.172,0.16,0.167,0.209,0.169,0.095,0.31,0.179,0.14,0.168,0.159,0.147,0.183,0.189,0.195,0.132,0.21,0.228,0.187,0.161,0.116,0.125,0.165,0.138,0.193,0.197,0.172,0.177,0.166,0.134,0.107,0.234,0.15,0.12,0.141,0.207,0.159,0.202,0.147,0.109,0.176,0.102,0.18,0.176,0.268,0.124,0.191,0.121,0.128,0.163,0.119,0.188,0.126,0.147,0.144,0.167,0.146,0.111,0.238,0.118,0.104,0.179,0.178,0.115,0.148,0.169,0.118,0.151,0.122,0.161,0.109,0.165,0.099,0.164,0.168,0.192,0.137,0.096,0.15,0.143,0.163,0.144,0.141,0.152,0.154,0.12,0.164,0.155,0.122,0.139,0.177,0.206,0.109,0.131,0.119,0.199,0.158,0.147,0.089,0.095,0.146,0.172,0.092,0.118,0.161,0.184,0.143,0.126,0.179,0.166,0.129,0.161,0.119,0.127,0.183,0.132,0.232,0.158,0.14,0.14,0.155,0.069,0.148,0.186,0.15,0.132,0.128,0.12,0.157],"n":979,"first50":{"dist":0.376,"hold":76.0,"ret":286.4},"last50":{"dist":0.138,"hold":95.8,"ret":416.8}},"gust":{"pid":{"rmse":0.358,"dist":0.252,"max":0.84,"worst":1.218,"end":0.241,"hold":85.0,"ep_rmse":[0.363,0.435,0.266,0.302,0.279,0.431,0.461,0.261,0.396,0.389],"ep_dist":[0.256,0.292,0.199,0.168,0.177,0.354,0.311,0.189,0.272,0.3],"ep_hold":[80.2,84.4,95.8,91.6,91.6,81.0,68.2,90.0,83.0,84.6],"ep_max":[0.625,1.218,0.551,0.431,0.656,1.155,1.05,0.574,1.107,1.036],"exc":26,"settle":1.92,"rmse_sd":0.076},"stage1":{"rmse":0.367,"dist":0.262,"max":0.822,"worst":1.131,"end":0.27,"hold":83.8,"ep_rmse":[0.391,0.392,0.288,0.305,0.293,0.418,0.474,0.272,0.416,0.42],"ep_dist":[0.289,0.276,0.216,0.168,0.182,0.351,0.322,0.198,0.3,0.314],"ep_hold":[78.2,85.0,95.0,91.4,89.4,77.4,70.2,89.2,80.2,82.4],"ep_max":[0.688,0.968,0.578,0.395,0.676,1.013,1.038,0.617,1.116,1.131],"exc":24,"settle":2.24,"rmse_sd":0.071},"ardupilot":{"rmse":0.316,"dist":0.216,"max":0.835,"worst":1.208,"end":0.21,"hold":90.6,"ep_rmse":[0.292,0.378,0.236,0.231,0.256,0.382,0.412,0.262,0.344,0.369],"ep_dist":[0.216,0.218,0.174,0.141,0.173,0.296,0.282,0.173,0.227,0.261],"ep_hold":[91.6,88.2,96.4,100.0,92.6,87.4,79.8,91.2,89.2,89.6],"ep_max":[0.467,1.082,0.527,0.374,0.701,1.208,1.184,0.68,1.091,1.033],"exc":16,"settle":2.55,"rmse_sd":0.068},"warm":{"rmse":0.198,"dist":0.111,"max":0.766,"worst":1.124,"end":0.076,"hold":96.3,"ep_rmse":[0.129,0.239,0.129,0.11,0.162,0.241,0.279,0.155,0.271,0.264],"ep_dist":[0.079,0.107,0.078,0.061,0.086,0.135,0.154,0.075,0.158,0.173],"ep_hold":[100.0,94.4,98.4,100.0,96.6,95.8,92.8,95.8,94.6,94.4],"ep_max":[0.243,1.064,0.515,0.13,0.704,1.108,1.065,0.666,1.124,1.038],"exc":9,"settle":1.54,"rmse_sd":0.067}},"levels":{"pid":{"5.0":0.167,"10.0":0.238,"15.0":0.182,"20.0":0.338},"stage1":{"5.0":0.198,"10.0":0.257,"15.0":0.197,"20.0":0.368},"ardupilot":{"5.0":0.159,"10.0":0.246,"15.0":0.202,"20.0":0.353},"warm":{"5.0":0.176,"10.0":0.232,"15.0":0.168,"20.0":0.354}},"level_hold":{"pid":{"5.0":96.6,"10.0":94.2,"15.0":96.8,"20.0":91.2},"stage1":{"5.0":96.7,"10.0":94.0,"15.0":96.9,"20.0":91.1},"ardupilot":{"5.0":96.4,"10.0":93.3,"15.0":92.3,"20.0":87.5},"warm":{"5.0":97.0,"10.0":94.6,"15.0":97.9,"20.0":92.5}},"rep":{"s1":[0.129,0.239,0.129,0.11,0.162,0.241,0.279,0.155,0.271,0.264],"s2":[0.145,0.277,0.165,0.142,0.187,0.283,0.292,0.185,0.294,0.296],"s2_rmse":0.226,"s2_dist":0.153,"s2_hold":95.9},"traces":{"4":{"pid":[0.627,0.635,0.644,0.648,0.653,0.657,0.658,0.657,0.655,0.652,0.648,0.641,0.629,0.621,0.613,0.603,0.588,0.571,0.558,0.545,0.522,0.51,0.485,0.462,0.444,0.428,0.402,0.373,0.357,0.337,0.311,0.285,0.268,0.245,0.23,0.215,0.202,0.18,0.171,0.164,0.158,0.157,0.159,0.162,0.169,0.174,0.182,0.188,0.196,0.202,0.208,0.212,0.214,0.216,0.218,0.216,0.213,0.212,0.207,0.202,0.193,0.188,0.177,0.169,0.157,0.143,0.134,0.124,0.112,0.098,0.09,0.083,0.077,0.068,0.067,0.067,0.071,0.075,0.084,0.09,0.099,0.105,0.115,0.123,0.128,0.134,0.14,0.146,0.149,0.152,0.155,0.157,0.158,0.158,0.159,0.159,0.156,0.156,0.154,0.152,0.148,0.146,0.143,0.139,0.133,0.127,0.124,0.119,0.113,0.11,0.103,0.099,0.092,0.088,0.084,0.078,0.072,0.069,0.065,0.059,0.057,0.055,0.054,0.053,0.052,0.053,0.055,0.057,0.059,0.064,0.067,0.069,0.074,0.077,0.082,0.085,0.089,0.094,0.097,0.099,0.103,0.105,0.108,0.11,0.112,0.114,0.115,0.116,0.117,0.117,0.117,0.117,0.116,0.115,0.113,0.111,0.109,0.107,0.105,0.1,0.097,0.094,0.091,0.087,0.087,0.086,0.086,0.088,0.09,0.092,0.095,0.097,0.101,0.103,0.106,0.108,0.11,0.111,0.112,0.112,0.111,0.11,0.108,0.106,0.102,0.096,0.092,0.088,0.081,0.076,0.071,0.063,0.056,0.051,0.047,0.041,0.04,0.039,0.04,0.044,0.05,0.053,0.061,0.066,0.071,0.077,0.085,0.089,0.095,0.099,0.104,0.106,0.109,0.111,0.112,0.113,0.113,0.113,0.113,0.11,0.108,0.106,0.103,0.101,0.096,0.093,0.09,0.087,0.085,0.084,0.082,0.082,0.082,0.083,0.084,0.085,0.087,0.091,0.096,0.099,0.105,0.108,0.115,0.119,0.124,0.129,0.133,0.139,0.143,0.143,0.144,0.142,0.135,0.132,0.129,0.121,0.111,0.104,0.098,0.089,0.08,0.074,0.068,0.066,0.066,0.069,0.077,0.085,0.098,0.108,0.119,0.141,0.153,0.163,0.176,0.197,0.208,0.218,0.234,0.243,0.257,0.266,0.278,0.285,0.291,0.301,0.306,0.31,0.313,0.316,0.319,0.32,0.319,0.316,0.314,0.312,0.308,0.303,0.298,0.29,0.281,0.274,0.266,0.259,0.243,0.234,0.226,0.212,0.198,0.188,0.179,0.165,0.15,0.142,0.132,0.12,0.112,0.103,0.096,0.093,0.091,0.092,0.096,0.1,0.104,0.113,0.123,0.13,0.138,0.148,0.155,0.166,0.175,0.184,0.19,0.199,0.207,0.21,0.213,0.218,0.224,0.228,0.233,0.244,0.256,0.266,0.275,0.291,0.307,0.316,0.327,0.341,0.355,0.362,0.37,0.379,0.387,0.39,0.391,0.393,0.394,0.391,0.387,0.383,0.379,0.368,0.355,0.349,0.339,0.325,0.314,0.297,0.262,0.236,0.208,0.189,0.178,0.187,0.203,0.245,0.275,0.323,0.375,0.405,0.437,0.482,0.511,0.549,0.58,0.597,0.61,0.632,0.643,0.646,0.646,0.647,0.64,0.632,0.622,0.609,0.591,0.58,0.565,0.544,0.528,0.51,0.49,0.481,0.472,0.46,0.451,0.448,0.447,0.445,0.446,0.451,0.455,0.457,0.458,0.461,0.464,0.467,0.464,0.463,0.459,0.454,0.445,0.435,0.419,0.407,0.393,0.371,0.359,0.331,0.307,0.289,0.271,0.242,0.224,0.197,0.172,0.159,0.146,0.135,0.133,0.138,0.151,0.165,0.178,0.202,0.216,0.241,0.263,0.278,0.292,0.312,0.324,0.34,0.349,0.362,0.372,0.377,0.38,0.384,0.386,0.387,0.386,0.381,0.379,0.375,0.365,0.359,0.353,0.341,0.328,0.32,0.31,0.296,0.286,0.272,0.261,0.245,0.234,0.217,0.207,0.19,0.181,0.165,0.151,0.141,0.132,0.12,0.113,0.107,0.104,0.104,0.108,0.113,0.119,0.129],"stage1":[0.652,0.658,0.666,0.671,0.675,0.677,0.678,0.678,0.675,0.669,0.665,0.66,0.653,0.647,0.635,0.625,0.614,0.604,0.587,0.576,0.557,0.544,0.524,0.502,0.487,0.471,0.449,0.433,0.41,0.386,0.368,0.354,0.329,0.307,0.29,0.276,0.253,0.231,0.219,0.207,0.189,0.175,0.167,0.16,0.153,0.149,0.148,0.149,0.15,0.152,0.157,0.162,0.165,0.168,0.172,0.175,0.179,0.18,0.181,0.182,0.183,0.182,0.18,0.178,0.176,0.174,0.17,0.166,0.163,0.161,0.157,0.153,0.151,0.149,0.146,0.144,0.143,0.142,0.143,0.143,0.145,0.147,0.148,0.151,0.154,0.155,0.157,0.161,0.163,0.165,0.167,0.168,0.17,0.171,0.171,0.173,0.173,0.173,0.172,0.171,0.17,0.168,0.166,0.165,0.163,0.158,0.155,0.153,0.15,0.145,0.14,0.137,0.131,0.125,0.122,0.118,0.112,0.108,0.102,0.098,0.093,0.09,0.086,0.079,0.076,0.073,0.07,0.067,0.063,0.062,0.06,0.059,0.058,0.058,0.059,0.059,0.06,0.061,0.063,0.064,0.065,0.067,0.069,0.069,0.07,0.072,0.073,0.073,0.074,0.075,0.075,0.075,0.075,0.075,0.075,0.074,0.074,0.073,0.073,0.072,0.071,0.07,0.069,0.064,0.056,0.05,0.04,0.034,0.027,0.023,0.02,0.019,0.021,0.026,0.03,0.033,0.037,0.041,0.045,0.047,0.049,0.05,0.05,0.049,0.049,0.047,0.044,0.042,0.04,0.038,0.035,0.034,0.034,0.035,0.036,0.041,0.048,0.053,0.058,0.066,0.075,0.081,0.09,0.097,0.102,0.111,0.119,0.124,0.129,0.139,0.143,0.147,0.151,0.156,0.161,0.163,0.166,0.168,0.17,0.171,0.173,0.173,0.174,0.173,0.173,0.172,0.171,0.17,0.17,0.171,0.171,0.171,0.172,0.172,0.173,0.174,0.175,0.176,0.177,0.178,0.18,0.181,0.183,0.184,0.186,0.187,0.188,0.189,0.19,0.19,0.189,0.185,0.182,0.178,0.171,0.166,0.161,0.154,0.146,0.141,0.137,0.13,0.126,0.124,0.123,0.124,0.127,0.133,0.142,0.149,0.157,0.17,0.184,0.194,0.209,0.22,0.23,0.247,0.26,0.27,0.279,0.292,0.304,0.31,0.318,0.327,0.333,0.339,0.344,0.347,0.348,0.348,0.349,0.347,0.345,0.339,0.334,0.329,0.32,0.312,0.304,0.291,0.277,0.267,0.256,0.24,0.223,0.211,0.193,0.181,0.168,0.148,0.13,0.116,0.105,0.086,0.069,0.057,0.047,0.037,0.036,0.04,0.049,0.062,0.073,0.089,0.104,0.114,0.125,0.135,0.153,0.161,0.168,0.182,0.189,0.197,0.202,0.211,0.216,0.219,0.224,0.232,0.239,0.25,0.265,0.275,0.287,0.306,0.324,0.337,0.348,0.362,0.384,0.396,0.407,0.421,0.435,0.443,0.451,0.458,0.466,0.47,0.472,0.472,0.471,0.469,0.466,0.458,0.454,0.443,0.432,0.417,0.396,0.352,0.317,0.259,0.221,0.176,0.14,0.13,0.134,0.162,0.207,0.244,0.274,0.329,0.359,0.408,0.435,0.478,0.503,0.527,0.556,0.584,0.601,0.613,0.633,0.642,0.648,0.652,0.655,0.656,0.656,0.654,0.646,0.642,0.637,0.63,0.618,0.608,0.601,0.592,0.577,0.566,0.557,0.549,0.532,0.52,0.51,0.5,0.482,0.466,0.457,0.443,0.421,0.408,0.396,0.376,0.362,0.342,0.327,0.314,0.291,0.271,0.257,0.237,0.222,0.202,0.191,0.175,0.166,0.159,0.15,0.146,0.145,0.148,0.153,0.163,0.172,0.189,0.2,0.21,0.228,0.244,0.256,0.266,0.281,0.296,0.304,0.313,0.323,0.331,0.336,0.341,0.344,0.347,0.349,0.349,0.347,0.346,0.342,0.336,0.33,0.326,0.317,0.306,0.3,0.291,0.28,0.271,0.259,0.247,0.239,0.23,0.218,0.208,0.2,0.195,0.185,0.179,0.175,0.172,0.171,0.171,0.175,0.182,0.187,0.194,0.204,0.215],"ardupilot":[0.675,0.682,0.691,0.697,0.7,0.702,0.703,0.702,0.697,0.694,0.687,0.681,0.672,0.662,0.648,0.637,0.627,0.603,0.591,0.576,0.555,0.54,0.525,0.493,0.475,0.46,0.433,0.416,0.398,0.373,0.346,0.33,0.304,0.284,0.259,0.242,0.219,0.202,0.179,0.164,0.151,0.132,0.12,0.104,0.094,0.088,0.085,0.084,0.087,0.091,0.097,0.103,0.106,0.114,0.121,0.125,0.13,0.134,0.137,0.139,0.139,0.139,0.141,0.139,0.137,0.136,0.134,0.132,0.127,0.123,0.119,0.115,0.109,0.105,0.1,0.095,0.091,0.085,0.078,0.075,0.07,0.064,0.06,0.054,0.048,0.045,0.041,0.036,0.032,0.029,0.025,0.022,0.02,0.018,0.016,0.015,0.015,0.015,0.015,0.016,0.017,0.018,0.019,0.02,0.021,0.021,0.022,0.022,0.022,0.022,0.022,0.022,0.022,0.021,0.02,0.02,0.018,0.018,0.017,0.015,0.014,0.013,0.011,0.01,0.009,0.008,0.008,0.008,0.008,0.009,0.011,0.013,0.015,0.016,0.018,0.02,0.021,0.023,0.026,0.027,0.028,0.03,0.032,0.033,0.034,0.035,0.037,0.038,0.038,0.039,0.04,0.041,0.042,0.042,0.043,0.044,0.045,0.045,0.045,0.046,0.046,0.046,0.047,0.048,0.049,0.053,0.057,0.064,0.069,0.077,0.086,0.092,0.098,0.107,0.116,0.121,0.129,0.134,0.142,0.146,0.151,0.155,0.159,0.163,0.165,0.167,0.169,0.171,0.172,0.172,0.173,0.173,0.173,0.171,0.171,0.17,0.17,0.168,0.167,0.165,0.164,0.161,0.16,0.158,0.156,0.154,0.152,0.149,0.146,0.144,0.143,0.14,0.137,0.134,0.132,0.129,0.126,0.124,0.121,0.119,0.117,0.113,0.111,0.109,0.109,0.11,0.112,0.113,0.116,0.119,0.123,0.126,0.13,0.133,0.137,0.143,0.15,0.154,0.159,0.166,0.174,0.178,0.184,0.191,0.199,0.203,0.211,0.215,0.219,0.222,0.222,0.22,0.218,0.211,0.207,0.203,0.198,0.189,0.179,0.174,0.166,0.154,0.143,0.136,0.123,0.115,0.106,0.094,0.085,0.079,0.076,0.072,0.073,0.076,0.08,0.089,0.1,0.107,0.117,0.129,0.138,0.149,0.162,0.17,0.178,0.186,0.2,0.207,0.212,0.22,0.226,0.233,0.236,0.242,0.244,0.248,0.251,0.252,0.253,0.254,0.253,0.252,0.25,0.249,0.248,0.244,0.241,0.239,0.236,0.231,0.226,0.223,0.219,0.213,0.208,0.202,0.195,0.191,0.186,0.178,0.171,0.165,0.16,0.152,0.148,0.14,0.133,0.128,0.123,0.116,0.112,0.105,0.101,0.095,0.092,0.087,0.082,0.078,0.075,0.076,0.089,0.103,0.118,0.142,0.16,0.191,0.211,0.242,0.262,0.294,0.326,0.346,0.367,0.393,0.411,0.436,0.46,0.475,0.486,0.5,0.523,0.532,0.54,0.552,0.558,0.565,0.568,0.574,0.576,0.577,0.577,0.574,0.562,0.534,0.495,0.477,0.455,0.419,0.397,0.362,0.336,0.316,0.299,0.284,0.263,0.257,0.253,0.254,0.258,0.264,0.273,0.282,0.29,0.297,0.309,0.317,0.321,0.328,0.331,0.335,0.339,0.343,0.343,0.344,0.344,0.345,0.343,0.343,0.343,0.342,0.341,0.341,0.341,0.341,0.34,0.34,0.339,0.339,0.338,0.337,0.337,0.335,0.333,0.33,0.327,0.325,0.321,0.317,0.313,0.306,0.301,0.293,0.288,0.281,0.269,0.261,0.254,0.242,0.235,0.222,0.213,0.201,0.191,0.178,0.164,0.155,0.146,0.139,0.126,0.115,0.11,0.101,0.097,0.094,0.093,0.093,0.095,0.099,0.104,0.111,0.117,0.125,0.131,0.14,0.15,0.156,0.161,0.167,0.175,0.183,0.188,0.195,0.199,0.205,0.208,0.213,0.216,0.219,0.221,0.224,0.226,0.228,0.228,0.229,0.228,0.229,0.228,0.227,0.226,0.225,0.223,0.22,0.217,0.211,0.205,0.198,0.193,0.185,0.178,0.17],"warm":[0.684,0.693,0.698,0.702,0.706,0.707,0.704,0.7,0.687,0.673,0.66,0.644,0.615,0.598,0.567,0.533,0.511,0.486,0.453,0.421,0.401,0.37,0.348,0.324,0.307,0.284,0.266,0.25,0.221,0.203,0.189,0.176,0.158,0.139,0.127,0.113,0.103,0.09,0.081,0.07,0.064,0.058,0.056,0.055,0.056,0.056,0.057,0.057,0.058,0.058,0.057,0.056,0.054,0.052,0.051,0.048,0.047,0.045,0.045,0.044,0.044,0.043,0.043,0.042,0.042,0.041,0.041,0.041,0.04,0.039,0.039,0.039,0.039,0.039,0.039,0.039,0.038,0.038,0.038,0.037,0.037,0.036,0.035,0.034,0.033,0.032,0.03,0.029,0.028,0.027,0.027,0.027,0.026,0.026,0.026,0.026,0.025,0.025,0.025,0.025,0.024,0.024,0.023,0.023,0.023,0.023,0.023,0.023,0.024,0.024,0.025,0.026,0.026,0.027,0.028,0.028,0.029,0.029,0.029,0.03,0.03,0.032,0.032,0.034,0.035,0.036,0.037,0.039,0.04,0.04,0.041,0.042,0.042,0.042,0.043,0.043,0.044,0.044,0.045,0.046,0.046,0.047,0.047,0.047,0.048,0.047,0.047,0.047,0.047,0.047,0.046,0.046,0.046,0.045,0.045,0.045,0.044,0.044,0.044,0.044,0.043,0.042,0.042,0.042,0.044,0.048,0.051,0.054,0.059,0.062,0.064,0.066,0.067,0.067,0.067,0.067,0.066,0.065,0.064,0.062,0.061,0.059,0.058,0.056,0.054,0.05,0.049,0.047,0.046,0.045,0.045,0.046,0.047,0.047,0.048,0.048,0.049,0.049,0.048,0.049,0.049,0.048,0.049,0.049,0.05,0.05,0.051,0.052,0.052,0.052,0.052,0.052,0.052,0.052,0.051,0.051,0.052,0.051,0.051,0.052,0.052,0.052,0.052,0.051,0.046,0.041,0.038,0.036,0.033,0.032,0.033,0.036,0.041,0.048,0.053,0.057,0.061,0.063,0.065,0.065,0.064,0.062,0.059,0.056,0.054,0.052,0.05,0.049,0.047,0.046,0.047,0.048,0.051,0.061,0.067,0.072,0.078,0.083,0.085,0.088,0.091,0.094,0.096,0.1,0.105,0.111,0.114,0.118,0.122,0.124,0.126,0.128,0.128,0.127,0.124,0.123,0.121,0.119,0.117,0.115,0.113,0.112,0.109,0.107,0.104,0.102,0.097,0.094,0.089,0.084,0.078,0.074,0.068,0.065,0.06,0.058,0.054,0.053,0.051,0.05,0.05,0.051,0.052,0.054,0.055,0.056,0.058,0.06,0.061,0.061,0.061,0.062,0.062,0.062,0.062,0.061,0.061,0.061,0.06,0.061,0.06,0.059,0.057,0.056,0.056,0.055,0.054,0.054,0.055,0.055,0.056,0.057,0.057,0.057,0.056,0.056,0.056,0.058,0.067,0.077,0.094,0.111,0.126,0.16,0.176,0.193,0.208,0.233,0.243,0.249,0.254,0.257,0.259,0.259,0.255,0.253,0.246,0.238,0.226,0.217,0.204,0.193,0.178,0.168,0.16,0.148,0.136,0.131,0.124,0.121,0.118,0.116,0.113,0.114,0.125,0.144,0.159,0.176,0.2,0.217,0.233,0.258,0.269,0.278,0.286,0.294,0.293,0.292,0.289,0.284,0.27,0.261,0.245,0.232,0.218,0.195,0.175,0.161,0.148,0.123,0.11,0.101,0.092,0.074,0.065,0.057,0.047,0.04,0.032,0.027,0.022,0.019,0.015,0.014,0.014,0.014,0.013,0.014,0.015,0.016,0.018,0.022,0.027,0.03,0.034,0.037,0.04,0.042,0.046,0.047,0.048,0.049,0.051,0.053,0.054,0.056,0.059,0.06,0.061,0.064,0.065,0.066,0.067,0.067,0.068,0.069,0.071,0.072,0.073,0.075,0.077,0.077,0.08,0.081,0.082,0.083,0.084,0.086,0.088,0.088,0.09,0.09,0.091,0.09,0.09,0.09,0.09,0.089,0.09,0.09,0.09,0.089,0.089,0.089,0.089,0.087,0.087,0.086,0.085,0.083,0.082,0.082,0.082,0.082,0.082,0.082,0.081,0.081,0.081,0.08,0.08,0.079,0.08,0.08,0.081,0.082,0.085,0.086,0.087,0.088]},"4_meta":{"seed":2004,"wind":5.7,"wmax":14.8},"1":{"pid":[1.147,1.161,1.173,1.184,1.2,1.215,1.223,1.232,1.241,1.247,1.249,1.25,1.252,1.25,1.246,1.243,1.236,1.228,1.214,1.196,1.185,1.173,1.151,1.124,1.109,1.086,1.057,1.023,1.001,0.975,0.937,0.898,0.866,0.826,0.796,0.77,0.724,0.682,0.651,0.622,0.578,0.533,0.508,0.476,0.437,0.399,0.375,0.341,0.32,0.3,0.275,0.256,0.246,0.239,0.233,0.233,0.237,0.242,0.255,0.276,0.29,0.311,0.339,0.37,0.392,0.425,0.446,0.468,0.503,0.535,0.556,0.572,0.607,0.633,0.651,0.667,0.693,0.708,0.726,0.745,0.756,0.765,0.774,0.778,0.784,0.787,0.787,0.785,0.78,0.775,0.766,0.757,0.741,0.731,0.71,0.695,0.673,0.652,0.624,0.601,0.572,0.537,0.513,0.486,0.461,0.409,0.382,0.358,0.316,0.278,0.251,0.227,0.192,0.172,0.146,0.129,0.126,0.129,0.142,0.163,0.18,0.2,0.229,0.246,0.277,0.302,0.319,0.334,0.355,0.37,0.389,0.399,0.414,0.429,0.435,0.44,0.447,0.451,0.452,0.452,0.451,0.45,0.443,0.437,0.431,0.424,0.411,0.402,0.387,0.377,0.361,0.347,0.328,0.314,0.295,0.28,0.26,0.238,0.221,0.208,0.185,0.165,0.151,0.139,0.12,0.109,0.095,0.088,0.081,0.082,0.085,0.09,0.099,0.107,0.119,0.128,0.136,0.143,0.153,0.16,0.166,0.171,0.176,0.18,0.182,0.185,0.186,0.186,0.188,0.187,0.185,0.183,0.178,0.176,0.172,0.169,0.163,0.158,0.154,0.149,0.141,0.137,0.129,0.125,0.118,0.113,0.107,0.1,0.097,0.094,0.089,0.085,0.083,0.082,0.081,0.082,0.087,0.094,0.107,0.118,0.134,0.145,0.161,0.172,0.187,0.202,0.21,0.218,0.228,0.234,0.242,0.245,0.249,0.251,0.252,0.25,0.247,0.245,0.24,0.232,0.227,0.22,0.211,0.204,0.193,0.181,0.173,0.162,0.152,0.141,0.141,0.145,0.162,0.176,0.202,0.22,0.249,0.269,0.297,0.323,0.338,0.354,0.372,0.382,0.39,0.399,0.403,0.402,0.399,0.392,0.384,0.375,0.363,0.347,0.326,0.311,0.284,0.268,0.243,0.224,0.2,0.184,0.167,0.152,0.148,0.149,0.155,0.17,0.191,0.206,0.229,0.243,0.265,0.28,0.301,0.314,0.324,0.346,0.355,0.362,0.369,0.375,0.381,0.383,0.382,0.384,0.381,0.371,0.36,0.351,0.334,0.321,0.298,0.281,0.267,0.232,0.214,0.196,0.171,0.152,0.126,0.112,0.101,0.088,0.085,0.09,0.105,0.118,0.139,0.154,0.179,0.197,0.218,0.235,0.256,0.271,0.29,0.303,0.322,0.333,0.342,0.362,0.371,0.378,0.384,0.39,0.398,0.402,0.405,0.406,0.41,0.411,0.41,0.41,0.408,0.405,0.4,0.397,0.393,0.382,0.375,0.369,0.361,0.349,0.334,0.323,0.308,0.294,0.276,0.262,0.243,0.229,0.209,0.188,0.173,0.161,0.149,0.131,0.114,0.106,0.096,0.093,0.093,0.097,0.104,0.114,0.122,0.142,0.152,0.163,0.179,0.189,0.202,0.21,0.224,0.23,0.238,0.249,0.255,0.259,0.262,0.267,0.27,0.271,0.271,0.271,0.269,0.266,0.261,0.256,0.252,0.246,0.24,0.231,0.224,0.219,0.213,0.206,0.199,0.195,0.189,0.185,0.181,0.178,0.175,0.172,0.17,0.168,0.165,0.164,0.163,0.16,0.159,0.158,0.157,0.156,0.154,0.153,0.152,0.152,0.152,0.152,0.152,0.153,0.154,0.155,0.157,0.159,0.161,0.164,0.168,0.17,0.172,0.175,0.18,0.184,0.194,0.203,0.214,0.232,0.251,0.265,0.284,0.297,0.314,0.325,0.336,0.349,0.358,0.362,0.368,0.369,0.367,0.361,0.355,0.349,0.335,0.321,0.307,0.294,0.28,0.256,0.234,0.217,0.202,0.179,0.157,0.147,0.132,0.126,0.124,0.126,0.134,0.142,0.153,0.171,0.187,0.198,0.215,0.225],"stage1":[0.997,0.994,0.993,0.993,0.994,0.995,0.997,1.0,0.999,0.998,0.997,0.995,0.994,0.991,0.986,0.982,0.976,0.971,0.963,0.956,0.945,0.937,0.928,0.907,0.895,0.885,0.872,0.851,0.829,0.814,0.788,0.771,0.745,0.726,0.696,0.672,0.643,0.62,0.588,0.563,0.529,0.504,0.48,0.442,0.403,0.38,0.351,0.315,0.277,0.252,0.213,0.189,0.151,0.124,0.09,0.067,0.039,0.029,0.047,0.072,0.115,0.14,0.186,0.212,0.244,0.296,0.325,0.351,0.392,0.418,0.455,0.482,0.515,0.539,0.569,0.589,0.618,0.637,0.653,0.674,0.696,0.707,0.724,0.732,0.741,0.75,0.756,0.757,0.758,0.757,0.754,0.748,0.741,0.733,0.719,0.706,0.693,0.675,0.65,0.635,0.608,0.589,0.568,0.538,0.503,0.481,0.445,0.417,0.395,0.355,0.32,0.294,0.269,0.222,0.197,0.179,0.161,0.138,0.126,0.125,0.129,0.144,0.165,0.181,0.207,0.228,0.25,0.265,0.288,0.303,0.317,0.335,0.351,0.362,0.371,0.384,0.392,0.398,0.402,0.404,0.408,0.409,0.405,0.401,0.398,0.393,0.384,0.376,0.366,0.357,0.343,0.334,0.317,0.308,0.295,0.272,0.26,0.249,0.231,0.219,0.202,0.19,0.176,0.166,0.158,0.144,0.139,0.135,0.132,0.132,0.134,0.138,0.145,0.15,0.155,0.163,0.172,0.177,0.185,0.19,0.196,0.201,0.206,0.209,0.213,0.215,0.217,0.219,0.219,0.22,0.22,0.219,0.219,0.217,0.215,0.214,0.211,0.209,0.207,0.203,0.2,0.198,0.195,0.192,0.188,0.186,0.184,0.181,0.178,0.176,0.174,0.171,0.17,0.167,0.165,0.163,0.161,0.157,0.156,0.156,0.157,0.16,0.166,0.17,0.174,0.182,0.19,0.195,0.201,0.206,0.209,0.213,0.215,0.217,0.217,0.217,0.213,0.211,0.208,0.202,0.193,0.189,0.183,0.173,0.161,0.154,0.141,0.13,0.117,0.107,0.105,0.112,0.123,0.149,0.177,0.199,0.22,0.254,0.287,0.305,0.322,0.349,0.367,0.388,0.404,0.415,0.424,0.431,0.434,0.436,0.437,0.432,0.426,0.42,0.409,0.398,0.387,0.368,0.349,0.337,0.32,0.299,0.278,0.263,0.242,0.231,0.22,0.209,0.204,0.201,0.2,0.204,0.211,0.217,0.223,0.235,0.248,0.256,0.266,0.277,0.285,0.295,0.304,0.309,0.314,0.319,0.322,0.32,0.316,0.308,0.296,0.285,0.274,0.256,0.235,0.223,0.206,0.186,0.163,0.148,0.125,0.111,0.099,0.085,0.083,0.087,0.095,0.115,0.136,0.154,0.171,0.196,0.212,0.237,0.263,0.278,0.294,0.315,0.336,0.348,0.363,0.375,0.389,0.396,0.401,0.407,0.412,0.417,0.417,0.415,0.415,0.411,0.404,0.401,0.395,0.385,0.373,0.366,0.351,0.341,0.329,0.31,0.292,0.278,0.265,0.241,0.221,0.204,0.189,0.164,0.14,0.125,0.109,0.089,0.071,0.063,0.059,0.061,0.072,0.084,0.095,0.115,0.126,0.147,0.164,0.176,0.188,0.206,0.221,0.23,0.241,0.254,0.265,0.271,0.278,0.286,0.29,0.296,0.3,0.303,0.304,0.305,0.305,0.304,0.302,0.298,0.293,0.29,0.285,0.277,0.271,0.263,0.253,0.247,0.242,0.238,0.23,0.228,0.225,0.222,0.22,0.22,0.221,0.223,0.225,0.229,0.233,0.237,0.24,0.245,0.25,0.253,0.256,0.258,0.26,0.263,0.264,0.264,0.265,0.264,0.262,0.26,0.259,0.255,0.251,0.247,0.242,0.238,0.233,0.225,0.218,0.212,0.208,0.198,0.193,0.18,0.167,0.159,0.154,0.153,0.159,0.165,0.175,0.19,0.207,0.219,0.232,0.249,0.26,0.273,0.286,0.293,0.298,0.304,0.309,0.311,0.31,0.307,0.304,0.299,0.291,0.285,0.279,0.269,0.258,0.251,0.239,0.23,0.224,0.214,0.206,0.201,0.197,0.192,0.189,0.189,0.189,0.19,0.194,0.197],"ardupilot":[0.989,0.997,1.006,1.015,1.031,1.044,1.05,1.059,1.068,1.075,1.083,1.088,1.093,1.097,1.103,1.104,1.106,1.108,1.108,1.108,1.106,1.105,1.101,1.098,1.091,1.086,1.079,1.069,1.062,1.054,1.044,1.034,1.018,1.009,0.994,0.983,0.964,0.946,0.933,0.92,0.899,0.886,0.863,0.846,0.824,0.807,0.784,0.767,0.742,0.725,0.698,0.682,0.654,0.638,0.611,0.594,0.567,0.549,0.528,0.496,0.459,0.43,0.41,0.361,0.337,0.312,0.277,0.252,0.229,0.195,0.161,0.144,0.126,0.107,0.105,0.109,0.124,0.138,0.164,0.185,0.211,0.231,0.248,0.285,0.302,0.32,0.336,0.359,0.38,0.39,0.41,0.421,0.434,0.442,0.456,0.462,0.467,0.472,0.478,0.48,0.48,0.48,0.479,0.477,0.475,0.467,0.462,0.457,0.447,0.441,0.429,0.421,0.408,0.399,0.389,0.373,0.358,0.346,0.336,0.318,0.301,0.289,0.277,0.258,0.24,0.23,0.211,0.2,0.189,0.174,0.159,0.149,0.14,0.128,0.117,0.11,0.105,0.097,0.094,0.092,0.091,0.092,0.094,0.096,0.1,0.102,0.106,0.111,0.116,0.119,0.123,0.128,0.132,0.134,0.137,0.141,0.144,0.145,0.147,0.15,0.151,0.151,0.152,0.154,0.153,0.153,0.153,0.153,0.151,0.148,0.144,0.141,0.136,0.131,0.125,0.121,0.116,0.108,0.1,0.095,0.089,0.08,0.072,0.066,0.057,0.052,0.044,0.038,0.032,0.028,0.026,0.026,0.028,0.031,0.035,0.041,0.048,0.052,0.057,0.063,0.069,0.073,0.079,0.083,0.086,0.091,0.095,0.098,0.1,0.104,0.106,0.108,0.109,0.111,0.112,0.112,0.113,0.114,0.117,0.121,0.128,0.134,0.143,0.151,0.162,0.17,0.181,0.189,0.196,0.206,0.217,0.222,0.227,0.234,0.239,0.242,0.245,0.247,0.249,0.249,0.248,0.247,0.245,0.242,0.238,0.234,0.229,0.215,0.191,0.176,0.158,0.135,0.121,0.101,0.086,0.08,0.078,0.083,0.096,0.108,0.119,0.137,0.154,0.166,0.181,0.19,0.198,0.211,0.217,0.223,0.225,0.23,0.231,0.23,0.228,0.225,0.221,0.215,0.21,0.201,0.195,0.185,0.174,0.166,0.159,0.146,0.134,0.127,0.12,0.113,0.108,0.106,0.105,0.107,0.11,0.114,0.125,0.132,0.138,0.15,0.161,0.169,0.177,0.188,0.196,0.207,0.216,0.221,0.223,0.225,0.225,0.226,0.224,0.222,0.219,0.216,0.211,0.207,0.202,0.195,0.19,0.182,0.176,0.166,0.157,0.151,0.144,0.135,0.126,0.121,0.115,0.11,0.104,0.101,0.099,0.099,0.099,0.101,0.104,0.107,0.111,0.117,0.123,0.126,0.13,0.134,0.138,0.142,0.146,0.15,0.153,0.157,0.16,0.163,0.165,0.17,0.172,0.173,0.174,0.175,0.177,0.177,0.176,0.175,0.175,0.173,0.171,0.169,0.167,0.163,0.16,0.155,0.153,0.148,0.144,0.14,0.137,0.131,0.125,0.121,0.117,0.111,0.105,0.101,0.097,0.092,0.086,0.082,0.079,0.073,0.07,0.065,0.061,0.058,0.055,0.051,0.049,0.046,0.044,0.042,0.04,0.04,0.039,0.039,0.039,0.039,0.039,0.039,0.04,0.041,0.041,0.042,0.042,0.041,0.042,0.045,0.049,0.056,0.067,0.074,0.082,0.093,0.102,0.114,0.126,0.134,0.14,0.147,0.16,0.166,0.17,0.176,0.183,0.186,0.189,0.192,0.194,0.195,0.196,0.196,0.195,0.193,0.19,0.188,0.186,0.182,0.177,0.174,0.17,0.165,0.161,0.155,0.151,0.146,0.14,0.126,0.108,0.096,0.084,0.076,0.073,0.078,0.084,0.1,0.111,0.129,0.141,0.158,0.17,0.187,0.201,0.209,0.218,0.228,0.233,0.239,0.242,0.245,0.245,0.244,0.242,0.239,0.236,0.231,0.226,0.218,0.212,0.202,0.192,0.185,0.177,0.166,0.158,0.147,0.136,0.127,0.12,0.113,0.098,0.091],"warm":[1.096,1.092,1.09,1.088,1.086,1.086,1.084,1.08,1.075,1.064,1.051,1.041,1.026,0.998,0.969,0.947,0.925,0.867,0.838,0.808,0.779,0.731,0.683,0.655,0.61,0.583,0.544,0.518,0.481,0.458,0.424,0.398,0.366,0.345,0.317,0.297,0.279,0.254,0.229,0.215,0.202,0.185,0.168,0.157,0.147,0.134,0.122,0.113,0.099,0.089,0.082,0.072,0.063,0.059,0.055,0.052,0.049,0.048,0.044,0.035,0.023,0.016,0.017,0.022,0.028,0.037,0.045,0.05,0.054,0.059,0.062,0.064,0.067,0.069,0.07,0.072,0.073,0.075,0.076,0.077,0.076,0.075,0.074,0.071,0.066,0.062,0.059,0.054,0.05,0.048,0.045,0.043,0.039,0.037,0.035,0.031,0.028,0.026,0.024,0.024,0.025,0.029,0.033,0.037,0.04,0.043,0.046,0.048,0.051,0.054,0.056,0.059,0.064,0.067,0.07,0.075,0.08,0.083,0.085,0.087,0.09,0.092,0.092,0.094,0.095,0.094,0.094,0.094,0.095,0.095,0.095,0.096,0.097,0.097,0.097,0.097,0.098,0.098,0.097,0.096,0.096,0.095,0.094,0.093,0.093,0.092,0.092,0.091,0.091,0.09,0.089,0.088,0.087,0.086,0.084,0.082,0.081,0.08,0.077,0.076,0.076,0.074,0.073,0.072,0.071,0.07,0.07,0.069,0.068,0.067,0.066,0.066,0.067,0.067,0.067,0.068,0.07,0.07,0.07,0.069,0.07,0.07,0.069,0.068,0.068,0.068,0.068,0.068,0.068,0.068,0.068,0.068,0.068,0.067,0.066,0.065,0.065,0.064,0.062,0.061,0.06,0.059,0.058,0.057,0.056,0.055,0.055,0.054,0.053,0.052,0.051,0.05,0.048,0.048,0.047,0.046,0.048,0.055,0.062,0.076,0.083,0.092,0.103,0.108,0.113,0.119,0.122,0.122,0.124,0.124,0.122,0.118,0.114,0.11,0.106,0.098,0.09,0.086,0.081,0.072,0.067,0.06,0.056,0.051,0.048,0.046,0.045,0.046,0.051,0.066,0.084,0.099,0.111,0.129,0.139,0.151,0.159,0.168,0.172,0.173,0.173,0.169,0.16,0.152,0.143,0.136,0.116,0.105,0.097,0.082,0.067,0.058,0.049,0.036,0.029,0.021,0.018,0.019,0.022,0.026,0.031,0.034,0.037,0.038,0.042,0.044,0.045,0.048,0.049,0.051,0.051,0.051,0.051,0.05,0.049,0.048,0.049,0.052,0.055,0.057,0.06,0.062,0.066,0.067,0.068,0.068,0.066,0.063,0.06,0.058,0.058,0.062,0.07,0.075,0.081,0.088,0.095,0.097,0.099,0.098,0.099,0.101,0.103,0.106,0.109,0.114,0.118,0.124,0.127,0.13,0.13,0.129,0.128,0.127,0.125,0.122,0.119,0.12,0.119,0.119,0.12,0.12,0.12,0.12,0.12,0.118,0.116,0.111,0.108,0.106,0.1,0.097,0.094,0.091,0.089,0.085,0.084,0.081,0.079,0.077,0.073,0.07,0.067,0.062,0.059,0.054,0.051,0.047,0.044,0.042,0.038,0.038,0.038,0.038,0.039,0.04,0.041,0.041,0.042,0.042,0.041,0.041,0.04,0.038,0.037,0.035,0.034,0.032,0.031,0.031,0.03,0.03,0.029,0.029,0.028,0.026,0.024,0.023,0.022,0.021,0.02,0.021,0.022,0.024,0.026,0.027,0.028,0.028,0.027,0.028,0.027,0.026,0.025,0.025,0.032,0.039,0.047,0.058,0.065,0.076,0.082,0.09,0.094,0.097,0.098,0.1,0.099,0.098,0.095,0.091,0.089,0.084,0.08,0.073,0.067,0.062,0.058,0.053,0.048,0.043,0.04,0.039,0.039,0.04,0.041,0.044,0.046,0.048,0.051,0.054,0.055,0.056,0.056,0.056,0.057,0.062,0.069,0.081,0.091,0.104,0.114,0.122,0.136,0.141,0.145,0.149,0.152,0.152,0.151,0.145,0.143,0.136,0.131,0.122,0.116,0.108,0.096,0.085,0.078,0.071,0.058,0.053,0.048,0.044,0.039,0.036,0.035,0.034,0.033,0.033,0.033,0.034,0.034,0.035,0.036,0.038,0.039,0.039,0.04,0.04]},"1_meta":{"seed":2001,"wind":5.3,"wmax":13.5},"6":{"pid":[1.054,1.054,1.053,1.051,1.044,1.038,1.026,1.018,1.004,0.976,0.96,0.946,0.918,0.899,0.871,0.847,0.815,0.789,0.755,0.728,0.689,0.659,0.632,0.573,0.541,0.515,0.481,0.425,0.394,0.366,0.324,0.3,0.268,0.247,0.217,0.198,0.175,0.16,0.138,0.123,0.11,0.087,0.075,0.067,0.053,0.046,0.038,0.034,0.035,0.04,0.05,0.059,0.071,0.082,0.096,0.106,0.121,0.131,0.147,0.156,0.165,0.179,0.194,0.203,0.212,0.226,0.243,0.254,0.27,0.282,0.296,0.306,0.317,0.326,0.332,0.337,0.341,0.343,0.344,0.343,0.337,0.332,0.324,0.318,0.304,0.294,0.277,0.266,0.247,0.233,0.221,0.2,0.182,0.17,0.154,0.148,0.143,0.142,0.148,0.158,0.169,0.18,0.192,0.211,0.231,0.246,0.258,0.278,0.297,0.312,0.333,0.349,0.373,0.386,0.407,0.418,0.431,0.447,0.455,0.461,0.467,0.469,0.469,0.467,0.461,0.454,0.443,0.433,0.416,0.402,0.387,0.364,0.337,0.321,0.299,0.271,0.242,0.223,0.194,0.177,0.152,0.136,0.121,0.114,0.112,0.115,0.125,0.136,0.146,0.163,0.181,0.192,0.209,0.218,0.226,0.238,0.249,0.253,0.258,0.262,0.267,0.268,0.268,0.267,0.265,0.259,0.254,0.247,0.242,0.23,0.219,0.211,0.201,0.187,0.171,0.161,0.146,0.133,0.117,0.106,0.092,0.081,0.071,0.052,0.045,0.039,0.035,0.035,0.039,0.044,0.052,0.057,0.064,0.071,0.079,0.084,0.088,0.094,0.098,0.1,0.102,0.099,0.091,0.086,0.078,0.062,0.043,0.033,0.025,0.031,0.045,0.067,0.094,0.115,0.132,0.162,0.189,0.209,0.226,0.261,0.28,0.294,0.306,0.311,0.299,0.285,0.267,0.247,0.229,0.218,0.201,0.192,0.188,0.184,0.188,0.197,0.213,0.228,0.253,0.271,0.29,0.318,0.348,0.368,0.397,0.414,0.431,0.455,0.479,0.496,0.507,0.53,0.548,0.559,0.569,0.583,0.596,0.603,0.609,0.617,0.624,0.628,0.628,0.628,0.628,0.622,0.603,0.587,0.576,0.548,0.515,0.494,0.461,0.434,0.408,0.369,0.327,0.305,0.277,0.243,0.23,0.225,0.226,0.239,0.267,0.294,0.317,0.363,0.392,0.442,0.485,0.517,0.548,0.591,0.634,0.659,0.688,0.72,0.741,0.768,0.794,0.809,0.821,0.837,0.848,0.852,0.855,0.852,0.853,0.848,0.841,0.824,0.81,0.795,0.779,0.753,0.734,0.705,0.671,0.647,0.621,0.578,0.539,0.508,0.481,0.435,0.392,0.359,0.33,0.287,0.242,0.218,0.191,0.165,0.149,0.147,0.153,0.172,0.201,0.223,0.245,0.278,0.306,0.328,0.357,0.377,0.394,0.418,0.446,0.461,0.476,0.494,0.515,0.524,0.532,0.538,0.544,0.548,0.547,0.544,0.543,0.533,0.522,0.51,0.5,0.481,0.458,0.442,0.425,0.399,0.37,0.351,0.322,0.304,0.284,0.256,0.234,0.22,0.209,0.198,0.194,0.195,0.2,0.219,0.237,0.273,0.303,0.345,0.377,0.42,0.465,0.493,0.522,0.564,0.596,0.616,0.635,0.662,0.679,0.688,0.698,0.707,0.711,0.712,0.711,0.709,0.705,0.697,0.688,0.682,0.673,0.66,0.648,0.638,0.624,0.613,0.604,0.589,0.579,0.561,0.551,0.533,0.515,0.503,0.49,0.472,0.458,0.438,0.415,0.398,0.384,0.354,0.312,0.275,0.224,0.19,0.17,0.167,0.179,0.216,0.254,0.305,0.361,0.397,0.436,0.487,0.536,0.568,0.595,0.635,0.656,0.684,0.709,0.724,0.734,0.744,0.754,0.759,0.76,0.758,0.757,0.756,0.748,0.742,0.733,0.73,0.723,0.713,0.704,0.696,0.688,0.671,0.66,0.643,0.632,0.61,0.596,0.577,0.561,0.537,0.518,0.497,0.471,0.45,0.435,0.419,0.385,0.368,0.353,0.332,0.32,0.305,0.298,0.291,0.289,0.292,0.296,0.306,0.315,0.326],"stage1":[1.043,1.046,1.046,1.044,1.041,1.038,1.029,1.018,1.011,0.991,0.978,0.962,0.941,0.917,0.898,0.879,0.849,0.831,0.796,0.774,0.74,0.717,0.692,0.656,0.618,0.589,0.553,0.526,0.489,0.462,0.427,0.404,0.384,0.346,0.33,0.318,0.301,0.274,0.261,0.25,0.232,0.222,0.211,0.205,0.196,0.192,0.191,0.19,0.19,0.192,0.195,0.201,0.212,0.217,0.228,0.236,0.25,0.258,0.272,0.281,0.29,0.305,0.317,0.325,0.337,0.347,0.361,0.37,0.384,0.391,0.398,0.407,0.415,0.42,0.425,0.426,0.428,0.429,0.425,0.421,0.416,0.409,0.398,0.389,0.379,0.365,0.346,0.334,0.321,0.301,0.279,0.265,0.251,0.232,0.214,0.203,0.193,0.182,0.177,0.176,0.176,0.183,0.192,0.2,0.208,0.223,0.233,0.248,0.264,0.274,0.286,0.303,0.32,0.332,0.343,0.359,0.373,0.382,0.39,0.4,0.407,0.411,0.413,0.413,0.41,0.409,0.404,0.395,0.387,0.377,0.361,0.349,0.336,0.315,0.294,0.278,0.264,0.238,0.214,0.197,0.18,0.156,0.132,0.12,0.108,0.098,0.095,0.098,0.105,0.119,0.136,0.149,0.167,0.181,0.192,0.21,0.225,0.236,0.246,0.26,0.267,0.277,0.284,0.292,0.296,0.3,0.302,0.302,0.301,0.3,0.299,0.293,0.29,0.284,0.276,0.269,0.262,0.251,0.239,0.232,0.222,0.209,0.2,0.187,0.173,0.164,0.154,0.139,0.127,0.117,0.11,0.097,0.09,0.08,0.074,0.066,0.062,0.058,0.054,0.054,0.054,0.053,0.051,0.051,0.052,0.056,0.064,0.078,0.09,0.11,0.122,0.138,0.161,0.185,0.201,0.226,0.253,0.269,0.287,0.311,0.327,0.349,0.363,0.363,0.355,0.333,0.319,0.302,0.285,0.267,0.243,0.215,0.198,0.176,0.163,0.153,0.153,0.16,0.17,0.189,0.206,0.233,0.25,0.28,0.297,0.318,0.353,0.371,0.386,0.407,0.431,0.443,0.457,0.474,0.486,0.5,0.513,0.523,0.531,0.538,0.544,0.552,0.554,0.559,0.558,0.552,0.545,0.529,0.514,0.495,0.471,0.45,0.429,0.409,0.383,0.355,0.334,0.306,0.293,0.28,0.263,0.257,0.259,0.266,0.282,0.306,0.327,0.363,0.391,0.428,0.457,0.498,0.526,0.564,0.592,0.617,0.651,0.685,0.706,0.736,0.752,0.767,0.793,0.81,0.819,0.826,0.838,0.844,0.845,0.843,0.842,0.838,0.83,0.821,0.807,0.797,0.769,0.752,0.737,0.718,0.69,0.657,0.637,0.602,0.575,0.552,0.513,0.475,0.447,0.42,0.38,0.353,0.314,0.288,0.249,0.212,0.192,0.171,0.15,0.138,0.136,0.139,0.147,0.162,0.176,0.198,0.217,0.235,0.259,0.275,0.298,0.313,0.334,0.35,0.361,0.371,0.382,0.387,0.391,0.393,0.394,0.391,0.387,0.381,0.374,0.366,0.353,0.337,0.327,0.315,0.296,0.276,0.264,0.25,0.233,0.217,0.208,0.196,0.191,0.189,0.189,0.195,0.203,0.215,0.243,0.282,0.305,0.33,0.374,0.409,0.452,0.497,0.526,0.555,0.594,0.633,0.658,0.677,0.706,0.732,0.746,0.761,0.772,0.78,0.786,0.788,0.789,0.789,0.786,0.781,0.777,0.772,0.762,0.753,0.739,0.731,0.716,0.707,0.69,0.675,0.662,0.65,0.63,0.609,0.596,0.582,0.56,0.542,0.519,0.493,0.475,0.454,0.409,0.347,0.301,0.263,0.198,0.163,0.12,0.121,0.146,0.179,0.24,0.307,0.345,0.39,0.447,0.504,0.538,0.571,0.614,0.657,0.684,0.704,0.736,0.751,0.776,0.791,0.798,0.808,0.819,0.822,0.823,0.823,0.823,0.819,0.809,0.8,0.794,0.783,0.772,0.748,0.733,0.719,0.693,0.668,0.647,0.627,0.593,0.574,0.543,0.517,0.485,0.462,0.434,0.404,0.386,0.37,0.357,0.34,0.331,0.329,0.331,0.335,0.345,0.357,0.374,0.386,0.404,0.427],"ardupilot":[1.167,1.173,1.179,1.183,1.184,1.182,1.175,1.17,1.158,1.14,1.127,1.113,1.09,1.064,1.044,1.027,1.003,0.973,0.936,0.912,0.874,0.832,0.808,0.776,0.736,0.705,0.664,0.633,0.591,0.561,0.533,0.494,0.457,0.437,0.416,0.378,0.358,0.339,0.315,0.299,0.274,0.256,0.237,0.222,0.204,0.192,0.176,0.167,0.156,0.144,0.132,0.126,0.117,0.11,0.106,0.105,0.101,0.1,0.102,0.104,0.107,0.11,0.115,0.122,0.128,0.133,0.139,0.15,0.164,0.172,0.189,0.201,0.213,0.23,0.247,0.258,0.275,0.286,0.298,0.307,0.318,0.324,0.33,0.334,0.339,0.34,0.341,0.342,0.34,0.338,0.333,0.33,0.326,0.319,0.31,0.305,0.299,0.29,0.28,0.273,0.267,0.254,0.246,0.24,0.234,0.225,0.216,0.21,0.204,0.193,0.179,0.171,0.162,0.156,0.154,0.153,0.156,0.161,0.166,0.175,0.187,0.194,0.201,0.211,0.222,0.228,0.234,0.237,0.242,0.245,0.247,0.248,0.248,0.246,0.244,0.241,0.238,0.233,0.226,0.221,0.216,0.209,0.202,0.194,0.187,0.18,0.173,0.164,0.155,0.148,0.142,0.133,0.125,0.119,0.112,0.106,0.102,0.095,0.088,0.085,0.082,0.08,0.079,0.079,0.08,0.081,0.084,0.086,0.088,0.092,0.096,0.098,0.102,0.105,0.108,0.112,0.115,0.118,0.121,0.124,0.127,0.129,0.131,0.134,0.137,0.138,0.14,0.141,0.143,0.145,0.145,0.146,0.148,0.148,0.149,0.149,0.15,0.151,0.151,0.151,0.149,0.146,0.137,0.129,0.122,0.113,0.105,0.1,0.097,0.097,0.103,0.108,0.116,0.131,0.144,0.163,0.178,0.199,0.215,0.235,0.258,0.275,0.285,0.287,0.286,0.277,0.262,0.25,0.238,0.229,0.218,0.213,0.209,0.208,0.209,0.215,0.223,0.237,0.25,0.271,0.285,0.311,0.335,0.353,0.377,0.396,0.413,0.438,0.455,0.482,0.5,0.521,0.536,0.558,0.578,0.591,0.603,0.616,0.639,0.648,0.657,0.67,0.677,0.686,0.69,0.691,0.684,0.675,0.667,0.653,0.632,0.617,0.598,0.578,0.559,0.525,0.496,0.473,0.45,0.424,0.375,0.349,0.324,0.286,0.261,0.222,0.195,0.163,0.135,0.121,0.112,0.112,0.126,0.143,0.159,0.188,0.207,0.241,0.269,0.289,0.306,0.334,0.351,0.374,0.39,0.404,0.429,0.438,0.447,0.46,0.468,0.477,0.48,0.488,0.491,0.492,0.492,0.492,0.49,0.485,0.481,0.473,0.468,0.461,0.449,0.437,0.428,0.415,0.405,0.387,0.377,0.359,0.348,0.334,0.315,0.296,0.283,0.262,0.249,0.229,0.215,0.197,0.186,0.177,0.174,0.168,0.166,0.166,0.171,0.175,0.179,0.188,0.194,0.202,0.212,0.221,0.227,0.236,0.242,0.247,0.25,0.254,0.256,0.257,0.257,0.257,0.255,0.254,0.248,0.245,0.242,0.238,0.232,0.225,0.22,0.213,0.207,0.2,0.195,0.188,0.184,0.18,0.166,0.152,0.14,0.128,0.115,0.111,0.119,0.141,0.159,0.183,0.216,0.255,0.284,0.319,0.344,0.379,0.404,0.436,0.457,0.488,0.505,0.531,0.545,0.561,0.586,0.596,0.605,0.612,0.623,0.632,0.635,0.64,0.642,0.644,0.642,0.639,0.637,0.634,0.627,0.62,0.615,0.608,0.595,0.587,0.58,0.567,0.559,0.545,0.536,0.519,0.495,0.473,0.433,0.397,0.37,0.337,0.317,0.293,0.282,0.275,0.272,0.277,0.284,0.3,0.314,0.334,0.348,0.37,0.389,0.4,0.424,0.435,0.448,0.464,0.472,0.482,0.49,0.496,0.502,0.507,0.512,0.516,0.518,0.519,0.525,0.526,0.525,0.525,0.524,0.522,0.517,0.51,0.507,0.499,0.493,0.481,0.475,0.465,0.446,0.435,0.425,0.413,0.395,0.376,0.36,0.348,0.325,0.304,0.288,0.267,0.25,0.226,0.212,0.196,0.174,0.152,0.139,0.127],"warm":[1.053,1.058,1.064,1.068,1.067,1.064,1.061,1.051,1.033,1.015,0.999,0.97,0.946,0.902,0.874,0.828,0.795,0.742,0.682,0.647,0.608,0.556,0.501,0.467,0.433,0.387,0.362,0.322,0.295,0.279,0.264,0.24,0.221,0.21,0.199,0.183,0.172,0.163,0.157,0.149,0.144,0.136,0.131,0.128,0.124,0.122,0.118,0.117,0.118,0.12,0.122,0.124,0.126,0.129,0.13,0.13,0.13,0.127,0.125,0.122,0.118,0.114,0.112,0.111,0.11,0.111,0.112,0.115,0.121,0.125,0.129,0.135,0.139,0.143,0.144,0.146,0.146,0.142,0.137,0.134,0.129,0.124,0.112,0.105,0.1,0.091,0.085,0.077,0.072,0.064,0.059,0.054,0.05,0.049,0.049,0.05,0.052,0.055,0.057,0.06,0.061,0.062,0.061,0.061,0.06,0.058,0.056,0.055,0.055,0.061,0.073,0.079,0.088,0.101,0.111,0.122,0.128,0.137,0.141,0.147,0.151,0.152,0.151,0.151,0.149,0.144,0.139,0.132,0.125,0.12,0.113,0.105,0.098,0.089,0.083,0.074,0.07,0.065,0.061,0.058,0.057,0.055,0.053,0.052,0.051,0.049,0.048,0.048,0.048,0.048,0.048,0.049,0.049,0.049,0.048,0.048,0.047,0.046,0.045,0.044,0.043,0.041,0.041,0.041,0.041,0.041,0.041,0.041,0.041,0.041,0.041,0.041,0.04,0.039,0.038,0.036,0.035,0.034,0.032,0.031,0.029,0.028,0.027,0.026,0.026,0.025,0.025,0.025,0.025,0.025,0.025,0.025,0.026,0.025,0.025,0.025,0.025,0.025,0.025,0.025,0.026,0.029,0.034,0.043,0.052,0.07,0.082,0.102,0.115,0.13,0.157,0.169,0.178,0.188,0.19,0.194,0.194,0.19,0.186,0.18,0.177,0.172,0.164,0.15,0.121,0.094,0.092,0.108,0.139,0.179,0.204,0.243,0.265,0.291,0.307,0.32,0.329,0.333,0.33,0.327,0.319,0.312,0.303,0.293,0.283,0.276,0.271,0.264,0.265,0.263,0.261,0.258,0.258,0.255,0.25,0.243,0.238,0.232,0.222,0.214,0.211,0.207,0.2,0.196,0.195,0.194,0.195,0.198,0.206,0.217,0.227,0.237,0.254,0.268,0.277,0.288,0.296,0.305,0.308,0.312,0.317,0.318,0.32,0.319,0.32,0.321,0.32,0.32,0.318,0.317,0.31,0.304,0.299,0.29,0.279,0.272,0.265,0.258,0.248,0.236,0.23,0.223,0.214,0.203,0.196,0.184,0.175,0.168,0.155,0.144,0.136,0.129,0.116,0.109,0.105,0.1,0.093,0.087,0.083,0.077,0.074,0.071,0.067,0.064,0.063,0.063,0.064,0.065,0.066,0.067,0.068,0.069,0.07,0.07,0.07,0.07,0.07,0.07,0.071,0.071,0.07,0.067,0.064,0.065,0.069,0.076,0.082,0.088,0.097,0.104,0.107,0.109,0.111,0.11,0.108,0.104,0.099,0.092,0.088,0.079,0.074,0.069,0.061,0.054,0.049,0.046,0.042,0.038,0.038,0.038,0.039,0.04,0.041,0.044,0.045,0.047,0.049,0.052,0.053,0.054,0.055,0.057,0.059,0.071,0.085,0.114,0.134,0.157,0.193,0.232,0.258,0.3,0.325,0.352,0.388,0.423,0.449,0.468,0.497,0.517,0.529,0.542,0.547,0.549,0.548,0.547,0.543,0.536,0.527,0.52,0.514,0.507,0.496,0.482,0.471,0.46,0.44,0.427,0.401,0.375,0.355,0.336,0.307,0.288,0.261,0.244,0.224,0.206,0.196,0.185,0.172,0.156,0.136,0.12,0.102,0.11,0.129,0.158,0.183,0.206,0.239,0.272,0.286,0.301,0.315,0.328,0.333,0.334,0.331,0.331,0.325,0.319,0.304,0.299,0.286,0.272,0.262,0.256,0.246,0.238,0.235,0.233,0.231,0.23,0.228,0.226,0.222,0.217,0.208,0.196,0.185,0.175,0.155,0.142,0.133,0.125,0.114,0.105,0.1,0.095,0.089,0.084,0.08,0.076,0.074,0.074,0.074,0.076,0.079,0.084,0.087,0.09,0.093,0.097,0.099,0.1,0.099,0.098,0.095,0.09]},"6_meta":{"seed":2006,"wind":8.7,"wmax":16.3},"8":{"pid":[1.072,1.084,1.093,1.102,1.108,1.112,1.113,1.112,1.108,1.103,1.097,1.089,1.075,1.06,1.047,1.025,1.011,0.988,0.971,0.942,0.919,0.9,0.864,0.83,0.804,0.768,0.74,0.698,0.673,0.645,0.601,0.568,0.526,0.481,0.451,0.42,0.377,0.332,0.3,0.26,0.232,0.191,0.165,0.131,0.107,0.078,0.068,0.066,0.074,0.089,0.119,0.136,0.154,0.172,0.193,0.213,0.231,0.242,0.26,0.271,0.281,0.294,0.3,0.305,0.311,0.317,0.317,0.317,0.316,0.314,0.312,0.307,0.303,0.296,0.289,0.281,0.274,0.264,0.256,0.244,0.236,0.223,0.215,0.199,0.191,0.18,0.167,0.151,0.142,0.131,0.117,0.102,0.092,0.083,0.069,0.057,0.05,0.042,0.039,0.037,0.04,0.047,0.052,0.058,0.066,0.076,0.083,0.096,0.106,0.117,0.134,0.15,0.162,0.177,0.188,0.201,0.21,0.218,0.228,0.233,0.238,0.243,0.245,0.245,0.243,0.24,0.236,0.231,0.22,0.211,0.201,0.192,0.176,0.16,0.147,0.135,0.116,0.096,0.085,0.066,0.053,0.038,0.039,0.075,0.105,0.138,0.189,0.24,0.279,0.309,0.363,0.41,0.443,0.474,0.518,0.557,0.577,0.604,0.633,0.65,0.67,0.688,0.697,0.703,0.709,0.713,0.713,0.711,0.685,0.653,0.619,0.583,0.517,0.46,0.42,0.353,0.31,0.267,0.211,0.162,0.139,0.131,0.151,0.19,0.224,0.257,0.315,0.364,0.398,0.43,0.478,0.52,0.542,0.57,0.604,0.624,0.646,0.669,0.683,0.695,0.712,0.726,0.733,0.74,0.741,0.744,0.745,0.742,0.737,0.735,0.729,0.715,0.705,0.694,0.683,0.663,0.65,0.629,0.614,0.598,0.571,0.546,0.528,0.51,0.473,0.452,0.435,0.415,0.384,0.353,0.334,0.314,0.288,0.265,0.251,0.233,0.222,0.218,0.217,0.22,0.226,0.24,0.253,0.275,0.288,0.305,0.329,0.347,0.369,0.392,0.407,0.421,0.435,0.453,0.461,0.468,0.472,0.478,0.481,0.48,0.477,0.476,0.47,0.466,0.456,0.448,0.436,0.421,0.41,0.398,0.381,0.361,0.347,0.328,0.312,0.299,0.275,0.256,0.241,0.228,0.203,0.191,0.182,0.174,0.163,0.157,0.153,0.153,0.154,0.157,0.162,0.169,0.176,0.18,0.191,0.199,0.205,0.214,0.219,0.224,0.229,0.232,0.237,0.24,0.239,0.237,0.234,0.23,0.224,0.216,0.209,0.199,0.191,0.182,0.17,0.157,0.148,0.139,0.127,0.115,0.109,0.102,0.098,0.097,0.099,0.104,0.11,0.121,0.13,0.138,0.153,0.167,0.176,0.186,0.201,0.211,0.225,0.234,0.249,0.258,0.269,0.28,0.288,0.294,0.301,0.307,0.313,0.315,0.318,0.32,0.321,0.322,0.321,0.317,0.316,0.313,0.306,0.301,0.294,0.287,0.278,0.27,0.262,0.251,0.243,0.237,0.232,0.221,0.216,0.211,0.206,0.204,0.201,0.198,0.197,0.197,0.197,0.196,0.198,0.199,0.199,0.201,0.203,0.203,0.2,0.19,0.184,0.181,0.178,0.178,0.184,0.191,0.2,0.21,0.235,0.249,0.262,0.284,0.298,0.318,0.331,0.347,0.356,0.372,0.383,0.388,0.393,0.399,0.399,0.398,0.395,0.393,0.384,0.376,0.37,0.357,0.343,0.331,0.32,0.302,0.282,0.27,0.257,0.239,0.227,0.211,0.2,0.187,0.179,0.172,0.162,0.159,0.157,0.156,0.158,0.159,0.162,0.164,0.168,0.173,0.176,0.178,0.182,0.184,0.185,0.185,0.184,0.184,0.184,0.182,0.179,0.177,0.175,0.172,0.168,0.165,0.161,0.157,0.154,0.153,0.15,0.148,0.147,0.146,0.144,0.14,0.138,0.136,0.131,0.127,0.119,0.117,0.11,0.102,0.097,0.092,0.086,0.079,0.075,0.071,0.069,0.067,0.067,0.069,0.072,0.077,0.084,0.09,0.099,0.104,0.111,0.12,0.129,0.135,0.139,0.147,0.154,0.158,0.162,0.167],"stage1":[1.085,1.093,1.103,1.112,1.117,1.12,1.122,1.12,1.115,1.11,1.102,1.094,1.083,1.067,1.049,1.033,1.018,0.983,0.966,0.945,0.916,0.893,0.857,0.835,0.811,0.772,0.743,0.704,0.662,0.633,0.602,0.559,0.513,0.479,0.45,0.401,0.358,0.325,0.281,0.249,0.203,0.177,0.133,0.11,0.084,0.059,0.054,0.065,0.082,0.108,0.14,0.161,0.186,0.203,0.22,0.245,0.263,0.275,0.295,0.303,0.311,0.322,0.329,0.337,0.343,0.344,0.346,0.347,0.344,0.341,0.339,0.334,0.327,0.321,0.315,0.308,0.302,0.291,0.284,0.272,0.263,0.251,0.237,0.229,0.22,0.207,0.194,0.184,0.176,0.164,0.153,0.146,0.137,0.131,0.126,0.121,0.118,0.115,0.114,0.114,0.115,0.117,0.119,0.123,0.125,0.124,0.124,0.124,0.126,0.128,0.134,0.139,0.144,0.153,0.159,0.169,0.176,0.183,0.191,0.195,0.199,0.201,0.204,0.205,0.204,0.201,0.199,0.193,0.187,0.181,0.176,0.166,0.155,0.148,0.141,0.131,0.123,0.114,0.107,0.104,0.102,0.1,0.11,0.126,0.145,0.188,0.231,0.264,0.296,0.347,0.381,0.433,0.465,0.512,0.56,0.588,0.616,0.65,0.684,0.704,0.728,0.741,0.751,0.77,0.779,0.783,0.787,0.785,0.761,0.738,0.711,0.667,0.613,0.574,0.533,0.474,0.428,0.362,0.313,0.24,0.199,0.124,0.064,0.038,0.059,0.12,0.189,0.228,0.268,0.327,0.37,0.423,0.459,0.505,0.551,0.58,0.607,0.63,0.674,0.696,0.713,0.73,0.758,0.77,0.78,0.786,0.79,0.796,0.798,0.794,0.789,0.782,0.774,0.761,0.747,0.737,0.715,0.69,0.672,0.655,0.627,0.595,0.573,0.551,0.52,0.485,0.458,0.439,0.405,0.374,0.353,0.328,0.311,0.292,0.284,0.279,0.276,0.28,0.285,0.299,0.311,0.324,0.342,0.366,0.383,0.397,0.418,0.442,0.457,0.475,0.486,0.504,0.511,0.521,0.524,0.529,0.533,0.535,0.535,0.534,0.529,0.519,0.512,0.5,0.49,0.474,0.461,0.446,0.432,0.418,0.394,0.369,0.354,0.336,0.311,0.286,0.27,0.252,0.229,0.205,0.188,0.175,0.155,0.141,0.132,0.125,0.123,0.124,0.129,0.138,0.144,0.153,0.167,0.179,0.188,0.201,0.209,0.217,0.227,0.235,0.241,0.246,0.251,0.255,0.256,0.255,0.25,0.246,0.243,0.234,0.228,0.222,0.214,0.202,0.195,0.187,0.176,0.166,0.16,0.156,0.15,0.148,0.148,0.149,0.155,0.165,0.171,0.18,0.193,0.203,0.217,0.233,0.243,0.254,0.269,0.285,0.296,0.31,0.319,0.332,0.341,0.348,0.358,0.364,0.373,0.38,0.383,0.386,0.39,0.391,0.39,0.388,0.388,0.384,0.38,0.377,0.371,0.362,0.355,0.348,0.339,0.334,0.325,0.317,0.309,0.304,0.296,0.29,0.287,0.283,0.281,0.277,0.276,0.276,0.276,0.277,0.278,0.279,0.281,0.283,0.285,0.287,0.289,0.289,0.284,0.277,0.267,0.258,0.254,0.248,0.244,0.241,0.244,0.247,0.25,0.256,0.267,0.274,0.281,0.291,0.303,0.31,0.315,0.322,0.328,0.331,0.332,0.332,0.331,0.329,0.325,0.318,0.313,0.303,0.29,0.281,0.271,0.261,0.239,0.227,0.211,0.198,0.187,0.171,0.162,0.148,0.141,0.133,0.129,0.126,0.127,0.13,0.137,0.142,0.149,0.155,0.169,0.177,0.186,0.192,0.199,0.208,0.213,0.218,0.221,0.226,0.23,0.232,0.234,0.236,0.236,0.235,0.234,0.234,0.232,0.23,0.228,0.226,0.223,0.22,0.216,0.214,0.212,0.207,0.204,0.2,0.195,0.187,0.18,0.174,0.169,0.161,0.157,0.15,0.146,0.14,0.136,0.133,0.131,0.13,0.129,0.13,0.131,0.133,0.138,0.141,0.145,0.151,0.155,0.162,0.166,0.173,0.177,0.183,0.188,0.192,0.195,0.198,0.201,0.203],"ardupilot":[1.046,1.054,1.064,1.075,1.085,1.09,1.094,1.097,1.096,1.092,1.089,1.084,1.08,1.066,1.06,1.048,1.038,1.019,1.007,0.987,0.965,0.949,0.933,0.91,0.884,0.866,0.847,0.816,0.798,0.764,0.745,0.711,0.689,0.655,0.633,0.599,0.577,0.543,0.507,0.485,0.452,0.43,0.407,0.376,0.344,0.321,0.302,0.282,0.243,0.224,0.198,0.18,0.164,0.141,0.127,0.107,0.094,0.081,0.07,0.066,0.064,0.065,0.068,0.076,0.083,0.088,0.094,0.1,0.11,0.114,0.119,0.125,0.128,0.133,0.136,0.141,0.143,0.146,0.148,0.151,0.152,0.153,0.154,0.155,0.155,0.155,0.155,0.154,0.154,0.153,0.151,0.149,0.148,0.145,0.143,0.14,0.138,0.135,0.13,0.127,0.124,0.121,0.117,0.112,0.109,0.105,0.101,0.098,0.097,0.099,0.105,0.112,0.118,0.124,0.132,0.142,0.15,0.161,0.168,0.178,0.187,0.192,0.196,0.2,0.207,0.21,0.211,0.213,0.214,0.213,0.212,0.21,0.207,0.203,0.2,0.197,0.191,0.185,0.18,0.175,0.166,0.15,0.14,0.125,0.12,0.118,0.127,0.147,0.163,0.195,0.22,0.255,0.281,0.316,0.342,0.365,0.4,0.422,0.454,0.474,0.504,0.524,0.547,0.568,0.582,0.601,0.612,0.621,0.619,0.605,0.588,0.575,0.553,0.524,0.501,0.479,0.449,0.427,0.389,0.361,0.328,0.302,0.266,0.241,0.208,0.185,0.165,0.139,0.119,0.112,0.109,0.113,0.127,0.14,0.161,0.176,0.194,0.218,0.241,0.258,0.285,0.308,0.323,0.338,0.358,0.378,0.39,0.401,0.416,0.425,0.436,0.442,0.451,0.456,0.46,0.463,0.467,0.468,0.466,0.464,0.463,0.46,0.454,0.447,0.443,0.437,0.427,0.42,0.408,0.4,0.388,0.379,0.369,0.355,0.34,0.328,0.313,0.301,0.286,0.274,0.258,0.247,0.229,0.219,0.201,0.191,0.175,0.16,0.149,0.139,0.129,0.112,0.105,0.097,0.088,0.083,0.078,0.068,0.064,0.062,0.059,0.055,0.055,0.055,0.056,0.057,0.061,0.064,0.069,0.072,0.078,0.083,0.089,0.093,0.097,0.104,0.111,0.116,0.12,0.127,0.134,0.138,0.143,0.149,0.156,0.16,0.165,0.169,0.173,0.178,0.182,0.185,0.189,0.191,0.193,0.196,0.198,0.199,0.2,0.201,0.201,0.201,0.201,0.2,0.198,0.193,0.186,0.18,0.174,0.166,0.157,0.15,0.143,0.132,0.12,0.113,0.105,0.092,0.082,0.07,0.058,0.05,0.042,0.034,0.029,0.03,0.033,0.042,0.053,0.061,0.072,0.08,0.088,0.1,0.108,0.12,0.129,0.141,0.153,0.161,0.169,0.18,0.19,0.197,0.203,0.213,0.221,0.227,0.232,0.24,0.246,0.25,0.254,0.259,0.263,0.265,0.267,0.269,0.271,0.271,0.271,0.271,0.271,0.27,0.271,0.272,0.273,0.275,0.277,0.281,0.283,0.286,0.29,0.293,0.295,0.298,0.3,0.302,0.304,0.305,0.305,0.305,0.305,0.302,0.297,0.283,0.272,0.252,0.239,0.221,0.199,0.187,0.173,0.158,0.143,0.135,0.128,0.124,0.119,0.119,0.12,0.124,0.128,0.133,0.137,0.144,0.148,0.152,0.156,0.159,0.162,0.163,0.164,0.166,0.166,0.165,0.164,0.164,0.162,0.16,0.158,0.157,0.156,0.155,0.155,0.153,0.152,0.151,0.149,0.149,0.148,0.146,0.145,0.144,0.143,0.142,0.14,0.138,0.137,0.135,0.133,0.131,0.13,0.127,0.125,0.123,0.121,0.118,0.116,0.113,0.11,0.108,0.106,0.103,0.099,0.096,0.094,0.091,0.087,0.085,0.082,0.078,0.075,0.073,0.067,0.064,0.06,0.055,0.052,0.046,0.043,0.039,0.037,0.036,0.036,0.037,0.04,0.045,0.048,0.056,0.062,0.07,0.076,0.085,0.091,0.1,0.106,0.112,0.123,0.129,0.134,0.14,0.147,0.154,0.159,0.165,0.169,0.175,0.179,0.183],"warm":[1.093,1.101,1.109,1.119,1.126,1.128,1.13,1.128,1.12,1.11,1.1,1.075,1.055,1.016,0.975,0.948,0.916,0.872,0.822,0.789,0.735,0.696,0.646,0.611,0.565,0.533,0.503,0.46,0.422,0.4,0.377,0.345,0.314,0.297,0.278,0.254,0.23,0.216,0.198,0.186,0.178,0.167,0.159,0.154,0.15,0.145,0.14,0.136,0.132,0.124,0.117,0.112,0.105,0.1,0.097,0.092,0.089,0.087,0.086,0.083,0.082,0.081,0.079,0.078,0.076,0.075,0.074,0.072,0.069,0.068,0.067,0.067,0.068,0.068,0.069,0.072,0.073,0.078,0.082,0.085,0.087,0.089,0.091,0.091,0.091,0.089,0.088,0.087,0.086,0.086,0.087,0.089,0.092,0.095,0.097,0.1,0.101,0.102,0.102,0.101,0.099,0.096,0.094,0.093,0.092,0.092,0.094,0.097,0.103,0.108,0.112,0.118,0.123,0.125,0.126,0.129,0.129,0.127,0.127,0.125,0.121,0.119,0.115,0.11,0.107,0.102,0.097,0.095,0.092,0.09,0.087,0.085,0.083,0.081,0.08,0.079,0.078,0.078,0.079,0.08,0.083,0.084,0.086,0.092,0.106,0.12,0.137,0.154,0.194,0.217,0.237,0.268,0.293,0.307,0.318,0.332,0.336,0.334,0.326,0.319,0.308,0.288,0.265,0.254,0.236,0.222,0.213,0.19,0.156,0.124,0.095,0.062,0.058,0.089,0.117,0.158,0.204,0.228,0.253,0.284,0.311,0.325,0.344,0.358,0.369,0.374,0.377,0.383,0.387,0.391,0.393,0.396,0.397,0.396,0.396,0.396,0.395,0.393,0.392,0.391,0.389,0.382,0.379,0.371,0.363,0.356,0.349,0.337,0.329,0.317,0.308,0.295,0.281,0.273,0.264,0.251,0.242,0.23,0.218,0.208,0.2,0.187,0.176,0.167,0.16,0.149,0.142,0.133,0.127,0.119,0.111,0.106,0.101,0.095,0.089,0.086,0.083,0.078,0.075,0.071,0.069,0.066,0.064,0.062,0.06,0.059,0.058,0.057,0.056,0.056,0.055,0.053,0.053,0.052,0.052,0.054,0.056,0.058,0.063,0.065,0.068,0.071,0.074,0.077,0.08,0.083,0.086,0.089,0.092,0.094,0.096,0.098,0.1,0.102,0.103,0.106,0.108,0.11,0.112,0.113,0.116,0.118,0.119,0.121,0.123,0.124,0.125,0.127,0.127,0.128,0.129,0.13,0.13,0.131,0.132,0.132,0.132,0.132,0.132,0.132,0.132,0.131,0.131,0.13,0.128,0.124,0.121,0.117,0.114,0.111,0.109,0.106,0.104,0.102,0.1,0.098,0.096,0.093,0.09,0.087,0.085,0.082,0.08,0.079,0.078,0.077,0.077,0.077,0.076,0.075,0.074,0.073,0.071,0.07,0.068,0.067,0.066,0.066,0.066,0.066,0.067,0.067,0.067,0.067,0.066,0.066,0.064,0.062,0.061,0.06,0.056,0.055,0.054,0.053,0.053,0.053,0.053,0.054,0.056,0.059,0.072,0.08,0.091,0.105,0.115,0.128,0.135,0.145,0.15,0.156,0.16,0.162,0.164,0.164,0.163,0.16,0.16,0.158,0.156,0.154,0.153,0.152,0.151,0.147,0.145,0.14,0.138,0.138,0.143,0.146,0.15,0.156,0.16,0.164,0.166,0.167,0.167,0.166,0.162,0.159,0.155,0.15,0.139,0.132,0.126,0.119,0.11,0.102,0.098,0.094,0.092,0.092,0.091,0.092,0.093,0.093,0.094,0.094,0.093,0.092,0.091,0.09,0.087,0.084,0.082,0.081,0.079,0.078,0.077,0.077,0.077,0.078,0.077,0.077,0.077,0.077,0.077,0.077,0.077,0.077,0.077,0.078,0.078,0.079,0.081,0.082,0.083,0.085,0.086,0.087,0.087,0.088,0.088,0.088,0.088,0.088,0.089,0.089,0.089,0.09,0.09,0.09,0.09,0.09,0.09,0.091,0.093,0.095,0.097,0.098,0.101,0.103,0.104,0.105,0.107,0.11,0.111,0.113,0.116,0.118,0.121,0.123,0.124,0.126,0.127,0.128,0.129,0.13,0.131,0.131,0.131,0.131,0.131,0.131,0.131,0.131,0.131,0.131,0.13,0.13]},"8_meta":{"seed":2008,"wind":6.6,"wmax":17.9},"0":{"pid":[0.058,0.062,0.067,0.071,0.076,0.08,0.084,0.088,0.092,0.096,0.098,0.1,0.103,0.106,0.107,0.109,0.111,0.112,0.112,0.114,0.114,0.113,0.112,0.112,0.11,0.11,0.107,0.106,0.104,0.102,0.099,0.097,0.093,0.091,0.086,0.083,0.08,0.073,0.069,0.066,0.06,0.057,0.051,0.047,0.042,0.038,0.033,0.028,0.026,0.023,0.021,0.017,0.016,0.016,0.016,0.019,0.021,0.022,0.025,0.027,0.029,0.029,0.027,0.025,0.023,0.023,0.025,0.029,0.036,0.042,0.053,0.059,0.068,0.083,0.092,0.1,0.113,0.121,0.133,0.142,0.153,0.161,0.167,0.18,0.187,0.193,0.197,0.207,0.211,0.214,0.218,0.221,0.224,0.226,0.226,0.224,0.218,0.21,0.198,0.19,0.182,0.167,0.159,0.152,0.147,0.143,0.141,0.142,0.147,0.151,0.159,0.165,0.178,0.186,0.199,0.209,0.223,0.233,0.241,0.258,0.268,0.277,0.286,0.298,0.312,0.32,0.328,0.339,0.351,0.358,0.364,0.371,0.377,0.384,0.387,0.391,0.394,0.396,0.397,0.397,0.397,0.395,0.393,0.387,0.385,0.379,0.37,0.363,0.355,0.345,0.336,0.327,0.306,0.295,0.284,0.271,0.253,0.234,0.222,0.202,0.19,0.171,0.159,0.142,0.132,0.121,0.113,0.11,0.111,0.115,0.121,0.131,0.14,0.155,0.163,0.174,0.19,0.198,0.205,0.215,0.223,0.233,0.239,0.246,0.251,0.258,0.262,0.264,0.266,0.267,0.267,0.265,0.263,0.26,0.255,0.25,0.246,0.239,0.234,0.225,0.211,0.203,0.193,0.18,0.17,0.165,0.161,0.159,0.16,0.163,0.167,0.175,0.181,0.192,0.199,0.208,0.214,0.222,0.229,0.231,0.233,0.235,0.236,0.234,0.232,0.23,0.224,0.215,0.209,0.199,0.192,0.182,0.155,0.116,0.087,0.037,0.008,0.044,0.077,0.122,0.154,0.196,0.236,0.265,0.286,0.309,0.341,0.368,0.383,0.405,0.415,0.426,0.431,0.44,0.441,0.441,0.436,0.435,0.43,0.42,0.408,0.403,0.395,0.388,0.372,0.366,0.361,0.353,0.347,0.343,0.341,0.337,0.337,0.336,0.336,0.334,0.332,0.333,0.332,0.329,0.327,0.325,0.317,0.31,0.303,0.293,0.287,0.275,0.266,0.253,0.241,0.233,0.216,0.202,0.194,0.187,0.186,0.191,0.197,0.206,0.225,0.242,0.267,0.295,0.313,0.343,0.362,0.391,0.412,0.429,0.464,0.479,0.494,0.509,0.532,0.544,0.551,0.561,0.573,0.579,0.581,0.585,0.586,0.583,0.58,0.574,0.569,0.558,0.548,0.534,0.523,0.513,0.489,0.474,0.462,0.447,0.416,0.398,0.382,0.363,0.337,0.309,0.29,0.261,0.239,0.221,0.189,0.161,0.142,0.123,0.09,0.076,0.068,0.064,0.07,0.087,0.1,0.125,0.147,0.172,0.209,0.248,0.278,0.302,0.344,0.382,0.409,0.444,0.469,0.492,0.525,0.555,0.571,0.589,0.618,0.631,0.64,0.65,0.661,0.666,0.668,0.67,0.669,0.662,0.654,0.646,0.637,0.627,0.606,0.586,0.57,0.551,0.521,0.489,0.469,0.435,0.411,0.385,0.346,0.311,0.286,0.264,0.233,0.21,0.198,0.193,0.196,0.213,0.227,0.249,0.282,0.318,0.342,0.38,0.406,0.432,0.469,0.501,0.525,0.544,0.58,0.597,0.614,0.628,0.644,0.661,0.67,0.68,0.687,0.694,0.708,0.718,0.724,0.729,0.738,0.742,0.743,0.743,0.742,0.74,0.734,0.722,0.717,0.708,0.69,0.669,0.656,0.64,0.615,0.588,0.57,0.541,0.518,0.5,0.471,0.444,0.425,0.409,0.387,0.37,0.362,0.355,0.35,0.349,0.352,0.358,0.367,0.376,0.39,0.407,0.42,0.436,0.446,0.454,0.471,0.484,0.491,0.498,0.511,0.526,0.533,0.539,0.547,0.556,0.559,0.562,0.565,0.565,0.564,0.561,0.559,0.556,0.547,0.539,0.533,0.527,0.516,0.505,0.497,0.491],"stage1":[0.211,0.205,0.199,0.191,0.182,0.177,0.17,0.166,0.16,0.156,0.152,0.149,0.147,0.145,0.144,0.143,0.143,0.142,0.142,0.142,0.142,0.143,0.143,0.143,0.144,0.144,0.144,0.143,0.142,0.141,0.14,0.137,0.135,0.133,0.13,0.127,0.124,0.122,0.119,0.114,0.11,0.108,0.103,0.1,0.096,0.093,0.089,0.085,0.083,0.08,0.077,0.076,0.074,0.073,0.073,0.073,0.074,0.075,0.077,0.079,0.081,0.085,0.09,0.094,0.101,0.107,0.115,0.122,0.131,0.138,0.145,0.156,0.167,0.174,0.181,0.192,0.203,0.209,0.219,0.224,0.233,0.238,0.245,0.249,0.252,0.257,0.259,0.26,0.261,0.262,0.26,0.259,0.257,0.253,0.25,0.242,0.229,0.218,0.203,0.182,0.16,0.144,0.132,0.111,0.096,0.088,0.084,0.085,0.09,0.104,0.122,0.133,0.148,0.169,0.189,0.202,0.215,0.235,0.254,0.267,0.278,0.295,0.31,0.319,0.327,0.34,0.352,0.357,0.363,0.373,0.379,0.382,0.384,0.389,0.391,0.392,0.392,0.393,0.391,0.388,0.382,0.38,0.377,0.372,0.364,0.361,0.356,0.346,0.335,0.33,0.323,0.313,0.305,0.297,0.285,0.276,0.27,0.26,0.25,0.243,0.237,0.229,0.223,0.22,0.217,0.215,0.214,0.215,0.215,0.218,0.221,0.225,0.231,0.236,0.24,0.244,0.249,0.251,0.252,0.252,0.252,0.254,0.255,0.256,0.255,0.256,0.257,0.257,0.256,0.256,0.254,0.253,0.251,0.249,0.248,0.245,0.243,0.24,0.238,0.235,0.231,0.226,0.222,0.217,0.214,0.213,0.212,0.214,0.215,0.22,0.223,0.228,0.232,0.238,0.242,0.248,0.251,0.254,0.258,0.26,0.26,0.261,0.26,0.259,0.257,0.253,0.25,0.244,0.24,0.232,0.227,0.212,0.187,0.166,0.146,0.123,0.096,0.076,0.075,0.09,0.117,0.137,0.16,0.192,0.215,0.235,0.266,0.294,0.309,0.327,0.354,0.367,0.378,0.393,0.402,0.413,0.419,0.426,0.431,0.435,0.437,0.441,0.442,0.443,0.442,0.442,0.441,0.44,0.436,0.434,0.432,0.428,0.424,0.42,0.414,0.409,0.403,0.397,0.386,0.38,0.372,0.365,0.355,0.341,0.334,0.323,0.311,0.296,0.286,0.271,0.262,0.252,0.236,0.222,0.214,0.209,0.205,0.207,0.213,0.221,0.237,0.261,0.276,0.304,0.322,0.341,0.37,0.399,0.417,0.437,0.467,0.491,0.507,0.519,0.549,0.561,0.572,0.582,0.596,0.608,0.611,0.615,0.619,0.621,0.621,0.619,0.618,0.613,0.602,0.591,0.583,0.574,0.551,0.539,0.526,0.513,0.491,0.465,0.451,0.432,0.407,0.388,0.363,0.336,0.319,0.301,0.277,0.257,0.244,0.229,0.221,0.216,0.211,0.211,0.215,0.221,0.232,0.247,0.264,0.286,0.321,0.359,0.383,0.421,0.45,0.473,0.513,0.548,0.572,0.592,0.625,0.655,0.67,0.684,0.706,0.724,0.731,0.736,0.743,0.747,0.745,0.738,0.732,0.722,0.71,0.689,0.675,0.655,0.638,0.62,0.594,0.575,0.543,0.509,0.488,0.466,0.435,0.402,0.383,0.364,0.338,0.32,0.311,0.307,0.307,0.315,0.326,0.339,0.363,0.38,0.413,0.446,0.468,0.489,0.522,0.554,0.573,0.599,0.623,0.638,0.662,0.678,0.691,0.703,0.717,0.723,0.73,0.734,0.738,0.743,0.747,0.751,0.754,0.756,0.76,0.76,0.759,0.757,0.754,0.749,0.743,0.736,0.724,0.716,0.701,0.688,0.667,0.644,0.627,0.598,0.58,0.559,0.529,0.497,0.472,0.453,0.416,0.385,0.363,0.344,0.315,0.289,0.276,0.266,0.255,0.251,0.251,0.261,0.269,0.279,0.296,0.317,0.335,0.347,0.369,0.39,0.404,0.417,0.438,0.461,0.475,0.489,0.51,0.525,0.542,0.556,0.564,0.574,0.586,0.594,0.599,0.605,0.606,0.605,0.602,0.6,0.597,0.592,0.585,0.574],"ardupilot":[0.273,0.279,0.287,0.292,0.299,0.302,0.304,0.306,0.307,0.306,0.305,0.303,0.301,0.295,0.29,0.286,0.278,0.273,0.263,0.256,0.246,0.239,0.228,0.218,0.207,0.198,0.186,0.173,0.164,0.155,0.141,0.133,0.124,0.107,0.099,0.091,0.079,0.072,0.063,0.057,0.05,0.047,0.046,0.047,0.05,0.053,0.058,0.062,0.07,0.073,0.08,0.084,0.089,0.097,0.1,0.104,0.109,0.112,0.116,0.119,0.122,0.122,0.122,0.119,0.119,0.117,0.115,0.112,0.112,0.111,0.112,0.113,0.117,0.12,0.126,0.131,0.14,0.15,0.157,0.165,0.176,0.185,0.196,0.208,0.217,0.225,0.232,0.247,0.255,0.262,0.268,0.277,0.285,0.291,0.298,0.301,0.301,0.298,0.291,0.284,0.277,0.267,0.26,0.252,0.241,0.234,0.221,0.212,0.2,0.191,0.178,0.169,0.156,0.147,0.14,0.129,0.12,0.115,0.109,0.105,0.105,0.106,0.108,0.112,0.121,0.127,0.134,0.143,0.154,0.162,0.173,0.181,0.193,0.201,0.21,0.217,0.225,0.235,0.24,0.244,0.25,0.258,0.262,0.264,0.268,0.271,0.274,0.275,0.278,0.279,0.28,0.279,0.28,0.279,0.277,0.275,0.273,0.271,0.269,0.265,0.26,0.258,0.253,0.249,0.246,0.241,0.235,0.231,0.227,0.22,0.216,0.212,0.207,0.203,0.2,0.194,0.187,0.182,0.174,0.165,0.16,0.155,0.148,0.143,0.135,0.13,0.124,0.118,0.113,0.109,0.103,0.099,0.096,0.093,0.089,0.088,0.086,0.085,0.085,0.084,0.078,0.073,0.063,0.055,0.051,0.049,0.049,0.053,0.061,0.069,0.081,0.088,0.102,0.109,0.119,0.132,0.14,0.147,0.157,0.162,0.169,0.175,0.18,0.183,0.187,0.189,0.191,0.192,0.192,0.192,0.191,0.187,0.175,0.142,0.119,0.097,0.074,0.055,0.045,0.052,0.072,0.09,0.117,0.137,0.163,0.183,0.21,0.224,0.249,0.262,0.277,0.294,0.31,0.32,0.33,0.341,0.351,0.358,0.366,0.37,0.373,0.379,0.382,0.384,0.385,0.388,0.389,0.39,0.389,0.39,0.389,0.388,0.386,0.385,0.383,0.381,0.378,0.376,0.374,0.369,0.364,0.361,0.357,0.35,0.343,0.338,0.332,0.324,0.315,0.309,0.299,0.292,0.283,0.268,0.252,0.24,0.23,0.211,0.195,0.183,0.172,0.156,0.141,0.134,0.123,0.118,0.114,0.113,0.116,0.12,0.126,0.138,0.149,0.159,0.173,0.182,0.194,0.204,0.213,0.226,0.234,0.247,0.259,0.265,0.271,0.28,0.289,0.293,0.298,0.304,0.309,0.312,0.314,0.317,0.32,0.321,0.321,0.322,0.322,0.322,0.32,0.32,0.319,0.317,0.314,0.312,0.309,0.306,0.304,0.3,0.296,0.293,0.289,0.284,0.279,0.276,0.272,0.265,0.256,0.241,0.223,0.214,0.206,0.197,0.193,0.195,0.198,0.21,0.226,0.24,0.255,0.28,0.296,0.323,0.341,0.368,0.387,0.412,0.437,0.451,0.466,0.484,0.503,0.516,0.524,0.54,0.548,0.558,0.566,0.569,0.572,0.572,0.569,0.567,0.565,0.558,0.551,0.54,0.53,0.521,0.51,0.492,0.477,0.464,0.452,0.432,0.412,0.398,0.384,0.365,0.352,0.333,0.32,0.305,0.294,0.282,0.272,0.267,0.263,0.26,0.259,0.26,0.263,0.268,0.274,0.279,0.285,0.291,0.294,0.298,0.304,0.313,0.323,0.341,0.362,0.377,0.393,0.409,0.445,0.462,0.483,0.498,0.514,0.534,0.545,0.559,0.569,0.58,0.588,0.592,0.596,0.598,0.598,0.597,0.595,0.593,0.582,0.576,0.57,0.56,0.553,0.538,0.531,0.519,0.509,0.493,0.478,0.468,0.457,0.442,0.426,0.417,0.402,0.39,0.382,0.366,0.353,0.342,0.331,0.311,0.298,0.275,0.263,0.245,0.231,0.214,0.203,0.189,0.174,0.165,0.156,0.15,0.138,0.134,0.131,0.128,0.127,0.126,0.128,0.131],"warm":[0.127,0.126,0.126,0.133,0.142,0.159,0.17,0.18,0.195,0.213,0.221,0.231,0.239,0.246,0.251,0.254,0.254,0.253,0.254,0.251,0.248,0.245,0.24,0.234,0.229,0.221,0.215,0.209,0.202,0.191,0.179,0.169,0.156,0.143,0.135,0.127,0.116,0.106,0.098,0.092,0.083,0.079,0.07,0.063,0.058,0.055,0.051,0.05,0.051,0.052,0.055,0.062,0.066,0.07,0.077,0.081,0.087,0.09,0.097,0.101,0.104,0.11,0.114,0.118,0.122,0.128,0.131,0.137,0.144,0.149,0.157,0.165,0.17,0.174,0.178,0.182,0.182,0.181,0.178,0.176,0.17,0.165,0.161,0.158,0.152,0.148,0.144,0.142,0.14,0.138,0.137,0.136,0.135,0.133,0.131,0.13,0.126,0.124,0.122,0.121,0.121,0.121,0.123,0.127,0.13,0.133,0.137,0.139,0.141,0.141,0.141,0.142,0.141,0.138,0.138,0.137,0.137,0.136,0.135,0.135,0.134,0.133,0.131,0.13,0.127,0.124,0.122,0.118,0.116,0.114,0.112,0.108,0.105,0.102,0.098,0.096,0.093,0.088,0.083,0.08,0.077,0.073,0.069,0.068,0.066,0.064,0.063,0.063,0.062,0.062,0.061,0.06,0.059,0.058,0.056,0.055,0.053,0.051,0.05,0.047,0.046,0.045,0.043,0.042,0.041,0.04,0.039,0.039,0.038,0.038,0.037,0.037,0.037,0.036,0.036,0.035,0.035,0.035,0.036,0.038,0.042,0.046,0.052,0.055,0.058,0.063,0.065,0.069,0.071,0.072,0.072,0.074,0.075,0.075,0.074,0.075,0.074,0.074,0.073,0.071,0.065,0.06,0.053,0.051,0.05,0.055,0.061,0.068,0.076,0.086,0.096,0.102,0.105,0.107,0.106,0.105,0.1,0.095,0.086,0.081,0.072,0.067,0.061,0.054,0.048,0.044,0.04,0.038,0.037,0.038,0.04,0.043,0.05,0.071,0.098,0.116,0.133,0.159,0.183,0.196,0.209,0.222,0.23,0.236,0.241,0.242,0.239,0.236,0.23,0.223,0.215,0.203,0.191,0.181,0.172,0.159,0.144,0.136,0.126,0.115,0.104,0.098,0.089,0.083,0.077,0.069,0.062,0.056,0.051,0.043,0.036,0.03,0.026,0.021,0.02,0.022,0.025,0.03,0.035,0.04,0.046,0.049,0.052,0.057,0.062,0.065,0.07,0.074,0.078,0.084,0.087,0.091,0.095,0.102,0.107,0.114,0.118,0.124,0.129,0.131,0.134,0.136,0.136,0.137,0.136,0.136,0.135,0.133,0.133,0.133,0.132,0.131,0.13,0.129,0.126,0.124,0.122,0.119,0.115,0.112,0.11,0.104,0.1,0.096,0.093,0.088,0.083,0.08,0.076,0.071,0.066,0.059,0.053,0.049,0.046,0.043,0.042,0.042,0.043,0.044,0.046,0.047,0.048,0.049,0.05,0.05,0.049,0.048,0.047,0.046,0.044,0.04,0.038,0.034,0.029,0.025,0.023,0.016,0.014,0.025,0.037,0.06,0.077,0.101,0.116,0.14,0.163,0.176,0.189,0.203,0.21,0.216,0.22,0.217,0.213,0.205,0.191,0.181,0.171,0.154,0.146,0.133,0.125,0.115,0.108,0.103,0.092,0.086,0.079,0.069,0.063,0.059,0.058,0.06,0.061,0.064,0.065,0.065,0.064,0.063,0.067,0.069,0.073,0.078,0.084,0.091,0.099,0.103,0.106,0.109,0.11,0.11,0.11,0.111,0.111,0.111,0.113,0.115,0.116,0.117,0.117,0.116,0.114,0.11,0.107,0.102,0.097,0.094,0.098,0.116,0.143,0.168,0.185,0.215,0.234,0.263,0.28,0.303,0.317,0.33,0.339,0.348,0.35,0.349,0.343,0.337,0.328,0.316,0.289,0.273,0.258,0.232,0.216,0.198,0.173,0.148,0.131,0.11,0.091,0.08,0.07,0.06,0.054,0.051,0.048,0.049,0.049,0.05,0.052,0.054,0.055,0.055,0.055,0.054,0.053,0.051,0.049,0.048,0.048,0.051,0.055,0.058,0.066,0.071,0.074,0.079,0.08,0.082,0.082,0.082,0.08,0.077,0.075,0.072,0.069,0.066,0.064,0.062,0.06,0.058]},"0_meta":{"seed":2000,"wind":8.4,"wmax":14.6}}};
+const NS = "http://www.w3.org/2000/svg";
+const $ = s => document.querySelector(s);
+const CTRL = [
+  {id:"pid", name:"PID teacher", key:"--k-pid"},
+  {id:"stage1", name:"Stage 1 (BC)", key:"--k-s1"},
+  {id:"ardupilot", name:"Stock ArduPilot", key:"--k-ap"},
+  {id:"warm", name:"PPO warm", key:"--k-ppo"}];
+const css = k => getComputedStyle(document.documentElement).getPropertyValue(k).trim();
+const tip = $("#tip");
+function showTip(e, html){ tip.innerHTML = html; tip.style.display = "block";
+  const x = Math.min(e.clientX + 14, innerWidth - tip.offsetWidth - 8), y = Math.min(e.clientY + 14, innerHeight - tip.offsetHeight - 8);
+  tip.style.left = x + "px"; tip.style.top = y + "px"; }
+function hideTip(){ tip.style.display = "none"; }
+function el(tag, attrs, parent){ const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+function txt(parent, x, y, s, attrs){ const t = el("text", Object.assign({x, y}, attrs || {}), parent); t.textContent = s; return t; }
+function niceTicks(lo, hi, n){ const span = hi - lo, raw = span / n, p = Math.pow(10, Math.floor(Math.log10(raw))), m = raw / p;
+  const step = (m <= 1 ? 1 : m <= 2 ? 2 : m <= 2.5 ? 2.5 : m <= 5 ? 5 : 10) * p; const out = [];
+  for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-9; v += step) out.push(+v.toFixed(10)); return out; }
+function legend(id, list){ const d = document.getElementById(id); if (!d) return;
+  d.innerHTML = list.map(c => `<span><i style="background:var(${c.key})"></i>${c.name}</span>`).join(""); }
+
+/* ---------------- theme, copy, tables, nav ---------------- */
+$("#themeBtn").onclick = () => {
+  const cur = document.documentElement.getAttribute("data-theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  document.documentElement.setAttribute("data-theme", cur === "dark" ? "light" : "dark");
+  try { localStorage.setItem("guideTheme", document.documentElement.getAttribute("data-theme")); } catch(e){}
+  drawAll();
+};
+try { const t = localStorage.getItem("guideTheme"); if (t) document.documentElement.setAttribute("data-theme", t); } catch(e){}
+document.querySelectorAll(".cmdbox button.copy").forEach(b => b.onclick = () => {
+  const t = b.parentElement.querySelector("pre").innerText;
+  const done = () => { b.textContent = "Copied"; setTimeout(() => b.textContent = "Copy", 1200); };
+  if (navigator.clipboard) navigator.clipboard.writeText(t).then(done, () => fallback()); else fallback();
+  function fallback(){ const a = document.createElement("textarea"); a.value = t; document.body.appendChild(a); a.select(); try { document.execCommand("copy"); } catch(e){} a.remove(); done(); }
+});
+document.querySelectorAll("button.tbl").forEach(b => b.onclick = () => {
+  const t = document.getElementById(b.dataset.t); t.classList.toggle("show"); b.textContent = t.classList.contains("show") ? "Hide table" : "Show table"; });
+(function(){ const links = [...document.querySelectorAll("nav.side a")];
+  const secs = links.map(a => document.querySelector(a.getAttribute("href"))).filter(Boolean);
+  addEventListener("scroll", () => { let cur = secs[0];
+    for (const s of secs) if (s.getBoundingClientRect().top < 120) cur = s;
+    links.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + cur.id)); }, {passive:true}); })();
+
+/* ---------------- line chart ---------------- */
+function lineChart(id, o){
+  const box = document.getElementById(id); if (!box) return; box.innerHTML = "";
+  const W = Math.max(320, box.clientWidth), H = o.height || 260, m = {l:52, r:o.right || 16, t:12, b:40};
+  const svg = el("svg", {viewBox:`0 0 ${W} ${H}`, width:"100%", role:"img", "aria-label":o.aria || ""}, box);
+  const xs = o.xdom, ys = o.ydom;
+  const X = v => m.l + (v - xs[0]) / (xs[1] - xs[0]) * (W - m.l - m.r);
+  const Y = v => H - m.b - (v - ys[0]) / (ys[1] - ys[0]) * (H - m.t - m.b);
+  niceTicks(ys[0], ys[1], 5).forEach(v => { el("line", {x1:m.l, x2:W - m.r, y1:Y(v), y2:Y(v), class:"grid"}, svg);
+    txt(svg, m.l - 6, Y(v) + 4, o.yfmt ? o.yfmt(v) : v, {"text-anchor":"end"}); });
+  (o.xticks || niceTicks(xs[0], xs[1], Math.max(3, Math.floor(W / 110)))).forEach(v => {
+    txt(svg, X(v), H - m.b + 16, o.xfmt ? o.xfmt(v) : v, {"text-anchor":"middle"}); });
+  el("line", {x1:m.l, x2:W - m.r, y1:H - m.b, y2:H - m.b, class:"axis"}, svg);
+  txt(svg, (m.l + W - m.r) / 2, H - 6, o.xlabel || "", {"text-anchor":"middle"});
+  const yl = txt(svg, 12, (m.t + H - m.b) / 2, o.ylabel || "", {"text-anchor":"middle", transform:`rotate(-90 12 ${(m.t + H - m.b) / 2})`});
+  (o.bands || []).forEach(b => el("rect", {x:m.l, width:W - m.l - m.r, y:Y(b.y1), height:Y(b.y0) - Y(b.y1), fill:css(b.key), opacity:.12}, svg));
+  (o.hlines || []).forEach(h => { el("line", {x1:m.l, x2:W - m.r, y1:Y(h.y), y2:Y(h.y), stroke:css(h.key || "--muted"), "stroke-dasharray":"5 4", "stroke-width":1.5}, svg);
+    txt(svg, W - m.r - 4, Y(h.y) - 5, h.label, {"text-anchor":"end"}); });
+  const surf = css("--surface");
+  o.series.forEach(s => { const col = css(s.key);
+    if (s.dots){ s.x.forEach((x, i) => el("circle", {cx:X(x), cy:Y(s.y[i]), r:s.r || 2, fill:col, opacity:s.opacity || .25}, svg)); return; }
+    if (s.line !== false){ let d = ""; s.x.forEach((x, i) => { d += (i ? "L" : "M") + X(x).toFixed(1) + "," + Y(s.y[i]).toFixed(1); });
+      el("path", {d, fill:"none", stroke:col, "stroke-width":s.width || 2, "stroke-linejoin":"round", opacity:s.opacity || 1}, svg); }
+    if (s.markers) s.x.forEach((x, i) => el("circle", {cx:X(x), cy:Y(s.y[i]), r:s.markers, fill:col, stroke:surf, "stroke-width":2}, svg));
+  });
+  (o.labels || []).forEach(L => txt(svg, X(L.x) + (L.dx || 6), Y(L.y) + (L.dy || 4), L.text, {"font-weight":600, style:"fill:var(--text)"}));
+  // hover crosshair
+  const hov = o.series.filter(s => !s.dots && !s.nohover);
+  const cross = el("line", {y1:m.t, y2:H - m.b, stroke:css("--muted"), "stroke-width":1, opacity:0}, svg);
+  const cursor = o.cursor ? el("line", {y1:m.t, y2:H - m.b, stroke:css("--text"), "stroke-width":2}, svg) : null;
+  const hit = el("rect", {x:m.l, y:m.t, width:W - m.l - m.r, height:H - m.t - m.b, fill:"transparent"}, svg);
+  hit.addEventListener("mousemove", e => { const r = svg.getBoundingClientRect(); const px = (e.clientX - r.left) * W / r.width;
+    const xv = xs[0] + (px - m.l) / (W - m.l - m.r) * (xs[1] - xs[0]);
+    const s0 = hov[0]; let i = 0, best = 1e18; s0.x.forEach((x, k) => { const d = Math.abs(x - xv); if (d < best){ best = d; i = k; } });
+    cross.setAttribute("x1", X(s0.x[i])); cross.setAttribute("x2", X(s0.x[i])); cross.setAttribute("opacity", 1);
+    showTip(e, `<b>${o.xfmtTip ? o.xfmtTip(s0.x[i]) : s0.x[i]}</b><br>` + hov.map(s => `<span style="color:var(${s.key})">■</span> ${s.name}: ${o.tipfmt ? o.tipfmt(s.y[i]) : s.y[i]}`).join("<br>"));
+    if (o.onhover) o.onhover(s0.x[i]); });
+  hit.addEventListener("mouseleave", () => { cross.setAttribute("opacity", 0); hideTip(); });
+  if (o.onclick) hit.addEventListener("click", e => { const r = svg.getBoundingClientRect(); const px = (e.clientX - r.left) * W / r.width;
+    o.onclick(xs[0] + (px - m.l) / (W - m.l - m.r) * (xs[1] - xs[0])); });
+  return {setCursor: v => { if (cursor){ cursor.setAttribute("x1", X(v)); cursor.setAttribute("x2", X(v)); } }};
+}
+
+/* ---------------- horizontal bars ---------------- */
+function hBars(id, o){
+  const box = document.getElementById(id); if (!box) return; box.innerHTML = "";
+  const W = Math.max(300, box.clientWidth), rowH = 38, m = {l:118, r:64, t:6, b:24}, H = m.t + m.b + rowH * o.items.length;
+  const svg = el("svg", {viewBox:`0 0 ${W} ${H}`, width:"100%"}, box);
+  const X = v => m.l + (v - o.min) / (o.max - o.min) * (W - m.l - m.r);
+  niceTicks(o.min, o.max, 4).forEach(v => { el("line", {x1:X(v), x2:X(v), y1:m.t, y2:H - m.b, class:"grid"}, svg);
+    txt(svg, X(v), H - 6, o.fmt(v), {"text-anchor":"middle"}); });
+  o.items.forEach((it, i) => { const y = m.t + i * rowH + 8, h = rowH - 16;
+    txt(svg, m.l - 8, y + h / 2 + 4, it.name, {"text-anchor":"end", style:"fill:var(--text)"});
+    const r = el("rect", {x:X(o.min), y, width:Math.max(2, X(it.value) - X(o.min)), height:h, rx:4, fill:css(it.key)}, svg);
+    txt(svg, X(it.value) + 6, y + h / 2 + 4, o.fmt(it.value) + (o.unit || ""), {"font-weight":700, style:"fill:var(--text)"});
+    const hit = el("rect", {x:m.l, y:y - 6, width:W - m.l - m.r, height:h + 12, fill:"transparent"}, svg);
+    hit.addEventListener("mousemove", e => showTip(e, `<b>${it.name}</b><br>${o.label}: ${o.fmt(it.value)}${o.unit || ""}${it.extra ? "<br>" + it.extra : ""}`));
+    hit.addEventListener("mouseleave", hideTip); });
+}
+
+/* ---------------- grouped vertical bars ---------------- */
+function groupBars(id, o){
+  const box = document.getElementById(id); if (!box) return; box.innerHTML = "";
+  const W = Math.max(320, box.clientWidth), H = 260, m = {l:48, r:12, t:12, b:40};
+  const svg = el("svg", {viewBox:`0 0 ${W} ${H}`, width:"100%"}, box);
+  const Y = v => H - m.b - v / o.max * (H - m.t - m.b);
+  niceTicks(0, o.max, 5).forEach(v => { el("line", {x1:m.l, x2:W - m.r, y1:Y(v), y2:Y(v), class:"grid"}, svg); txt(svg, m.l - 6, Y(v) + 4, v.toFixed(2), {"text-anchor":"end"}); });
+  el("line", {x1:m.l, x2:W - m.r, y1:Y(0), y2:Y(0), class:"axis"}, svg);
+  const gw = (W - m.l - m.r) / o.groups.length, n = o.series.length, bw = Math.min(30, (gw - 18) / n - 2);
+  o.groups.forEach((g, gi) => { const x0 = m.l + gi * gw + (gw - n * (bw + 2)) / 2;
+    txt(svg, m.l + gi * gw + gw / 2, H - m.b + 16, g, {"text-anchor":"middle", style:"fill:var(--text)"});
+    o.series.forEach((s, si) => { const v = s.values[gi], x = x0 + si * (bw + 2);
+      el("rect", {x, y:Y(v), width:bw, height:Y(0) - Y(v), rx:3, fill:css(s.key)}, svg);
+      const hit = el("rect", {x:x - 1, y:m.t, width:bw + 2, height:Y(0) - m.t, fill:"transparent"}, svg);
+      hit.addEventListener("mousemove", e => showTip(e, `<b>${s.name}</b> · ${g}<br>RMSE ${v.toFixed(3)} m`)); hit.addEventListener("mouseleave", hideTip); }); });
+  txt(svg, (m.l + W - m.r) / 2, H - 4, o.xlabel || "", {"text-anchor":"middle"});
+}
+
+/* ---------------- charts ---------------- */
+function roll(a, k){ const o = []; for (let i = 0; i < a.length; i++){ const s = a.slice(Math.max(0, i - k + 1), i + 1); o.push(s.reduce((x, y) => x + y, 0) / s.length); } return o; }
+function drawStatic(){
+  const L = DATA.learn, kfmt = v => (v / 1000) + "k";
+  lineChart("chLearn", {xdom:[0, 510000], ydom:[0, 0.8], xfmt:kfmt, xlabel:"training timesteps", ylabel:"mean distance (m)", yfmt:v => v.toFixed(1),
+    xfmtTip:v => v.toLocaleString() + " steps", tipfmt:v => v.toFixed(3) + " m", aria:"Mean distance falls from 0.38 to 0.14 m",
+    series:[{name:"episode", key:"--k-ppo", x:L.raw_t, y:L.raw_dist, dots:true, r:2, opacity:.28},
+            {name:"PPO warm, rolling 20", key:"--k-ppo", x:L.t, y:L.dist, width:2.2}],
+    labels:[{x:L.t[2], y:L.dist[2], text:"0.38 m", dy:-8}, {x:L.t[L.t.length - 1], y:L.dist[L.dist.length - 1], text:"0.14 m", dx:-46, dy:-10}]});
+  lineChart("chHold", {xdom:[0, 510000], ydom:[60, 100], xfmt:kfmt, xlabel:"training timesteps", ylabel:"held within 0.5 m (%)", height:200,
+    xfmtTip:v => v.toLocaleString() + " steps", tipfmt:v => v.toFixed(1) + "%",
+    series:[{name:"PPO warm, rolling 20", key:"--k-ppo", x:L.t, y:L.hold}]});
+  document.getElementById("tLearn").innerHTML = `<div class="tw"><table><tr><th>Timesteps</th><th class="n">Mean distance, rolling 20 (m)</th><th class="n">Held %, rolling 20</th><th class="n">Return, rolling 20</th></tr>` +
+    L.t.filter((_, i) => i % 20 === 0).map((t, j) => `<tr><td class="n">${t.toLocaleString()}</td><td class="n">${L.dist[j * 20]}</td><td class="n">${L.hold[j * 20]}</td><td class="n">${L.ret[j * 20]}</td></tr>`).join("") + "</table></div>";
+
+  const G = DATA.gust;
+  legend("lgCtrl", CTRL);
+  hBars("chRmse", {min:0, max:0.4, fmt:v => v.toFixed(2), label:"RMSE", unit:" m",
+    items:CTRL.map(c => ({name:c.name, key:c.key, value:G[c.id].rmse, extra:`±${G[c.id].rmse_sd} m (std over 10 episodes)`}))});
+  hBars("chHeld", {min:0, max:100, fmt:v => v.toFixed(0), label:"Held within 0.5 m", unit:"%",
+    items:CTRL.map(c => ({name:c.name, key:c.key, value:G[c.id].hold}))});
+
+  const ep = [1,2,3,4,5,6,7,8,9,10];
+  legend("lgEp", CTRL);
+  lineChart("chEp", {xdom:[0.5, 10.5], ydom:[0, 0.5], xticks:ep, xlabel:"gust episode (seed 2000 + n − 1)", ylabel:"RMSE (m)", yfmt:v => v.toFixed(1),
+    xfmtTip:v => "Episode " + v + " (seed " + (1999 + v) + ")", tipfmt:v => v.toFixed(3) + " m", right:96,
+    series:CTRL.map(c => ({name:c.name, key:c.key, x:ep, y:G[c.id].ep_rmse, markers:c.id === "warm" ? 5 : 4, width:c.id === "warm" ? 2 : 1.2, opacity:c.id === "warm" ? 1 : .7})),
+    labels:[{x:10, y:G.warm.ep_rmse[9], text:"PPO warm", dx:10}]});
+  document.getElementById("tEp").innerHTML = `<div class="tw"><table><tr><th>Episode</th>${CTRL.map(c => `<th class="n">${c.name}</th>`).join("")}</tr>` +
+    ep.map(i => `<tr><td>${i}</td>${CTRL.map(c => `<td class="n">${G[c.id].ep_rmse[i - 1].toFixed(3)}</td>`).join("")}</tr>`).join("") + "</table></div>";
+
+  const lv = ["5.0","10.0","15.0","20.0"];
+  legend("lgConst", CTRL);
+  groupBars("chConst", {groups:["5","10","15","20"], max:0.4, xlabel:"constant wind (AirSim setting)",
+    series:CTRL.map(c => ({name:c.name, key:c.key, values:lv.map(l => DATA.levels[c.id][l])}))});
+  document.getElementById("tConst").innerHTML = `<div class="tw"><table><tr><th>Controller</th>${lv.map(l => `<th class="n">${parseFloat(l)}</th>`).join("")}</tr>` +
+    CTRL.map(c => `<tr><td>${c.name}</td>${lv.map(l => `<td class="n">${DATA.levels[c.id][l].toFixed(3)}</td>`).join("")}</tr>`).join("") + "</table></div>";
+
+  const R = DATA.rep;
+  legend("lgRep", [{name:"Stock ArduPilot (session 1)", key:"--k-ap"}, {name:"PPO session 1 (solid)", key:"--k-ppo"}, {name:"PPO session 2 (faded)", key:"--k-ppo"}]);
+  lineChart("chRep", {xdom:[0.5, 10.5], ydom:[0, 0.5], xticks:ep, xlabel:"gust episode", ylabel:"RMSE (m)", yfmt:v => v.toFixed(1), right:120,
+    xfmtTip:v => "Episode " + v, tipfmt:v => v.toFixed(3) + " m",
+    series:[{name:"Stock ArduPilot (session 1)", key:"--k-ap", x:ep, y:G.ardupilot.ep_rmse, markers:4, width:1.2, opacity:.8},
+            {name:"PPO session 2", key:"--k-ppo", x:ep, y:R.s2, markers:4, width:1.4, opacity:.55},
+            {name:"PPO session 1", key:"--k-ppo", x:ep, y:R.s1, markers:5, width:2}],
+    labels:[{x:10, y:G.ardupilot.ep_rmse[9], text:"ArduPilot", dx:10}, {x:10, y:R.s2[9], text:"PPO session 2", dx:10, dy:2}, {x:10, y:R.s1[9], text:"PPO session 1", dx:10, dy:12}]});
+}
+
+/* ---------------- replay ---------------- */
+const RP = {ep:"4", t:0, playing:false, last:0, speed:2, chart:null};
+function rpInit(){
+  const s = $("#rpEp");
+  s.innerHTML = Object.keys(DATA.traces).filter(k => !k.includes("_")).map(k => { const m = DATA.traces[k + "_meta"];
+    return `<option value="${k}">Episode ${+k + 1} (seed ${m.seed}) · mean wind ${m.wind}, peak ${m.wmax}</option>`; }).join("");
+  s.value = RP.ep;
+  s.onchange = () => { RP.ep = s.value; RP.t = 0; rpDrawChart(); rpRender(); };
+  $("#rpPlay").onclick = () => { RP.playing = !RP.playing; $("#rpPlay").textContent = RP.playing ? "❚❚ Pause" : "▶ Play";
+    if (RP.playing){ if (RP.t >= 24.95) RP.t = 0; RP.last = performance.now(); requestAnimationFrame(rpTick); } };
+  $("#rpSpeed").onchange = e => RP.speed = +e.target.value;
+  $("#rpSlider").oninput = e => { RP.t = +e.target.value / 20; rpRender(); };
+  legend("lgTrace", CTRL);
+}
+function rpTick(now){ if (!RP.playing) return; RP.t += (now - RP.last) / 1000 * RP.speed; RP.last = now;
+  if (RP.t >= 24.95){ RP.t = 24.95; RP.playing = false; $("#rpPlay").textContent = "▶ Play"; }
+  rpRender(); if (RP.playing) requestAnimationFrame(rpTick); }
+function rpDrawChart(){
+  const tr = DATA.traces[RP.ep], t = tr.warm.map((_, i) => +(i / 20).toFixed(2));
+  RP.chart = lineChart("chTrace", {xdom:[0, 25], ydom:[0, 1.4], xlabel:"time in episode (s)", ylabel:"distance to target (m)", height:230,
+    xfmtTip:v => "t = " + v.toFixed(2) + " s", tipfmt:v => v.toFixed(2) + " m", cursor:true,
+    bands:[{y0:0, y1:0.5, key:"--good"}], hlines:[{y:0.5, label:"0.5 m", key:"--good"}],
+    series:CTRL.map(c => ({name:c.name, key:c.key, x:t, y:tr[c.id], width:c.id === "warm" ? 2.2 : 1.3, opacity:c.id === "warm" ? 1 : .75})),
+    onclick:v => { RP.t = Math.max(0, Math.min(24.95, v)); rpRender(); }});
+}
+function drone(g, x, y, col){
+  el("rect", {x:x - 18, y:y - 5, width:36, height:10, rx:4, fill:col}, g);
+  el("rect", {x:x - 28, y:y - 10, width:16, height:3, rx:1.5, fill:css("--text-2")}, g);
+  el("rect", {x:x + 12, y:y - 10, width:16, height:3, rx:1.5, fill:css("--text-2")}, g);
+}
+function rpRender(){
+  const svg = $("#rpStage"); svg.innerHTML = "";
+  const tr = DATA.traces[RP.ep], i = Math.min(499, Math.round(RP.t * 20));
+  const x0 = 210, sc = 420;                       // px per metre
+  const lane = 58, top = 22;
+  el("rect", {x:x0, y:8, width:0.5 * sc, height:top + lane * 4 - 12, fill:css("--good"), opacity:.10}, svg);
+  el("line", {x1:x0 + 0.5 * sc, x2:x0 + 0.5 * sc, y1:8, y2:top + lane * 4 - 4, stroke:css("--good"), "stroke-dasharray":"5 4"}, svg);
+  txt(svg, x0 + 0.5 * sc + 4, 18, "0.5 m", {style:"fill:var(--good)"});
+  [1.0, 1.5].forEach(v => { if (x0 + v * sc < 890){ el("line", {x1:x0 + v * sc, x2:x0 + v * sc, y1:8, y2:top + lane * 4 - 4, class:"grid"}, svg); txt(svg, x0 + v * sc + 4, 18, v + " m"); } });
+  CTRL.forEach((c, k) => { const y = top + k * lane + 26, d = tr[c.id][i], col = css(c.key);
+    txt(svg, 8, y + 4, c.name, {style:"fill:var(--text)", "font-weight":c.id === "warm" ? 700 : 400});
+    el("line", {x1:x0, x2:890, y1:y + 14, y2:y + 14, stroke:css("--border")}, svg);
+    el("path", {d:`M${x0 - 7},${y} h14 M${x0},${y - 7} v14`, stroke:css("--text"), "stroke-width":2}, svg);
+    const g = el("g", {}, svg); drone(g, Math.min(880, x0 + d * sc), y, col);
+    txt(svg, Math.min(860, x0 + d * sc) + 32, y + 4, d.toFixed(2) + " m", {style:"fill:var(--text)"}); });
+  $("#rpTime").textContent = "t = " + RP.t.toFixed(1) + " s";
+  $("#rpSlider").value = i;
+  if (RP.chart) RP.chart.setCursor(RP.t);
+}
+
+function drawAll(){ drawStatic(); rpDrawChart(); rpRender(); }
+let rz; addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(drawAll, 150); });
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", drawAll);
+rpInit(); drawAll();
+</script>
+
+</body>
+</html>

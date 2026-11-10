@@ -1,0 +1,1133 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Throw &amp; Fly 5-inch Guide</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Throw & Fly 5-inch guide: same tokens and components as the F450 Throw & Fly guide */
+/* =====================================================================
+   THEME TOKENS  (edit colours here only)
+   ===================================================================== */
+:root{
+  color-scheme:light;
+  --bg:#f6f6f4; --surface:#fcfcfb; --surface-2:#f0efec; --border:#dcdad3;
+  --text:#1a1a19; --text-2:#52514e; --muted:#7a7972;
+  --accent:#2a78d6; --accent-soft:#e3eefb;
+  --good:#1b7f3b; --good-soft:#e2f3e7; --warn:#a96a00; --warn-soft:#fdf1d8; --bad:#c23a39; --bad-soft:#fbe5e4;
+  --code-bg:#f0efec;
+  /* controller colours: one colour per controller, same everywhere */
+  --c-ppo:#2a78d6; --c-bc:#eb6834; --c-rule:#1baf7a; --c-ssf:#eda100; --c-ap:#e87ba4;
+  --s1:#2f5ea8; --s2:#2e7d4f; --s3:#b83232;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#121211; --surface:#1a1a19; --surface-2:#242422; --border:#3a3936;
+    --text:#f0efec; --text-2:#c3c2b7; --muted:#9a998f;
+    --accent:#3987e5; --accent-soft:#1d2a3b;
+    --good:#5cc97f; --good-soft:#16281c; --warn:#e3a53a; --warn-soft:#2c2414; --bad:#ef7473; --bad-soft:#2e1717;
+    --code-bg:#242422;
+    --c-ppo:#3987e5; --c-bc:#d95926; --c-rule:#199e70; --c-ssf:#c98500; --c-ap:#d55181;
+    --s1:#6d9be0; --s2:#5fb383; --s3:#e06a6a;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#121211; --surface:#1a1a19; --surface-2:#242422; --border:#3a3936;
+  --text:#f0efec; --text-2:#c3c2b7; --muted:#9a998f;
+  --accent:#3987e5; --accent-soft:#1d2a3b;
+  --good:#5cc97f; --good-soft:#16281c; --warn:#e3a53a; --warn-soft:#2c2414; --bad:#ef7473; --bad-soft:#2e1717;
+  --code-bg:#242422;
+  --c-ppo:#3987e5; --c-bc:#d95926; --c-rule:#199e70; --c-ssf:#c98500; --c-ap:#d55181;
+  --s1:#6d9be0; --s2:#5fb383; --s3:#e06a6a;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 "Segoe UI",Calibri,system-ui,-apple-system,Arial,sans-serif}
+a{color:var(--accent)}
+code,pre{font-family:Consolas,"Cascadia Mono",Menlo,monospace}
+code{background:var(--code-bg);padding:1px 5px;border-radius:4px;font-size:13px;word-break:break-word}
+/* layout */
+.layout{display:grid;grid-template-columns:270px minmax(0,1fr);min-height:100vh}
+nav.side{position:sticky;top:0;height:100vh;overflow:auto;background:var(--surface);border-right:1px solid var(--border);padding:16px 12px 40px}
+nav.side .brand{font-weight:700;font-size:15px;margin:0 6px 2px}
+nav.side .sub{font-size:12px;color:var(--muted);margin:0 6px 12px}
+nav.side a{display:block;text-decoration:none;color:var(--text-2);padding:4px 8px;border-radius:6px;font-size:13.5px}
+nav.side a.l2{padding-left:22px;font-size:12.5px}
+nav.side a:hover{background:var(--surface-2)}
+nav.side a.active{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav.side .grp{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:14px 8px 4px}
+main{padding:24px 40px 80px;max-width:1180px}
+.topbar{display:flex;gap:10px;align-items:center;justify-content:flex-end;margin-bottom:6px}
+button,.btn{font:inherit;font-size:13px;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:7px;padding:5px 11px;cursor:pointer}
+button:hover{background:var(--surface-2)}
+button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+h1{font-size:28px;margin:4px 0 2px;line-height:1.2}
+h2{font-size:22px;margin:46px 0 10px;padding-top:10px;border-top:2px solid var(--border)}
+h3{font-size:17px;margin:28px 0 8px}
+h4{font-size:15px;margin:18px 0 6px}
+.lead{color:var(--text-2);font-size:15.5px;margin:4px 0 16px}
+.stage-tag{display:inline-block;color:#fff;border-radius:5px;padding:1px 8px;font-size:13px;font-weight:700;margin-right:8px;vertical-align:2px}
+.t1{background:var(--s1)}.t2{background:var(--s2)}.t3{background:var(--s3)}.thw{background:#5b5b66}
+/* tables */
+.tw{overflow-x:auto;margin:8px 0 14px}
+table{border-collapse:collapse;width:100%;font-size:13.5px;background:var(--surface)}
+th,td{border:1px solid var(--border);padding:5px 8px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.hl td{background:var(--accent-soft);font-weight:600}
+/* callouts */
+.note,.warn,.ok,.bad{border-left:4px solid;border-radius:6px;padding:9px 13px;margin:12px 0;font-size:14px}
+.note{border-color:var(--accent);background:var(--accent-soft)}
+.ok{border-color:var(--good);background:var(--good-soft)}
+.warn{border-color:var(--warn);background:var(--warn-soft)}
+.bad{border-color:var(--bad);background:var(--bad-soft)}
+.note b:first-child,.warn b:first-child,.ok b:first-child,.bad b:first-child{display:inline}
+.analogy{border:1px dashed var(--border);border-radius:8px;padding:9px 13px;margin:12px 0;font-size:14px;background:var(--surface)}
+.analogy::before{content:"Analogy  ";font-weight:700;color:var(--accent)}
+/* status chips */
+.chip{display:inline-block;font-size:11.5px;font-weight:700;border-radius:10px;padding:1px 8px;white-space:nowrap}
+.done{background:var(--good-soft);color:var(--good)}.run{background:var(--warn-soft);color:var(--warn)}.todo{background:var(--surface-2);color:var(--muted)}.fail{background:var(--bad-soft);color:var(--bad)}
+/* steps */
+.step{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin:12px 0}
+.step>.sh{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.step>.sh .num{background:var(--s3);color:#fff;border-radius:6px;font-weight:700;font-size:12.5px;padding:1px 8px}
+.step.s1 .num{background:var(--s1)}.step.s2 .num{background:var(--s2)}.step.hw .num{background:#5b5b66}
+.step>.sh .tt{font-weight:700;font-size:15.5px}
+.step>.sh .meta{margin-left:auto;font-size:12.5px;color:var(--muted)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:900px){.cols{grid-template-columns:1fr}}
+/* command block */
+.cmdbox{position:relative;margin:8px 0}
+pre.cmd{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:10px 70px 10px 12px;margin:0;font-size:13px;white-space:pre-wrap;word-break:break-all}
+.cmdbox button{position:absolute;top:6px;right:6px;font-size:12px;padding:2px 9px}
+details{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;margin:10px 0}
+details>summary{cursor:pointer;font-weight:600;font-size:14px}
+details[open]>summary{margin-bottom:6px}
+/* diagrams */
+.dgwrap{background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px;overflow:hidden;margin:10px 0}
+.dgwrap .dg{transform-origin:0 0}
+.dgwrap table{background:#fff;width:auto}.dgwrap th,.dgwrap td{color:#1d2433}
+.figure{background:#fff;border:1px solid var(--border);border-radius:10px;padding:8px;margin:10px 0;text-align:center}
+.figure img{max-width:100%;height:auto}
+.cap{font-size:12.5px;color:var(--muted);margin:4px 2px 12px}
+/* charts */
+.chart{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin:10px 0}
+.chart .ct{font-weight:700;font-size:14.5px}
+.chart .cs{font-size:12.5px;color:var(--muted);margin-bottom:6px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12.5px;color:var(--text-2);margin:4px 0 2px}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+.tip{position:fixed;pointer-events:none;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:7px;padding:6px 9px;font-size:12.5px;box-shadow:0 4px 14px rgba(0,0,0,.15);z-index:50;display:none;max-width:280px}
+svg text{fill:var(--text-2);font-size:11.5px}
+svg .axis{stroke:var(--border)}
+svg .grid{stroke:var(--border);stroke-dasharray:2 3}
+.charttable{display:none}
+.charttable.show{display:block}
+/* replay */
+.replay{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;margin:14px 0}
+.rp-controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+.rp-controls select{font:inherit;font-size:13px;padding:4px 6px;border-radius:7px;border:1px solid var(--border);background:var(--surface);color:var(--text);max-width:100%}
+.rp-controls input[type=range]{flex:1;min-width:160px}
+.rp-time{font-variant-numeric:tabular-nums;font-size:13px;color:var(--text-2);min-width:120px}
+#rpStage{width:100%;height:auto;display:block;background:linear-gradient(var(--surface-2),var(--surface));border-radius:10px}
+.rp-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:10px}
+.rp-card{border:1px solid var(--border);border-radius:8px;padding:6px 9px;font-size:12.5px;border-top:4px solid}
+.rp-card b{font-size:13px}
+/* timeline (who flies) */
+.tl{position:relative;height:56px;border-radius:9px;overflow:hidden;display:flex;margin:8px 0 4px;border:1px solid var(--border)}
+.tl div{display:flex;align-items:center;justify-content:center;color:#fff;font-size:12.5px;font-weight:700;text-align:center;padding:0 4px}
+.tl .cursor{position:absolute;top:0;bottom:0;width:3px;background:var(--text);left:0;transition:left .1s linear;padding:0}
+.tl-cap{min-height:44px;font-size:14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 12px}
+/* stat tiles */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:12px 0}
+.tile{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+.tile .v{font-size:24px;font-weight:700;line-height:1.1}
+.tile .k{font-size:12.5px;color:var(--muted)}
+/* explorer */
+.explorer{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin:10px 0}
+.explorer label{font-size:13px;color:var(--text-2)}
+.explorer input[type=range]{width:100%}
+.ex-out{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:8px}
+.ex-out div{background:var(--surface-2);border-radius:8px;padding:6px 10px;font-size:13px}
+.ex-out b{display:block;font-size:18px}
+.bar-h{height:14px;border-radius:4px;display:inline-block;vertical-align:middle}
+/* hardware block diagram (editable HTML) */
+.hw{background:#fff;color:#1d2433;border:1px solid var(--border);border-radius:10px;padding:14px;margin:10px 0;overflow-x:auto}
+.hw-grid{display:grid;grid-template-columns:1fr 46px 1.25fr 46px 1fr;gap:0;min-width:860px;align-items:center}
+.hw-col{display:flex;flex-direction:column;gap:12px}
+.hwb{border:2px solid #5b5b66;border-radius:10px;padding:8px 10px;background:#f7f7f9;font-size:13px;line-height:1.35}
+.hwb h5{margin:0 0 3px;font-size:14px;color:#2c2c38}
+.hwb.fc{border-color:#b83232;background:#fbeeee}.hwb.fc h5{color:#b83232}
+.hwb.pi{border-color:#2f5ea8;background:#eef3fb}.hwb.pi h5{color:#2f5ea8}
+.hwb.sens{border-color:#2e7d4f;background:#edf7f0}.hwb.sens h5{color:#2e7d4f}
+.hwb.pwr{border-color:#a96a00;background:#fdf6e6}.hwb.pwr h5{color:#a96a00}
+.hwb .lbl{display:inline-block;background:#fff;border:1px solid #c9ced8;border-radius:4px;padding:0 5px;font-size:11.5px;font-family:Consolas,monospace;margin:1px 0}
+.hw-arrow{text-align:center;font-size:22px;color:#555}
+.hw-bottom{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:14px;min-width:860px}
+/* flow */
+.flow{display:flex;flex-direction:column;align-items:center;gap:0;margin:10px 0}
+.fb{background:var(--surface);border:2px solid var(--border);border-radius:10px;padding:8px 14px;max-width:640px;width:100%;text-align:center;font-size:13.5px}
+.fb.pilot{border-color:var(--c-ssf)}.fb.pi{border-color:var(--c-ppo)}.fb.ap{border-color:var(--c-rule)}.fb.dec{border-color:var(--c-ap);border-style:dashed}
+.fb b{display:block}
+.fa{font-size:18px;color:var(--muted);line-height:1.3}
+.flow-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;justify-content:center;margin-bottom:8px}
+.flow-legend span{border:2px solid;border-radius:6px;padding:0 6px}
+footer{margin-top:60px;font-size:12px;color:var(--muted)}
+@media (max-width:860px){.layout{grid-template-columns:1fr}nav.side{position:relative;height:auto}main{padding:16px}}
+
+main{padding-block:24px 80px;padding-left:max(40px,env(safe-area-inset-left,0px));padding-right:max(40px,env(safe-area-inset-right,0px));min-width:0}
+@media (max-width:860px){main{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}}
+nav.side{padding-left:max(12px,env(safe-area-inset-left,0px))}
+.cmdbox pre{overflow-x:auto}
+h1,h2,h3{text-wrap:balance}
+button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+<div class="layout">
+<nav class="side" id="nav">
+  <div class="brand">Throw &amp; Fly · 5-inch (Q250)</div>
+  <div class="sub">Throw the sim Q250, catch it · ArduCopter 4.4 SITL (built-in physics) · FlightGear view</div>
+  <div class="grp">Start here</div>
+  <a href="#s0">0. Summary</a>
+  <a href="#s1">1. Brain and body: what each file is</a>
+  <a href="#s2">2. How the pieces connect</a>
+  <a href="#s3">3. What happens in one throw</a>
+  <div class="grp">Part A · Once</div>
+  <a href="#a1">A1. Folder and two files</a>
+  <a href="#a2">A2. PPO files</a>
+  <a href="#a3">A3. FlightGear ready</a>
+  <div class="grp">Part B · Every session</div>
+  <a href="#b1">B1. Start FlightGear</a>
+  <a href="#b2">B2. Windows IP</a>
+  <a href="#b3">B3. Start the simulator</a>
+  <a href="#b4">B4. Load parameters (first time)</a>
+  <a href="#b5">B5. Hover check</a>
+  <a href="#b6">B6. Throw by hand (optional)</a>
+  <a href="#b7">B7. Timing check</a>
+  <a href="#b8">B8. The thesis run</a>
+  <a href="#b9">B9. Read the results</a>
+  <div class="grp">Part C · Real drone</div>
+  <a href="#c1">C1. Hardware check</a>
+  <a href="#c2">C2. Pi set-up</a>
+  <a href="#c3">C3. Throw-day parameters</a>
+  <a href="#c3b">C3b. Your switches</a>
+  <a href="#c4">C4. Step 0: --check</a>
+  <a href="#c5">C5. Step 1: bench, props off</a>
+  <a href="#c6">C6. Steps 2–5: field</a>
+  <a href="#c6b">C6b. 8 Nov field + fixes</a>
+  <a href="#c6c">C6c. Version d + take-over</a>
+  <a href="#c7">C7. Send me</a>
+  <div class="grp">Findings</div>
+  <a href="#f1">4. Results (baseline)</a>
+  <a href="#f2">5. What we found building it</a>
+  <div class="grp">Reference</div>
+  <a href="#n1">6. What to do next</a>
+  <a href="#r1">7. Troubleshooting</a>
+  <a href="#r2">8. Files and outputs</a>
+</nav>
+<main>
+<div class="topbar"><span style="font-size:12px;color:var(--muted)">Built 8 Nov 2026 · results from 7 Nov 2026</span><button id="themeBtn" type="button">◐ Theme</button></div>
+<h1><span class="stage-tag thw">THROW</span>Throw &amp; Fly: 5-inch Q250 simulation<br><span style="font-size:19px;color:var(--text-2);font-weight:500">Throw the simulated Q250, catch it with attitude-rule or PPO, watch it in FlightGear 2024</span></h1>
+<p class="lead">Same method as your F450 Throw &amp; Fly guide: ArduPilot's own simulator (<code>-f quad</code>), the throw push (<code>SIM_SHOVE</code> / <code>SIM_TWIST</code>), <code>throw_check.py</code> and FlightGear on Windows. One thing is new: a small file that makes the simulated drone <b>your</b> 5-inch instead of ArduPilot's generic quad (<a href="#s1">section 1</a>).</p>
+
+<h2 id="s0">0. Summary</h2>
+<div class="tiles">
+  <div class="tile"><div class="v">27 / 27</div><div class="k">throws caught, 0 crashed (up, roll, pitch × 3 modes × 3 repeats), your run 8 Nov</div></div>
+  <div class="tile"><div class="v">0.23–0.32 s</div><div class="k">release → motors on for the script (Throw mode: 0.67–0.73 s)</div></div>
+  <div class="tile"><div class="v">≈ 0.95 s</div><div class="k">roll / pitch throw recovered by the script (Throw mode: ≈ 3.9 s, drifting ≈ 29 m)</div></div>
+  <div class="tile"><div class="v">PPO = rule</div><div class="k">PPO (Round 1) vs attitude-rule: 0.03–0.06 s apart, inside the throw-to-throw spread</div></div>
+</div>
+<div class="tw"><table>
+<tr><th>What you do</th><th>Where</th><th>Section</th></tr>
+<tr><td>Copy 2 files into a new folder; check the PPO in <code>models\</code> is Round 1 (<code>round1_final.zip</code>)</td><td>WSL + Windows, once</td><td><a href="#a1">A</a></td></tr>
+<tr><td>FlightGear → simulator → load parameters → hover check</td><td>Windows + WSL</td><td><a href="#b1">B1–B5</a></td></tr>
+<tr><td>Timing check, then the thesis run with <code>throw_check.py</code></td><td>PowerShell</td><td><a href="#b7">B7–B8</a></td></tr>
+<tr><td>Compare with the baseline results</td><td>runs\throw_check\</td><td><a href="#f1">4</a></td></tr>
+<tr><td><b>Real drone:</b> hardware check → Pi → throw-day parameters → ladder steps 0–5 with <code>throw_real.py</code> (7 Nov plan)</td><td>Drone + Pi + field</td><td><a href="#c0">C</a></td></tr>
+</table></div>
+<div class="note"><b>The three rules that matter most.</b> 1) The build log must say <code>Embedding file models/q250.json</code> and the hover check (B5) must show 13–15 %, otherwise you are throwing ArduPilot's generic 3 kg quad. 2) Every run: <b>motors on ≈ 0.2–0.3 s</b>, otherwise the simulator is too slow and the numbers are not valid. 3) FlightGear and the simulator start at the <b>same place</b> (KSFO).</div>
+
+<h2 id="s1">1. Brain and body: what each file is</h2>
+<p>A simulated drone needs two things, the same as the real one:</p>
+<div class="tw"><table>
+<tr><th></th><th><b>Brain</b>: <code>q250_throw.parm</code></th><th><b>Body</b>: <code>q250.json</code></th></tr>
+<tr><td>What it holds</td><td>ArduPilot parameters: your tuned gains, hover value, motor curve</td><td>The physical drone: weight, size, motor strength, how hard it is to spin</td></tr>
+<tr><td>Real-drone equivalent</td><td>Mission Planner → Full Parameter List</td><td>The drone you hold in your hand</td></tr>
+<tr><td>How it is loaded</td><td>MAVProxy: <code>param load</code> (same as <code>q250_sim.parm</code>)</td><td>Copied into ArduPilot's models folder once, then one extra part on the start line: <code>--model quad:@ROMFS/models/q250.json</code></td></tr>
+<tr><td>Same idea in AirSim</td><td>—</td><td><code>settings_Q250.json</code> (MASS, ARM, THRUST …)</td></tr>
+</table></div>
+<div class="analogy">The parameters are the pilot, the JSON file is the aircraft. Your F450 tests put the right pilot into ArduPilot's default aircraft. This time the pilot gets your own aircraft.</div>
+<div class="warn"><b>Correction to the F450 guide.</b> Without a JSON file, <code>-f quad</code> simulates ArduPilot's built-in generic quad (SITL source: 3.0 kg, 35 cm, hovers at 39 % throttle). The F450 throw results in that guide were made with that generic body, not an F450. Parameters cannot change the body; only the JSON file can.</div>
+<h3>What is in the two files</h3>
+<div class="tw"><table>
+<tr><th><code>q250.json</code> line</th><th>Value</th><th>From</th></tr>
+<tr><td><code>mass</code></td><td>0.5445 kg</td><td>your scale (544.5 g)</td></tr>
+<tr><td><code>diagonal_size</code></td><td>0.25 m</td><td>motor shaft to motor shaft</td></tr>
+<tr><td><code>hoverThrOut</code></td><td>0.165</td><td>set so the sim hovers at 14 % (real 14.9 %, <a href="#f2">section 5</a>)</td></tr>
+<tr><td><code>propExpo</code>, <code>spin_min</code>, <code>spin_max</code></td><td>0.49, 0.15, 0.95</td><td>your <code>MOT_THST_EXPO</code>, <code>MOT_SPIN_MIN</code>, <code>MOT_SPIN_MAX</code></td></tr>
+<tr><td><code>maxVoltage</code>, <code>refVoltage</code>, <code>refCurrent</code>, <code>refBatRes</code></td><td>16.8 V, 15.5 V, 7.3 A, 0.15 Ω</td><td>4S full, your hover log (7.3 A), the voltage sag seen in your logs</td></tr>
+<tr><td><code>disc_area</code></td><td>0.0507 m²</td><td>4 × 5-inch props</td></tr>
+<tr><td><code>moment_inertia</code></td><td>0.0025, 0.0028, 0.0046 kg·m²</td><td>2× the first estimate (<a href="#f2">section 5</a>)</td></tr>
+</table></div>
+<div class="tw"><table>
+<tr><th><code>q250_throw.parm</code></th><th>Value</th><th>From</th></tr>
+<tr><td><code>MOT_THST_HOVER</code></td><td>0.149</td><td>learned on the real drone outdoors</td></tr>
+<tr><td><code>MOT_THST_EXPO</code> / <code>MOT_SPIN_ARM</code> / <code>MIN</code> / <code>MAX</code></td><td>0.49 / 0.1 / 0.15 / 0.95</td><td>your real parameters</td></tr>
+<tr><td><code>ATC_RAT_RLL_P / I / D</code> (and <code>PIT</code>)</td><td>0.065 / 0.065 / 0.0018</td><td>roll AutoTune 7 Nov, pitch copied from roll</td></tr>
+<tr><td><code>ATC_ANG_RLL_P</code> (and <code>PIT</code>)</td><td>23.457</td><td>roll AutoTune</td></tr>
+<tr><td><code>ATC_ACCEL_R_MAX</code> (and <code>P</code>)</td><td>282459</td><td>roll AutoTune</td></tr>
+<tr><td><code>MOT_BAT_VOLT_MAX</code> / <code>MIN</code>, <code>BATT_CAPACITY</code></td><td>16.8 / 13.2 V, 1500</td><td>your 4S pack</td></tr>
+</table></div>
+
+<h2 id="s2">2. How the pieces connect</h2>
+<div class="figure">
+<svg viewBox="0 0 880 340" width="100%" style="max-width:880px" role="img" aria-label="Windows runs throw_check.py and FlightGear 2024. WSL runs MAVProxy and ArduCopter SITL with q250.json body and q250_throw.parm brain. MAVLink on TCP 5762, FlightGear view on UDP 5503.">
+<defs><marker id="arA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#5b5b66"/></marker></defs>
+<rect x="10" y="10" width="400" height="320" rx="14" fill="#eef3fb" stroke="#2f5ea8" stroke-width="1.5"/>
+<text x="30" y="38" style="font-size:15px;font-weight:700;fill:#2f5ea8">Windows</text>
+<rect x="470" y="10" width="400" height="320" rx="14" fill="#edf7f0" stroke="#2e7d4f" stroke-width="1.5"/>
+<text x="490" y="38" style="font-size:15px;font-weight:700;fill:#2e7d4f">WSL (Ubuntu) · ~/sitl_q250_throw</text>
+<rect x="30" y="60" width="360" height="110" rx="10" fill="#fff" stroke="#2f5ea8"/>
+<text x="46" y="86" style="font-size:14px;font-weight:700;fill:#1d2433">PowerShell · throw_check.py</text>
+<text x="46" y="108" style="font-size:12.5px;fill:#444">folder Throw_and_Fly\ (+ models\round1_final.zip)</text>
+<text x="46" y="128" style="font-size:12.5px;fill:#444">throws (SIM_SHOVE), detects release,</text>
+<text x="46" y="148" style="font-size:12.5px;fill:#444">flies the catch: rule or PPO, logs 50 Hz</text>
+<rect x="30" y="200" width="360" height="110" rx="10" fill="#fff" stroke="#2f5ea8"/>
+<text x="46" y="226" style="font-size:14px;font-weight:700;fill:#1d2433">FlightGear 2024 · FlightGear_quad.bat</text>
+<text x="46" y="248" style="font-size:12.5px;fill:#444">only DRAWS the drone (KSFO, noon)</text>
+<text x="46" y="268" style="font-size:12.5px;fill:#444">listens on UDP 5503</text>
+<rect x="490" y="60" width="360" height="250" rx="10" fill="#fff" stroke="#2e7d4f"/>
+<text x="506" y="86" style="font-size:14px;font-weight:700;fill:#1d2433">ArduCopter SITL + MAVProxy</text>
+<text x="506" y="108" style="font-size:12.5px;fill:#444">sim_vehicle.py -f quad --model quad:…q250.json</text>
+<rect x="506" y="124" width="160" height="78" rx="8" fill="#fbeeee" stroke="#b83232"/>
+<text x="520" y="148" style="font-size:13px;font-weight:700;fill:#b83232">BODY</text>
+<text x="520" y="168" style="font-size:12px;fill:#444">q250.json</text>
+<text x="520" y="186" style="font-size:12px;fill:#444">0.54 kg · 25 cm</text>
+<rect x="676" y="124" width="160" height="78" rx="8" fill="#eef3fb" stroke="#2f5ea8"/>
+<text x="690" y="148" style="font-size:13px;font-weight:700;fill:#2f5ea8">BRAIN</text>
+<text x="690" y="168" style="font-size:12px;fill:#444">q250_throw.parm</text>
+<text x="690" y="186" style="font-size:12px;fill:#444">your tuned gains</text>
+<text x="506" y="232" style="font-size:12.5px;fill:#444">built-in physics: the throw push lives here</text>
+<text x="506" y="252" style="font-size:12.5px;fill:#444">saves its settings in eeprom.bin (this folder)</text>
+<text x="506" y="272" style="font-size:12.5px;fill:#444">start at KSFO: --custom-location=37.6188,…</text>
+<line x1="392" y1="115" x2="488" y2="115" stroke="#5b5b66" stroke-width="2" marker-start="url(#arA)" marker-end="url(#arA)"/>
+<text x="440" y="106" text-anchor="middle" style="font-size:12px;fill:#1d2433">MAVLink</text>
+<text x="440" y="132" text-anchor="middle" style="font-size:12px;fill:#1d2433">tcp 5762</text>
+<line x1="488" y1="255" x2="392" y2="255" stroke="#5b5b66" stroke-width="2" marker-end="url(#arA)"/>
+<text x="440" y="246" text-anchor="middle" style="font-size:12px;fill:#1d2433">UDP 5503</text>
+<text x="440" y="272" text-anchor="middle" style="font-size:11px;fill:#1d2433">-A "--fg &lt;IP&gt;"</text>
+</svg></div>
+<div class="analogy">The simulator is the football match, <code>throw_check.py</code> is the goalkeeper, FlightGear is the TV. The TV never changes the match, unless it is so heavy that the match slows down (that is what the timing check in <a href="#b7">B7</a> catches).</div>
+
+<h2 id="s3">3. What happens in one throw</h2>
+<div class="flow-legend"><span style="border-color:var(--c-ssf)">simulator push (the "hand")</span><span style="border-color:var(--c-ppo)">throw_check.py</span><span style="border-color:var(--c-rule)">ArduPilot by itself</span></div>
+<div class="flow">
+<div class="fb pilot"><b>1 · Idle, armed on the ground</b>GUIDED_NOGPS, props at idle (simulator only), 1.5 s</div><div class="fa">↓</div>
+<div class="fb pilot"><b>2 · Push</b><code>SIM_SHOVE</code> up (+ <code>SIM_TWIST</code> spin for roll / pitch), 0.3 s</div><div class="fa">↓</div>
+<div class="fb pi"><b>3 · Released</b>accelerometer below 0.35 g, 3 samples in a row → time 0</div><div class="fa">↓</div>
+<div class="fb pi"><b>4 · Motors on</b>≈ 0.2–0.3 s after release</div><div class="fa">↓</div>
+<div class="fb pi"><b>5 · Recover</b>attitude-rule or PPO at 50 Hz until level and calm for 0.5 s</div><div class="fa">↓</div>
+<div class="fb ap"><b>6 · LOITER 10 s → LAND → disarm</b>braking distance and how still it holds are measured</div>
+</div>
+<div class="tw"><table>
+<tr><th>Throw</th><th>Push (0.3 s)</th><th>Spin (0.3 s)</th><th>Sim Q250, attitude-rule</th></tr>
+<tr><td>up</td><td>30 m/s² up</td><td>none</td><td>top ≈ 2.9 m</td></tr>
+<tr><td>roll</td><td>45 m/s² up</td><td>40 rad/s² roll</td><td>spins up to ≈ 20 rad/s, caught at ≈ 5.8 m</td></tr>
+<tr><td>pitch</td><td>45 m/s² up</td><td>40 rad/s² pitch</td><td>spins up to ≈ 22 rad/s, caught at ≈ 5.7 m</td></tr>
+</table></div>
+<p>Same pushes as the F450 runs, so the two drones are compared with the same throws.</p>
+
+<h2 id="a1">Part A · Once</h2>
+<div class="step s1"><div class="sh"><span class="num">A1</span><span class="tt">New folder and the two files</span><span class="meta">WSL terminal</span></div>
+<p>Make the folder, then create the two files by pasting the blocks below into the WSL terminal (no download needed). Each block is one command: copy the whole block, from <code>cat</code> to <code>EOF</code>.</p>
+<div class="cmdbox"><pre class="cmd">mkdir -p ~/sitl_q250_throw</pre><button class="copy" type="button">Copy</button></div>
+<p><b>1 · The body:</b> <code>q250.json</code></p>
+<div class="cmdbox"><pre class="cmd">cat > ~/sitl_q250_throw/q250.json &lt;&lt;'EOF'
+{
+    "mass" : 0.5445,
+    "diagonal_size" : 0.25,
+    "hoverThrOut" : 0.165,
+    "propExpo" : 0.49,
+    "spin_min" : 0.15,
+    "spin_max" : 0.95,
+    "maxVoltage" : 16.8,
+    "refVoltage" : 15.5,
+    "refCurrent" : 7.3,
+    "refBatRes" : 0.15,
+    "disc_area" : 0.0507,
+    "moment_inertia" : [0.0025, 0.0028, 0.0046],
+    "num_motors" : 4
+}
+EOF</pre><button class="copy" type="button">Copy</button></div>
+<p><b>2 · The brain:</b> <code>q250_throw.parm</code></p>
+<div class="cmdbox"><pre class="cmd">cat > ~/sitl_q250_throw/q250_throw.parm &lt;&lt;'EOF'
+# Q250 throw simulation (ArduPilot own physics, -f quad + q250.json) - real drone values 7 Nov 2026
+# Load with: param load q250_throw.parm   (folder ~/sitl_q250_throw only)
+MOT_THST_EXPO 0.49
+MOT_SPIN_ARM 0.1
+MOT_SPIN_MIN 0.15
+MOT_SPIN_MAX 0.95
+MOT_THST_HOVER 0.149
+MOT_BAT_VOLT_MAX 16.8
+MOT_BAT_VOLT_MIN 13.2
+BATT_CAPACITY 1500
+ATC_RAT_RLL_P 0.065
+ATC_RAT_RLL_I 0.065
+ATC_RAT_RLL_D 0.0018
+ATC_ANG_RLL_P 23.457
+ATC_ACCEL_R_MAX 282459
+ATC_RAT_PIT_P 0.065
+ATC_RAT_PIT_I 0.065
+ATC_RAT_PIT_D 0.0018
+ATC_ANG_PIT_P 23.457
+ATC_ACCEL_P_MAX 282459
+SCHED_LOOP_RATE 400
+EOF</pre><button class="copy" type="button">Copy</button></div>
+<p><b>3 · Check</b></p>
+<div class="cmdbox"><pre class="cmd">ls ~/sitl_q250_throw
+
+grep moment_inertia ~/sitl_q250_throw/q250.json
+
+grep -c "^[A-Z]" ~/sitl_q250_throw/q250_throw.parm</pre><button class="copy" type="button">Copy</button></div>
+<p>✅ <code>q250.json  q250_throw.parm</code>, then <code>"moment_inertia" : [0.0025, 0.0028, 0.0046],</code>, then <code>19</code> (parameter lines).</p>
+<p>Downloaded the two files instead? Then this replaces blocks 1 and 2:</p>
+<div class="cmdbox"><pre class="cmd">cp /mnt/c/Users/lukas/Downloads/q250.json /mnt/c/Users/lukas/Downloads/q250_throw.parm ~/sitl_q250_throw/</pre><button class="copy" type="button">Copy</button></div>
+<p><b>4 · Put the body inside ArduPilot</b> (your ArduPilot version only opens model files that are built into the simulator)</p>
+<div class="cmdbox"><pre class="cmd">cp ~/sitl_q250_throw/q250.json ~/ardupilot/Tools/autotest/models/q250.json</pre><button class="copy" type="button">Copy</button></div>
+<div class="tw"><table>
+<tr><th>Your <code>~/ardupilot</code></th><th>Model from your home folder (<code>--model quad:$HOME/…/q250.json</code>)</th><th>Model built in (<code>--model quad:@ROMFS/models/q250.json</code>)</th></tr>
+<tr><td><code>git describe --tags</code> = <code>AP_Periph-1.5.0</code> (newer development version, 8 Nov)</td><td>❌ <code>PANIC: …q250.json failed to load</code>, simulator stops, MAVProxy shows <code>Connection refused</code></td><td>✅ works (8 Nov)</td></tr>
+<tr><td>ArduCopter 4.4.4 (my test PC)</td><td>✅ works</td><td>✅ works</td></tr>
+</table></div>
+<p>Changed <code>q250.json</code> later? Run block 4 again; the next <code>sim_vehicle.py</code> start builds it in by itself.</p>
+<div class="warn"><b>Own folder.</b> Do not use <code>~/sitl_throw</code> (F450 / generic quad), <code>~/sitl_q250</code> (AirSim) or <code>~/sitl_gps</code> (training). Each folder keeps its own saved settings (<code>eeprom.bin</code>).</div></div>
+
+<div class="step s1" id="a2"><div class="sh"><span class="num">A2</span><span class="tt">Scripts and PPO files</span><span class="meta">Windows · Throw_and_Fly\</span></div>
+<p>Put these four scripts in <code>Throw_and_Fly\</code> (replace the old ones). They are the exact files used for the 7 Nov Q250 test; <code>throw_check.py</code> has a new header section 0 for the 5-inch.</p>
+<div class="tw"><table>
+<tr><th>Script</th><th>Job</th></tr>
+<tr><td><code>throw_check.py</code></td><td>The throw test: push, detect release, catch, LOITER, land, log</td></tr>
+<tr><td><code>ap_link.py</code></td><td>MAVLink link: modes, arming, landing helpers</td></tr>
+<tr><td><code>impact_check.py</code></td><td>attitude-rule and loading the PPO network (shared with Stage 3)</td></tr>
+<tr><td><code>train_imitation.py</code></td><td>Only its <code>normalize</code> function is used: scales the PPO inputs with <code>obs_norm.npz</code></td></tr>
+</table></div>
+<p>Then the PPO files. Same as the F450 throw runs: they are already in <code>Throw_and_Fly\models\</code>.</p>
+<div class="tw"><table>
+<tr><th>In <code>Throw_and_Fly\models\</code></th><th>What it is</th></tr>
+<tr><td><code>round1_final.zip</code></td><td>The Stage 3 PPO, Round 1 = the final thesis model (Round 2 was only an experiment)</td></tr>
+<tr><td><code>obs_norm.npz</code></td><td>Its input scaling (from Stage 3 BC, <code>train_imitation.py</code>)</td></tr>
+</table></div>
+<div class="tw"><table>
+<tr><th>Name you may see</th><th>Which network</th><th>Proof</th></tr>
+<tr><td><code>Throw_and_Fly\models\round1_final.zip</code></td><td>Round 1</td><td>Name; used for all F450 throw runs</td></tr>
+<tr><td><code>Stage_3\models\stage3_checkpoints\gated_curriculum_policy.zip</code></td><td>Round 1 (same training run)</td><td>Settings inside the file: gamma 0.99, learning rate 5e-5, 200,191 steps, saved 22 Oct 01:53. Round 2 would show gamma 0.995 and learning rate 1e-4</td></tr>
+</table></div>
+<h3>Round 1 or Round 2? (why it matters)</h3>
+<div class="tw"><table>
+<tr><th></th><th>Round 1</th><th>Round 2</th></tr>
+<tr><td>Settings</td><td>learning rate 5e-5, gamma 0.99, ≈ 200k steps, 7 h</td><td>learning rate 1e-4, gamma 0.995, clip 0.2, more reward for recovering fast</td></tr>
+<tr><td>Why trained</td><td>The Stage 3 PPO (BC start, EASY → MEDIUM → HARD)</td><td>Tried to fix Round 1's slow spin recovery (≈ 3.6 s vs 2.3 s) and its reward plateau after ≈ 105k steps</td></tr>
+<tr><td>Decision</td><td>✅ <b>Final thesis model.</b> The slow spin was fixed with the <b>yaw brake</b> at test time and on the real drone, no retraining</td><td>❌ Experiment only, not used</td></tr>
+<tr><td>Used for</td><td>F450 throws, 5-inch impact tests (31 Oct), these 5-inch throws, the 5-inch fine-tune</td><td>—</td></tr>
+</table></div>
+<h3>Check which round a file is (once)</h3>
+<p>PowerShell in <code>Throw_and_Fly\</code>. It prints the training settings stored inside each file. Add your Q250 Stage 3 files to compare:</p>
+<div class="cmdbox"><pre class="cmd">py -c "import zipfile,json,sys; [print(f, {k: json.load(zipfile.ZipFile(f).open('data')).get(k) for k in ('gamma','learning_rate','num_timesteps')}) for f in sys.argv[1:]]" .\models\round1_final.zip C:\Users\lukas\Desktop\My_Project\AirSim_Project\reinforcement_learning\drone_recovery_v8_real_hardware\Q250_Airsim\Stage_3\models\stage3_checkpoints\gated_curriculum_policy.zip C:\Users\lukas\Desktop\My_Project\AirSim_Project\reinforcement_learning\drone_recovery_v8_real_hardware\Q250_Airsim\Stage_3\models\stage3_checkpoints\gated_curriculum_best.zip</pre><button class="copy" type="button">Copy</button></div>
+<div class="tw"><table>
+<tr><th>A file prints</th><th>It is</th><th>Use for the throws?</th></tr>
+<tr><td><code>'gamma': 0.99, 'learning_rate': 5e-05, 'num_timesteps': ≈ 200000</code></td><td>Round 1</td><td>✅ yes</td></tr>
+<tr><td><code>'gamma': 0.995, 'learning_rate': 0.0001</code></td><td>Round 2</td><td>❌ no</td></tr>
+<tr><td>Anything else</td><td>Unknown</td><td>Send me the printout first</td></tr>
+</table></div>
+<p>Known so far: <code>gated_curriculum_policy.zip</code> sent on 28 Oct prints <code>0.99</code> / <code>5e-05</code> / <code>200191</code> = Round 1. <code>round1_final.zip</code> must print the same. If it does not, copy the Round 1 file into <code>models\</code> as <code>round1_final.zip</code> (with its <code>obs_norm.npz</code>).</p>
+<div class="warn"><b>Keep the model and its obs_norm.npz together.</b> A network fed with another training's input scaling flies badly without any error message. Without <code>train_imitation.py</code> the PPO stops with <code>No module named 'train_imitation'</code>.</div>
+<p>✅ Folder check (PowerShell in <code>Throw_and_Fly\</code>): <code>dir *.py, models\*</code> lists the 4 scripts, <code>round1_final.zip</code> and <code>obs_norm.npz</code>.</p></div>
+
+<div class="step s1" id="a3"><div class="sh"><span class="num">A3</span><span class="tt">FlightGear ready</span><span class="meta">already done for the F450</span></div>
+<p>Nothing new. You need what the F450 guide Part C1 set up: FlightGear 2024.1.7 installed, <code>C:\Users\lukas\fg_aircraft\arducopter\</code> copied, and <code>FlightGear_quad.bat</code>. FlightGear shows the same ArduPilot quad picture; it moves exactly like the sim Q250.</p></div>
+
+<h2 id="b1">Part B · Every session</h2>
+<p>Order: <b>FlightGear → simulator → script</b>.</p>
+<div class="step s2"><div class="sh"><span class="num">B1</span><span class="tt">Start FlightGear</span><span class="meta">Windows</span></div>
+<p>Double-click <code>FlightGear_quad.bat</code>. Wait for the runway at KSFO.</p></div>
+
+<div class="step s2" id="b2"><div class="sh"><span class="num">B2</span><span class="tt">Find the Windows IP</span><span class="meta">WSL terminal</span></div>
+<div class="cmdbox"><pre class="cmd">ip route | grep default</pre><button class="copy" type="button">Copy</button></div>
+<p>✅ <code>default via 172.28.0.1 dev eth0</code>: the number after <code>via</code> is the IP for B3. It can change after a Windows reboot.</p></div>
+
+<div class="step s2" id="b3"><div class="sh"><span class="num">B3</span><span class="tt">Start the simulator with the Q250 body</span><span class="meta">WSL terminal</span></div>
+<p>Put your IP from B2 after <code>--fg</code>:</p>
+<div class="cmdbox"><pre class="cmd">cd ~/sitl_q250_throw
+
+sim_vehicle.py -v ArduCopter -f quad --model quad:@ROMFS/models/q250.json --console --custom-location=37.6188,-122.3754,5,0 -A "--fg 172.28.0.1"</pre><button class="copy" type="button">Copy</button></div>
+<div class="tw"><table>
+<tr><th>Part</th><th>Meaning</th></tr>
+<tr><td><code>-f quad</code></td><td>ArduPilot's own physics (the throw push only exists here)</td></tr>
+<tr><td><code>--model quad:@ROMFS/models/q250.json</code></td><td><b>new:</b> use the Q250 body (built into the simulator by A1 block 4) instead of the generic quad</td></tr>
+<tr><td><code>--custom-location=37.6188,-122.3754,5,0</code></td><td>KSFO, same place as <code>FlightGear_quad.bat</code></td></tr>
+<tr><td><code>-A "--fg 172.28.0.1"</code></td><td>send the picture to FlightGear on Windows</td></tr>
+</table></div>
+<p>✅ In the build lines: <code>Embedding file models/q250.json:Tools/autotest/models/q250.json</code>, then <code>Detected vehicle 1:1</code> and <code>Received … parameters</code> (your run, 8 Nov). Then wait for <code>EKF3 IMU0 is using GPS</code>. The real proof that the Q250 body is used is the hover check in B5.</p>
+<p>Without FlightGear (fastest, for thesis numbers): leave out <code>--custom-location…</code> and <code>-A "--fg …"</code>.</p></div>
+
+<div class="step s2" id="b4"><div class="sh"><span class="num">B4</span><span class="tt">Load the parameters (first time only)</span><span class="meta">MAVProxy console</span></div>
+<div class="cmdbox"><pre class="cmd">param load q250_throw.parm
+
+reboot</pre><button class="copy" type="button">Copy</button></div>
+<p>✅ <code>Loaded 19 parameters</code> (or similar), then after the reboot <code>EKF3 IMU0 is using GPS</code> again. The values are saved in this folder: next session start at B1 and skip B4.</p>
+<p>Check one value:</p>
+<div class="cmdbox"><pre class="cmd">param show MOT_THST_HOVER</pre><button class="copy" type="button">Copy</button></div>
+<p>✅ <code>MOT_THST_HOVER 0.149000</code></p></div>
+
+<div class="step s2" id="b5"><div class="sh"><span class="num">B5</span><span class="tt">Hover check (once per new setup)</span><span class="meta">MAVProxy console</span></div>
+<div class="cmdbox"><pre class="cmd">mode GUIDED
+
+arm throttle
+
+takeoff 5</pre><button class="copy" type="button">Copy</button></div>
+<p>Wait about 15 s at 5 m, then:</p>
+<div class="cmdbox"><pre class="cmd">status VFR_HUD</pre><button class="copy" type="button">Copy</button></div>
+<div class="tw"><table>
+<tr><th><code>throttle</code></th><th>Meaning</th><th>Do</th></tr>
+<tr><td>13–15</td><td>✅ Sim Q250 matches the real drone (14.9 %)</td><td>Land: <code>mode LAND</code>, carry on</td></tr>
+<tr><td>about 38–40</td><td>❌ Generic quad body, the JSON was not loaded</td><td>Check the B3 start line and the <code>Loaded model params</code> line</td></tr>
+<tr><td>Drone shakes in FlightGear, <code>status ATTITUDE</code> rollspeed / pitchspeed jumping ±2</td><td>❌ Old <code>q250.json</code> (low inertia)</td><td>Download it again, check <code>moment_inertia</code> is <code>[0.0025, 0.0028, 0.0046]</code></td></tr>
+</table></div>
+<div class="cmdbox"><pre class="cmd">mode LAND</pre><button class="copy" type="button">Copy</button></div>
+<p>Wait until <code>DISARMED</code> before B6 / B7.</p></div>
+
+<div class="step s2" id="b6"><div class="sh"><span class="num">B6</span><span class="tt">Throw by hand in ArduPilot Throw mode (optional, to watch)</span><span class="meta">MAVProxy console</span></div>
+<div class="cmdbox"><pre class="cmd">mode THROW
+
+arm throttle
+
+param set SIM_SHOVE_Z -30
+
+param set SIM_SHOVE_TIME 300</pre><button class="copy" type="button">Copy</button></div>
+<p>✅ In FlightGear the drone is thrown up about 4–5 m; ArduPilot starts the motors after ≈ 0.7 s, levels and holds. Then:</p>
+<div class="cmdbox"><pre class="cmd">mode LAND</pre><button class="copy" type="button">Copy</button></div>
+<p><code>SIM_SHOVE_TIME</code> resets to 0 after every push: set it again for the next throw. This is only to see it; the measured comparison is B8.</p></div>
+
+<div class="step s2" id="b7"><div class="sh"><span class="num">B7</span><span class="tt">Timing check (every session)</span><span class="meta">PowerShell · Throw_and_Fly\</span></div>
+<div class="cmdbox"><pre class="cmd">py .\throw_check.py --types up --modes attitude-rule</pre><button class="copy" type="button">Copy</button></div>
+<p>✅ First line: <code>Position source: GPS position, GPS velocity | hover thrust 0.15 | modes attitude-rule</code></p>
+<div class="tw"><table>
+<tr><th>Result line says</th><th>Meaning</th><th>Do</th></tr>
+<tr><td><code>motors on 0.2–0.35 s</code>, <code>recovered ≈ 0.5 s</code></td><td>✅ Simulator keeps real time</td><td>Go to B8</td></tr>
+<tr><td><code>motors on ≈ 1.0 s</code> or a crash</td><td>❌ Simulator slower than real time (FlightGear load)</td><td>Close FlightGear, start B3 without <code>--custom-location</code> / <code>-A</code>, run B7 again</td></tr>
+<tr><td><code>hover thrust 0.39</code> or <code>0.20</code></td><td>❌ Parameters not loaded in this folder</td><td>B4</td></tr>
+</table></div></div>
+
+<div class="step s2" id="b8"><div class="sh"><span class="num">B8</span><span class="tt">The thesis run: Throw mode vs attitude-rule vs PPO</span><span class="meta">PowerShell · ≈ 45 min</span></div>
+<div class="cmdbox"><pre class="cmd">py .\throw_check.py --types up roll pitch --modes throw-mode attitude-rule ppo-policy --model .\models\round1_final.zip --repeats 3</pre><button class="copy" type="button">Copy</button></div>
+<p>3 throws × 3 modes × 3 repeats = 27 throws. Quick version for a first look: leave out <code>--repeats 3</code> (9 throws, ≈ 15 min).</p>
+<p>When PPO loads you may see <code>UserWarning: Could not deserialize object clip_range</code>. Harmless: only training settings are skipped, the network loads (<code>ppo-policy: network loaded in … s</code>).</p></div>
+
+<div class="step s2" id="b9"><div class="sh"><span class="num">B9</span><span class="tt">Read the results</span><span class="meta">end of the run + runs\throw_check\</span></div>
+<p>The last lines print one summary per mode and throw, for example:</p>
+<div class="cmdbox"><pre class="cmd">attitude-rule/roll           recovered 1/1   | mean time 0.96 s | mean lowest 5.8 m | mean drift 5.72 m | braked 1.31 m, held within 0.2 m</pre><button class="copy" type="button">Copy</button></div>
+<div class="tw"><table>
+<tr><th>Column</th><th>Meaning</th></tr>
+<tr><td>recovered</td><td>calm for 0.5 s: spin &lt; 1.2 rad/s, tilt &lt; 30°, sideways &lt; 3 m/s, up/down &lt; 1 m/s</td></tr>
+<tr><td>mean time</td><td>release → recovered</td></tr>
+<tr><td>mean lowest</td><td>lowest point after the top, metres above the ground</td></tr>
+<tr><td>mean drift</td><td>distance from the throw spot after the hold</td></tr>
+<tr><td>braked / held within</td><td>LOITER: distance to stop, then how still it hovers</td></tr>
+</table></div>
+<p>Send me <code>runs\throw_check\throw_check_&lt;date&gt;.json</code> (and the <code>.csv</code>).</p></div>
+
+<!-- ================= PART C REAL DRONE ================= -->
+<h2 id="c0">Part C · Real drone: hardware check, Pi, bench, throws</h2>
+<div class="analogy">The simulator was the driving school. Part C is the first real drive: check the car (C1), fit the co-driver (the Pi, C2), set the car for this kind of drive (C3), test every pedal with the engine off (C4), start the engine in the garage (C5), then an empty car park before the road (C6).</div>
+<div class="figure">
+<svg viewBox="0 0 900 120" width="100%" style="max-width:900px" role="img" aria-label="Part C order: C1 hardware check, C2 Pi set-up, C3 throw-day parameters, C4 ladder step 0 check, C5 step 1 bench props off, C6 steps 2 to 5 in the field, C7 send results">
+<defs><marker id="pc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#5b5b66"/></marker></defs>
+<g style="font-size:12px" text-anchor="middle">
+<rect x="6" y="20" width="112" height="60" rx="8" fill="#fdf1d8" stroke="#a96a00"/><text x="62" y="44" style="font-weight:700;fill:#7a4b00">C1</text><text x="62" y="62" style="fill:#7a4b00">hardware</text>
+<rect x="134" y="20" width="112" height="60" rx="8" fill="#e6f1fb" stroke="#185fa5"/><text x="190" y="44" style="font-weight:700;fill:#0c447c">C2</text><text x="190" y="62" style="fill:#0c447c">Pi set-up</text>
+<rect x="262" y="20" width="112" height="60" rx="8" fill="#ede7f6" stroke="#5e35b1"/><text x="318" y="44" style="font-weight:700;fill:#4527a0">C3</text><text x="318" y="62" style="fill:#4527a0">throw-day params</text>
+<rect x="390" y="20" width="112" height="60" rx="8" fill="#e6f1fb" stroke="#185fa5"/><text x="446" y="44" style="font-weight:700;fill:#0c447c">C4 step 0</text><text x="446" y="62" style="fill:#0c447c">--check</text>
+<rect x="518" y="20" width="112" height="60" rx="8" fill="#e6f1fb" stroke="#185fa5"/><text x="574" y="44" style="font-weight:700;fill:#0c447c">C5 step 1</text><text x="574" y="62" style="fill:#0c447c">bench, props OFF</text>
+<rect x="646" y="20" width="112" height="60" rx="8" fill="#fbe5e4" stroke="#c23a39"/><text x="702" y="44" style="font-weight:700;fill:#8e2321">C6 steps 2–5</text><text x="702" y="62" style="fill:#8e2321">field, props ON</text>
+<rect x="774" y="20" width="120" height="60" rx="8" fill="#d9f2e6" stroke="#1b8a5a"/><text x="834" y="44" style="font-weight:700;fill:#0f5e3c">C7</text><text x="834" y="62" style="fill:#0f5e3c">send results</text>
+<line x1="118" y1="50" x2="132" y2="50" stroke="#5b5b66" stroke-width="1.5" marker-end="url(#pc)"/><line x1="246" y1="50" x2="260" y2="50" stroke="#5b5b66" stroke-width="1.5" marker-end="url(#pc)"/><line x1="374" y1="50" x2="388" y2="50" stroke="#5b5b66" stroke-width="1.5" marker-end="url(#pc)"/><line x1="502" y1="50" x2="516" y2="50" stroke="#5b5b66" stroke-width="1.5" marker-end="url(#pc)"/><line x1="630" y1="50" x2="644" y2="50" stroke="#5b5b66" stroke-width="1.5" marker-end="url(#pc)"/><line x1="758" y1="50" x2="772" y2="50" stroke="#5b5b66" stroke-width="1.5" marker-end="url(#pc)"/>
+<text x="450" y="108" style="fill:#55555f">One failed step = stop there. Every later step assumes all earlier ones passed.</text>
+</g></svg></div>
+<div class="warn"><b>Two people for the first throws:</b> the <b>pilot</b> holds the transmitter (CH5, CH7, CH8, CH9, throttle), the <b>thrower</b> only throws. Throw away from people, cars and yourself. Eye protection for the thrower. Field ≥ 15 × 15 m, grass.</div>
+
+<div class="note"><b>Final check before hardware (8 Nov 2026, version b: stick LOW the whole time + buzzer)</b>: checked in the ArduPilot source of <b>your exact firmware</b> (commit <code>1e001fa0</code> = your "ArduCopter V4.6.0-dev (1e001fa0)") and in a SITL <b>built from that commit</b>, with a test script moving your switches exactly as written in C6.
+<div class="tw"><table><tr><th>What</th><th>Checked how</th><th>Result</th></tr>
+<tr><td>Props in the hand: ALT_HOLD, armed, stick at the bottom</td><td>SITL 4.6.0-dev, motor 1 output</td><td>PWM 1000 = stopped ✅</td></tr>
+<tr><td>After CH5 ON (GUIDED_NOGPS), stick at the bottom</td><td>SITL 4.6.0-dev</td><td>PWM 1000 = stopped ✅</td></tr>
+<tr><td>Motors start on the throw with the stick at the bottom</td><td><code>mode_guided.cpp</code> line 966 of your commit (take-off command sets "auto-armed") + SITL</td><td>Motors on 0.40 s ✅</td></tr>
+<tr><td>Props in the hand: ALT_HOLD, armed, stick MIDDLE</td><td>SITL + <code>get_alt_hold_state</code> ("prepare for take-off")</td><td>PWM 1153–1155 = <b>spinning</b> → the stick never goes to the middle before the throw</td></tr>
+<tr><td>After the catch: GUIDED hold → LAND</td><td>SITL 4.6.0-dev</td><td>Both ignore the stick; landed and disarmed by itself ✅</td></tr>
+<tr><td>No throw: how long READY lasts</td><td>SITL 4.6.0-dev armed with <b>your CH9</b> (<code>RC9_OPTION 154</code>) + <code>radio.cpp</code></td><td><b>No time limit</b>: READY held 25 s, props still; it waits until CH5 OFF (corrected 8 Nov night: the old "10 s" test armed by MAVLink, not by your switch)</td></tr>
+<tr><td>Arm again after a cancel / landing</td><td>SITL, your switches only (<a href="#c6c">C6c</a>)</td><td>Version (c): <code>GUIDED_NOGPS mode not armable</code> (same as your field log) · version (d): mode back to ALT_HOLD, CH9 arms ✅</td></tr>
+<tr><td>Take over mid-catch: stick middle → CH8 PosHold</td><td>SITL, 0.6 s after the throw (<a href="#c6c">C6c</a>)</td><td>You fly at once; held 2.35–2.43 m hands off; script never touches your mode ✅</td></tr>
+<tr><td>Arm in Stabilize with your CH9 (AirMode)</td><td><code>mode_stabilize.cpp</code>, ArduPilot AirMode page</td><td>Props would spin → arm only in ALT_HOLD</td></tr>
+<tr><td>CH5 ON with the stick in the middle</td><td>SITL</td><td><code>REFUSED: throttle stick LOW</code> + 2 long beeps ✅</td></tr>
+<tr><td>Buzzer from the Pi</td><td>Your board file (MatekF405-TE: PB9 = ALARM) + MAVLink PLAY_TUNE enabled in your commit</td><td><b>Proven 8 Nov (C4)</b>: 3 short + 2 long heard ✅</td></tr>
+<tr><td>EKF origin (home) on the real drone</td><td>SITL from your commit, home Kuching, GPS off at start-up (<a href="#c6b">C6b</a>)</td><td>Version (b) set Canberra (bug); <b>version (c) leaves it to your GPS</b> ✅</td></tr>
+<tr><td>Battery check 14.9 V</td><td>SITL battery 15.0 V and 14.8 V (<a href="#c6b">C6b</a>)</td><td>15.0 V → throw caught ✅ · 14.8 V → REFUSED ✅</td></tr>
+<tr><td>PPO on the Pi</td><td><code>export_ppo_onnx.py</code>: ONNX vs the PPO itself</td><td>max difference 0.0000019 (your PC run) ✅</td></tr></table></div>
+Not checkable in SITL: your real IMU during a hand throw (C4 toss test), the real buzzer (C4), real motor start-up, Pi UART (C2 ⑤). Those are what C2 ⑤, C4 and C5 are for.</div>
+<h3 id="c1">C1 · Hardware check (H1–H8)</h3>
+<div class="tw"><table>
+<tr><th>#</th><th>Check</th><th>How</th><th>Pass when</th><th>If not</th></tr>
+<tr><td>H1</td><td>Battery from 7 Nov (went to 12.36 V)</td><td>Look and press gently on both sides; charge it, wait 1 h, measure</td><td>Flat sides, holds ≥ 16.7 V after 1 h</td><td>Puffed or drops fast: retire it (do not throw with it)</td></tr>
+<tr><td>H2</td><td>Balance (left-heavy, sim-to-real F10)</td><td>Props off: lift the drone on two fingers under the front and rear of the frame centre line. Or: hover 30 s, log → compare <code>RCOU</code> C1+C2 (right) with C3+C4 (left)</td><td>Hangs level; left vs right ≤ 20 PWM</td><td>Move the battery or the Pi a few mm to the right, check again</td></tr>
+<tr><td>H3</td><td>Props, nuts, motor screws</td><td>Look and tighten. YSIDO 5045 3-blade: normal on front-right + rear-left, reversed on front-left + rear-right</td><td>No chips, nuts tight, no loose screw</td><td>Replace the prop / tighten. A throw lands hard sometimes: carry spare props</td></tr>
+<tr><td>H4</td><td>Pi power and link</td><td>Battery in, props off: Pi LED on, SSH works. C4 <code>--check</code> shows <code>link OK</code></td><td>Pi powered from the 5 V BEC (not the FC pad); 50 Hz data</td><td>C2 wiring / UART set-up</td></tr>
+<tr><td>H5</td><td>GPS noise from the Pi (still open)</td><td>Outdoors, props off: 2 min Pi <b>off</b>, then 2 min Pi <b>on</b> (running C3). Mission Planner: satellites + HDOP</td><td>Same satellites ±1, HDOP not worse by &gt; 0.2</td><td>Wrap the Pi in copper tape (grounded), or move the GPS mast higher / further</td></tr>
+<tr><td>H6</td><td>CH7 stop</td><td>Props off, arm in AltHold, throttle up a little, flip CH7</td><td>Motors stop at once</td><td><code>RC7_OPTION 81</code>, switch assignment on the transmitter</td></tr>
+<tr><td>H7</td><td>CH5 throw switch</td><td>Mission Planner → Radio Calibration: flip CH5</td><td>Low &lt; 1300, high &gt; 1700; no "AutoTune" message</td><td>Transmitter end points / <code>RC5_OPTION 0</code> (C3)</td></tr>
+<tr><td>H8</td><td>Battery current (still open)</td><td>After a flight: mAh the charger puts back vs mAh used in the log (Mission Planner HUD)</td><td>Within 10 %</td><td>New <code>BATT_AMP_PERVLT</code> = old × charger mAh ÷ log mAh</td></tr>
+</table></div>
+
+<h3 id="c2">C2 · Pi set-up (once)</h3>
+<p><b>Wiring</b> (same as the sim-to-real guide, step 7.3): the Pi talks to the FC on <code>SERIAL2</code> (pads TX3 / RX3), MAVLink2 at 921600.</p>
+<div class="figure">
+<svg viewBox="0 0 900 260" width="100%" style="max-width:900px" role="img" aria-label="Wiring: Raspberry Pi Zero 2 W pin 8 GPIO14 TX to FC RX3, pin 10 GPIO15 RX to FC TX3, pin 6 GND to FC GND; 5 V 3 A BEC from the battery pads to Pi pin 2 5V and pin 14 GND">
+<defs><marker id="pw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#185fa5"/></marker></defs>
+<g style="font-size:12px">
+<rect x="20" y="30" width="250" height="190" rx="10" fill="#e6f1fb" stroke="#185fa5" stroke-width="2"/><text x="145" y="54" text-anchor="middle" style="font-weight:700;fill:#0c447c">Raspberry Pi Zero 2 W</text>
+<text x="40" y="90" style="fill:#0c447c">pin 8 · GPIO14 TX</text><text x="40" y="120" style="fill:#0c447c">pin 10 · GPIO15 RX</text><text x="40" y="150" style="fill:#0c447c">pin 6 · GND</text>
+<text x="40" y="185" style="fill:#7a4b00">pin 2 · 5V</text><text x="40" y="208" style="fill:#7a4b00">pin 14 · GND</text>
+<rect x="560" y="30" width="250" height="140" rx="10" fill="#fbe5e4" stroke="#c23a39" stroke-width="2"/><text x="685" y="54" text-anchor="middle" style="font-weight:700;fill:#8e2321">Matek F405-HDTE</text>
+<text x="690" y="90" style="fill:#8e2321">RX3 pad</text><text x="690" y="120" style="fill:#8e2321">TX3 pad</text><text x="690" y="150" style="fill:#8e2321">GND</text>
+<text x="575" y="72" style="fill:#8e2321;font-size:11px">SERIAL2 · MAVLink2 · 921600</text>
+<line x1="180" y1="86" x2="684" y2="86" stroke="#185fa5" stroke-width="2" marker-end="url(#pw)"/>
+<line x1="684" y1="116" x2="180" y2="116" stroke="#185fa5" stroke-width="2" marker-end="url(#pw)"/>
+<line x1="180" y1="146" x2="684" y2="146" stroke="#333" stroke-width="2"/>
+<text x="430" y="80" text-anchor="middle" style="fill:#185fa5">TX → RX</text><text x="430" y="110" text-anchor="middle" style="fill:#185fa5">RX ← TX</text><text x="430" y="140" text-anchor="middle" style="fill:#333">common ground</text>
+<rect x="560" y="190" width="250" height="50" rx="10" fill="#fdf1d8" stroke="#a96a00" stroke-width="2"/><text x="685" y="212" text-anchor="middle" style="font-weight:700;fill:#7a4b00">5 V 3 A BEC</text><text x="685" y="230" text-anchor="middle" style="fill:#7a4b00;font-size:11px">input: battery pads at the ESC</text>
+<line x1="558" y1="205" x2="150" y2="181" stroke="#a96a00" stroke-width="2"/><line x1="558" y1="225" x2="160" y2="204" stroke="#a96a00" stroke-width="2"/>
+<text x="360" y="232" text-anchor="middle" style="fill:#7a4b00;font-size:11px">5 V + GND (not from the FC's 5 V pad)</text>
+</g></svg></div>
+<p><b>Folder:</b> the real-drone files live in their own folder, <b>separate from the simulation</b> (<code>Throw_and_Fly\</code> stays as it is). Same name on the PC and on the Pi:</p>
+<div class="tw"><table><tr><th>File</th><th>PC <code>…\Q250_Hardware_Throw_Fly\</code></th><th>Pi <code>~/Q250_Hardware_Throw_Fly/</code></th><th>What</th></tr>
+<tr><td><code>export_ppo_onnx.py</code></td><td>✅</td><td>—</td><td>PC only: PPO .zip → ONNX file (step ③)</td></tr>
+<tr><td><code>throw_real.py</code></td><td>✅</td><td>✅</td><td>The catch. Throw switch <code>THROW_CH = 5</code> at the top</td></tr>
+<tr><td><code>impact_check.py</code>, <code>ap_link.py</code></td><td>✅</td><td>✅</td><td>Same files as <code>Throw_and_Fly\</code> (attitude-rule, yaw brake, network input/output, MAVLink link)</td></tr>
+<tr><td><code>models\round1_final.zip</code>, <code>models\obs_norm.npz</code></td><td>✅ copied from your Stage 3 models</td><td>—</td><td>Round 1 PPO (same as the simulation runs)</td></tr>
+<tr><td><code>models\round1_final.onnx</code></td><td>made by ③</td><td>✅</td><td>The PPO the Pi runs (ONNX: input scaling + network in one file)</td></tr></table></div>
+
+<p><b>① Fast UART on your Pi</b> (Pi Zero 2 W, aarch64, Debian 12 bookworm, Python 3.11: what you sent 6–7 Nov). From the PC: <code>ssh jlukas@10.160.112.138</code> (your Pi on your home Wi-Fi, 8 Nov; if it stops answering one day, the router gave it a new IP: look it up in the router or on the Pi with <code>hostname -I</code>). Gives the fast UART to pins 8 / 10 and stops the login console on it:</p>
+<div class="cmdbox"><pre class="cmd">sudo raspi-config nonint do_serial_cons 1
+
+sudo raspi-config nonint do_serial_hw 0
+
+echo "dtoverlay=disable-bt" | sudo tee -a /boot/firmware/config.txt
+
+sudo systemctl disable hciuart
+
+sudo reboot</pre><button class="copy" type="button">Copy</button></div>
+<p>After the reboot:</p>
+<div class="cmdbox"><pre class="cmd">ls -l /dev/serial0</pre><button class="copy" type="button">Copy</button></div>
+<p>✅ <code>/dev/serial0 -&gt; ttyAMA0</code>. ❌ <code>-&gt; ttyS0</code> = Bluetooth still has the fast UART: check the <code>dtoverlay</code> line is in <code>/boot/firmware/config.txt</code>, reboot.</p>
+
+<p><b>② Programs and folder on the Pi</b> (no PyTorch: the Pi runs the PPO with onnxruntime, your ONNX plan):</p>
+<div class="cmdbox"><pre class="cmd">sudo apt update
+
+sudo apt install -y python3-numpy python3-serial python3-lxml python3-pip tmux
+
+pip3 install --break-system-packages pymavlink onnxruntime
+
+mkdir -p ~/Q250_Hardware_Throw_Fly/models</pre><button class="copy" type="button">Copy</button></div>
+<p>✅ <code>python3 -c "import numpy, pymavlink, onnxruntime; print('ok')"</code> prints <code>ok</code>. ❌ <code>onnxruntime</code> will not install: send me the error (the 64-bit OS, <code>aarch64</code>, has the ready-made package).</p>
+
+<p><b>③ PPO → ONNX</b> (PC, PowerShell in <code>Q250_Hardware_Throw_Fly\</code>, once; a separate script so the conversion is easy to follow). First time only, the two ONNX packages:</p>
+<div class="cmdbox"><pre class="cmd">py -m pip install onnx onnxruntime
+
+py .\export_ppo_onnx.py</pre><button class="copy" type="button">Copy</button></div>
+<div class="tw"><table><tr><th>You see</th><th>Means</th></tr>
+<tr class="hl"><td><code>actor: 13 -&gt; 256 -&gt; 256 -&gt; 128 -&gt; 3 (ReLU)</code><br><code>max difference ONNX vs PPO (200 inputs): 0.0000004 (OK)</code><br><code>Saved models\round1_final.onnx (0.4 MB)</code></td><td>✅ The ONNX file gives the same actions as the PPO itself (my test with your Round 1 zip, 8 Nov). The input scaling (<code>obs_norm.npz</code>) is inside the ONNX file</td></tr>
+<tr><td><code>TOO BIG - do not use</code></td><td>Wrong <code>obs_norm.npz</code> or another network: send me the printout</td></tr></table></div>
+
+<p><b>④ Copy to the Pi</b> (PowerShell, same folder):</p>
+<div class="cmdbox"><pre class="cmd">scp throw_real.py impact_check.py ap_link.py jlukas@10.160.112.138:~/Q250_Hardware_Throw_Fly/
+
+scp models\round1_final.onnx jlukas@10.160.112.138:~/Q250_Hardware_Throw_Fly/models/</pre><button class="copy" type="button">Copy</button></div>
+
+<p><b>⑤ Pi ↔ flight controller connection test</b> (battery in, props off; USB to Mission Planner may stay connected: it is a different port).</p>
+<div class="tw"><table><tr><th>#</th><th>Check</th><th>Expected</th><th>If not</th></tr>
+<tr><td>1</td><td>Mission Planner → Full Parameter List: <code>SERIAL2_PROTOCOL</code>, <code>SERIAL2_BAUD</code></td><td>2 (MAVLink2), 921</td><td>Set them, Write Params, reboot the FC</td></tr>
+<tr><td>2</td><td>Pi: <code>ls -l /dev/serial0</code></td><td><code>-&gt; ttyAMA0</code></td><td>Step ①</td></tr>
+<tr><td>3</td><td>Pi: heartbeat test (box below)</td><td><code>HEARTBEAT OK from system 1</code> within a few seconds</td><td><code>NO HEARTBEAT</code>: Pi pin 8 must go to RX3, pin 10 to TX3 (crossed), GND joined; FC powered by the battery</td></tr>
+<tr><td>4</td><td>Pi: data + switch test = ladder step 0 (<a href="#c4">C4</a>)</td><td><code>link OK (IMU 50 Hz, ATT 50 Hz)</code>, <code>switch OK</code></td><td>IMU below 45 Hz: send me the lines</td></tr></table></div>
+<div class="cmdbox"><pre class="cmd">python3 -c "from pymavlink import mavutil; m=mavutil.mavlink_connection('/dev/serial0', baud=921600); hb=m.wait_heartbeat(timeout=10); print(f'HEARTBEAT OK from system {m.target_system}' if hb else 'NO HEARTBEAT')"</pre><button class="copy" type="button">Copy</button></div>
+
+<p><b>⑥ Autostart: no laptop in the field</b> (do this after C4 <code>--check</code> has passed). The Pi starts <code>throw_real.py</code> by itself every time the battery goes in, and the buzzer tells you when it is ready. Paste on the Pi, one box at a time:</p>
+<div class="cmdbox"><pre class="cmd">mkdir -p ~/Q250_Hardware_Throw_Fly/runs
+
+echo ppo-policy &gt; ~/Q250_Hardware_Throw_Fly/mode.txt</pre><button class="copy" type="button">Copy</button></div>
+<div class="cmdbox"><pre class="cmd">sudo tee /etc/systemd/system/throw.service &gt; /dev/null &lt;&lt; 'END'
+[Unit]
+Description=Q250 throw catch (throw_real.py)
+After=multi-user.target
+
+[Service]
+User=jlukas
+WorkingDirectory=/home/jlukas/Q250_Hardware_Throw_Fly
+ExecStart=/usr/bin/python3 -u throw_real.py
+Restart=always
+RestartSec=5
+StandardOutput=append:/home/jlukas/Q250_Hardware_Throw_Fly/runs/console.log
+StandardError=append:/home/jlukas/Q250_Hardware_Throw_Fly/runs/console.log
+
+[Install]
+WantedBy=multi-user.target
+END</pre><button class="copy" type="button">Copy</button></div>
+<div class="cmdbox"><pre class="cmd">sudo systemctl daemon-reload
+
+sudo systemctl enable throw
+
+sudo systemctl start throw</pre><button class="copy" type="button">Copy</button></div>
+<div class="tw"><table><tr><th>Test (props off)</th><th>Expected</th><th>If not</th></tr>
+<tr class="hl"><td><b>Outdoors</b> (open sky: the start beep needs a GPS position, indoors you hear nothing and that is normal). Optional first, to protect the SD card: <code>sudo shutdown now</code>, wait 10 s. Unplug the battery, wait 5 s, plug it in. CH5 OFF, CH6 middle, stick LOW, disarmed. Don't touch anything</td><td>After ≈ 1–3 min (Pi boot + GPS): <b>1 long + 2 short beeps</b> = Pi ready, mode PPO</td><td>No beep after 3 min: at home, <code>tail -n 30 ~/Q250_Hardware_Throw_Fly/runs/console.log</code> and send it to me</td></tr>
+<tr><td>At home, see what it is doing</td><td><code>systemctl status throw</code> → <code>active (running)</code>; <code>tail -f ~/Q250_Hardware_Throw_Fly/runs/console.log</code> shows the <code>WAIT</code> lines</td><td>—</td></tr></table></div>
+<div class="tw"><table><tr><th>Job</th><th>Command (on the Pi, at home)</th></tr>
+<tr><td>Change the mode for the next field day</td><td><code>echo attitude-rule &gt; ~/Q250_Hardware_Throw_Fly/mode.txt</code> (or back: <code>echo ppo-policy …</code>) then <code>sudo systemctl restart throw</code> → start beep: rule = <b>1 long + 1 short</b>, PPO = <b>1 long + 2 short</b></td></tr>
+<tr><td>Run something by hand (<code>--check</code>, a test)</td><td><code>sudo systemctl stop throw</code> first: only ONE program may use the serial port. Afterwards <code>sudo systemctl start throw</code></td></tr>
+<tr><td>Switch autostart off</td><td><code>sudo systemctl disable throw</code> and <code>sudo systemctl stop throw</code></td></tr></table></div>
+<div class="note"><b>Safe to leave running:</b> the script never does anything until <b>you</b> arm (CH9) and flip CH5 ON with all 9 checks passing. Results are written to the SD card after <b>every</b> throw, so pulling the battery afterwards loses nothing. If the script stops (no GPS yet, FC still booting), Linux starts it again after 5 s. The mode for a field day is fixed by <code>mode.txt</code>: the start beep tells you which one.</div>
+
+<h3 id="c3">C3 · Throw-day parameters</h3>
+<p>Mission Planner → CONFIG → Full Parameter List → Write Params → reboot. Save as <code>q250_throwday.param</code>.</p>
+<div class="tw"><table><tr><th>Parameter</th><th>Normal</th><th>Throw day</th><th>Why</th></tr>
+<tr><td><code>MOT_SPIN_ARM</code></td><td>0.1</td><td><b>0</b></td><td>Props still while the armed drone is in your hand (your OK, 8 Nov)</td></tr>
+<tr class="hl"><td><code>MOT_SPOOL_TIME</code></td><td>0.5 (default)</td><td><b>0.25</b> (your OK, 8 Nov)</td><td>Motors reach full power faster from stopped (below)</td></tr>
+<tr><td><code>RC5_OPTION</code></td><td>17 (AutoTune)</td><td><b>0</b></td><td>CH5 = throw switch, read only by the Pi</td></tr>
+<tr><td>CH6</td><td>—</td><td><b>middle</b> before the battery goes in</td><td>GPS set: position hold after the catch</td></tr></table></div>
+<h4>When do the props spin? (CH5 has nothing to do with it)</h4>
+<div class="tw"><table><tr><th>Moment</th><th>Normal day (<code>MOT_SPIN_ARM 0.1</code>)</th><th>Throw day (<code>MOT_SPIN_ARM 0</code>, stick LOW)</th></tr>
+<tr><td>Armed with CH9, CH8 AltHold, throttle stick <b>low</b></td><td>Props spin slowly (idle)</td><td><b>Props still</b> (SITL 4.6.0-dev: motor PWM 1000)</td></tr>
+<tr><td>CH5 ON: the Pi switches to GUIDED_NOGPS (3 short beeps)</td><td>—</td><td><b>Props still</b> (PWM 1000); this mode ignores the stick</td></tr>
+<tr><td>The throw is detected</td><td>—</td><td>Props start (≈ 0.4 s after release with <code>MOT_SPOOL_TIME 0.25</code>)</td></tr>
+<tr><td>Throttle at the <b>middle or above</b> while armed in AltHold, still on the ground</td><td>Props spin up (ready to take off)</td><td><b>Props spin up in the hand</b> (SITL: PWM 1000 → 1153). That is why the stick stays LOW</td></tr>
+<tr><td>Armed in <b>Stabilize</b></td><td>Props spin (AirMode)</td><td><b>Props spin (AirMode)</b>: never arm in Stabilize</td></tr></table></div>
+<p><code>MOT_SPIN_ARM</code> is the motor speed ArduPilot uses while armed and still on the ground. 0.1 = slow idle (what you see today). 0 = armed but stopped. CH5 only tells the Pi to take the drone and watch for a throw.</p>
+<h4>What <code>MOT_SPOOL_TIME</code> is</h4>
+<p>ArduPilot never jumps the motors from stopped to full power. It ramps them, in two ramps of <code>MOT_SPOOL_TIME</code> each (ArduPilot source, <code>AP_MotorsMulticopter.cpp</code>, <code>output_logic</code>; the parameter text: "Time in seconds to spool up the motors from zero to min throttle"):</p>
+<div class="tw"><table><tr><th>Ramp</th><th>From → to</th><th>With props idling (<code>MOT_SPIN_ARM 0.1</code>)</th><th>With props stopped (<code>MOT_SPIN_ARM 0</code>)</th></tr>
+<tr><td>1</td><td>stopped → <code>MOT_SPIN_MIN</code> (0.15)</td><td>already 2/3 there (0.1 of 0.15): short</td><td>the <b>whole</b> ramp</td></tr>
+<tr><td>2</td><td>max-throttle limit 0 → what the catch asks</td><td>same</td><td>same</td></tr></table></div>
+<p>Like a car that must go through first gear before second: with the engine already idling (props idling) first gear is quick; from a cold stop (props still) it takes the full time. Halving the time per gear gets the cold start back near the idling start.</p>
+<div class="tw"><table><tr><th>Measured, same SITL, same rule, 8 Nov</th><th>Motors on</th><th>up recovered</th><th>roll recovered / drift</th><th>pitch recovered / drift</th></tr>
+<tr><td>SPIN_ARM 0.1, SPOOL 0.5 (simulation runs: props idling)</td><td>0.22–0.26 s</td><td>0.66 s</td><td>1.82 s / 1.1 m</td><td>1.74 s / 1.4 m</td></tr>
+<tr><td>SPIN_ARM 0, SPOOL 0.5 (default)</td><td><b>0.60–0.64 s</b></td><td>1.36 s</td><td><b>4.20 s / 22.6 m</b></td><td><b>3.84 s / 23.9 m</b></td></tr>
+<tr class="hl"><td>SPIN_ARM 0, <b>SPOOL 0.25</b></td><td>0.36–0.40 s</td><td>0.50 s</td><td>1.42 s / 5.0 m</td><td>1.52 s / 3.0 m</td></tr></table></div>
+<div class="tw"><table><tr><th>What you will notice with 0.25</th><th>Normal?</th></tr>
+<tr><td>Normal take-off (AltHold, stick up): motors come up to speed in about half the time, the take-off starts a little sooner</td><td>✅ Yes. Once flying nothing changes: the ramps are only used while the motors start and stop (they also stop a little quicker after landing)</td></tr>
+<tr><td>Throw: motors start ≈ 0.35–0.4 s after release instead of ≈ 0.6 s</td><td>✅ The point of the change</td></tr>
+<tr><td>A harsh "bang" or a jump on take-off</td><td>❌ Not expected for a 5-inch. If it happens: 0.35, and tell me</td></tr></table></div>
+<p><code>throw_real.py</code> prints a <b>WARNING</b> at start if <code>MOT_SPIN_ARM</code> is 0 and <code>MOT_SPOOL_TIME</code> is above 0.3. After the throw day set the four back (AutoTune day: <code>RC5_OPTION 17</code>).</p>
+
+<h3 id="c3b">C3b · Your switches and the buzzer on throw days (fill in once)</h3>
+<p>Mission Planner → SETUP → Mandatory Hardware → <b>Flight Modes</b>: flip CH8 through its positions and write down which position gives which mode (your <code>FLTMODE1–6</code> = Stabilize, AltHold, PosHold, Stabilize, Stabilize, Loiter).</p>
+<div class="tw"><table><tr><th>Switch</th><th>Job</th><th>On a throw day</th><th>Your position (write it down)</th></tr>
+<tr><td>CH3 (throttle stick)</td><td>—</td><td><b>LOW (all the way down) the whole time</b>, from arming until it has landed. You only move it to take over (below)</td><td>—</td></tr>
+<tr><td>CH5</td><td>Throw switch (Pi only; does not start or stop the props)</td><td>OFF until armed in the hand; ON = Pi takes the drone</td><td>OFF = ______ ON = ______</td></tr>
+<tr><td>CH6</td><td>Position source</td><td><b>middle</b> (GPS), before the battery goes in</td><td>—</td></tr>
+<tr><td>CH7</td><td>Emergency disarm (motors off)</td><td>normal (not disarm)</td><td>normal = ______</td></tr>
+<tr><td>CH8</td><td>Flight mode</td><td><b>AltHold</b> to arm. Take-over: <b>PosHold</b> (Loiter also works)</td><td>AltHold = ______ PosHold = ______</td></tr>
+<tr><td>CH9</td><td>Arm / disarm (with AirMode)</td><td>arm only with CH8 on <b>AltHold</b>; back to disarm after every landing</td><td>armed = ______</td></tr></table></div>
+<div class="tw"><table><tr><th>The drone's buzzer (played by the Pi)</th><th>Means</th><th>Do</th></tr>
+<tr class="hl"><td><b>3 short beeps</b></td><td>READY: the Pi has the drone, props still</td><td>Throw when ready: no time limit, READY waits until CH5 OFF</td></tr>
+<tr><td><b>2 long beeps</b></td><td>REFUSED / cancelled / disarmed while ready</td><td>CH5 OFF, look at the Pi window, CH9 to disarm</td></tr>
+<tr><td><b>1 long + 1 short</b></td><td>Pi started, link and GPS OK, mode attitude-rule (≈ 1 min after the battery goes in)</td><td>You may arm</td></tr>
+<tr><td><b>1 long + 2 short</b></td><td>Same, mode ppo-policy</td><td>You may arm</td></tr>
+<tr><td>ArduPilot's own tunes</td><td>Arm, disarm (as always)</td><td>—</td></tr></table></div>
+<div class="note"><b>So the pilot does not need the laptop:</b> arm → CH5 ON → wait for <b>3 short beeps</b> → say "throw". No beeps, or 2 long beeps = no throw. The <code>--check</code> step (C4) plays both patterns so you know them and know the buzzer works.</div>
+<div class="warn"><b>Never Stabilize on a throw day.</b> (1) Your CH9 arms <b>with AirMode</b> (<code>RC9_OPTION 154</code>). In Stabilize, AirMode keeps the motors running at idle even with the throttle stick at the bottom (ArduPilot <code>mode_stabilize.cpp</code>; AirMode is for ACRO and STABILIZE, ArduPilot AirMode page): props would spin in the thrower's hand. In AltHold they do not. (2) Taking over in Stabilize with the stick in the middle = about 50 % throttle on a drone that hovers at 15 %: it shoots up. Take over with <b>PosHold</b> (<a href="#c6c">C6c</a>).</div>
+
+<h3 id="c4">C4 · Ladder step 0: <code>--check</code> (never arms)</h3>
+<p>Props off, battery in (CH6 middle first), C2 ⑤ steps 1–3 passed. Works indoors. If autostart (C2 ⑥) is already on: <code>sudo systemctl stop throw</code> first.</p>
+<div class="cmdbox"><pre class="cmd">ssh jlukas@10.160.112.138
+
+cd ~/Q250_Hardware_Throw_Fly
+
+python3 throw_real.py --check --mode ppo-policy</pre><button class="copy" type="button">Copy</button></div>
+<div class="tw"><table><tr><th>Do</th><th>Expected</th><th>If not</th></tr>
+<tr class="hl"><td>Watch 5 s</td><td><code>link OK (IMU 50 Hz, ATT 50 Hz)</code>, then 1 line per second: CH5 / CH6 / CH3, GPS, <code>16.x V</code>, <code>PPO … ms</code> (under 10 ms; indoors <code>PPO - (no EKF position yet)</code>)</td><td>C2 ⑤</td></tr>
+<tr class="hl"><td>Flip CH5 OFF, then ON</td><td><code>switch OK</code>, then the buzzer: <b>3 short beeps</b> (READY), 2 s later <b>2 long beeps</b> (REFUSED), then the 9 checks. Disarmed now, so check 1 says <code>NO … DISARMED - arm with CH9</code>: right. Indoors the two GPS lines say <code>NO</code>: right</td><td>No beeps: tell me (buzzer wiring, or the board plays tunes another way). No <code>switch OK</code>: transmitter end points (OFF &lt; 1300, ON &gt; 1700)</td></tr>
+<tr><td>CH5 ON, toss the drone ~20 cm up onto a pillow</td><td><code>throw detected (check only - motors NOT started)</code>, push ≈ 2–4 g, free fall ≈ 0.0–0.3 g (yours: 2.87–3.21 g / 0.17–0.30 g)</td><td>Toss a little harder (push must pass 1.5 g)</td></tr>
+<tr><td>CH5 ON, walk, wave, shake, put it down hard</td><td><b>Nothing</b></td><td>A detection here = false trigger: stop, send me the printout</td></tr></table></div>
+<p>Stop: CH5 OFF, then <code>Ctrl+C</code> → <code>check stopped</code>.</p>
+<div class="note"><b>What the command does, in plain words:</b> <code>--check</code> = test mode only, like a sound check before a concert: it only <b>listens</b> to the FC and plays beeps. It never arms, never changes a mode or parameter, never starts the motors (and the drone is disarmed, props off). <code>--mode ppo-policy</code> loads <code>round1_final.onnx</code> and times one PPO step every second (<code>PPO … ms</code>). <b>tmux is not needed here:</b> if the Wi-Fi drops during <code>--check</code>, nothing happens. tmux only matters for a real throw started <b>by hand</b> from the laptop; with autostart (C2 ⑥) the script runs inside the Pi and the laptop link does not matter.</div>
+<h4>Your result, 8 Nov 2026 (indoors, props off): PASSED ✅</h4>
+<div class="tw"><table><tr><th>Line</th><th>Your value</th><th>Verdict</th></tr>
+<tr><td><code>PPO (ONNX) loaded</code></td><td>round1_final.zip</td><td>✅ model file on the Pi opens</td></tr>
+<tr><td><code>link OK</code></td><td>IMU 50 Hz, ATT 50 Hz (now and then 34–45 Hz for one second)</td><td>✅ Pi ↔ FC wiring and SERIAL2 OK. Short dips: watch in the field logs</td></tr>
+<tr><td>PPO time</td><td>0.9–1.5 ms (first one 38.6 ms = warm-up)</td><td>✅ far below the 20 ms of one 50 Hz step</td></tr>
+<tr><td><code>switch OK</code></td><td>CH5 OFF 999 → ON 2000</td><td>✅</td></tr>
+<tr><td>Buzzer</td><td>3 short, then 2 long heard</td><td>✅ Pi drives the buzzer</td></tr>
+<tr><td>Checks (ok)</td><td>MOT_SPIN_ARM 0.0, MOT_SPOOL_TIME 0.25, RC5_OPTION 0.0, CH6 1503, CH3 988</td><td>✅ parameters right</td></tr>
+<tr><td>Checks (NO, expected)</td><td>disarmed; GPS fix 1, 0 sats; EKF not on GPS (indoors)</td><td>✅ right for this test</td></tr>
+<tr><td>Battery</td><td><b>14.99 V</b></td><td>Was below the old 15.2 V limit. With the new limit (14.9 V, version c) it passes</td></tr>
+<tr><td>CH6 at the start</td><td>999 (not middle)</td><td>⚠️ set CH6 <b>middle</b> (1503) before the battery goes in</td></tr>
+<tr><td>Toss onto a pillow (4×)</td><td>push 2.87–3.21 g, free fall 0.17–0.30 g; 4 tosses = 4 detections</td><td>✅ clears 1.5 g / 0.35 g easily</td></tr>
+<tr><td>Walk, shake, handle, tumble (tilt up to 120°)</td><td>no detection</td><td>✅ no false trigger</td></tr></table></div>
+<div class="tw"><table><tr><th>Harmless lines you may see</th><th>Why</th></tr>
+<tr><td><code>ReadFileContents Failed to open file: "/sys/class/drm/card0/device/vendor"</code> (top)</td><td>onnxruntime looks for a graphics card; the Pi has none. Ignore</td></tr>
+<tr><td>First line <code>0.00 V</code>, <code>IMU 0 Hz</code></td><td>Before the first data arrived</td></tr>
+<tr><td><code>IMU 3 Hz ATT 3 Hz</code> right after the check list</td><td>The script pauses 2 s to play both beep patterns, so that one second looks slow</td></tr>
+<tr><td><code>would REFUSE</code></td><td>Disarmed and indoors. In the field (armed, GPS, charged battery) all 9 say <code>ok</code></td></tr></table></div>
+<div class="tw"><table><tr><th>#</th><th>The 9 checks when CH5 goes ON (all must say <code>ok</code>)</th><th>Needed</th><th>Why</th></tr>
+<tr><td>1</td><td>armed by you, on the ground</td><td>you armed with CH9, not flying</td><td>The script never takes over a flying drone</td></tr>
+<tr><td>2</td><td><code>MOT_SPIN_ARM 0</code></td><td>0</td><td>Props still in the hand</td></tr>
+<tr><td>3</td><td><code>MOT_SPOOL_TIME &lt;= 0.3</code></td><td>0.25</td><td>Motors on ≈ 0.35 s, not ≈ 0.6 s</td></tr>
+<tr><td>4</td><td><code>RC5_OPTION 0</code></td><td>0</td><td>CH5 must not start AutoTune</td></tr>
+<tr><td>5</td><td>CH6 middle (GPS)</td><td>1300–1700</td><td>GPS set for the position hold</td></tr>
+<tr><td>6</td><td>GPS 3D fix, ≥ 5 sats</td><td>your choice</td><td>ArduPilot itself needs 6 to <b>start</b> using GPS</td></tr>
+<tr><td>7</td><td>EKF using GPS position</td><td>EKF flag "absolute position"</td><td>Same as Mission Planner's <code>EKF3 IMU0 is using GPS</code>; without it GUIDED / Loiter are refused</td></tr>
+<tr><td>8</td><td>throttle stick LOW</td><td>below 1300</td><td>In ALT_HOLD on the ground a middle stick spins the props</td></tr>
+<tr><td>9</td><td>battery ≥ 14.9 V</td><td>3.72 V per cell at rest (your choice 8 Nov evening; was 15.2 V)</td><td>Enough thrust for the catch: hover is only ≈ 15 % (0.149), a big margin. During the catch it dips to ≈ 13.5 V for a second; the FC battery failsafe waits <code>BATT_LOW_TIMER</code> (10 s default) so a short dip does not trigger it</td></tr></table></div>
+
+<h3 id="c5">C5 · Ladder step 1: bench, props OFF, armed</h3>
+<p>The full real run with props off, outdoors (GPS), C3 parameters set. Motors must start <b>only</b> on the toss. Stick LOW the whole time.</p>
+<div class="tw"><table><tr><th>#</th><th>Who</th><th>Do</th><th>Expected (buzzer / Pi window / motors)</th></tr>
+<tr><td>1</td><td>Pilot</td><td>Switches: CH5 OFF, CH6 middle, CH7 normal, CH8 AltHold, CH9 disarmed, <b>stick LOW</b>. Battery in. Leave the drone still 30 s</td><td>—</td></tr>
+<tr><td>2</td><td>You</td><td>Autostart on (C2 ⑥): just wait for the start beep. Or by hand: <code>sudo systemctl stop throw</code> → <code>tmux new -s throw</code> → <code>cd ~/Q250_Hardware_Throw_Fly</code> → <code>python3 throw_real.py</code></td><td><code>WAIT | CH5 1000 … GPS fix 3+ ≥5 sats | 16.x V | disarmed ALT_HOLD</code></td></tr>
+<tr><td>3</td><td>Pilot</td><td>Hold the drone (props off). Stick LOW → CH9 arm</td><td>Arming tone, <code>… ARMED ALT_HOLD</code>, motors <b>still</b></td></tr>
+<tr><td>4</td><td>Pilot</td><td>Stick still LOW: CH5 ON straight away</td><td><b>3 short beeps</b>, <code>READY - THROW NOW</code>, motors still</td></tr>
+<tr><td>5</td><td>You</td><td>Within a few seconds: toss it 20–30 cm up onto a pillow</td><td><code>Throw detected - spooling motors</code>, motors spin up, <code>[handover] GUIDED hold 10 s, then LAND</code>, then <code>landed and disarmed</code>, <code>Throw 1 | …</code>, <code>mode back to ALT_HOLD</code></td></tr>
+<tr><td>6</td><td>Pilot</td><td>CH5 OFF, <b>CH9 back to disarm</b></td><td><code>WAIT …</code></td></tr>
+<tr><td>7</td><td>Pilot</td><td>Repeat 3–4, then CH5 OFF while READY. CH9 back to disarm, then <b>CH9 arm again without touching CH8</b></td><td><b>2 long beeps</b>, <code>CH5 OFF - cancelled, disarmed</code>, <code>mode back to ALT_HOLD</code>; the new arm works (version d)</td></tr>
+<tr><td>8</td><td>Pilot</td><td>Repeat 3–4 and do <b>not</b> toss: wait</td><td>Stays READY, props still: <b>no time limit</b> (your CH9 arms with AirMode, so ArduPilot never auto-disarms). Wait 20 s, then CH5 OFF → 2 long beeps, disarmed, mode back to ALT_HOLD. CH9 to disarm</td></tr>
+<tr><td>9</td><td>Pilot</td><td>Repeat 3, then CH5 ON with the stick in the <b>middle</b> (props off!)</td><td>Motors start in ALT_HOLD (this is why the stick stays low), then <b>2 long beeps</b> <code>REFUSED: throttle stick LOW</code>. Stick LOW, CH9 disarm</td></tr>
+<tr><td>10</td><td>Pilot</td><td>Repeat 3–4, then CH7</td><td>Disarmed at once, <b>2 long beeps</b>, <code>Disarmed while READY</code>. CH7 back to normal, CH9 to disarm</td></tr></table></div>
+<div class="note"><b>CH9 after any disarm</b> (script, LAND, CH7): the switch still sits on "arm". ArduPilot arms only when the switch <b>moves</b> to arm, so always put CH9 back to disarm before the next arm.</div>
+<div class="note"><b>Changed from the 7 Nov plan:</b> step 1 said "drop it 30 cm onto a pillow". The detection rule of the same plan needs the <b>push</b> first (above 1.5 g), so a plain drop does nothing. Use a small toss.</div>
+
+<h3 id="c6">C6 · Ladder steps 2–5: field, props ON</h3>
+<div class="tw"><table><tr><th>Step</th><th>What</th><th>Command</th><th>Pass when</th></tr>
+<tr><td>2</td><td><b>Hover:</b> normal flight (no script). CH8 AltHold, arm, take off to 2–3 m, <b>practise the take-over 3×</b> (stick middle → CH8 PosHold, <a href="#c6c">C6c</a>), 1 min hands off, land, then <b>on the ground</b> CH7</td><td>—</td><td>Holds within about ±0.5 m; the take-over move feels natural; CH7 disarms</td></tr>
+<tr><td>3</td><td><b>Gentle up throw</b> to 2–3 m, level, no spin, <b>PPO</b> (your choice 8 Nov)</td><td>autostart, <code>mode.txt</code> = <code>ppo-policy</code></td><td>3 × caught → hold 10 s → lands → disarms by itself</td></tr>
+<tr><td>4</td><td><b>Roll / pitch throw:</b> wrist flick, half turn; then a full turn</td><td>same</td><td>3 × each: caught, stays inside the area</td></tr>
+<tr><td>5</td><td>Steps 3–4 with the <b>attitude-rule</b> (comparison for the thesis)</td><td><code>mode.txt</code> = <code>attitude-rule</code></td><td>Compare with the PPO and with Part B</td></tr></table></div>
+<h4>Field day, in order (no laptop)</h4>
+<div class="tw"><table><tr><th>When</th><th>Do</th><th>Pass / stop</th></tr>
+<tr><td><b>At home, before you go</b></td><td>Battery charged (≥ 14.9 V at rest, full = 16.8 V best). C4 passed ✅. C2 ⑥ autostart beep heard outdoors. C5 bench (props off) done once. Props on and tight. Gloves + glasses. A helper: one <b>pilot</b>, one <b>thrower</b></td><td>Anything missing: no throws today</td></tr>
+<tr><td><b>At the field</b></td><td>Open grass, nobody within 15 m, light wind</td><td>—</td></tr>
+<tr><td><b>Part A: hover check</b> (C6 step 2, no script, once)</td><td>CH8 ALT_HOLD, arm (CH9), stick middle, take off to 2–3 m → <b>take-over practice 3×</b>: stick middle, CH8 PosHold, back to AltHold → hands off 1 min in PosHold → land, CH9 disarm</td><td>Holds within ≈ ±0.5 m. Not good: <b>stop</b>, no throws</td></tr>
+<tr><td><b>Part B: throws</b></td><td>The 12 steps below. First <b>3 gentle up throws</b> (level, no spin). Only when those are good: wrist-flick throws (C6 step 4). Next throw = repeat from step 4</td><td>See the two tables below</td></tr>
+<tr><td><b>After the session</b></td><td>Bring it home: copy <code>runs/</code> from the Pi + download the FC <code>.bin</code></td><td>C7</td></tr></table></div>
+<h4>One throw, switch by switch (steps 3–5)</h4>
+<div class="warn"><b>The throttle stick stays LOW the whole time</b> (changed 8 Nov, final). In ALT_HOLD, a drone that is armed and still on the ground gets ready to take off as soon as the stick is at the middle or above, so the props would spin up in the hand even with <code>MOT_SPIN_ARM 0</code> (ArduPilot <code>get_alt_hold_state</code>; SITL: motor PWM 1000 → 1153). With the stick LOW they stay still. After CH5 ON the Pi uses GUIDED_NOGPS and, after the catch, GUIDED and LAND: all three ignore the stick, and your firmware (4.6.0-dev <code>1e001fa0</code>, <code>mode_guided.cpp</code> line 966) starts the motors on the Pi's take-off command even with the stick at the bottom. So there is no moment where the stick must move.</div>
+<div class="tw"><table><tr><th>#</th><th>Who</th><th>Do</th><th>Expected</th><th>If not</th></tr>
+<tr><td>1</td><td>Pilot</td><td>Before the battery: <b>CH5 OFF, CH6 middle, CH7 normal, CH8 AltHold, CH9 disarmed, stick LOW</b></td><td>—</td><td>—</td></tr>
+<tr><td>2</td><td>Pilot</td><td>Battery in, drone on the ground, still, 30 s</td><td>Mission Planner: <code>EKF3 IMU0 is using GPS</code></td><td>Wait; no GPS = no throw</td></tr>
+<tr><td>3</td><td>—</td><td>Wait for the Pi (autostart, C2 ⑥). No laptop needed</td><td><b>1 long + 1 short</b> (rule) or <b>1 long + 2 short</b> (PPO), ≈ 1 min after the battery goes in</td><td>No start beep after 3 min: no throw today; read <code>runs/console.log</code> at home</td></tr>
+<tr><td>4</td><td>Thrower</td><td>Gloves, glasses. Pick the drone up, hold it level under the frame, arm out, props away from the body</td><td>—</td><td>—</td></tr>
+<tr><td>5</td><td>Pilot</td><td>Stick <b>LOW</b> → <b>CH9 arm</b></td><td>Arming tone; props <b>still</b></td><td>Props turn: CH9 disarm at once; check <code>MOT_SPIN_ARM 0</code>, CH8 not Stabilize, stick at the bottom</td></tr>
+<tr><td>6</td><td>Pilot</td><td>Stick still LOW: <b>CH5 ON</b> straight away</td><td><b>3 short beeps</b> = READY. Props still</td><td><b>2 long beeps</b> = refused: CH5 OFF, CH9 disarm, read the Pi window</td></tr>
+<tr><td>7</td><td>Pilot</td><td>Says "throw"</td><td>—</td><td>—</td></tr>
+<tr><td>8</td><td>Thrower</td><td>Toss (step 3: straight up 2–3 m; step 4: with a wrist flick). Step back 2 m. No rush: READY waits</td><td><code>Throw detected</code>, motors on ≈ 0.35–0.4 s after release</td><td>No detection: catch it if you can / let it fall on grass; CH5 OFF; send me the steps CSV</td></tr>
+<tr><td>9</td><td>Pi</td><td>Catch until level and calm, stick still LOW</td><td><code>[handover] GUIDED hold 10 s, then LAND (recovered)</code></td><td>Drifts &gt; 2 m or heads to people: take over (table below)</td></tr>
+<tr><td>10</td><td>ArduPilot</td><td>Holds its position <b>10 s</b> (your time to take over if you want), then LAND straight down (your <code>LAND_SPEED</code> 20 = 0.2 m/s near the ground: from 3 m about 15 s)</td><td><code>landed and disarmed</code>, then <code>Throw 1 | …</code></td><td>Lands somewhere bad: take over</td></tr>
+<tr><td>11</td><td>Pilot</td><td><b>CH5 OFF</b>, <b>CH9 back to disarm</b></td><td><code>mode back to ALT_HOLD</code>, <code>WAIT …</code>: next throw from step 4, no CH8 flick needed</td><td>Old version (c): <code>GUIDED_NOGPS / LAND mode not armable</code> → flick CH8 Stabilize → AltHold</td></tr>
+<tr><td>12</td><td>Thrower</td><td>Pick it up <b>only now</b> (disarmed, props stopped)</td><td>—</td><td>—</td></tr></table></div>
+<div class="tw"><table><tr><th>Something wrong when…</th><th>Pilot does</th><th>Result</th></tr>
+<tr><td><b>2 long beeps</b> at step 6 (refused)</td><td>CH5 OFF, CH9 disarm</td><td>One check failed: battery, GPS, CH6 not middle or stick not low. At home: <code>runs/console.log</code> says which</td></tr>
+<tr><td>Props spin in the hand at step 5</td><td><b>CH9 disarm at once</b></td><td>Check CH8 = ALT_HOLD (not Stabilize) and stick at the bottom</td></tr>
+<tr><td>READY, drone still in the hand (changed your mind)</td><td>CH5 OFF (or CH9 disarm)</td><td>Pi disarms (2 long beeps); nothing spins</td></tr>
+<tr><td>READY and nobody throws</td><td>Nothing (or CH5 OFF)</td><td>It waits, props still, no time limit. CH5 OFF = cancel, mode back to ALT_HOLD</td></tr>
+<tr><td>In the air, drifting / odd (take over) - during the catch, the 10 s hold or LAND</td><td><b>1.</b> stick to the <b>middle</b> &nbsp; <b>2.</b> CH8 → <b>PosHold</b></td><td>You fly it at once, full control; the script stops and never changes your mode. Stick first: PosHold with a low stick sinks (controlled, ≤ 2.5 m/s). Land it yourself, <b>CH9 disarm</b> (no auto-disarm)</td></tr>
+<tr><td>CH5 OFF in the air</td><td>—</td><td><b>Not a take-over</b>: the Pi holds 10 s, then lands</td></tr>
+<tr><td>In the air, heading for people / about to hit something</td><td><b>CH7</b></td><td>Motors off: the drone falls. Last resort</td></tr>
+<tr><td>Climbs past 5 m above the hand / not caught in 3 s</td><td>— (automatic)</td><td>Script: GUIDED hold 10 s → LAND</td></tr>
+<tr><td>No GPS position at the hand-over</td><td>— (automatic)</td><td>Script: LAND at once (level, slow)</td></tr>
+<tr><td>The Pi stops in the air (power, crash; Wi-Fi does NOT matter with autostart)</td><td>Stick middle, CH8 → <b>PosHold</b></td><td>After <code>GUID_TIMEOUT</code> 3 s ArduPilot itself levels the drone and holds height (ArduPilot 4.6 <code>mode_guided.cpp</code>); then you fly it</td></tr></table></div>
+<div class="tw"><table><tr><th>Expected: SITL built from <b>your firmware commit</b> (ArduCopter 4.6.0-dev <code>1e001fa0</code>), <code>throw_real.py</code>, stick at the bottom (988) the whole time, C3 parameters, 8 Nov</th><th>Motors on</th><th>Caught</th><th>Recovered</th><th>Lowest (hand = 0)</th><th>Then</th></tr>
+<tr><td>Up throw, attitude-rule</td><td>0.40 s</td><td>0.40 s</td><td>0.46 s</td><td>+1.38 m</td><td>GUIDED hold (within 0.02 m) → LAND → disarmed</td></tr>
+<tr><td>Pitch throw, PPO (ONNX)</td><td>0.40 s</td><td>0.60 s</td><td>0.74 s</td><td>+2.25 m</td><td>braked 1.8 m, held within 0.16 m → LAND → disarmed</td></tr>
+<tr><td>Roll throw, attitude-rule (strong SITL push: climbs past 5 m)</td><td>0.40 s</td><td>0.54 s</td><td>—</td><td>+2.39 m</td><td>passed 5 m → GUIDED hold → LAND → disarmed</td></tr>
+<tr><td>No throw after arming</td><td>—</td><td>—</td><td>—</td><td>—</td><td>Armed with your CH9 (AirMode): stays READY (25 s tested), props still. The old "disarmed ≈ 10.8 s" was MAVLink arming</td></tr>
+<tr><td>Version (d), PPO up throw, hands off</td><td>0.34 s</td><td>0.34 s</td><td>0.48 s</td><td>+1.37 m</td><td>GUIDED hold <b>10.1 s</b> (within 0.04 m) → LAND → disarmed → mode back to ALT_HOLD</td></tr></table></div>
+
+<div class="note"><b>Spinning throws and the free-fall rule:</b> the IMU is not at the exact centre, so a spin adds a little acceleration. If roll / pitch throws (step 4) are detected late or not at all while up throws are fine, send me the steps CSV before changing anything: the 0.35 g rule is shared with the simulator.</div>
+
+<h3 id="c6b">C6b · 8 Nov evening: first field session, findings and fixes (version c)</h3>
+<p>Your <code>runs/console.log</code> from the field (PosHold flight, then throw attempts). <b>Every attempt gave 2 long beeps.</b></p>
+<div class="tw"><table><tr><th>In the log</th><th>Value</th><th>Verdict</th></tr>
+<tr><td>Armed, on the ground, ALT_HOLD</td><td><code>ARMED ALT_HOLD</code></td><td>✅</td></tr>
+<tr><td>CH6 / stick</td><td>1503 / 988</td><td>✅</td></tr>
+<tr><td>GPS</td><td>fix 3–4, <b>19–20 sats</b>; EKF on GPS</td><td>✅</td></tr>
+<tr><td>Parameters (MOT_SPIN_ARM, MOT_SPOOL_TIME, RC5_OPTION)</td><td>never in a REFUSED line</td><td>✅</td></tr>
+<tr><td><b>Battery</b></td><td><b>15.11–15.14 V at rest</b>; 13.8–14.5 V during the PosHold flight</td><td>❌ the only reason: <code>REFUSED: battery >= 15.2 V (15.14 V)</code></td></tr>
+<tr><td>CH5 ON before arming</td><td><code>REFUSED: armed by you … DISARMED</code></td><td>✅ correct: arm first, then CH5 ON</td></tr>
+<tr><td>Flying PosHold with CH5 left ON</td><td><code>&lt;- CH5 is ON: flip it OFF, then ON to start</code></td><td>✅ the Pi did nothing: only the <b>flip</b> OFF→ON starts a throw</td></tr>
+<tr><td>At connect</td><td><code>[fc] EKF3 IMU0 origin set</code> + <code>[fc] Field Elevation Set: 584m</code></td><td>❌ <b>bug</b> (fix 1)</td></tr></table></div>
+
+<h4>Fix 1 · No fake home (EKF origin)</h4>
+<div class="analogy"><b>Like a map pin:</b> the old script stuck a "you are here" pin in Australia before your GPS could place the real pin in Malaysia. ArduPilot only accepts the <b>first</b> pin and keeps it until the battery is unplugged.</div>
+<div class="tw"><table><tr><th>What</th><th>Detail</th></tr>
+<tr><td>Cause</td><td><code>ap_link.py</code> (copied from the simulation) sends <code>SET_GPS_GLOBAL_ORIGIN</code> = −35.363261, 149.165230, 584 m (SITL default home) at connect. The simulator needs it without GPS; the real drone must not get it</td></tr>
+<tr><td>Why it matters (your firmware, <code>AP_NavEKF3</code>)</td><td><code>setOrigin</code>: "if the origin is valid reject setting a new origin"; the GPS code sets the origin only "if not previously set". <code>setOrigin</code> also loads the compass table (declination) for that place. So a Pi that starts <b>before</b> GPS lock (likely with autostart) fixes home + compass table to Australia until power-off</td></tr>
+<tr><td>Fix (version c)</td><td><code>throw_real.py</code> connects with <code>RealLink</code>: the same link, but it never sends an origin. Your GPS sets it, as in a normal flight. <code>ap_link.py</code>, detection, catch and PPO are unchanged</td></tr>
+<tr><td>Side effect (good)</td><td>The start beep now comes only after a real GPS position. Indoors: no start beep (<code>waiting for the EKF position (GPS fix)</code> in the log) = normal. <code>--check</code> still works indoors</td></tr></table></div>
+<div class="tw"><table><tr><th>Test: SITL from your commit 1e001fa0, home Kuching, GPS OFF at start-up (= Pi before GPS lock)</th><th>Old (b)</th><th>Fixed (c)</th></tr>
+<tr><td>Script connects, GPS still off</td><td><code>origin set</code> + <code>Field Elevation Set: 584m</code> (same lines as your real log)</td><td>no origin ✅</td></tr>
+<tr><td>Origin 45 s after GPS ON</td><td>Canberra −35.36, 149.17 (kept)</td><td>Kuching 1.55, 110.36 from GPS ✅</td></tr>
+<tr><td>Drone position from home</td><td><b>4,109 km / −4,133 km</b></td><td>0 m ✅</td></tr>
+<tr><td>Start beep</td><td>could come without GPS</td><td>11 s after GPS ON ✅</td></tr>
+<tr><td>PPO up throw, stick LOW the whole time</td><td>—</td><td>props still in the hand → READY → motors on 0.38 s → caught 0.38 s → held within 0.03 m → LAND → disarmed ✅</td></tr></table></div>
+
+<h4>Fix 2 · Battery check 15.2 V → 14.9 V</h4>
+<p>Your choice, so a part-charged battery is not a stopper. 14.9 V = 3.72 V per cell at rest. Your hover thrust is 0.149 (≈ 15 % power), so a catch on a slightly tired battery still has plenty of thrust; this battery flew PosHold fine at 14.0–14.5 V under load. The REFUSED message and the check list take the new number by themselves (<code>MIN_VOLT</code> at the top of the script).</p>
+<div class="tw"><table><tr><th>Test: the exact file sent 8 Nov (version c), SITL from your commit</th><th>Result</th><th>Verdict</th></tr>
+<tr><td>Battery 15.0 V (refused before)</td><td>READY → thrown → motors on 0.36 s → caught → held within 0.03 m → LAND → disarmed; <code>Field Elevation Set: 30m</code> (= SITL height, from GPS)</td><td>✅ passes now</td></tr>
+<tr><td>Battery 14.8 V</td><td><code>REFUSED: battery >= 14.9 V (14.80 V)</code>, 2 long, nothing spins</td><td>✅ still protects</td></tr></table></div>
+
+<h4>Put version (c) on the Pi and confirm it</h4>
+<p><b>Step 1 · Copy</b> (PC, PowerShell in <code>Q250_Hardware_Throw_Fly\</code>), then on the Pi:</p>
+<div class="cmdbox"><pre class="cmd">scp .\throw_real.py jlukas@10.160.112.138:~/Q250_Hardware_Throw_Fly/</pre><button class="copy" type="button">Copy</button></div>
+<div class="cmdbox"><pre class="cmd">ssh jlukas@10.160.112.138
+
+grep -n "MIN_VOLT =\|class RealLink" ~/Q250_Hardware_Throw_Fly/throw_real.py
+
+sudo systemctl restart throw</pre><button class="copy" type="button">Copy</button></div>
+<div class="tw"><table><tr><th>grep shows</th><th>Meaning</th></tr>
+<tr class="hl"><td><code>145:class RealLink(APLink):</code> and <code>171:MIN_VOLT = 14.9 …</code></td><td>✅ version (c) on the Pi</td></tr>
+<tr><td>Only <code>MIN_VOLT = 15.2</code>, no <code>RealLink</code></td><td>❌ old file: copy again</td></tr></table></div>
+<p><b>Step 2 · Outdoors, props OFF</b> (= <a href="#c5">C5</a> steps 1–6): CH5 OFF, CH6 middle, CH8 ALT_HOLD, stick LOW, disarmed → battery in → <b>1 long + 2 short</b> → hold it, CH9 arm (still) → <b>CH5 ON → 3 short beeps</b> (not 2 long) → toss onto a pillow / grass → motors spin up, then it disarms by itself → CH5 OFF, CH9 to disarm. Props off, so it usually ends <code>not caught</code> or <code>landed</code>: fine, the point is READY → motors start on the toss → disarm by itself.</p>
+<p><b>Step 3 · At home, read the log:</b></p>
+<div class="cmdbox"><pre class="cmd">grep -a "Field Elevation\|REFUSED\|Throw 1" ~/Q250_Hardware_Throw_Fly/runs/console.log | tail -n 5</pre><button class="copy" type="button">Copy</button></div>
+<div class="tw"><table><tr><th>You see</th><th>Meaning</th></tr>
+<tr><td><code>Field Elevation Set: 584m</code></td><td>❌ old file still running: Step 1 again</td></tr>
+<tr><td><code>Field Elevation Set: &lt;your real height&gt;m</code>, or no such line</td><td>✅ origin fix working</td></tr>
+<tr><td><code>Throw 1 | ppo-policy | motors on …</code></td><td>✅ whole chain works → C6 with props ON</td></tr>
+<tr><td><code>REFUSED: …</code></td><td>It names the check: send me the line</td></tr></table></div>
+<div class="note"><b>Reading <code>console.log</code>:</b> use <code>grep -a</code>. Pulling the battery can leave zero bytes at the end of the file, then plain <code>grep</code> only says <code>binary file matches</code> and hides lines.</div>
+
+<h3 id="c6c">C6c · 8 Nov night: version (d), take-over and what the night log showed</h3>
+<h4>Your night log (props off, version c)</h4>
+<div class="tw"><table><tr><th>Log</th><th>Meaning</th></tr>
+<tr><td><code>EKF3 IMU0 origin set</code> + <code>Field Elevation Set: 21m</code></td><td>✅ origin fix (c) works: your GPS set the real home (21 m), no 584 m</td></tr>
+<tr><td><code>REFUSED: EKF using GPS position</code> (5–8 sats)</td><td>✅ correct: it waited until the EKF used GPS</td></tr>
+<tr><td><code>READY - THROW NOW</code> ×4, battery 15.3 V</td><td>✅ 3 short beeps; battery check (14.9 V) passes</td></tr>
+<tr><td><code>CH5 OFF - cancelled, disarmed</code></td><td>✅ cancel works</td></tr>
+<tr><td><code>disarmed GUIDED_NOGPS</code> + <code>Arm: GUIDED_NOGPS mode not armable</code> ×10</td><td>❌ <b>bug</b>: could not arm again until you flicked CH8 Stabilize → AltHold → fix 1 below</td></tr>
+<tr><td>End: <code>GPS Glitch</code>, sats 12 → 0, <code>EKF3 IMU0 stopped aiding</code></td><td>GPS signal lost (moved indoors / under a roof?). If it was still under open sky: check the GPS cable and plug before flying</td></tr>
+<tr><td>Old lines with <code>584m</code>, <code>EKF position reset of 1827490 m</code>, a red traceback at 16:02</td><td>Earlier runs: <code>console.log</code> keeps <b>every</b> run. They show the origin bug really broke the position on your drone (jumps of hundreds of km). The traceback = the script stopped by <code>systemctl</code> while waiting for GPS (harmless; quiet in version d)</td></tr></table></div>
+<p>Start each test with an empty log, so you only read the new run (your results in <code>runs/throw_real/</code> are not touched):</p>
+<div class="cmdbox"><pre class="cmd">sudo systemctl stop throw
+
+&gt; ~/Q250_Hardware_Throw_Fly/runs/console.log
+
+sudo systemctl start throw</pre><button class="copy" type="button">Copy</button></div>
+
+<h4>Version (d): the 4 changes, in plain words</h4>
+<div class="tw"><table><tr><th>#</th><th>Before</th><th>Now</th></tr>
+<tr><td>1</td><td>After a cancel or a landing the drone stayed in the Pi's mode (GUIDED_NOGPS / LAND): CH9 would not arm</td><td>The script puts it back to <b>ALT_HOLD</b> (only when disarmed, and only from the Pi's own modes). Arm again with CH9 at once</td></tr>
+<tr><td>2</td><td>After the catch: hover <b>3 s</b>, then land</td><td>Hover <b>10 s</b> (<code>HOLD_S</code>), then land: time to take over calmly. Do nothing = it still lands by itself</td></tr>
+<tr><td>3</td><td>The Pi asked the FC once for GPS / battery / EKF data; a lost request = <code>0 sats, 0.00 V</code> refusals all session</td><td>It asks again every 2 s until the data arrives, at start and in WAIT</td></tr>
+<tr><td>4</td><td>Stopped while waiting for GPS → red traceback in the log</td><td>Prints <code>stopped (before the WAIT loop - no throws, nothing to save)</code></td></tr></table></div>
+<div class="note"><b>Correction (8 Nov night):</b> the guide said ArduPilot disarms ≈ 10 s after arming, so "throw within 8 s". <b>Wrong for your drone.</b> Your CH9 arms with AirMode (<code>RC9_OPTION 154</code>); in your firmware that means the throttle never counts as "zero" (<code>radio.cpp</code>, <code>set_throttle_zero_flag</code>: <code>armed_with_airmode_switch</code>), so <code>DISARM_DELAY</code> never fires. SITL with your switch: READY held 25 s, props still. My old test armed through MAVLink, not your switch. So: <b>READY waits until CH5 OFF</b> (no rush), and <b>after you land it yourself, disarm with CH9</b>.</div>
+
+<h4>Take over, any time in the air</h4>
+<div class="analogy"><b>Lift buttons, not an accelerator:</b> in PosHold (and AltHold) the throttle stick does <b>not</b> set motor power. It only says up / stay / down; the flight controller works out the power itself. So "my stick is not strong enough and it falls" cannot happen: a low stick only makes it go down slowly, under control. In <b>Stabilize</b> the stick <b>is</b> the power (an accelerator): never take over in Stabilize.</div>
+<div class="tw"><table><tr><th>Step</th><th>Do</th><th>Drone</th></tr>
+<tr class="hl"><td>1</td><td>Throttle stick to the <b>middle</b></td><td>Nothing yet (the Pi's modes ignore the stick): you are only getting ready</td></tr>
+<tr class="hl"><td>2</td><td>CH8 → <b>PosHold</b></td><td>You fly it at once, like a normal PosHold flight. Script prints <code>you took over (POSHOLD) - the script lets go</code> / <code>you changed the mode to POSHOLD</code></td></tr>
+<tr><td>3</td><td>Fly, land it yourself, <b>CH9 disarm</b>, CH5 OFF, CH8 back to AltHold, stick LOW</td><td>Ready for the next throw</td></tr></table></div>
+<div class="tw"><table><tr><th>Stick in PosHold</th><th>Drone does</th></tr>
+<tr><td>Around the middle (40–60 %, need not be exact: <code>THR_DZ</code> 100)</td><td>Stays at the same height</td></tr>
+<tr><td>A bit below the middle</td><td>Goes down slowly, under control</td></tr>
+<tr><td>All the way down</td><td>Goes down at most ≈ 2.5 m/s, under control, then lands; never a free fall</td></tr>
+<tr><td>Above the middle</td><td>Climbs</td></tr></table></div>
+<div class="tw"><table><tr><th>Do not use to take over</th><th>Why</th></tr>
+<tr><td>CH5 OFF</td><td>Does not give you control: the Pi holds 10 s and lands</td></tr>
+<tr><td>CH8 → Stabilize</td><td>Middle stick ≈ 50 % power on a drone that hovers at 15 %: it shoots up</td></tr>
+<tr><td>CH7 (emergency only)</td><td>Motors off, the drone drops: only if it is about to hit a person</td></tr></table></div>
+<p><b>Practise first</b> (C6 step 2, a normal flight): AltHold at ≈ 2 m → stick middle → CH8 PosHold → it just stays. Three times, then back to AltHold.</p>
+
+<h4>Test of version (d): SITL from your commit 1e001fa0, your switches only</h4>
+<p>The test moves only what you move: CH8 (your <code>FLTMODE1–6</code>), CH9 with <code>RC9_OPTION 154</code>, CH5, the stick. It never sets a mode by command (that is how the arming bug hid before). Home Kuching, battery 15.3 V.</p>
+<div class="tw"><table><tr><th>Test</th><th>Version (c)</th><th>Version (d)</th></tr>
+<tr><td>A · arm, CH5 ON, cancel with CH5 OFF</td><td>disarmed, stays GUIDED_NOGPS</td><td>disarmed, <b>ALT_HOLD</b> ✅</td></tr>
+<tr><td>B · arm again without touching CH8</td><td><code>Arm: GUIDED_NOGPS mode not armable</code> (= your field log)</td><td>ARMED ALT_HOLD, props still; READY held 25 s (no auto-disarm) ✅</td></tr>
+<tr><td>C · throw, hands off</td><td>—</td><td>motors on 0.34 s, caught 0.34 s → GUIDED hold <b>10.1 s</b> at 2.3 m (within 0.04 m) → LAND → disarmed → ALT_HOLD ✅</td></tr>
+<tr><td>D · throw, take over 0.6 s later (mid-catch): stick middle, CH8 PosHold</td><td>—</td><td>POSHOLD at once; 6 s hands off: <b>2.35–2.43 m</b>; you land it; script never changed your mode ✅</td></tr>
+<tr><td>Change 3 · first GPS + battery requests deliberately lost</td><td>(the 16:02 field run: <code>0 sats, 0.00 V</code>)</td><td>asked again → 10 sats, 15.30 V ✅</td></tr>
+<tr><td>Change 4 · <code>systemctl stop</code> while waiting for GPS</td><td>red traceback</td><td><code>stopped (… nothing to save)</code>, exit code 0 ✅</td></tr></table></div>
+
+<h4>Put version (d) on the Pi</h4>
+<div class="cmdbox"><pre class="cmd">scp .\throw_real.py jlukas@10.160.112.138:~/Q250_Hardware_Throw_Fly/</pre><button class="copy" type="button">Copy</button></div>
+<div class="cmdbox"><pre class="cmd">ssh jlukas@10.160.112.138
+
+grep -n "^HOLD_S\|def back_to_alt_hold\|^MIN_VOLT\|class RealLink" ~/Q250_Hardware_Throw_Fly/throw_real.py
+
+sudo systemctl restart throw</pre><button class="copy" type="button">Copy</button></div>
+<div class="tw"><table><tr><th>grep shows</th><th>Meaning</th></tr>
+<tr class="hl"><td>4 lines: <code>class RealLink</code>, <code>HOLD_S = 10.0</code>, <code>MIN_VOLT = 14.9</code>, <code>def back_to_alt_hold</code></td><td>✅ version (d)</td></tr>
+<tr><td><code>HOLD_S = 3.0</code> or no <code>back_to_alt_hold</code></td><td>❌ older file: copy again</td></tr></table></div>
+<p>Then the props-off test (<a href="#c5">C5</a>, outdoors, daylight): after each cancel or landing you should read <code>mode back to ALT_HOLD</code> in the log and CH9 arms straight away.</p>
+
+<h3 id="c7">C7 · After each session: send me</h3>
+<div class="tw"><table><tr><th>What</th><th>Where</th></tr>
+<tr><td><code>throw_real_&lt;date&gt;.csv</code>, <code>_steps.csv</code>, <code>.json</code></td><td>Pi <code>~/Q250_Hardware_Throw_Fly/runs/throw_real/</code> → PC (PowerShell, in <code>Q250_Hardware_Throw_Fly\</code>): <code>scp -r jlukas@10.160.112.138:~/Q250_Hardware_Throw_Fly/runs .</code></td></tr>
+<tr><td>The FC log of the session (.bin)</td><td>Mission Planner → DATA → DataFlash Logs → Download (newest)</td></tr>
+<tr><td>The printout</td><td>Autostart: <code>runs/console.log</code> (comes with the <code>scp -r … runs</code> above). By hand: copy the window and paste as text</td></tr>
+<tr><td>Wind and ground</td><td>One line, e.g. "light wind, grass"</td></tr></table></div>
+<div class="tw"><table><tr><th>Column in the .csv</th><th>Meaning</th><th>Compare with</th></tr>
+<tr><td><code>motors_on_s</code></td><td>release → motors at full range</td><td>SITL (your firmware) 0.40 s</td></tr>
+<tr><td><code>caught_s</code> / <code>recovered_s</code></td><td>release → spin stopped / calm 0.5 s</td><td>SITL up: 0.40 / 0.46 s; pitch PPO 0.60 / 0.74 s</td></tr>
+<tr><td><code>low_m</code></td><td>lowest point above the <b>hand</b> (negative = below the hand)</td><td>SITL: +1.4 to +2.4 m</td></tr>
+<tr><td><code>ended</code> / <code>hold_mode</code> / <code>landed_disarmed</code></td><td>why the script let go / what took over / landed by itself</td><td><code>recovered</code> / <code>GUIDED</code> / <code>True</code></td></tr>
+<tr><td><code>brake_m</code> / <code>wander_m</code></td><td>Braking distance after the hand-over / how still it then held (GUIDED hold)</td><td>SITL 0–1.8 m / 0.02–0.33 m</td></tr></table></div>
+
+<h2 id="f1">4. Results: the simulation baseline</h2>
+<p><b>Official baseline = your run, 8 Nov 2026</b> (<code>throw_check_20261108_103523</code>): <code>round1_final.zip</code>, <code>--repeats 3</code>, GPS, hover thrust 0.147, FlightGear on. Values are the <b>mean of 3 throws</b>, range in brackets. My single test run of 7 Nov is in the last column for reference only.</p>
+<div class="tw"><table>
+<tr><th>Throw</th><th>Measure</th><th>ArduPilot Throw mode</th><th>attitude-rule</th><th>PPO (Round 1)</th><th>7 Nov (1 throw) rule / PPO</th></tr>
+<tr><td rowspan="3">up</td><td>motors on</td><td>0.72 s</td><td>0.25 s (0.23–0.29)</td><td>0.29 s (0.23–0.32)</td><td>0.32 / 0.22 s</td></tr>
+<tr><td>recovered</td><td>1.90 s (1.89–1.91)</td><td><b>0.51 s</b> (0.51–0.51)</td><td><b>0.51 s</b> (0.49–0.52)</td><td>0.54 / 0.52 s</td></tr>
+<tr><td>lowest / drift</td><td>2.25 m / 0.04 m</td><td>2.76 m / 0.02 m</td><td>2.76 m / 0.03 m</td><td>2.9 / 2.9 m</td></tr>
+<tr><td rowspan="3">roll</td><td>motors on</td><td>0.70 s (0.67–0.73)</td><td>0.29 s</td><td>0.29 s (0.26–0.30)</td><td>0.24 / 0.22 s</td></tr>
+<tr><td>recovered</td><td>3.94 s (3.89–4.05)</td><td><b>0.96 s</b> (0.91–1.00)</td><td><b>1.01 s</b> (0.96–1.06)</td><td>0.96 / 1.10 s</td></tr>
+<tr><td>lowest / drift</td><td>3.67 m / 29.1 m</td><td>5.85 m / 6.2 m</td><td>5.81 m / 6.4 m</td><td>5.8 / 6.6 m</td></tr>
+<tr><td rowspan="3">pitch</td><td>motors on</td><td>0.70 s (0.68–0.71)</td><td>0.27 s (0.24–0.31)</td><td>0.30 s</td><td>0.28 / 0.22 s</td></tr>
+<tr><td>recovered</td><td>3.92 s (3.82–3.97)</td><td><b>0.91 s</b> (0.87–0.94)</td><td><b>0.94 s</b> (0.91–0.96)</td><td>0.90 / 1.08 s</td></tr>
+<tr><td>lowest / drift</td><td>3.46 m / 29.2 m</td><td>5.50 m / 6.0 m</td><td>5.71 m / 6.3 m</td><td>5.7 / 6.5 m</td></tr>
+<tr><td colspan="2">LOITER after the catch (roll / pitch)</td><td>braked 1.7 m, then held within 0.4 m</td><td>braked 1.4–1.5 m, held within 0.2 m</td><td>braked 1.5 m, held within 0.2 m</td><td>same</td></tr>
+<tr><td colspan="2">Fastest spin seen (roll / pitch)</td><td>≈ 10 rad/s</td><td>23.4 / 21.2 rad/s</td><td>22.3 / 20.7 rad/s</td><td>–</td></tr>
+</table></div>
+<div class="figure">
+<svg viewBox="0 -22 700 292" width="100%" style="max-width:700px" role="img" aria-label="Bar chart of mean recovery time after release, 8 Nov, 3 throws each. Up: Throw mode 1.90 s, rule 0.51 s, PPO 0.51 s. Roll: 3.94, 0.96, 1.01 s. Pitch: 3.92, 0.91, 0.94 s.">
+<text x="20" y="-4" style="font-size:14px;font-weight:700;fill:#1d2433">Recovered (s after release), mean of 3, your run 8 Nov</text>
+<g style="font-size:11px;fill:#555">
+<line x1="60" y1="230" x2="680" y2="230" stroke="#999"/>
+<line x1="60" y1="180" x2="680" y2="180" stroke="#e3e3e3"/><text x="50" y="184" text-anchor="end">1</text>
+<line x1="60" y1="130" x2="680" y2="130" stroke="#e3e3e3"/><text x="50" y="134" text-anchor="end">2</text>
+<line x1="60" y1="80" x2="680" y2="80" stroke="#e3e3e3"/><text x="50" y="84" text-anchor="end">3</text>
+<line x1="60" y1="30" x2="680" y2="30" stroke="#e3e3e3"/><text x="50" y="34" text-anchor="end">4</text>
+<text x="50" y="234" text-anchor="end">0</text>
+</g>
+<!-- scale: 50 px per second, baseline 230 -->
+<g>
+<rect x="90" y="135" width="40" height="95" fill="#e87ba4"/><rect x="134" y="204.5" width="40" height="25.5" fill="#1baf7a"/><rect x="178" y="204.5" width="40" height="25.5" fill="#2a78d6"/>
+<rect x="290" y="33" width="40" height="197" fill="#e87ba4"/><rect x="334" y="182" width="40" height="48" fill="#1baf7a"/><rect x="378" y="179.5" width="40" height="50.5" fill="#2a78d6"/>
+<rect x="490" y="34" width="40" height="196" fill="#e87ba4"/><rect x="534" y="184.5" width="40" height="45.5" fill="#1baf7a"/><rect x="578" y="183" width="40" height="47" fill="#2a78d6"/>
+</g>
+<g style="font-size:11px;fill:#1d2433" text-anchor="middle">
+<text x="110" y="130">1.90</text><text x="154" y="199">0.51</text><text x="198" y="199">0.51</text>
+<text x="310" y="28">3.94</text><text x="354" y="177">0.96</text><text x="398" y="174">1.01</text>
+<text x="510" y="29">3.92</text><text x="554" y="179">0.91</text><text x="598" y="178">0.94</text>
+</g>
+<g style="font-size:12.5px;font-weight:700;fill:#1d2433" text-anchor="middle"><text x="154" y="250">up</text><text x="354" y="250">roll</text><text x="554" y="250">pitch</text></g>
+<g style="font-size:11.5px;fill:#1d2433"><rect x="390" y="256" width="10" height="10" fill="#e87ba4"/><text x="404" y="265">Throw mode</text><rect x="480" y="256" width="10" height="10" fill="#1baf7a"/><text x="494" y="265">attitude-rule</text><rect x="580" y="256" width="10" height="10" fill="#2a78d6"/><text x="594" y="265">PPO</text></g>
+</svg></div>
+<h3>What the 8 Nov run says</h3>
+<div class="tw"><table>
+<tr><th>Question</th><th>Answer from the data</th><th>Confidence</th></tr>
+<tr><td>Is the sim Q250 healthy?</td><td>Yes. Hover 0.147 (real 0.149); after every catch LOITER held within 0.2–0.4 m and never shook (max 0.62 rad/s, braking only)</td><td>High</td></tr>
+<tr><td>Is the timing valid?</td><td>Yes. Motors on 0.23–0.32 s in all 18 script throws, FlightGear on</td><td>High</td></tr>
+<tr><td>Script vs ArduPilot Throw mode</td><td><b>≈ 4× faster</b> on roll / pitch (0.9–1.0 s vs 3.9 s), <b>≈ 5× less drift</b> (6 m vs 29 m), caught ≈ 2 m higher. Upright in 0.37 s vs 1.06 s</td><td>High: no overlap between the ranges</td></tr>
+<tr><td>PPO vs its teacher (attitude-rule)</td><td>Up: same. Roll +0.06 s, pitch +0.03 s for PPO. Both gaps are smaller than the spread between repeats (t ≈ 1.5 and 1.2 with 3 throws) → <b>no real difference</b></td><td>High that they are equal; the 7 Nov "0.15 s slower" was one unlucky throw</td></tr>
+<tr><td>Is anything inconsistent?</td><td>PPO is the more consistent catcher: caught at 0.44–0.46 s every time; the rule once needed 0.60 s (roll #3)</td><td>Low: 3 throws</td></tr>
+</table></div>
+<div class="tw"><table>
+<tr><th>Your result on a rerun</th><th>Meaning</th><th>Do</th></tr>
+<tr><td>All recovered, means within ±0.1 s of the table</td><td>✅ Same as the baseline</td><td>Nothing</td></tr>
+<tr><td>All recovered but ≈ 0.3–0.5 s slower everywhere</td><td>Simulator a little slow</td><td>B7 check without FlightGear</td></tr>
+<tr><td><code>not recovered</code> with peak rate staying 2–3 rad/s</td><td>Drone shaking: old <code>q250.json</code></td><td>B5 table, third row</td></tr>
+<tr><td>PPO much worse than the rule (crash, &gt; 2 s)</td><td>Wrong model or <code>obs_norm.npz</code></td><td>A2</td></tr>
+</table></div>
+
+<h2 id="f2">5. What we found building it</h2>
+<div class="tw"><table>
+<tr><th>Finding</th><th>Measured</th><th>What it means</th></tr>
+<tr><td><b>Inertia must be ≈ 2× the first estimate</b></td><td>Hover with your tuned gains: first estimate (battery box + motors) shook at 2.6 rad/s · 1.5× still 1.7 rad/s · <b>2× steady, 0.003 rad/s</b></td><td>The real drone is steady with these gains, so its real inertia is at least ≈ 2× that estimate (frame plates, arms, Pi, GPS mast and wires were not counted). <b>The AirSim sim Q250 uses the same low estimate</b> and will shake with the new gains the same way.</td></tr>
+<tr><td>Hover matches</td><td><code>hoverThrOut</code> 0.149 → sim hovered at 13 %; 0.165 → <b>14 %</b></td><td>Real drone 14.9 %; the integer readout cannot show closer</td></tr>
+<tr><td>Script vs ArduPilot Throw mode</td><td>Motors on 0.22–0.32 s vs 0.70–0.74 s; roll / pitch recovered ≈ 1 s vs ≈ 4 s, drift ≈ 6 m vs ≈ 30 m</td><td>The script sees free fall on the accelerometer at once; Throw mode waits until the speed has dropped 2.5 m/s</td></tr>
+<tr><td>PPO vs its teacher (attitude-rule)</td><td>8 Nov, 3 throws each: up 0.51 vs 0.51 s, roll 1.01 vs 0.96 s, pitch 0.94 vs 0.91 s; lowest height and drift the same (±0.2 m)</td><td><b>Equal within the spread.</b> My 7 Nov note "PPO 0.14–0.18 s slower" came from one throw each and was wrong. The throw test cannot show PPO is better or worse than the rule: both are close to what the motors can physically do.</td></tr>
+<tr><td><b>Fake home sent to the real drone</b> (found 8 Nov from your field log)</td><td><code>ap_link.py</code> sends the simulator's home (Canberra, 584 m) at connect. SITL from your commit: origin stayed Canberra after GPS lock, positions 4,109 km / −4,133 km from home</td><td>Fixed in <code>throw_real.py</code> version (c): the real GPS sets the home. Details <a href="#c6b">C6b</a></td></tr>
+<tr><td><b>Could not arm again after a cancel</b> (field, 8 Nov night)</td><td><code>Arm: GUIDED_NOGPS mode not armable</code> ×10; the Pi left its own mode on the FC, ArduPilot changes mode only when CH8 moves. Reproduced in SITL with your switches</td><td>Fixed in version (d): mode back to ALT_HOLD after cancel / disarm / landing (<a href="#c6c">C6c</a>)</td></tr>
+<tr><td><b>No auto-disarm with your CH9</b></td><td><code>radio.cpp</code>: armed with the AirMode switch → throttle never "zero" → <code>DISARM_DELAY</code> not used. SITL with <code>RC9_OPTION 154</code>: READY 25 s, props still</td><td>No 8 s rush to throw; after landing it yourself, disarm with CH9. Earlier "10 s" test armed by MAVLink: wrong for you</td></tr>
+<tr><td>F450 throw runs used the generic body</td><td><code>-f quad</code> without JSON = 3.0 kg, 35 cm, hover 39 % (SITL source)</td><td>Those numbers describe a generic quad, not the F450</td></tr>
+</table></div>
+
+<h2 id="n1">6. What to do next</h2>
+<p><b>The simulation part is done.</b> The throw test has answered what it can: the script is far better than Throw mode, and PPO = rule. Running it more will not change that. The open questions are now on the real drone and in the AirSim impact tests.</p>
+<div class="flow">
+<div class="fb pilot"><b>1 · Hardware holds (before any throw)</b>battery from 7 Nov (12.36 V): check for puffing · CG balance check (left motors 36–50 PWM higher in every log) · MOT_SPIN_ARM 0 OK from you</div><div class="fa">↓</div>
+<div class="fb pi"><b>2 · throw_real.py + bench test</b>Pi Zero 2 W, props OFF: <a href="#c2">C2</a>–<a href="#c5">C5</a> (script ready 8 Nov)</div><div class="fa">↓</div>
+<div class="fb pilot"><b>3 · Real throws, test ladder</b>outdoor, GPS set, field ≥ 15 × 15 m · drop upright from 1.5 m → small tilt → harder tilt · PPO first (your choice 8 Nov), then the rule for comparison</div><div class="fa">↓</div>
+<div class="fb pi"><b>4 · In parallel: AirSim twin fix + impact test ✅ 8 Nov</b>throttle 15 steady; 36 flights, 36/36 recovered, PPO = rule overall (5-inch guide 5.7, finding F12)</div><div class="fa">↓</div>
+<div class="fb pi"><b>5 · Fine-tune only if a gap shows</b>in step 3 or 4 (Flip HARD, over-climb, spin drift). No gap = no fine-tune</div>
+</div>
+<h3>Decisions behind this order</h3>
+<div class="tw"><table>
+<tr><th>Item</th><th>Decision</th><th>Why</th></tr>
+<tr><td>Fine-tune on the throw test?</td><td><b>No</b></td><td>There is nothing to improve here: PPO and the rule both catch in ≈ 0.45 s, close to the motor spool-up limit. A fine-tune judged on this test could only overfit</td></tr>
+<tr><td>Thesis claim from this test</td><td>"Learned policy matches its rule teacher and beats ArduPilot Throw mode 4× on time and 5× on drift"</td><td>That is what the data supports. "PPO beats the rule" is <b>not</b> supported here; if you want that claim, it has to come from the harder impact cases</td></tr>
+<tr><td>Field size</td><td>≥ 15 × 15 m, not 5 × 5 m</td><td>The sim roll / pitch throws drift 6 m; they spin at 21–24 rad/s, far harder than a first hand throw, but leave room</td></tr>
+<tr><td>Where</td><td>Outdoor, CH6 middle (GPS set) chosen <b>before</b> the battery goes in</td><td>Rangefinder reads only ≈ 3.9 m outdoors; GPS keeps the position at any height</td></tr>
+<tr><td>Catch order</td><td>PPO first (your choice, 8 Nov), then the attitude-rule for comparison</td><td>If the PPO fails a throw, repeat that throw with the rule: rule OK = network issue, rule fails too = hardware</td></tr>
+<tr><td>Detection</td><td>Same as here: push, then &lt; 0.35 g for 3 samples</td><td>Simulation and real drone use one rule</td></tr>
+<tr><td>Height limits</td><td>Measured from the throw spot, not the raw EKF height</td><td>Your 7 Nov 09:21 log showed the EKF height 1.5–2 m off after a source switch</td></tr>
+<tr><td>Props while armed in your hand</td><td><code>MOT_SPIN_ARM 0</code> on throw days</td><td>Your OK, 8 Nov. With <code>MOT_SPOOL_TIME 0.25</code> (<a href="#c3">C3</a>, your OK 8 Nov)</td></tr>
+<tr><td>Throw switch</td><td>CH5, 2-position, <code>RC5_OPTION 0</code> on throw days</td><td>Decided 8 Nov; only the Pi reads it</td></tr>
+</table></div>
+<div class="note"><b>Real drone:</b> <code>throw_real.py</code> is ready (8 Nov), as the 7 Nov plan: you arm (props still, stick LOW), CH5 ON (3 short beeps), throw, Pi catches, hold 10 s (you may take over: stick middle, CH8 PosHold) → Land → Disarm. Steps in <a href="#c0">Part C</a>.</div>
+
+<h2 id="r1">7. Troubleshooting</h2>
+<div class="tw"><table>
+<tr><th>Symptom</th><th>Cause</th><th>Fix</th></tr>
+<tr><td>No <code>Embedding file models/q250.json</code> line</td><td>A1 block 4 not done</td><td><code>ls ~/ardupilot/Tools/autotest/models/q250.json</code>, then A1 block 4</td></tr>
+<tr><td>MAVProxy: <code>Connection refused</code> × 4, then <code>MAVProxy exited</code></td><td>The simulator stopped at start-up; its message is not in this terminal</td><td>Start it by hand to see the message: <code>~/ardupilot/build/sitl/bin/arducopter --model quad:@ROMFS/models/q250.json --defaults ~/ardupilot/Tools/autotest/default_params/copter.parm -I0</code> (Ctrl+C after 5 s)</td></tr>
+<tr><td><code>PANIC: …q250.json failed to load</code></td><td>Model given as a home-folder path (<code>quad:$HOME/…</code>) on a newer ArduPilot</td><td>Use <code>quad:@ROMFS/models/q250.json</code> (A1 block 4 + B3)</td></tr>
+<tr><td><code>python3 -m json.tool q250.json</code> prints <code>Expecting …</code></td><td>Broken line from copy-paste</td><td>Paste A1 block 1 again, then block 4</td></tr>
+<tr><td>Hover throttle ≈ 39 %</td><td>Generic quad body (<code>--model</code> missing)</td><td>B3 command</td></tr>
+<tr><td><code>hover thrust 0.39</code> / <code>0.20</code> in the first line of B7</td><td>Parameters not loaded in this folder</td><td>B4</td></tr>
+<tr><td>Drone shakes, <code>not recovered</code></td><td>Old <code>q250.json</code> with the low inertia</td><td>B5, third row</td></tr>
+<tr><td><code>motors on ≈ 1.0 s</code>, crashes</td><td>Simulator slower than real time</td><td>B7, second row</td></tr>
+<tr><td><code>Connection refused</code> in PowerShell</td><td>Simulator not running, or still starting</td><td>Wait for <code>EKF3 IMU0 is using GPS</code>, run again</td></tr>
+<tr><td>Blue sea or night in FlightGear</td><td>FlightGear and simulator at different places</td><td>KSFO in the .bat, <code>--custom-location=37.6188,-122.3754,5,0</code> in B3</td></tr>
+<tr><td>FlightGear shows the quad but it never moves</td><td>Wrong IP after <code>--fg</code>, or firewall</td><td>B2; allow FlightGear on private and public networks</td></tr>
+<tr><td><code>No module named 'train_imitation'</code></td><td>File missing in Throw_and_Fly\</td><td>Copy <code>train_imitation.py</code> from Stage 3</td></tr>
+<tr><td>PPO: <code>No models/obs_norm.npz</code></td><td>A2 not done</td><td>A2</td></tr>
+<tr><td>Pi: <code>no heartbeat</code></td><td>TX/RX not crossed, wrong UART, or SERIAL2 settings</td><td>C2 ⑤ connection test</td></tr>
+<tr><td>Pi: <code>REFUSED: …</code> after CH5 up</td><td>One of the checks failed (it names it)</td><td>Arm with CH9 first; C3 parameters, CH6 middle, throttle LOW, GPS ≥ 5 sats, battery ≥ 14.9 V</td></tr>
+<tr><td><code>Arm: GUIDED_NOGPS mode not armable</code> (or LAND …), CH9 does nothing</td><td>Old <code>throw_real.py</code> (before version d) left the Pi's mode on</td><td>Now: flick CH8 to Stabilize and back to AltHold (disarmed!). Fix: version (d) (<a href="#c6c">C6c</a>)</td></tr>
+<tr><td><code>Field Elevation Set: 584m</code> in <code>runs/console.log</code></td><td>Old <code>throw_real.py</code> (before version c) still on the Pi: it sets the simulator's home (Canberra)</td><td>Copy version (c) to the Pi, <code>sudo systemctl restart throw</code>, unplug and replug the battery (<a href="#c6b">C6b</a>)</td></tr>
+<tr><td>Pi: <code>REFUSED by ArduPilot: GUIDED_NOGPS not accepted</code></td><td>Mode refused (message printed just above)</td><td>Send me the printout</td></tr>
+<tr><td>Pi: <code>WARNING: MOT_SPIN_ARM 0 with MOT_SPOOL_TIME &gt; 0.3</code></td><td>Default spool time with stopped props</td><td><code>MOT_SPOOL_TIME 0.25</code> (C3)</td></tr>
+<tr><td>Pi: <code>[fix] values left from a stopped run - restored</code></td><td>The script was stopped in the air (power, Ctrl+C): thrust bit / zero rotation limits were saved on the FC</td><td>Nothing: it put them back. Check <code>ATC_ACCEL_R_MAX</code> 282459 in Mission Planner if unsure</td></tr>
+<tr><td><code>--check</code>: no <code>throw detected</code> on a toss</td><td>Push under 1.5 g</td><td>Toss a little harder (C4)</td></tr>
+</table></div>
+
+<h2 id="r2">8. Files and outputs</h2>
+<div class="tw"><table>
+<tr><th>File</th><th>Where</th><th>What</th></tr>
+<tr><td><code>q250.json</code></td><td>WSL <code>~/sitl_q250_throw/</code> (your copy)</td><td>Body of the sim Q250 (section 1)</td></tr>
+<tr><td><code>q250.json</code></td><td>WSL <code>~/ardupilot/Tools/autotest/models/</code></td><td>The copy the simulator builds in and uses (A1 block 4)</td></tr>
+<tr><td><code>q250_throw.parm</code></td><td>WSL <code>~/sitl_q250_throw/</code></td><td>Brain: your real tuned parameters</td></tr>
+<tr><td><code>eeprom.bin</code></td><td>WSL <code>~/sitl_q250_throw/</code></td><td>The simulator's saved parameters after B4</td></tr>
+<tr><td><code>throw_check.py</code>, <code>ap_link.py</code>, <code>impact_check.py</code>, <code>train_imitation.py</code></td><td>Windows <code>Throw_and_Fly\</code></td><td>The scripts sent 8 Nov (A2); <code>throw_check.py</code> header section 0 = 5-inch</td></tr>
+<tr><td><code>models\round1_final.zip</code> + <code>models\obs_norm.npz</code></td><td>Windows <code>Throw_and_Fly\</code></td><td>Stage 3 PPO (Round 1) for <code>ppo-policy</code>, same as the F450 runs</td></tr>
+<tr><td><code>runs\throw_check\throw_check_&lt;date&gt;.csv</code></td><td>Windows <code>Throw_and_Fly\</code></td><td>One line per throw</td></tr>
+<tr><td><code>runs\throw_check\throw_check_&lt;date&gt;_steps.csv</code></td><td>Windows <code>Throw_and_Fly\</code></td><td>Every 50 Hz step: phase, tilt, rate, height, speed, accel</td></tr>
+<tr><td><code>runs\throw_check\throw_check_&lt;date&gt;.json</code></td><td>Windows <code>Throw_and_Fly\</code></td><td>Settings + summary (send this one)</td></tr>
+<tr><td><code>FlightGear_quad.bat</code></td><td>Desktop / project</td><td>Starts FlightGear (F450 guide C1)</td></tr>
+<tr><td><code>throw_real.py</code>, <code>export_ppo_onnx.py</code></td><td>Windows <code>Q250_Hardware_Throw_Fly\</code> (+ <code>throw_real.py</code> on the Pi <code>~/Q250_Hardware_Throw_Fly/</code>)</td><td>Real catch (8 Nov): <code>--check</code> / normal / <code>--mode ppo-policy</code>; PPO → ONNX on the PC</td></tr>
+<tr><td><code>models\round1_final.onnx</code></td><td>Windows <code>Q250_Hardware_Throw_Fly\models\</code> + Pi <code>~/Q250_Hardware_Throw_Fly/models/</code></td><td>Round 1 PPO as ONNX, input scaling inside (C2 ③)</td></tr>
+<tr><td><code>runs/throw_real/throw_real_&lt;date&gt;.csv</code> / <code>_steps.csv</code> / <code>.json</code></td><td>Pi <code>~/Q250_Hardware_Throw_Fly/</code></td><td>Real throws, written after every throw (C7)</td></tr>
+</table></div>
+<footer>Throw &amp; Fly · 5-inch Q250 simulation guide · ArduCopter 4.4.4 SITL · expected numbers from the 7 Nov 2026 test run · real drone values: 544.5 g, hover 0.149, roll AutoTune 7 Nov · Part C (real drone, throw_real.py) added 8 Nov</footer>
+</main>
+</div>
+<script>
+(function(){
+  var btn=document.getElementById("themeBtn");
+  btn.onclick=function(){var c=document.documentElement.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");var n=c==="dark"?"light":"dark";document.documentElement.setAttribute("data-theme",n);try{localStorage.setItem("guideTheme",n)}catch(e){}};
+  try{var t=localStorage.getItem("guideTheme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}
+  document.querySelectorAll(".cmdbox button.copy").forEach(function(b){b.onclick=function(){var pre=b.parentElement.querySelector("pre");var t=pre.innerText;var done=function(){b.textContent="Copied";setTimeout(function(){b.textContent="Copy"},1200)};var sel=function(){var r=document.createRange();r.selectNodeContents(pre);var s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent="Selected: Ctrl+C";setTimeout(function(){b.textContent="Copy"},1600)};try{navigator.clipboard.writeText(t).then(done,sel)}catch(e){sel()}}});
+  var L=[].slice.call(document.querySelectorAll("nav.side a")),S=L.map(function(a){return document.querySelector(a.getAttribute("href"))}).filter(Boolean);
+  addEventListener("scroll",function(){var c=S[0];S.forEach(function(s){if(s.getBoundingClientRect().top<120)c=s});L.forEach(function(a){a.classList.toggle("active",a.getAttribute("href")==="#"+c.id)})},{passive:true});
+})();
+</script>
+
+</body></html>

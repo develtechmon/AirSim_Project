@@ -1,0 +1,19 @@
+FLOW DIAGNOSTIC - sensor mode: gps - 20261017_203323
+========================================================================
+Heading: ArduPilot minus AirSim = +1.4 deg on average (range -0.1 .. +1.9)
+
+PHASE A - hold still 40 s
+  ArduPilot thinks it moved: 0.01 m
+  Drone REALLY moved:        0.01 m
+  Gap estimate vs real at the end: 0.01 m
+  Height above floor: ArduPilot 1.98 m | real 1.91 m
+
+PHASE B - 0.5 m/s steps (real movement vs command)
+  step   real dist  real dir  cmd dir dir error  est dist est/real
+  north      1.18m       -1°      +0°       -1°     1.07m     0.91
+  east       1.19m      +86°     +90°       -4°     1.07m     0.90
+  south      1.15m     +176°    +180°       -4°     1.04m     0.91
+  west       1.16m      -95°     -90°       -5°     1.05m     0.90
+
+VERDICT
+  Commands work: direction error 3 deg, distance ratio 0.90.

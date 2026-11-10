@@ -1,0 +1,43 @@
+{
+  "training_info": {
+    "total_episodes": 19,
+    "total_time_seconds": 227.1404531002045,
+    "total_time_hours": 0.06309457030561236,
+    "episodes_per_hour": 301.13526263780454,
+    "episodes_cut_by_ppo_update": 0,
+    "end_time": 1792494375.925017,
+    "virtual_ground_m": 5.0,
+    "crash_rule_brake_mss": 8.0
+  },
+  "final_performance": {
+    "last_10_avg_reward": -0.5772161032482839,
+    "last_50_avg_reward": -0.33042015330100005,
+    "last_10_recovery_rate": 100.0,
+    "last_50_recovery_rate": 100.0,
+    "avg_recovery_time_steps": 105.36842105263158,
+    "avg_recovery_time_seconds": 2.1073684210526316
+  },
+  "curriculum_progression": {
+    "level_0": {
+      "level_name": "EASY (0.7-0.9)",
+      "reached_at_episode": 1,
+      "elapsed_time_hours": 0.010878257817692227
+    }
+  },
+  "statistics_by_level": {
+    "level_0_EASY": {
+      "episodes_trained": 19,
+      "recovery_rate": 100.0,
+      "avg_reward": -0.33042015330100005,
+      "avg_intensity": 0.7769581136054394,
+      "avg_lowest_m": 23.512554670635023,
+      "last_50_ppo_avg_lowest_m": null,
+      "last_50_ppo_recovery_rate": null,
+      "by_type_avg_lowest_m": {
+        "bird_attack": 24.85565775090998,
+        "flip": 18.921154975891113,
+        "spin": 29.899686813354492
+      }
+    }
+  }
+}

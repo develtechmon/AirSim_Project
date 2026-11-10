@@ -1,0 +1,242 @@
+{
+  "by_level": {
+    "ppo-policy": {
+      "easy": {
+        "flights": 6,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 27.92833333333333,
+        "worst_lowest_m": 25.36,
+        "avg_height_loss_m": 2.06,
+        "avg_recovery_time_s": 1.375,
+        "below_5m": 0
+      },
+      "medium": {
+        "flights": 6,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 27.849999999999998,
+        "worst_lowest_m": 24.86,
+        "avg_height_loss_m": 2.141666666666667,
+        "avg_recovery_time_s": 1.4966666666666668,
+        "below_5m": 0
+      },
+      "hard": {
+        "flights": 6,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 25.448333333333334,
+        "worst_lowest_m": 18.86,
+        "avg_height_loss_m": 4.545,
+        "avg_recovery_time_s": 1.3416666666666668,
+        "below_5m": 0
+      }
+    },
+    "attitude-rule": {
+      "easy": {
+        "flights": 6,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 27.564999999999998,
+        "worst_lowest_m": 24.28,
+        "avg_height_loss_m": 2.44,
+        "avg_recovery_time_s": 0.9249999999999999,
+        "below_5m": 0
+      },
+      "medium": {
+        "flights": 6,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 27.686666666666667,
+        "worst_lowest_m": 24.4,
+        "avg_height_loss_m": 2.32,
+        "avg_recovery_time_s": 1.4716666666666667,
+        "below_5m": 0
+      },
+      "hard": {
+        "flights": 6,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 25.953333333333333,
+        "worst_lowest_m": 20.03,
+        "avg_height_loss_m": 4.045000000000001,
+        "avg_recovery_time_s": 1.3316666666666668,
+        "below_5m": 0
+      }
+    },
+    "spin-stop-fast": {
+      "easy": {
+        "flights": 6,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 25.636666666666667,
+        "worst_lowest_m": 20.29,
+        "avg_height_loss_m": 4.361666666666666,
+        "avg_recovery_time_s": 1.055,
+        "below_5m": 0
+      },
+      "medium": {
+        "flights": 6,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 25.685000000000002,
+        "worst_lowest_m": 17.79,
+        "avg_height_loss_m": 4.316666666666667,
+        "avg_recovery_time_s": 2.3983333333333334,
+        "below_5m": 0
+      },
+      "hard": {
+        "flights": 6,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 24.151666666666667,
+        "worst_lowest_m": 16.02,
+        "avg_height_loss_m": 5.843333333333334,
+        "avg_recovery_time_s": 1.8133333333333332,
+        "below_5m": 0
+      }
+    }
+  },
+  "by_type": {
+    "ppo-policy": {
+      "bird": {
+        "flights": 6,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 28.03,
+        "worst_lowest_m": 26.75,
+        "avg_height_loss_m": 1.9716666666666667,
+        "avg_recovery_time_s": 1.7766666666666666,
+        "below_5m": 0
+      },
+      "flip": {
+        "flights": 6,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 23.201666666666664,
+        "worst_lowest_m": 18.86,
+        "avg_height_loss_m": 6.775000000000001,
+        "avg_recovery_time_s": 1.0266666666666666,
+        "below_5m": 0
+      },
+      "spin": {
+        "flights": 6,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 29.995,
+        "worst_lowest_m": 29.97,
+        "avg_height_loss_m": 0.0,
+        "avg_recovery_time_s": 1.4100000000000001,
+        "below_5m": 0
+      }
+    },
+    "attitude-rule": {
+      "bird": {
+        "flights": 6,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 28.073333333333334,
+        "worst_lowest_m": 27.07,
+        "avg_height_loss_m": 1.9316666666666666,
+        "avg_recovery_time_s": 1.7766666666666666,
+        "below_5m": 0
+      },
+      "flip": {
+        "flights": 6,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 23.11666666666667,
+        "worst_lowest_m": 20.03,
+        "avg_height_loss_m": 6.87,
+        "avg_recovery_time_s": 0.7783333333333333,
+        "below_5m": 0
+      },
+      "spin": {
+        "flights": 6,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 30.015,
+        "worst_lowest_m": 30.0,
+        "avg_height_loss_m": 0.0033333333333333335,
+        "avg_recovery_time_s": 1.1733333333333336,
+        "below_5m": 0
+      }
+    },
+    "spin-stop-fast": {
+      "bird": {
+        "flights": 6,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 26.263333333333335,
+        "worst_lowest_m": 24.86,
+        "avg_height_loss_m": 3.7383333333333337,
+        "avg_recovery_time_s": 2.72,
+        "below_5m": 0
+      },
+      "flip": {
+        "flights": 6,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 19.205000000000002,
+        "worst_lowest_m": 16.02,
+        "avg_height_loss_m": 10.786666666666667,
+        "avg_recovery_time_s": 1.5000000000000002,
+        "below_5m": 0
+      },
+      "spin": {
+        "flights": 6,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 30.005000000000006,
+        "worst_lowest_m": 30.0,
+        "avg_height_loss_m": -0.0033333333333333335,
+        "avg_recovery_time_s": 1.0466666666666666,
+        "below_5m": 0
+      }
+    }
+  },
+  "all": {
+    "ppo-policy": {
+      "flights": 18,
+      "recovered_pct": 100.0,
+      "avg_lowest_m": 27.075555555555557,
+      "worst_lowest_m": 18.86,
+      "avg_height_loss_m": 2.9155555555555552,
+      "avg_recovery_time_s": 1.4044444444444446,
+      "below_5m": 0
+    },
+    "attitude-rule": {
+      "flights": 18,
+      "recovered_pct": 100.0,
+      "avg_lowest_m": 27.068333333333335,
+      "worst_lowest_m": 20.03,
+      "avg_height_loss_m": 2.935,
+      "avg_recovery_time_s": 1.2427777777777778,
+      "below_5m": 0
+    },
+    "spin-stop-fast": {
+      "flights": 18,
+      "recovered_pct": 100.0,
+      "avg_lowest_m": 25.15777777777778,
+      "worst_lowest_m": 16.02,
+      "avg_height_loss_m": 4.8405555555555555,
+      "avg_recovery_time_s": 1.7555555555555555,
+      "below_5m": 0
+    }
+  },
+  "settings": {
+    "model": "models/stage3_checkpoints/gated_curriculum_policy.zip",
+    "modes": [
+      "ppo-policy",
+      "attitude-rule",
+      "spin-stop-fast"
+    ],
+    "types": [
+      "flip",
+      "spin",
+      "bird"
+    ],
+    "levels": [
+      "easy",
+      "medium",
+      "hard"
+    ],
+    "repeats": 2,
+    "seed": 1,
+    "yaw_brake_t": 0.5
+  },
+  "comparison": {
+    "attitude-rule": {
+      "height_gained_m": 0.007222222222221575,
+      "time_saved_s": -0.16166666666666685,
+      "recovered_pct_diff": 0.0
+    },
+    "spin-stop-fast": {
+      "height_gained_m": 1.9177777777777756,
+      "time_saved_s": 0.35111111111111093,
+      "recovered_pct_diff": 0.0
+    }
+  }
+}

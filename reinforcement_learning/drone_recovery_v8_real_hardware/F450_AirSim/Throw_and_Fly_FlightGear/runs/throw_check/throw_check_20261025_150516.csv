@@ -1,0 +1,4 @@
+n,type,mode,released,detected,release_s,motors_on_s,upright_s,caught_s,recovered,recovered_s,apex_m,low_m,peak_rate_rads,drift_m,crashed,impact_speed_ms,hold_mode,hold_s,hold_max_m,hold_end_m,hold_dz_m,brake_s,brake_m,wander_m
+1,up,attitude-rule,True,True,0.55,1.05,0.0,,False,,2.44,0.07,0.0,,True,6.59,,,,,,,,
+2,roll,attitude-rule,True,True,0.55,0.94,1.27,1.58,True,2.57,4.52,2.83,8.34,15.26,False,,LOITER,10.0,2.2,2.15,0.1,1.7,2.04,0.41
+3,pitch,attitude-rule,True,True,0.57,0.97,1.3,1.61,True,2.64,4.53,2.49,8.36,15.54,False,,LOITER,10.0,2.25,2.09,0.06,1.66,1.94,0.34

@@ -1,0 +1,10 @@
+n,type,level,cmd_rates,cmd_duration_s,peak_tilt_deg,peak_rate_rads,recovered,recovery_time_s,alt_loss_m,drift_m,impact_cut_low
+1,flip,easy,"[-4.2, 0.0, 0.0]",0.4,101.1,6.51,True,1.44,3.12,8.21,False
+2,flip,medium,"[6.0, 0.0, 0.0]",0.4,142.6,8.63,True,1.2,5.94,7.22,False
+3,flip,hard,"[0.0, -9.0, 0.0]",0.4,157.2,8.11,True,1.0,5.12,5.56,False
+4,spin,easy,"[0.0, 0.0, -4.2]",1.0,2.6,2.56,True,1.69,-0.0,0.43,False
+5,spin,medium,"[0.0, 0.0, 6.0]",1.0,0.6,2.65,True,1.86,0.01,0.15,False
+6,spin,hard,"[0.0, 0.0, -9.0]",1.0,0.6,2.57,True,1.78,0.01,0.09,False
+7,bird,easy,"[-2.8, -2.8, -2.1]",0.25,64.2,6.23,True,0.82,0.41,3.29,False
+8,bird,medium,"[-4.0, 4.0, -3.0]",0.25,92.8,7.21,True,1.18,1.99,5.88,False
+9,bird,hard,"[6.0, -6.0, 4.5]",0.25,107.2,7.71,True,1.09,3.22,5.41,False
