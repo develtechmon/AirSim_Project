@@ -1,0 +1,5 @@
+n,type,level,mode,date,planned_turns,turns,impact_s,hit_cut,peak_rate_rads,peak_tilt_deg,height_before_m,lowest_m,height_lost_m,b_handover_s,recovered,recovered_s,rescued,ended,hold_s,back_mode,volt
+1,flip,hard,ppo-policy,2026-11-13T10:31:01,2.8,2.81,0.93,False,25.35,173.1,30.35,25.61,4.74,0.12,True,0.5,False,recovered,10.0,POSHOLD,15.3
+2,bird,hard,ppo-policy,2026-11-13T10:31:22,1.47,1.53,0.57,False,22.21,172.9,30.28,25.9,4.38,0.91,True,1.03,False,recovered,10.0,POSHOLD,15.3
+3,spin,hard,ppo-policy,2026-11-13T10:31:45,2.73,2.74,2.41,False,11.09,0.2,30.39,30.38,0.01,1.2,True,1.2,False,recovered,10.0,POSHOLD,15.3
+4,flip,hard,ppo-policy,2026-11-13T10:32:27,2.3,2.37,0.79,False,23.82,175.5,30.29,26.59,3.69,,False,,False,you took over,0.0,ALT_HOLD,15.3

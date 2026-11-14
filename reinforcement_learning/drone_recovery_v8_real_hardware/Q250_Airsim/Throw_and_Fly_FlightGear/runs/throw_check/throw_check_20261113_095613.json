@@ -1,0 +1,184 @@
+{
+  "date": "2026-11-13T09:57:30",
+  "position_source": "GPS position, GPS velocity",
+  "hover": 0.1467777043581009,
+  "modes": [
+    "ppo-policy"
+  ],
+  "types": [
+    "flip-fast"
+  ],
+  "repeats": 3,
+  "throws": {
+    "up": {
+      "shove": [
+        0.0,
+        0.0,
+        -30.0
+      ],
+      "twist": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "ms": 300
+    },
+    "roll": {
+      "shove": [
+        0.0,
+        0.0,
+        -45.0
+      ],
+      "twist": [
+        40.0,
+        0.0,
+        0.0
+      ],
+      "ms": 300
+    },
+    "pitch": {
+      "shove": [
+        0.0,
+        0.0,
+        -45.0
+      ],
+      "twist": [
+        0.0,
+        40.0,
+        0.0
+      ],
+      "ms": 300
+    },
+    "flip": {
+      "shove": [
+        0.0,
+        0.0,
+        -45.0
+      ],
+      "twist": [
+        0.0,
+        50.0,
+        0.0
+      ],
+      "ms": 300
+    },
+    "flip-fast": {
+      "shove": [
+        0.0,
+        0.0,
+        -45.0
+      ],
+      "twist": [
+        0.0,
+        65.0,
+        0.0
+      ],
+      "ms": 300
+    }
+  },
+  "freefall_g": 0.35,
+  "freefall_n": 3,
+  "model": ".\\models\\round1_final.zip",
+  "spin_r_m": 0.03,
+  "old_rule": false,
+  "after_recovery": "loiter",
+  "launch": false,
+  "loiter_s": 10.0,
+  "stopped": null,
+  "summary": {
+    "ppo-policy/flip-fast": {
+      "recovered": "3/3",
+      "mean_recovered_s": 0.92,
+      "mean_low_m": 4.23,
+      "mean_drift_m": 13.91,
+      "mean_brake_m": 4.47,
+      "mean_wander_m": 0.25
+    }
+  },
+  "results": [
+    {
+      "n": 1,
+      "type": "flip-fast",
+      "mode": "ppo-policy",
+      "released": true,
+      "detected": true,
+      "release_s": 0.57,
+      "motors_on_s": 0.29,
+      "upright_s": 0.38,
+      "caught_s": 0.52,
+      "recovered": true,
+      "recovered_s": 0.9,
+      "apex_m": 4.08,
+      "low_m": 4.08,
+      "peak_rate_rads": 16.53,
+      "drift_m": 13.98,
+      "crashed": false,
+      "impact_speed_ms": null,
+      "hold_mode": "LOITER",
+      "hold_s": 10.0,
+      "hold_max_m": 4.8,
+      "hold_end_m": 4.77,
+      "hold_dz_m": 0.12,
+      "brake_s": 2.34,
+      "brake_m": 4.59,
+      "wander_m": 0.21,
+      "hover_used": 0.147
+    },
+    {
+      "n": 2,
+      "type": "flip-fast",
+      "mode": "ppo-policy",
+      "released": true,
+      "detected": true,
+      "release_s": 0.56,
+      "motors_on_s": 0.27,
+      "upright_s": 0.38,
+      "caught_s": 0.49,
+      "recovered": true,
+      "recovered_s": 0.95,
+      "apex_m": 4.34,
+      "low_m": 4.34,
+      "peak_rate_rads": 16.7,
+      "drift_m": 13.92,
+      "crashed": false,
+      "impact_speed_ms": null,
+      "hold_mode": "LOITER",
+      "hold_s": 10.0,
+      "hold_max_m": 4.63,
+      "hold_end_m": 4.61,
+      "hold_dz_m": 0.1,
+      "brake_s": 2.41,
+      "brake_m": 4.37,
+      "wander_m": 0.27,
+      "hover_used": 0.147
+    },
+    {
+      "n": 3,
+      "type": "flip-fast",
+      "mode": "ppo-policy",
+      "released": true,
+      "detected": true,
+      "release_s": 0.55,
+      "motors_on_s": 0.27,
+      "upright_s": 0.38,
+      "caught_s": 0.5,
+      "recovered": true,
+      "recovered_s": 0.92,
+      "apex_m": 4.27,
+      "low_m": 4.27,
+      "peak_rate_rads": 16.54,
+      "drift_m": 13.82,
+      "crashed": false,
+      "impact_speed_ms": null,
+      "hold_mode": "LOITER",
+      "hold_s": 10.0,
+      "hold_max_m": 4.74,
+      "hold_end_m": 4.72,
+      "hold_dz_m": 0.1,
+      "brake_s": 2.47,
+      "brake_m": 4.46,
+      "wander_m": 0.28,
+      "hover_used": 0.147
+    }
+  ]
+}

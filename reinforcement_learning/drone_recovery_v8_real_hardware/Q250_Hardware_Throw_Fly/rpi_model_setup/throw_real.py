@@ -7,6 +7,10 @@ Version 8 Nov 2026 (b): the THROTTLE STICK STAYS LOW THE WHOLE TIME, the buzzer 
 Version 8 Nov 2026 (c): NO fake EKF origin is sent any more - the real GPS sets it (section 8, RealLink).
 Version 8 Nov 2026 (d): mode back to ALT_HOLD after cancel / auto-disarm / landing (arm again at once), hold
 10 s before LAND (time to take over), GPS + battery data asked again until it arrives, quiet stop at start.
+Version 12 Nov 2026 (e): FAST-SPIN THROWS ARE NO LONGER MISSED (real throw 6, 11 Nov) - section 9:
+Fix 1 free-fall limit = 0.35 g + the spin's push (SPIN_R_M 0.03 m); Fix 2 no detection 0.5 m below the hand.
+Version 12 Nov 2026 (f): OPTION B + B2 - the PPO only levels the drone, the height hold brakes the fall, ArduPilot
+brakes the drift (section 10). Fast flips in the simulator: PPO 2/13 -> 8/8 caught.
 
 0. SETTINGS AT THE TOP (change here only)
 ------------------------------------------------------------------------------------------------------
@@ -55,7 +59,8 @@ Version 8 Nov 2026 (d): mode back to ALT_HOLD after cancel / auto-disarm / landi
     | 2 | Pilot    | CH9 arm. Props still. Stick stays LOW                   | ArduPilot arming tone          |
     | 3 | Pilot    | CH5 ON                                                  | 9 checks -> GUIDED_NOGPS ->    |
     |   |          |                                                         | 3 SHORT BEEPS = READY          |
-    | 4 | Thrower  | toss up and away (READY waits until CH5 OFF)            | push > 1.5 g, then < 0.35 g x3 |
+    | 4 | Thrower  | toss up and away (READY waits until CH5 OFF)            | push > 1.5 g, then 3 readings  |
+    |   |          |                                                         | in a row < limit (section 9)   |
     |   |          |                                                         | -> motors start (~0.35 s)      |
     | 5 | Pi       | catch: attitude-rule or PPO until level and calm        | rotation limits off, 50 Hz     |
     | 6 | ArduPilot| GUIDED position hold 10 s -> LAND -> disarm (stick ignored)| (requests the modes, logs)  |
@@ -122,7 +127,7 @@ Version 8 Nov 2026 (d): mode back to ALT_HOLD after cancel / auto-disarm / landi
 
 8. SAME AS THE SIMULATOR  (change one = change both)
 ------------------------------------------------------------------------------------------------------
-    free fall 0.35 g x 3, spool rule, attitude-rule / PPO step (impact_check.py), caught and calm rules,
+    free fall < limit x 3 (0.35 g + spin push, section 9 - throw_check.py e has the same rule), spool rule, attitude-rule / PPO step (impact_check.py), caught and calm rules,
     hover thrust = MOT_THST_HOVER from the FC (0.149). New here: push > 1.5 g first, CH5, the checks,
     buzzer, no SIM_SHOVE, no RC override, GUIDED hold instead of LOITER (does not need the stick).
     NOT the same (8 Nov fix c): ap_link.APLink sends the SITL default EKF origin (Canberra, 584 m) at connect -
@@ -133,6 +138,64 @@ Version 8 Nov 2026 (d): mode back to ALT_HOLD after cancel / auto-disarm / landi
     | log: "EKF3 IMU0 origin set" + "Field        | no such line from the Pi; the FC sets the origin   |
     |  Elevation Set: 584m" right after connect   |  itself from GPS (as in a normal flight)           |
     | start beep could come without GPS (indoors) | start beep only after a real GPS position          |
+
+9. VERSION e (12 Nov 2026): WHY THROW 6 FELL, AND THE 2 FIXES  (full story: "Why Throw 6 Crashed" guide)
+------------------------------------------------------------------------------------------------------
+    Real field day 11 Nov (.bin 2026-11-11_16-29-50): throws 1-5 caught, throw 6 fell. Throw 6 spun 15 rad/s
+    (2.4 turns/s; throws 1-5: 4-8 rad/s). The FC's sensor sits ~2 cm from the spin centre, so the spin pressed
+    it outward: in free fall it read 0.35-0.64 g instead of ~0 g -> never below 0.35 g -> motors stayed OFF.
+    Then the crash (6.3 g) looked like a push and the bounce like free fall -> "detected" ON THE GROUND.
+    The simulator never showed it: its sensor sits exactly at the centre (SIM_IMU_POS 0).
+    Spin push (g) = spin x spin x distance / 9.81.  Distance from the log = reading x 9.81 / (spin x spin):
+    throw 6, 25 readings in the air -> 1.6-2.6 cm (middle 1.9 cm). SPIN_R_M rounds UP to 3 cm.
+    | Rule                          | Before (d)               | Now (e)                                        |
+    |-------------------------------|--------------------------|------------------------------------------------|
+    | free fall = below             | 0.35 g                   | 0.35 g + spin x spin x 0.03 / 9.81             |
+    |   in the hand (spin ~0)       | 0.35 g                   | 0.35 g (same)                                  |
+    |   throw 4 (4.5 rad/s)         | 0.35 g                   | 0.41 g                                         |
+    |   throw 6 (15 rad/s)          | 0.35 g -> MISSED         | 1.04 g -> detected 0.08 s after release        |
+    | 0.5 m or more below the hand  | detected (motors on the  | "[guard] ... not a throw", motors stay OFF     |
+    |                               |  ground, upside down)    |                                                |
+    Unchanged: push > 1.5 g first, 0.8 s window after the push, 3 readings in a row, everything after detection.
+    Replay of the 11 Nov log: throws 1-5 detected at the same moments; throw 6 at +0.08 s (motors ~0.3 s later,
+    ~1 s before the ground); no detection in the hand during any READY. Simulator test with the sensor 2 cm
+    off-centre (SIM_IMU_POS_Z 0.02): see the guide, part "Simulator test".
+    New printouts:
+    | Line                                                                    | Means                         |
+    |-------------------------------------------------------------------------|-------------------------------|
+    | Throw detected - spooling motors  (0.49 g < limit 1.07 g at spin 15.3)  | the reading, limit and spin   |
+    | [guard] -1.1 m below the hand - not a throw (crash / dropped), motors.. | Fix 2 blocked a false start   |
+    Simulator, sensor 2 cm off-centre (SIM_IMU_POS_Z 0.02), fast flip ~15.6 rad/s, THIS script with your switches:
+    | Version | Mode          | Release found | Result                          |
+    |---------|---------------|---------------|---------------------------------|
+    | d       | ppo-policy    | 0.34 s late   | CRASHED (ground at 5.9 m/s)     |
+    | d       | attitude-rule | 0.34 s late   | recovered, lowest +1.64 m       |
+    | e       | ppo-policy    | 0.06 s        | recovered, lowest +0.87 m       |
+    | e       | attitude-rule | 0.06 s        | recovered, lowest +1.37 m       |
+    throw_check.py, same flip, release found in time: attitude-rule 6/6 caught, Round 1 PPO only 1/8 (also
+    with the sensor at the centre) -> at throw-6 spins the PPO's CATCH is weak, not the detection. Real drone: gentle throws first;
+    for fast flips use attitude-rule (mode.txt) until the PPO handles them.
+
+10. VERSION f (12 Nov 2026): OPTION B + B2  (full story: "Q250 Recovery Option B" guide)
+------------------------------------------------------------------------------------------------------
+    Found: once level, the Round 1 PPO asks only ~25 % of hover thrust (it trained 30 m up and lost ~15 m per
+    recovery). The hand-over to the height hold needed "falling < 1 m/s", so a drone that levelled while
+    already falling (fast flips) stayed with the PPO and fell. Gentle throws levelled while still RISING.
+    | Hand-over                 | Before (e)                                | Now (f)                              |
+    |---------------------------|-------------------------------------------|--------------------------------------|
+    | PPO -> height hold        | spin < 1.2 rad/s, tilt < 30 deg,          | spin < 1.2 rad/s, tilt < 30 deg      |
+    |  ("caught")               |  falling < 1 m/s                          |  (falling allowed: B)                |
+    | height hold -> ArduPilot  | + drift < 3 m/s + |vertical| < 1 m/s,     | + |vertical| < 1 m/s, 0.5 s          |
+    |  GUIDED hold ("recovered")|  0.5 s                                    |  (ArduPilot brakes the drift: B2)    |
+    Simulator (SITL 1e001fa0, q250.json, sensor 2 cm off-centre), flip-fast ~15.6 rad/s:
+    | Script                        | Result                                                            |
+    |-------------------------------|-------------------------------------------------------------------|
+    | throw_check, PPO (e)          | 2/13 caught                                                       |
+    | throw_check, PPO + B          | 8/8 caught, lowest 1.4-2.1 m                                      |
+    | throw_real (your switches)    | e+B only: caught, but the 2.4 s height hold sank to the ground;    |
+    |                               | e+B+B2 (= f): 2/2 PPO + 1/1 rule, lowest 1.3-1.8 m                |
+    | up / roll / pitch             | unchanged (all caught, same times)                               |
+    New column meaning: caught_s = level + spin stopped; recovered_s = level + not falling (drift may go on).
 """
 
 import argparse
@@ -162,6 +225,9 @@ HOLD_S = 10.0              # s GUIDED position hold after the catch, then LAND (
 MAX_UP_M = 5.0             # m above the hand: hand over at once (7 Nov plan)
 HZ = 50.0
 FREEFALL_G = 0.35          # accelerometer below this = free fall (released)   - same as throw_check
+SPIN_R_M = 0.03            # m: sensor distance from the spin centre allowed for (12 Nov e, Fix 1). Throw 6 log:
+                           # 1.6-2.6 cm, rounded UP (too small = fast spins missed; bigger = harmless)
+GROUND_GUARD_M = -0.5      # m: no throw is detected this far BELOW the hand (12 Nov e, Fix 2: crash != throw)
 FREEFALL_N = 3             # ... for this many samples in a row (60 ms)         - same as throw_check
 PUSH_G = 1.5               # g: the throw push must come first (7 Nov plan)
 PUSH_TO_FREE_S = 0.8       # s: free fall must start within this time after the push
@@ -213,6 +279,19 @@ def ppo_step(net, link, hover, alt0, last):
 def accel_g(link):
     m = link.msgs.get("RAW_IMU")
     return None if m is None else math.sqrt(m.xacc ** 2 + m.yacc ** 2 + m.zacc ** 2) / 1000.0
+
+
+def spin_rads(link):
+    """Spin from the SAME message as the accelerometer (RAW_IMU gyro, ArduPilot sends mrad/s)."""
+    m = link.msgs.get("RAW_IMU")
+    return 0.0 if m is None else math.sqrt(m.xgyro ** 2 + m.ygyro ** 2 + m.zgyro ** 2) / 1000.0
+
+
+def freefall_limit(w):
+    """Fix 1 (12 Nov e): free-fall limit in g. A spinning sensor that is off the spin centre is pressed outward
+    by w*w*r (centripetal), so a falling drone does NOT read 0 g. Real throw 6 (11 Nov): 15 rad/s, 0.36-0.64 g ->
+    the old fixed 0.35 g missed it. 0 rad/s -> 0.35 g (as before); 4.5 rad/s -> 0.41 g; 15 rad/s -> 1.04 g."""
+    return FREEFALL_G + w * w * SPIN_R_M / 9.80665
 
 
 def landed_state(link):
@@ -470,11 +549,20 @@ def one_throw(link, mode, n, rows, hover, guid, limits, net):
             if g is not None and g > PUSH_G:
                 t_push = t
             if t_push is not None and t - t_push < PUSH_TO_FREE_S and g is not None:
-                n_ff = n_ff + 1 if g < FREEFALL_G else 0
+                w = spin_rads(link)
+                lim = freefall_limit(w)                                  # Fix 1: 0.35 g + the spin's push
+                if h < GROUND_GUARD_M:                                   # Fix 2: below the hand = on the ground
+                    if n_ff or g < lim:
+                        print(f"[guard] {h:.1f} m below the hand - not a throw (crash / dropped), motors stay OFF")
+                    n_ff, t_push = 0, None
+                    continue
+                n_ff = n_ff + 1 if g < lim else 0
                 if n_ff >= FREEFALL_N:
                     t_rel, alt_rel = t - (FREEFALL_N - 1) / HZ, link.alt
                     phase, spool_t0 = "spool", t
-                    print("Throw detected - spooling motors")
+                    print(f"Throw detected - spooling motors  ({g:.2f} g < limit {lim:.2f} g at spin {w:.1f} rad/s)")
+            else:
+                n_ff = 0
             continue
         # ---- in the air: aborts first
         if not link.armed:
@@ -502,7 +590,7 @@ def one_throw(link, mode, n, rows, hover, guid, limits, net):
             phase = "recover"
         if t_upright is None and tilted and t_motors is not None and link.tilt_deg < ic.TILT_OK:
             t_upright = t
-        if phase == "recover" and rate < ic.RATE_OK and link.tilt_deg < ic.TILT_OK and float(link.vel[2]) < 1.0:
+        if phase == "recover" and rate < ic.RATE_OK and link.tilt_deg < ic.TILT_OK:   # f (Option B): falling allowed
             if limits_off:
                 ic.send_params(link, limits)
                 limits_off = False
@@ -512,7 +600,7 @@ def one_throw(link, mode, n, rows, hover, guid, limits, net):
             break
         if t_motors is not None:
             ok = (rate < ic.RATE_OK and link.tilt_deg < ic.TILT_OK
-                  and float(np.linalg.norm(link.vel[0:2])) < ic.HSPEED_OK and abs(float(link.vel[2])) < VZ_OK)
+                  and abs(float(link.vel[2])) < VZ_OK)               # f (B2): drift is braked by ArduPilot GUIDED
             held = (held or t) if ok else None
             if held and t - held >= ic.HELD_S:
                 t_rec, why = held, "recovered"
@@ -579,9 +667,11 @@ def check(link, p, net):
         if ch > CH_HIGH and g is not None:
             if g > PUSH_G:
                 t_push = t
-            n_ff = n_ff + 1 if (g < FREEFALL_G and t_push is not None and t - t_push < PUSH_TO_FREE_S) else 0
+            lim = freefall_limit(spin_rads(link))                        # same rule as a real throw (Fix 1)
+            n_ff = n_ff + 1 if (g < lim and t_push is not None and t - t_push < PUSH_TO_FREE_S) else 0
             if n_ff == FREEFALL_N:
-                print(f"throw detected (check only - motors NOT started)  push {g_max:.2f} g, free fall {g_min:.2f} g")
+                print(f"throw detected (check only - motors NOT started)  push {g_max:.2f} g, free fall {g_min:.2f} g"
+                      f" (limit {lim:.2f} g)")
         if t - t_print >= 1.0:
             ms = None
             if net is not None and link.pos is not None and link.vel is not None:
@@ -610,7 +700,7 @@ def save(base, results, rows, meta):
     with open(f"{base}.json", "w") as f:
         json.dump(dict(meta, results=results), f, indent=2)
     for ext in (".csv", "_steps.csv", ".json"):                 # on the SD card NOW: the battery may be pulled
-        fd = os.open(f"{base}{ext}", os.O_RDONLY)
+        fd = os.open(f"{base}{ext}", os.O_RDWR)       # RDWR: Windows (SITL on the PC) cannot fsync a read-only file
         os.fsync(fd)
         os.close(fd)
 
@@ -681,6 +771,7 @@ def main(args):
     meta = {"date": datetime.datetime.now().isoformat(timespec="seconds"), "mode": args.mode, "hover": hover,
             "model": net.source if net else None, "throw_ch": THROW_CH, "hold_s": HOLD_S, "max_up_m": MAX_UP_M,
             "freefall_g": FREEFALL_G, "freefall_n": FREEFALL_N, "push_g": PUSH_G, "limits": limits,
+            "version": "f (12 Nov 2026)", "spin_r_m": SPIN_R_M, "ground_guard_m": GROUND_GUARD_M,
             "guid_options": guid, "mot_spool_time": p.get("MOT_SPOOL_TIME")}
     results, rows, n = [], [], 0
     ch_was, t_print = rc(link, THROW_CH), 0.0
