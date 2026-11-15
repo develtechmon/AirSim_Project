@@ -27,10 +27,13 @@ Never connect it to the real drone: it sends RC overrides and SIM_ parameters (t
 
     py .\sim_pilot.py flip                           (throw_real: fast flip like throw 6, ~15.6 rad/s)
 
-    py .\sim_pilot.py hits                           (hit_real: climb 30 m, CH11 / CH12 / CH13, low test, take-over)
+    py .\sim_pilot.py hits                           (hit_real b: hover 10 m, CH13 / CH12 / CH11, low test, take-over)
+
+    py .\sim_pilot.py safety                         (throw_real g: the 14 Nov fly-away case - must stay on the ground)
 
     First it sets YOUR drone's values in the SIMULATOR only (printed): FLTMODE1-6, FLTMODE_CH 8, RC9_OPTION 154,
-    MOT_SPIN_ARM 0, MOT_SPOOL_TIME 0.25, RC5_OPTION 0, SIM_BATT_VOLTAGE 15.3, SIM_IMU_POS_Z 0.02 (sensor 2 cm off).
+    MOT_SPIN_ARM 0, MOT_SPOOL_TIME 0.25, RC5_OPTION 0, RC7_OPTION 81, SIM_BATT_VOLTAGE 15.3, SIM_IMU_POS_Z 0.02
+    (sensor 2 cm off). "safety" (14 Nov) also sets GUID_OPTIONS 8 on purpose and puts it back to 0 at the end.
 
 2. EXPECTED RESULT  (pilot window; the script window shows the script's own lines - see the guide, section 7)
 ------------------------------------------------------------------------------------------------------
@@ -47,10 +50,14 @@ Never connect it to the real drone: it sends RC overrides and SIM_ parameters (t
     | flip    | GUIDED hold lasted 10.1 s / after landing: disarmed       | script: "0.60 g < limit 1.12 g at|
     |         |                                                           | spin 15.8", Throw 1 ... caught   |
     |         |                                                           | 0.70 s, lowest about +1.8 m      |
-    | hits    | after CH11 / CH12 / CH13: mode POSHOLD, lowest ~18-27 m   | script: 3x "RECOVERED", "back to |
-    |         | (--level hard: lost 7.6 / 12.2 / 4.0 m on 12 Nov)         |                                  |
-    |         | LOW test at 15 m: mode POSHOLD (refused)                  | you in POSHOLD", REFUSED at 15 m,|
-    |         | after take-over: mode POSHOLD                             | "you took over"                  |
+    | safety  | S1 result: highest +0.00 m (switch left ON = 14 Nov)      | script (throw_real g): "[fix]    |
+    |         | S2 result: highest +0.00 m (switch ON during READY)       | thrust switch ... read back",    |
+    |         | S3 result: highest below 1 m, disarmed after < 1 s        | "[watchdog] ... DISARMED".       |
+    |         |                                                           | Version f: +14 to +19 m each     |
+    | hits    | after CH13 / CH12 / CH11 (hover 10 m, level easy): mode   | script: 3x "RECOVERED" (or       |
+    |         | POSHOLD, lowest ~4-7 m (13 Nov: lost 3.1-6.0 m)           | "rescued"), "back to you in      |
+    |         | LOW test at 6 m: mode POSHOLD (refused)                   | POSHOLD", REFUSED at 6 m,        |
+    |         | after take-over (CH13 spin): mode POSHOLD                 | "you took over", never above 15 m|
 
 3. OUTPUTS
 ------------------------------------------------------------------------------------------------------
@@ -67,7 +74,7 @@ from pymavlink import mavutil
 ALTHOLD, POSHOLD = 1300, 1425          # CH8 positions for FLTMODE2 (AltHold) and FLTMODE3 (PosHold)
 YOUR_VALUES = {"FLTMODE1": 0, "FLTMODE2": 2, "FLTMODE3": 16, "FLTMODE4": 0, "FLTMODE5": 0, "FLTMODE6": 5,
                "FLTMODE_CH": 8, "RC9_OPTION": 154, "MOT_SPIN_ARM": 0, "MOT_SPOOL_TIME": 0.25, "RC5_OPTION": 0,
-               "SIM_BATT_VOLTAGE": 15.3, "SIM_IMU_POS_Z": 0.02}
+               "SIM_BATT_VOLTAGE": 15.3, "SIM_IMU_POS_Z": 0.02, "RC7_OPTION": 81}
 THROWS = {"up": ((0, 0, -30), (0, 0, 0)),          # field C: straight up
           "gentle": ((0, 0, -30), (0, 20, 0)),     # ~4-5 rad/s pitch, rising ~6 m/s, like throws 1-5
           "flip": ((0, 0, -45), (0, 65, 0))}       # ~15.6 rad/s pitch, like throw 6
@@ -78,7 +85,7 @@ class Pilot:
         self.m = mavutil.mavlink_connection(conn, source_system=255)
         self.m.wait_heartbeat()
         self.m.mav.command_long_send(1, 1, mavutil.mavlink.MAV_CMD_SET_MESSAGE_INTERVAL, 0, 33, 100000, 0, 0, 0, 0, 0)
-        self.st = {3: 988, 5: 1000, 8: ALTHOLD, 9: 1000, 11: 1000, 12: 1000, 13: 1000}
+        self.st = {3: 988, 5: 1000, 7: 1000, 8: ALTHOLD, 9: 1000, 11: 1000, 12: 1000, 13: 1000}
         self.mode, self.armed, self.alt, self.t0 = "", False, 0.0, time.time()
 
     def log(self, s):
@@ -87,25 +94,45 @@ class Pilot:
     def ps(self, name, v):
         self.m.mav.param_set_send(1, 1, name.encode(), float(v), 9)
 
+    def pump(self):                                  # one radio frame out, all FC messages in
+        s = self.st
+        self.m.mav.rc_channels_override_send(1, 1, 1500, 1500, s[3], 1500, s[5], 1500, s[7], s[8], s[9], 1500,
+                                             s[11], s[12], s[13], 0, 0, 0, 0, 0)
+        while True:
+            h = self.m.recv_match(blocking=False)
+            if h is None:
+                break
+            ty = h.get_type()
+            if ty == "HEARTBEAT" and h.get_srcSystem() == 1 and h.type != 6:
+                a, md = bool(h.base_mode & 128), mavutil.mode_string_v10(h)
+                if (a, md) != (self.armed, self.mode):
+                    self.log(f"   FC: {'ARMED' if a else 'disarmed'} {md}")
+                self.armed, self.mode = a, md
+            elif ty == "GLOBAL_POSITION_INT":
+                self.alt = h.relative_alt / 1000
+
     def tick(self, sec):
         t = time.time() + sec
         while time.time() < t:
-            s = self.st
-            self.m.mav.rc_channels_override_send(1, 1, 1500, 1500, s[3], 1500, s[5], 1500, 1000, s[8], s[9], 1500,
-                                                 s[11], s[12], s[13], 0, 0, 0, 0, 0)
-            while True:
-                h = self.m.recv_match(blocking=False)
-                if h is None:
-                    break
-                ty = h.get_type()
-                if ty == "HEARTBEAT" and h.get_srcSystem() == 1 and h.type != 6:
-                    a, md = bool(h.base_mode & 128), mavutil.mode_string_v10(h)
-                    if (a, md) != (self.armed, self.mode):
-                        self.log(f"   FC: {'ARMED' if a else 'disarmed'} {md}")
-                    self.armed, self.mode = a, md
-                elif ty == "GLOBAL_POSITION_INT":
-                    self.alt = h.relative_alt / 1000
+            self.pump()
             time.sleep(0.05)
+
+    def watch_ground(self, sec, force_thrust=None):
+        """Safety tests: watch the height for sec seconds; CH7 (motors off) above 3 m, like you did on 14 Nov.
+        force_thrust: also send a 'thrust' command from outside, 200 times a second (a take-off nobody asked for)."""
+        t0, top, t_pump, t_dis, a0 = time.time(), -9.0, 0.0, None, self.alt
+        while time.time() - t0 < sec:
+            if force_thrust is not None and self.armed:
+                self.m.mav.set_attitude_target_send(0, 1, 1, 0b00000111, [1, 0, 0, 0], 0, 0, 0, force_thrust)
+            if time.time() - t_pump > 0.05:
+                self.pump(); t_pump = time.time()
+                top = max(top, self.alt - a0)
+                if not self.armed and t_dis is None:
+                    t_dis = time.time() - t0
+                if self.alt - a0 > 3.0 and self.st[7] == 1000:
+                    self.st[7] = 1900; self.log(f"   PILOT CH7 (motors off) at {self.alt - a0:.1f} m above the start")
+            time.sleep(0.005)
+        return top, t_dis
 
     def arm(self):                                   # CH9 switch (RC9_OPTION 154): disarm position first, then arm
         self.st[9] = 1000; self.tick(0.6); self.st[9] = 1900; self.tick(2)
@@ -199,17 +226,39 @@ def main(args):
         if p.arm():
             p.ch5_on(); p.throw(args.what); p.watch_landing()
             p.st[9] = 1000; p.tick(2)
+    elif args.what == "safety":
+        def reset():
+            p.st[5] = 1000; p.tick(4); p.st[7] = 1900; p.tick(1); p.st[7] = 1000; p.st[9] = 1000; p.tick(3)
+        p.log("== S1 (= 14 Nov): thrust switch LEFT ON (GUID_OPTIONS 8), arm, CH5 ON, NO throw, watch 8 s")
+        p.ps("GUID_OPTIONS", 8); p.tick(1)
+        if p.arm():
+            p.ch5_on(); top, td = p.watch_ground(8)
+            p.log(f"S1 result: highest {top:+.2f} m above the start, mode {p.mode}, {'ARMED' if p.armed else 'disarmed'}")
+        reset()
+        p.log("== S2: READY first, THEN the thrust switch goes ON (after check 10), NO throw, watch 6 s")
+        if p.arm():
+            p.ch5_on(); p.tick(2); p.ps("GUID_OPTIONS", 8); top, td = p.watch_ground(6)
+            p.log(f"S2 result: highest {top:+.2f} m above the start, mode {p.mode}, {'ARMED' if p.armed else 'disarmed'}")
+        reset()
+        p.log("== S3: READY, then a take-off FORCED from outside (thrust 60 %, 200 x a second), watch 5 s")
+        if p.arm():
+            p.ch5_on(); p.tick(1); p.ps("GUID_OPTIONS", 8); top, td = p.watch_ground(5, force_thrust=0.6)
+            p.log(f"S3 result: highest {top:+.2f} m above the start, disarmed after "
+                  f"{'%.2f s' % td if td is not None else 'NEVER'}, mode {p.mode}")
+        reset()
+        p.ps("GUID_OPTIONS", 0); p.tick(1)
+        p.log(f"END: {'ARMED' if p.armed else 'disarmed'} {p.mode}")
     elif args.what == "hits":
-        p.log("== hits: take off (CH9 arm, CH8 PosHold, stick up), hover 30 m, then the hit switches")
-        p.arm(); p.climb_to(30)
-        p.hit(11)
-        p.climb_to(30); p.hit(12)
-        p.climb_to(30); p.hit(13)
-        p.climb_to(15); p.st[11] = 1900; p.tick(3)
-        p.log(f"   LOW test CH11 at 15 m: mode {p.mode} (expect POSHOLD = refused)"); p.st[11] = 1000; p.tick(2)
-        p.climb_to(30); p.st[11] = 1900; p.log("PILOT CH11 ON, then TAKE OVER 1.0 s later: CH8 AltHold -> PosHold")
+        p.log("== hits: take off (CH9 arm, CH8 PosHold, stick up), hover 10 m, then the hit switches (spin first)")
+        p.arm(); p.climb_to(10)
+        p.hit(13)
+        p.climb_to(10); p.hit(12)
+        p.climb_to(10); p.hit(11)
+        p.climb_to(6); p.st[13] = 1900; p.tick(3)
+        p.log(f"   LOW test CH13 at 6 m: mode {p.mode} (expect POSHOLD = refused)"); p.st[13] = 1000; p.tick(2)
+        p.climb_to(10); p.st[13] = 1900; p.log("PILOT CH13 ON, then TAKE OVER 1.0 s later: CH8 AltHold -> PosHold")
         p.tick(1.0); p.st[8] = ALTHOLD; p.tick(0.5); p.st[8] = POSHOLD; p.tick(4)
-        p.log(f"   after take-over: mode {p.mode}, height {p.alt:.1f} m"); p.st[11] = 1000; p.tick(2)
+        p.log(f"   after take-over: mode {p.mode}, height {p.alt:.1f} m"); p.st[13] = 1000; p.tick(2)
         p.log("landing: PosHold, stick low")
         p.st[3] = 1300; t = time.time()
         while p.alt > 0.3 and time.time() - t < 90:
@@ -220,6 +269,6 @@ def main(args):
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("what", choices=["field", "gentle", "flip", "hits"])
+    ap.add_argument("what", choices=["field", "gentle", "flip", "hits", "safety"])
     ap.add_argument("--conn", default="tcp:127.0.0.1:5763", help="SITL SERIAL2 (MAVProxy has 5760, the script 5762)")
     main(ap.parse_args())

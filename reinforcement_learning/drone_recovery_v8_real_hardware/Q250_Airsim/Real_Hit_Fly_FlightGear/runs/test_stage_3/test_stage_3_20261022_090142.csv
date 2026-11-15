@@ -1,0 +1,21 @@
+n,type,level,recovery,cmd_rates,planned_turns,turns,impact_s,peak_rate_rads,peak_tilt_deg,recovered,recovery_time_s,alt_loss_m,min_alt_m,virtual_ground,drift_m,impact_cut_low,alt_end_impact_m,spin_stopped_s,rule_handover_s,rescued
+1,flip,hard,ppo-policy,"[0.0, 16.0, 0.0]",2.32,2.35,1.25,14.41,171.9,True,2.51,15.8,14.19,False,15.42,False,25.58,1.03,2.51,False
+2,flip,hard,bc-policy,"[0.0, 16.0, 0.0]",2.32,2.34,1.23,14.61,170.0,True,2.91,16.81,13.18,False,17.79,False,25.74,1.74,2.91,False
+3,flip,hard,attitude-rule,"[0.0, 16.0, 0.0]",2.32,2.34,1.24,14.13,174.6,True,0.81,14.07,15.91,False,14.18,False,25.62,0.62,,False
+4,flip,hard,spin-stop-fast,"[0.0, 16.0, 0.0]",2.32,2.34,1.26,14.34,172.5,True,1.28,15.05,14.93,False,15.54,False,25.51,0.65,,False
+5,flip,hard,ppo-policy,"[0.0, 16.0, 0.0]",2.63,2.66,1.4,14.35,178.3,True,0.91,13.04,16.95,False,13.09,False,24.1,0.23,1.27,False
+6,flip,hard,bc-policy,"[0.0, 16.0, 0.0]",2.63,2.64,1.38,14.3,171.6,True,2.26,14.19,15.79,False,14.29,False,24.56,0.75,2.26,False
+7,flip,hard,attitude-rule,"[0.0, 16.0, 0.0]",2.63,2.66,1.38,14.89,174.7,True,2.69,14.45,15.54,False,14.64,False,24.52,1.31,2.69,False
+8,flip,hard,spin-stop-fast,"[0.0, 16.0, 0.0]",2.63,2.7,1.4,14.74,172.4,True,1.82,16.25,13.73,False,18.35,False,24.27,1.12,,False
+9,flip,hard,ppo-policy,"[0.0, 16.0, 0.0]",2.22,2.26,1.21,14.0,175.5,True,2.09,15.59,14.41,False,16.04,False,25.67,0.78,2.09,False
+10,flip,hard,bc-policy,"[0.0, 16.0, 0.0]",2.22,2.26,1.21,14.76,173.5,True,2.67,16.42,13.57,False,16.94,False,25.77,1.22,2.67,False
+11,flip,hard,attitude-rule,"[0.0, 16.0, 0.0]",2.22,2.25,1.19,15.09,171.9,True,2.72,17.36,12.62,False,18.06,False,25.97,1.45,2.72,False
+12,flip,hard,spin-stop-fast,"[0.0, 16.0, 0.0]",2.22,2.22,1.18,14.51,172.6,True,3.43,15.37,14.61,False,20.6,False,26.1,1.1,,False
+13,flip,hard,ppo-policy,"[16.0, 0.0, 0.0]",2.36,2.38,1.27,14.09,177.4,True,0.67,13.11,16.87,False,13.29,False,25.32,0.59,,False
+14,flip,hard,bc-policy,"[16.0, 0.0, 0.0]",2.36,2.36,1.26,13.9,173.7,True,0.77,13.73,16.25,False,13.79,False,25.5,0.56,,False
+15,flip,hard,attitude-rule,"[16.0, 0.0, 0.0]",2.36,2.37,1.27,14.05,176.2,True,0.77,13.71,16.27,False,13.78,False,25.4,0.45,,False
+16,flip,hard,spin-stop-fast,"[16.0, 0.0, 0.0]",2.36,2.37,1.26,14.35,173.9,True,0.96,14.54,15.45,False,14.56,False,25.4,0.51,,False
+17,flip,hard,ppo-policy,"[-16.0, 0.0, 0.0]",2.9,2.91,1.51,14.33,175.4,True,0.44,12.76,17.23,False,13.14,False,23.15,0.16,,False
+18,flip,hard,bc-policy,"[-16.0, 0.0, 0.0]",2.9,2.91,1.51,14.27,174.4,True,0.49,13.19,16.79,False,13.62,False,23.19,0.14,,False
+19,flip,hard,attitude-rule,"[-16.0, 0.0, 0.0]",2.9,2.9,1.51,14.3,173.7,True,0.47,12.87,17.11,False,13.29,False,23.16,0.14,,False
+20,flip,hard,spin-stop-fast,"[-16.0, 0.0, 0.0]",2.9,2.92,1.52,14.46,179.0,True,1.67,16.84,13.14,False,16.89,False,23.09,0.14,,False

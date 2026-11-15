@@ -14,11 +14,11 @@ throw_check.py - THROW TEST: throw the drone into the air, then catch it (ArduPi
 
     First time only (MAVProxy):  param load q250_throw.parm   then   reboot
 
-    Timing check, then the thesis run (PowerShell, this folder, Stage 3 PPO in models\):
+    Timing check, then the thesis run (PowerShell, this folder; models\round1_final.zip + obs_norm.npz = Round 1 PPO, same as the F450 runs):
 
     py .\throw_check.py --types up --modes attitude-rule
 
-    py .\throw_check.py --types up roll pitch --modes throw-mode attitude-rule ppo-policy --model .\models\gated_curriculum_policy.zip --repeats 3
+    py .\throw_check.py --types up roll pitch --modes throw-mode attitude-rule ppo-policy --model .\models\round1_final.zip --repeats 3
 
     Expected (my run 7 Nov 2026, ArduCopter 4.4.4 SITL, q250.json + q250_throw.parm, 1 throw each):
     | Throw | throw-mode               | attitude-rule            | ppo-policy               |
@@ -31,6 +31,49 @@ throw_check.py - THROW TEST: throw the drone into the air, then catch it (ArduPi
     First line must show "hover thrust 0.15". "motors on" ~1.0 s = simulator too slow (close FlightGear).
     "not recovered" with peak rate staying 2-3 rad/s = old q250.json (inertia too low).
     The F450 numbers in section 4 below were made WITHOUT a frame file = ArduPilot's generic 3 kg quad.
+
+
+0b. 12 NOV 2026 (e): FAST-SPIN THROW + SENSOR OFF-CENTRE  (= why real throw 6 fell; "Why Throw 6 Crashed" guide)
+------------------------------------------------------------------------------------------------------
+    Real drone: sensor ~2 cm from the spin centre -> a 15 rad/s spin presses it (0.35-0.64 g in free fall),
+    the fixed 0.35 g rule missed the throw. SITL put the sensor at the centre, so it never showed this.
+    New: release limit 0.35 g + spin x spin x SPIN_R_M / 9.81 (SPIN_R_M 0.03), throw types "flip" (~12 rad/s)
+    and "flip-fast" (~15.6 rad/s = throw 6), --old-rule = the rule before (fixed 0.35 g).
+    Move the simulated sensor 2 cm (MAVProxy, works at once):
+
+    param set SIM_IMU_POS_Z 0.02
+
+    py .\throw_check.py --types flip --modes ppo-policy --model .\models\round1_final.zip --old-rule --repeats 3
+
+    py .\throw_check.py --types flip --modes ppo-policy --model .\models\round1_final.zip --repeats 3
+
+    py .\throw_check.py --types flip-fast --modes attitude-rule ppo-policy --model .\models\round1_final.zip --repeats 3
+
+    Back to the normal (thesis) simulator afterwards:   param set SIM_IMU_POS_Z 0
+    Expected (my runs 12 Nov 2026, SITL 1e001fa0, q250.json, SIM_IMU_POS_Z 0.02):
+    | Run                                  | Result                                                        |
+    |--------------------------------------|---------------------------------------------------------------|
+    | flip, --old-rule, ppo-policy         | 3/3 CRASHED: release found 0.32-0.34 s late (= real throw 6)  |
+    | flip, new rule, ppo-policy           | 3/3 recovered: release found 0.06 s after it, lowest 4.0 m    |
+    | flip-fast, new rule, attitude-rule   | 3/3 recovered (lowest 2.3-2.6 m)                              |
+    | flip-fast, new rule, ppo-policy      | 1/3 recovered, 2 CRASHED - also with the sensor at the centre |
+    |                                      | (0/2); all runs: PPO 1/8, rule 6/6 -> the Round 1 PPO's catch |
+    |                                      | is weak at this spin, not the detection                       |
+    | up / roll / pitch, sensor at centre  | old and new rule give the same results (thesis runs valid)    |
+    In free fall at 15.6 rad/s the simulated sensor (2 cm) read 0.38-0.67 g; the real one read 0.35-0.64 g.
+
+
+0c. 12 NOV 2026 (f): OPTION B + B2  (= throw_real.py f; "Q250 Recovery Option B" guide)
+------------------------------------------------------------------------------------------------------
+    The PPO hands over to the height hold as soon as it is level + not spinning (falling allowed, B); the
+    height hold hands over to LOITER as soon as it is not falling (drift allowed, B2). Before (e) the PPO had to
+    wait for "falling < 1 m/s" and, with ~25 % of hover thrust when level, fast flips fell.
+    | Run (SIM_IMU_POS_Z 0.02)                     | e (before)                 | f (now)                    |
+    |----------------------------------------------|----------------------------|----------------------------|
+    | flip-fast, ppo-policy                        | 2/13 caught                | 8/8 caught (lowest 1.4-2.1)|
+    | flip-fast, attitude-rule                     | caught                     | caught                     |
+    | up / roll / pitch (sensor centre)            | all caught                 | all caught, same times     |
+    recovered_s now = level + not falling (no drift condition) - see the guide when comparing with older runs.
 
 
 1. HOW TO RUN  (Windows PowerShell, in the folder with these scripts, e.g. Throw_and_Fly\ - SITL must run in WSL, section 3)
@@ -64,21 +107,24 @@ throw_check.py - THROW TEST: throw the drone into the air, then catch it (ArduPi
     |------|-------------------------------------------|------------------------------------------------------|
     | 1    | mode THROW, arm (motors stopped)          | mode GUIDED_NOGPS, arm (motors idle on the ground)   |
     | 2    | the script THROWS the drone: SIM_SHOVE (push) + SIM_TWIST (spin) for 0.3 s                       |
-    | 3    | ArduPilot detects the throw itself        | the script detects it: accelerometer < 0.35 g for    |
-    |      | (needs GPS - see section 4)               | 3 samples in a row (free fall = released)            |
+    | 3    | ArduPilot detects the throw itself        | the script detects it: accelerometer < limit for     |
+    |      | (needs GPS - see section 4)               | 3 samples in a row (free fall = released). Limit =   |
+    |      |                                           | 0.35 g + spin push (12 Nov e, section 0b)            |
     | 4    | ArduPilot spools up, uprights, holds      | motors spool up (max 1 s), then the recovery flies:  |
     |      |                                           | level + thrust (rule) or the network (PPO / BC)      |
     | 5    | when calm: ArduPilot LOITER holds the recovery point 10 s (the script does the RECOVERY only), |
     |      | measured: braking distance + how still it holds. Then LAND right there, check it disarmed.     |
     |      | (--fly-back: GUIDED hold 3 s, fly back to the throw spot - section 8)                          |
     "Released" (the moment the hand lets go) is found the SAME way for every mode: first accelerometer
-    reading below 0.35 g after the push. All times in the results count from that moment.
+    reading below the limit after the push (0.35 g + spin push, section 0b). All times in the results count from that moment.
 
     | Throw  | Push (body, m/s^2, 0.3 s) | Spin (rad/s^2, 0.3 s) | Roughly                                  |
     |--------|---------------------------|-----------------------|------------------------------------------|
     | up     | 30 up                     | none                  | ~6 m/s up, top ~2.5 m                    |
     | roll   | 45 up                     | 40 roll               | ~12 rad/s roll, tumbles ~1 turn          |
     | pitch  | 45 up                     | 40 pitch              | same about pitch                         |
+    | flip   | 45 up                     | 50 pitch              | ~12 rad/s fast flip (12 Nov, measured)   |
+    | flip-fast | 45 up                  | 65 pitch              | ~15.6 rad/s = your real throw 6 (12 Nov) |
 
 
 3. SIMULATOR  (WSL - ArduPilot's own physics, NOT Gazebo: SIM_SHOVE / SIM_TWIST only exist there)
@@ -292,6 +338,7 @@ from ap_link import APLink, RateKeeper, M
 
 HZ = 50.0
 FREEFALL_G = 0.35          # accelerometer below this = free fall (released)
+SPIN_R_M = 0.03            # m: + the spin's push (12 Nov e, = throw_real.py e). --old-rule sets 0 (= before)
 FREEFALL_N = 3             # ... for this many samples in a row (60 ms)
 IDLE_S = 1.5               # s on the ground, armed, before the throw
 WAIT_MAX_S = 4.0           # s after the push: no release / no catch by then = not detected
@@ -318,6 +365,8 @@ THROWS = {                 # push (body m/s^2, z negative = up), spin (body rad/
     "up":    {"shove": (0.0, 0.0, -30.0), "twist": (0.0, 0.0, 0.0), "ms": 300},
     "roll":  {"shove": (0.0, 0.0, -45.0), "twist": (40.0, 0.0, 0.0), "ms": 300},
     "pitch": {"shove": (0.0, 0.0, -45.0), "twist": (0.0, 40.0, 0.0), "ms": 300},
+    "flip":  {"shove": (0.0, 0.0, -45.0), "twist": (0.0, 50.0, 0.0), "ms": 300},   # 12 Nov: ~12 rad/s fast flip
+    "flip-fast": {"shove": (0.0, 0.0, -45.0), "twist": (0.0, 65.0, 0.0), "ms": 300},   # 12 Nov: ~15.6 rad/s = real throw 6
 }
 LAUNCH = {                 # --launch (Gazebo): the drone throws ITSELF - body rates of the spin kick (rad/s)
     "up":    (0.0, 0.0, 0.0),
@@ -340,6 +389,18 @@ def accel_g(link):
     if m is None:
         return None
     return math.sqrt(m.xacc ** 2 + m.yacc ** 2 + m.zacc ** 2) / 1000.0
+
+
+def spin_rads(link):
+    """Spin from the same RAW_IMU message as the accelerometer (ArduPilot sends mrad/s)."""
+    m = link.msgs.get("RAW_IMU")
+    return 0.0 if m is None else math.sqrt(m.xgyro ** 2 + m.ygyro ** 2 + m.zgyro ** 2) / 1000.0
+
+
+def freefall_limit(w):
+    """Free-fall limit in g (12 Nov e, same as throw_real.py e): 0.35 g + the push of the spin on a sensor that
+    is SPIN_R_M off the spin centre (w*w*r). With --old-rule SPIN_R_M = 0 -> the fixed 0.35 g used before."""
+    return FREEFALL_G + w * w * SPIN_R_M / 9.80665
 
 
 def landed_state(link):
@@ -667,7 +728,7 @@ def one_throw(link, kind, mode, n, rows, hover, guid, limits, after="loiter", la
             tilted = True
         # ---- release: first free-fall readings after the push (same rule for every mode)
         if t_rel is None and g is not None and t - t_trig > 0.05:
-            n_ff = n_ff + 1 if g < FREEFALL_G else 0
+            n_ff = n_ff + 1 if g < freefall_limit(spin_rads(link)) else 0
             if n_ff >= FREEFALL_N:
                 t_rel = t - (FREEFALL_N - 1) / HZ
                 alt_rel = link.alt                         # (network input uses height CHANGE only)
@@ -696,8 +757,7 @@ def one_throw(link, kind, mode, n, rows, hover, guid, limits, after="loiter", la
         if t_upright is None and tilted and t_motors is not None and link.tilt_deg < ic.TILT_OK:
             t_upright = t
         # ---- caught: same hand-back rule as impact_check (spinning stopped, upright, not falling fast)
-        if script and phase == "recover" and rate < ic.RATE_OK and link.tilt_deg < ic.TILT_OK \
-                and float(link.vel[2]) < 1.0:
+        if script and phase == "recover" and rate < ic.RATE_OK and link.tilt_deg < ic.TILT_OK:   # f: falling allowed (B)
             if limits:
                 ic.send_params(link, limits)                 # stock rotation limits again
             phase, t_caught = "caught", t
@@ -708,7 +768,7 @@ def one_throw(link, kind, mode, n, rows, hover, guid, limits, after="loiter", la
         # ---- calm?
         if t_motors is not None:
             ok = (rate < ic.RATE_OK and link.tilt_deg < ic.TILT_OK and h > ALT_OK
-                  and float(np.linalg.norm(link.vel[0:2])) < ic.HSPEED_OK and abs(float(link.vel[2])) < VZ_OK)
+                  and abs(float(link.vel[2])) < VZ_OK)               # f: drift braked by ArduPilot (B2)
             held = (held or t) if ok else None
             if held and t - held >= ic.HELD_S:
                 t_rec = held
@@ -771,6 +831,10 @@ def one_throw(link, kind, mode, n, rows, hover, guid, limits, after="loiter", la
 
 
 def main(args):
+    global SPIN_R_M
+    if args.old_rule:
+        SPIN_R_M = 0.0                                        # the rule before 12 Nov: fixed 0.35 g
+    print(f"Release rule: below 0.35 g + spin push (SPIN_R_M {SPIN_R_M} m){'  = OLD RULE' if args.old_rule else ''}")
     default = ["attitude-rule"] if args.launch else ["throw-mode", "attitude-rule"]
     modes = list(args.modes or (default + (["ppo-policy"] if args.model else [])))
     if args.launch and "throw-mode" in modes:
@@ -915,6 +979,7 @@ def main(args):
         json.dump({"date": datetime.datetime.now().isoformat(timespec="seconds"), "position_source": src,
                    "hover": hover, "modes": modes, "types": args.types, "repeats": args.repeats,
                    "throws": THROWS, "freefall_g": FREEFALL_G, "freefall_n": FREEFALL_N, "model": args.model,
+                   "spin_r_m": SPIN_R_M, "old_rule": bool(args.old_rule),
                    "after_recovery": after, "launch": bool(args.launch), "loiter_s": LOITER_S, "stopped": stop, "summary": summary, "results": results},
                   open(f"{base}.json", "w"), indent=2)
         print("\n" + "=" * 70)
@@ -937,6 +1002,8 @@ if __name__ == "__main__":
     ap.add_argument("--conn", default="tcp:127.0.0.1:5762")
     ap.add_argument("--launch", action="store_true",
                     help="Gazebo: the drone throws itself (climb, push, spin, release) - no SIM_SHOVE needed")
+    ap.add_argument("--old-rule", action="store_true",
+                    help="release rule before 12 Nov (fixed 0.35 g) - to reproduce the throw 6 miss")
     ap.add_argument("--fly-back", action="store_true",
                     help="old ending: GUIDED hold 3 s, fly back to the throw spot (default: LOITER where it recovered)")
     main(ap.parse_args())

@@ -1,0 +1,286 @@
+{
+  "date": "20261018_101119",
+  "settings": {
+    "types": [
+      "flip",
+      "spin",
+      "bird"
+    ],
+    "levels": [
+      "easy",
+      "medium",
+      "hard"
+    ],
+    "repeats": 1,
+    "seed": 0,
+    "conn": "tcp:127.0.0.1:5762"
+  },
+  "disturbances": {
+    "flip": {
+      "rates": [
+        6.0,
+        0.0,
+        0.0
+      ],
+      "dur": 0.4
+    },
+    "spin": {
+      "rates": [
+        0.0,
+        0.0,
+        6.0
+      ],
+      "dur": 1.0
+    },
+    "bird": {
+      "rates": [
+        4.0,
+        4.0,
+        3.0
+      ],
+      "dur": 0.25
+    }
+  },
+  "levels": {
+    "easy": 0.7,
+    "medium": 1.0,
+    "hard": 1.5
+  },
+  "criterion": {
+    "rate_rads": 1.2,
+    "tilt_deg": 30.0,
+    "alt_m": 3.0,
+    "hspeed_ms": 3.0,
+    "held_s": 0.5,
+    "max_s": 10.0
+  },
+  "summary": {
+    "flip/easy": {
+      "impacts": 1,
+      "recovered_pct": 100.0,
+      "mean_peak_tilt_deg": 101.1,
+      "mean_recovery_s": 1.44,
+      "mean_alt_loss_m": 3.12
+    },
+    "flip/medium": {
+      "impacts": 1,
+      "recovered_pct": 100.0,
+      "mean_peak_tilt_deg": 142.6,
+      "mean_recovery_s": 1.2,
+      "mean_alt_loss_m": 5.94
+    },
+    "flip/hard": {
+      "impacts": 1,
+      "recovered_pct": 100.0,
+      "mean_peak_tilt_deg": 157.2,
+      "mean_recovery_s": 1.0,
+      "mean_alt_loss_m": 5.12
+    },
+    "spin/easy": {
+      "impacts": 1,
+      "recovered_pct": 100.0,
+      "mean_peak_tilt_deg": 2.6,
+      "mean_recovery_s": 1.69,
+      "mean_alt_loss_m": 0.0
+    },
+    "spin/medium": {
+      "impacts": 1,
+      "recovered_pct": 100.0,
+      "mean_peak_tilt_deg": 0.6,
+      "mean_recovery_s": 1.86,
+      "mean_alt_loss_m": 0.01
+    },
+    "spin/hard": {
+      "impacts": 1,
+      "recovered_pct": 100.0,
+      "mean_peak_tilt_deg": 0.6,
+      "mean_recovery_s": 1.78,
+      "mean_alt_loss_m": 0.01
+    },
+    "bird/easy": {
+      "impacts": 1,
+      "recovered_pct": 100.0,
+      "mean_peak_tilt_deg": 64.2,
+      "mean_recovery_s": 0.82,
+      "mean_alt_loss_m": 0.41
+    },
+    "bird/medium": {
+      "impacts": 1,
+      "recovered_pct": 100.0,
+      "mean_peak_tilt_deg": 92.8,
+      "mean_recovery_s": 1.18,
+      "mean_alt_loss_m": 1.99
+    },
+    "bird/hard": {
+      "impacts": 1,
+      "recovered_pct": 100.0,
+      "mean_peak_tilt_deg": 107.2,
+      "mean_recovery_s": 1.09,
+      "mean_alt_loss_m": 3.22
+    }
+  },
+  "impacts": [
+    {
+      "n": 1,
+      "type": "flip",
+      "level": "easy",
+      "cmd_rates": [
+        -4.2,
+        0.0,
+        0.0
+      ],
+      "cmd_duration_s": 0.4,
+      "peak_tilt_deg": 101.1,
+      "peak_rate_rads": 6.51,
+      "recovered": true,
+      "recovery_time_s": 1.44,
+      "alt_loss_m": 3.12,
+      "drift_m": 8.21,
+      "impact_cut_low": false
+    },
+    {
+      "n": 2,
+      "type": "flip",
+      "level": "medium",
+      "cmd_rates": [
+        6.0,
+        0.0,
+        0.0
+      ],
+      "cmd_duration_s": 0.4,
+      "peak_tilt_deg": 142.6,
+      "peak_rate_rads": 8.63,
+      "recovered": true,
+      "recovery_time_s": 1.2,
+      "alt_loss_m": 5.94,
+      "drift_m": 7.22,
+      "impact_cut_low": false
+    },
+    {
+      "n": 3,
+      "type": "flip",
+      "level": "hard",
+      "cmd_rates": [
+        0.0,
+        -9.0,
+        0.0
+      ],
+      "cmd_duration_s": 0.4,
+      "peak_tilt_deg": 157.2,
+      "peak_rate_rads": 8.11,
+      "recovered": true,
+      "recovery_time_s": 1.0,
+      "alt_loss_m": 5.12,
+      "drift_m": 5.56,
+      "impact_cut_low": false
+    },
+    {
+      "n": 4,
+      "type": "spin",
+      "level": "easy",
+      "cmd_rates": [
+        0.0,
+        0.0,
+        -4.2
+      ],
+      "cmd_duration_s": 1.0,
+      "peak_tilt_deg": 2.6,
+      "peak_rate_rads": 2.56,
+      "recovered": true,
+      "recovery_time_s": 1.69,
+      "alt_loss_m": -0.0,
+      "drift_m": 0.43,
+      "impact_cut_low": false
+    },
+    {
+      "n": 5,
+      "type": "spin",
+      "level": "medium",
+      "cmd_rates": [
+        0.0,
+        0.0,
+        6.0
+      ],
+      "cmd_duration_s": 1.0,
+      "peak_tilt_deg": 0.6,
+      "peak_rate_rads": 2.65,
+      "recovered": true,
+      "recovery_time_s": 1.86,
+      "alt_loss_m": 0.01,
+      "drift_m": 0.15,
+      "impact_cut_low": false
+    },
+    {
+      "n": 6,
+      "type": "spin",
+      "level": "hard",
+      "cmd_rates": [
+        0.0,
+        0.0,
+        -9.0
+      ],
+      "cmd_duration_s": 1.0,
+      "peak_tilt_deg": 0.6,
+      "peak_rate_rads": 2.57,
+      "recovered": true,
+      "recovery_time_s": 1.78,
+      "alt_loss_m": 0.01,
+      "drift_m": 0.09,
+      "impact_cut_low": false
+    },
+    {
+      "n": 7,
+      "type": "bird",
+      "level": "easy",
+      "cmd_rates": [
+        -2.8,
+        -2.8,
+        -2.1
+      ],
+      "cmd_duration_s": 0.25,
+      "peak_tilt_deg": 64.2,
+      "peak_rate_rads": 6.23,
+      "recovered": true,
+      "recovery_time_s": 0.82,
+      "alt_loss_m": 0.41,
+      "drift_m": 3.29,
+      "impact_cut_low": false
+    },
+    {
+      "n": 8,
+      "type": "bird",
+      "level": "medium",
+      "cmd_rates": [
+        -4.0,
+        4.0,
+        -3.0
+      ],
+      "cmd_duration_s": 0.25,
+      "peak_tilt_deg": 92.8,
+      "peak_rate_rads": 7.21,
+      "recovered": true,
+      "recovery_time_s": 1.18,
+      "alt_loss_m": 1.99,
+      "drift_m": 5.88,
+      "impact_cut_low": false
+    },
+    {
+      "n": 9,
+      "type": "bird",
+      "level": "hard",
+      "cmd_rates": [
+        6.0,
+        -6.0,
+        4.5
+      ],
+      "cmd_duration_s": 0.25,
+      "peak_tilt_deg": 107.2,
+      "peak_rate_rads": 7.71,
+      "recovered": true,
+      "recovery_time_s": 1.09,
+      "alt_loss_m": 3.22,
+      "drift_m": 5.41,
+      "impact_cut_low": false
+    }
+  ]
+}

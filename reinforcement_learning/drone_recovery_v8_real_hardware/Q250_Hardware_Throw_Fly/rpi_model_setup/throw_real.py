@@ -11,6 +11,11 @@ Version 12 Nov 2026 (e): FAST-SPIN THROWS ARE NO LONGER MISSED (real throw 6, 11
 Fix 1 free-fall limit = 0.35 g + the spin's push (SPIN_R_M 0.03 m); Fix 2 no detection 0.5 m below the hand.
 Version 12 Nov 2026 (f): OPTION B + B2 - the PPO only levels the drone, the height hold brakes the fall, ArduPilot
 brakes the drift (section 10). Fast flips in the simulator: PPO 2/13 -> 8/8 caught.
+Version 14 Nov 2026 (g): NO TAKE-OFF WITHOUT A THROW (real fly-away 14 Nov: 43 m up from the ground) - section 11:
+every parameter write is repeated until the FC confirms it, CH5 ON checks the thrust switch, READY sends
+thrust 0 (safe in both thrust modes), and a READY watchdog stops any motor start that is not a throw.
+15 Nov 2026 (g2): the READY watchdog also reads the MOTOR OUTPUTS 50 x a second (your PC test 15 Nov: the
+"in the air" flag alone reacted at +1.1 m) - a motor that turns while READY = disarm at once.
 
 0. SETTINGS AT THE TOP (change here only)
 ------------------------------------------------------------------------------------------------------
@@ -57,7 +62,7 @@ brakes the drift (section 10). Fast flips in the simulator: PPO 2/13 -> 8/8 caug
     |---|----------|---------------------------------------------------------|--------------------------------|
     | 1 | Pilot    | CH6 middle BEFORE the battery; CH8 ALT_HOLD; stick LOW  | (WAIT: prints status)          |
     | 2 | Pilot    | CH9 arm. Props still. Stick stays LOW                   | ArduPilot arming tone          |
-    | 3 | Pilot    | CH5 ON                                                  | 9 checks -> GUIDED_NOGPS ->    |
+    | 3 | Pilot    | CH5 ON                                                  | 10 checks -> GUIDED_NOGPS ->   |
     |   |          |                                                         | 3 SHORT BEEPS = READY          |
     | 4 | Thrower  | toss up and away (READY waits until CH5 OFF)            | push > 1.5 g, then 3 readings  |
     |   |          |                                                         | in a row < limit (section 9)   |
@@ -66,6 +71,7 @@ brakes the drift (section 10). Fast flips in the simulator: PPO 2/13 -> 8/8 caug
     | 6 | ArduPilot| GUIDED position hold 10 s -> LAND -> disarm (stick ignored)| (requests the modes, logs)  |
     | 7 | Pilot    | take over ANY time (catch, hold, LAND): stick to MIDDLE,| "you took over (POSHOLD) - the |
     |   |          | then CH8 to POSHOLD (or Loiter; never Stabilize)        |  script lets go"               |
+    |   | Pi       | (g) thrust switch OFF + limits back, WAITS for the FC   | "[params] confirmed by the FC" |
     | 8 | Anyone   | pick it up ONLY after it is disarmed; CH5 OFF; CH9 OFF  | mode back to ALT_HOLD by itself|
     |   |          |                                                         | -> arm again at once (8 Nov d) |
     Why the stick stays LOW: ALT_HOLD on the ground with the stick at middle or above prepares take-off and
@@ -90,6 +96,8 @@ brakes the drift (section 10). Fast flips in the simulator: PPO 2/13 -> 8/8 caug
     | 7 | EKF GPS position    | EKF_STATUS "absolute position"  | = "EKF3 IMU0 is using GPS"; GUIDED needs it |
     | 8 | CH3 throttle stick  | LOW (below 1300)                | ALT_HOLD + stick middle = props spin        |
     | 9 | battery             | >= 14.9 V (3.72 V per cell)     | enough thrust for the catch (was 15.2, 8 Nov)|
+    | 10| thrust switch OFF   | GUID_OPTIONS bit 8 = 0 and      | bit 8 left ON = READY takes off (14 Nov);   |
+    |   |  + rotation limits  | ATC_ACCEL_* not 0, READ BACK    | fixed + read back first, else REFUSED (g)   |
     At start the script also puts back GUID_OPTIONS / ATC_ACCEL_* if a stopped run left test values saved.
 
 5. TAKE OVER / ABORT  (any time)
@@ -196,6 +204,38 @@ brakes the drift (section 10). Fast flips in the simulator: PPO 2/13 -> 8/8 caug
     |                               | e+B+B2 (= f): 2/2 PPO + 1/1 rule, lowest 1.3-1.8 m                |
     | up / roll / pitch             | unchanged (all caught, same times)                               |
     New column meaning: caught_s = level + spin stopped; recovered_s = level + not falling (drift may go on).
+
+11. VERSION g (14 Nov 2026): NO TAKE-OFF WITHOUT A THROW  (full story: "Why It Shot Up" guide)
+------------------------------------------------------------------------------------------------------
+    Real fly-away 14 Nov (.bin 2026-11-14_16-16-42, last flight): the thrust number the Pi sends has two
+    meanings, chosen by GUID_OPTIONS bit 8 on the FC: bit OFF = climb rate (0.5 = hold), bit ON = real throttle
+    (0.5 = 50 %). The script sets the bit ON for the catch and OFF afterwards. After the throw at 715 s the
+    "OFF" message never reached the FC (sent once, never checked). Next CH5 ON: READY sent 0.5 = "stay on the
+    ground" -> the FC read 50 % throttle (hover is 14 %) -> 43 m up in 3 s, CH7, fell from 54 m.
+    | # | Weak point (f)                               | Now (g)                                           |
+    |---|----------------------------------------------|---------------------------------------------------|
+    | A | parameters sent once, never checked          | every write is REPEATED every 0.1 s until the FC  |
+    |   |                                              | echoes the value (ParamKeeper); after a throw the |
+    |   |                                              | script waits for "confirmed" (3 s), else 2 long   |
+    | B | CH5 ON never looked at GUID_OPTIONS          | check 10: read from the FC, fixed + read back if  |
+    |   |                                              | wrong, REFUSED if it will not confirm             |
+    | C | READY sent thrust 0.5 (safe only bit OFF)    | READY sends 0: on the ground in BOTH modes        |
+    | D | READY never watched for a take-off           | watchdog: a MOTOR TURNS (g2, 50 x a second) or the|
+    |   |                                              | FC says "in the air" without a throw -> forced    |
+    |   |                                              | DISARM (below 1 m) or LAND + 2 long beeps         |
+    New printouts:
+    | Line                                                              | Means                               |
+    |-------------------------------------------------------------------|-------------------------------------|
+    | [params] confirmed by the FC: GUID_OPTIONS 0, ATC_ACCEL_R_MAX ... | the values are really on the FC     |
+    | [params] NOT CONFIRMED: ... (2 long beeps)                        | do not throw: CH5 OFF, try again;   |
+    |                                                                   | the next CH5 ON checks and fixes it |
+    | [fix] thrust switch / limits were wrong - fixed and read back     | check 10 repaired a left-over value |
+    | REFUSED: thrust switch OFF + limits (...)                         | the FC did not confirm: no READY    |
+    | [watchdog] motors started WITHOUT a throw ... DISARMED / LAND     | fix D stopped a take-off            |
+    Simulator proof (SITL 1e001fa0, your switches, sim_pilot): see the guide. Today's case = GUID_OPTIONS 8 left
+    on the FC, arm, CH5 ON: version f takes off at 50 % throttle; version g fixes it at CH5 ON and stays on the
+    ground; with check 10 switched off for the test, READY still stays on the ground (C); with a take-off forced
+    from outside, the watchdog disarms within 0.2 s (D).
 """
 
 import argparse
@@ -238,6 +278,12 @@ HOLD_K = 0.4               # x hover per m/s: height hold after the catch      -
 VZ_OK = 1.0                # m/s: calm also needs this vertical speed          - same as throw_check
 STOP_V = 0.2               # m/s: finished braking after the hand-over          - same as throw_check
 LAND_WAIT_S = 60.0         # s for LAND to land and disarm
+READY_THRUST = 0.0         # g (14 Nov, fix C): READY sends 0 = stay on the ground with GUID_OPTIONS bit 8 OFF *and* ON
+RESEND_S = 0.1             # g (fix A): an unconfirmed parameter write is sent again after this time
+CONFIRM_S = 3.0            # g (fix A): s to wait for the FC to confirm the values after a throw / at CH5 ON
+WATCH_LOW_M = 1.0          # g (fix D): take-off without a throw below this height above the start = DISARM, higher = LAND
+IN_AIR = (2, 3)            # EXTENDED_SYS_STATE.landed_state: in the air / taking off
+MOTOR_ON_PWM = 1050        # g2 (fix D): READY = props still = motor outputs 1000. Above this = a motor turns
 PI_MODES = ("GUIDED_NOGPS", "GUIDED", "LAND")   # modes only the script uses
 DATA_MSGS = {"GPS_RAW_INT": 2, "SYS_STATUS": 2, "EKF_STATUS_REPORT": 2}   # needed by the checks (Hz)
 LANDED_ON_GROUND = 1       # EXTENDED_SYS_STATE.landed_state
@@ -299,6 +345,12 @@ def landed_state(link):
     return int(m.landed_state) if m is not None else 0
 
 
+def motors_turning(link):
+    """g2 (fix D): True when any of the 4 motor outputs is above 'stopped' (SERVO_OUTPUT_RAW, 50 Hz)."""
+    m = link.msgs.get("SERVO_OUTPUT_RAW")
+    return m is not None and max(m.servo1_raw, m.servo2_raw, m.servo3_raw, m.servo4_raw) > MOTOR_ON_PWM
+
+
 def level_q(link):
     R = ic.quat_to_R(link.q)
     return ic.euler_quat(0.0, 0.0, math.atan2(R[1, 0], R[0, 0]))
@@ -352,6 +404,19 @@ def disarm(link):
         time.sleep(0.05)
 
 
+def force_disarm(link, timeout=1.5):      # the FC reports armed / disarmed once a second (heartbeat)
+    """g (fix D): motors off NOW, also when ArduPilot thinks it is flying (a normal disarm is refused in the air).
+    Used only by the READY watchdog below WATCH_LOW_M. Returns True when the FC reports disarmed."""
+    t_end = time.time() + timeout
+    while time.time() < t_end and link.armed:
+        with link.io_lock:
+            link.m.mav.command_long_send(link.m.target_system, link.m.target_component,
+                                         M.MAV_CMD_COMPONENT_ARM_DISARM, 0, 0, 21196, 0, 0, 0, 0, 0)
+        time.sleep(0.05)
+        link.update()
+    return not link.armed
+
+
 def request_mode(link, mode, timeout=1.0):
     t_end = time.time() + timeout
     while time.time() < t_end:
@@ -376,6 +441,86 @@ class Rate:
             self.hz, self.n, self.t0 = self.n / (time.time() - self.t0), 0, time.time()
 
 
+# ------------------------------------------------------------------ parameters that are CONFIRMED (g, fix A)
+class ParamKeeper:
+    """Every parameter write is repeated until the FC echoes the value back (PARAM_VALUE).
+    Version f sent each value once: on 14 Nov one lost message left GUID_OPTIONS 8 on the FC -> fly-away."""
+
+    def __init__(self, link):
+        self.link, self.want, self.sent, self.seen = link, {}, {}, None
+
+    def _send(self, name):
+        with self.link.io_lock:
+            self.link.m.mav.param_set_send(self.link.m.target_system, self.link.m.target_component,
+                                           name.encode(), float(self.want[name]), 9)   # 9 = REAL32
+        self.sent[name] = time.time()
+
+    def set(self, values):
+        """Send now (no waiting - safe inside the 50 Hz loop). service() repeats until confirmed."""
+        for name, v in values.items():
+            self.want[name] = float(v)
+            self._send(name)
+
+    def service(self):
+        """Call after every link.update(): tick off confirmed values, resend ONE unconfirmed value."""
+        m = self.link.msgs.get("PARAM_VALUE")
+        if m is not None and m is not self.seen:
+            self.seen = m
+            pid = m.param_id.decode(errors="ignore") if isinstance(m.param_id, bytes) else m.param_id
+            pid = pid.rstrip("\x00")
+            if pid in self.want and abs(m.param_value - self.want[pid]) <= 1e-3 * max(1.0, abs(self.want[pid])):
+                del self.want[pid]
+        now = time.time()
+        for name in list(self.want):
+            if now - self.sent[name] > RESEND_S:
+                self._send(name)                                 # one per call: its echo is not hidden by another
+                break
+
+    def pending(self):
+        return sorted(self.want)
+
+    def flush(self, timeout=CONFIRM_S):
+        """Wait (keeps reading the FC) until every value is confirmed. True = all confirmed."""
+        t_end = time.time() + timeout
+        while self.want and time.time() < t_end:
+            self.link.update()
+            self.service()
+            time.sleep(0.02)
+        return not self.want
+
+
+def confirm(link, keeper, what):
+    """After the script's control ends: wait until the FC confirms the put-back values. Loud if it does not."""
+    names = keeper.pending()
+    if keeper.flush():
+        if names:
+            print(f"[params] confirmed by the FC: {what}")
+        return True
+    beep(link, TUNE_REFUSED)
+    print(f"[params] NOT CONFIRMED by the FC: {', '.join(keeper.pending())} - do not throw. CH{THROW_CH} OFF; the next "
+          f"CH{THROW_CH} ON checks and fixes it (check 10)")
+    return False
+
+
+def switch_and_limits(link, keeper, p, guid, limits):
+    """Check 10 (g, fix B), at every CH5 ON: read GUID_OPTIONS + the rotation limits FROM THE FC. Thrust bit ON
+    or a limit left at 0 -> put back, wait for the confirmation, read again. The result goes into p for checks()."""
+    names = ["GUID_OPTIONS"] + list(limits)
+    got = link.get_params(names, timeout=2)
+    bad = (len(got) < len(names) or int(got["GUID_OPTIONS"]) & ic.GUID_THRUST_BIT
+           or any(abs(got[k]) < 1e-6 for k in limits))
+    if bad and len(got) == len(names):
+        keeper.set({"GUID_OPTIONS": guid, **limits})
+        keeper.flush()
+        got = link.get_params(names, timeout=2)
+        if (len(got) == len(names) and not int(got["GUID_OPTIONS"]) & ic.GUID_THRUST_BIT
+                and all(abs(got[k]) > 1e-6 for k in limits)):
+            print(f"[fix] thrust switch / limits were wrong - fixed and read back: {got}")
+    for k in names:
+        p.pop(k, None)
+    p.update(got)
+
+
 # ------------------------------------------------------------------ the checks
 def checks(link, p):
     """Section 4. Returns (all passed, list of (name, ok, value))."""
@@ -391,6 +536,12 @@ def checks(link, p):
            ("EKF using GPS position", ekf_gps(link), "yes" if ekf_gps(link) else "NO - wait for 'EKF3 IMU0 is using GPS'"),
            ("throttle stick LOW", 900 < rc(link, 3) < CH3_LOW, f"CH3 {rc(link, 3)}"),
            (f"battery >= {MIN_VOLT} V", volts(link) >= MIN_VOLT, f"{volts(link):.2f} V")]
+    lim = [k for k in p if k.startswith("ATC_ACC")]
+    sw_ok = ("GUID_OPTIONS" in p and not int(p["GUID_OPTIONS"]) & ic.GUID_THRUST_BIT
+             and all(abs(p[k]) > 1e-6 for k in lim))
+    out.append(("thrust switch OFF + limits", sw_ok,                       # check 10 (g): values read from the FC
+                f"GUID_OPTIONS {p.get('GUID_OPTIONS', 'NO ANSWER from the FC')}"
+                + ("".join(f", {k} {p[k]:.0f}" for k in lim if abs(p[k]) < 1e-6))))
     return all(c[1] for c in out), out
 
 
@@ -448,7 +599,7 @@ def log_row(rows, n, mode, phase, t, link, h0, spot, g):
                 + [round(float(v), 2) for v in link.rates])
 
 
-def hold_land(link, n, mode, rows, t0_log, h0, spot, rk, why):
+def hold_land(link, n, mode, rows, t0_log, h0, spot, rk, why, keeper):
     """After the catch (or an abort): GUIDED position hold HOLD_S (no stick needed) -> LAND -> until disarmed.
     No position (GUIDED refused): LAND at once. Stops at once if the pilot changes the mode himself."""
     hold = "GUIDED" if request_mode(link, "GUIDED") else None
@@ -463,6 +614,7 @@ def hold_land(link, n, mode, rows, t0_log, h0, spot, rk, why):
             link.send_velocity(0.0, 0.0, 0.0)                    # stay here (stick ignored)
         rk.wait()
         link.update()
+        keeper.service()                                         # g: the put-back values are repeated until confirmed
         log_row(rows, n, mode, "hold" if link.mode == "GUIDED" else "land", time.time() - t0_log, link, h0, spot,
                 accel_g(link))
         if stop_pt is None and float(np.linalg.norm(link.vel[0:2])) < STOP_V:
@@ -487,7 +639,7 @@ def hold_land(link, n, mode, rows, t0_log, h0, spot, rk, why):
             "landed_disarmed": not link.armed, "note": note}
 
 
-def one_throw(link, mode, n, rows, hover, guid, limits, net):
+def one_throw(link, mode, n, rows, hover, guid, limits, net, keeper):
     """READY (armed by the pilot, GUIDED_NOGPS, props still) -> throw -> catch -> GUIDED hold 3 s -> LAND.
     Returns the result dict, or None if no throw happened."""
     rk = RateKeeper(HZ)
@@ -508,7 +660,7 @@ def one_throw(link, mode, n, rows, hover, guid, limits, net):
     t_att, att_msg = time.time(), None
     while True:
         if phase == "ready":
-            ic.send_attitude(link, level_q(link), 0.5)               # climb-rate mode, 0.5 = stay on the ground
+            ic.send_attitude(link, level_q(link), READY_THRUST)      # g (fix C): 0 = on the ground in BOTH thrust modes
         elif phase == "spool":
             ic.send_attitude(link, level_q(link), 1.0)               # take-off = spool the motors up
         elif phase == "caught":
@@ -520,6 +672,7 @@ def one_throw(link, mode, n, rows, hover, guid, limits, net):
             ic.send_attitude(link, q, thr)
         rk.wait()
         link.update()
+        keeper.service()                                             # g (fix A): repeat unconfirmed parameter writes
         t, g = time.time(), accel_g(link)
         m_att = link.msgs.get("ATTITUDE_QUATERNION")
         if m_att is not att_msg:
@@ -540,6 +693,17 @@ def one_throw(link, mode, n, rows, hover, guid, limits, net):
             if link.mode != "GUIDED_NOGPS":
                 beep(link, TUNE_REFUSED)
                 print(f"Mode changed to {link.mode} while READY - back to WAIT")
+                return None
+            if motors_turning(link) or landed_state(link) in IN_AIR:   # g/g2 (fix D): a motor turns, or "flying", but nobody threw
+                beep(link, TUNE_REFUSED)
+                if h < WATCH_LOW_M and force_disarm(link):
+                    print(f"[watchdog] motors started WITHOUT a throw at {h:+.1f} m - DISARMED. Back to WAIT")
+                else:
+                    ok_land = request_mode(link, "LAND", timeout=3)
+                    print(f"[watchdog] in the air WITHOUT a throw at {h:+.1f} m - "
+                          + ("LAND" if ok_land else "LAND REFUSED: CH7") + " (take over: stick middle, CH8 POSHOLD)")
+                keeper.set({"GUID_OPTIONS": int(guid), **limits})
+                confirm(link, keeper, "GUID_OPTIONS + rotation limits")
                 return None
             if rc(link, THROW_CH) < CH_LOW:
                 disarm(link)
@@ -584,15 +748,15 @@ def one_throw(link, mode, n, rows, hover, guid, limits, net):
         if phase == "spool" and (landed_state(link) != LANDED_ON_GROUND or t - spool_t0 > SPOOL_MAX_S):
             t_motors = t
             if limits:
-                ic.send_params(link, {k: 0 for k in limits})          # rotation limits off (as the SITL test)
+                keeper.set({k: 0 for k in limits})                    # rotation limits off (as the SITL test)
                 limits_off = True
-            ic.send_params(link, {"GUID_OPTIONS": int(guid) | ic.GUID_THRUST_BIT})   # thrust = real thrust
+            keeper.set({"GUID_OPTIONS": int(guid) | ic.GUID_THRUST_BIT})   # thrust = real thrust (g: until confirmed)
             phase = "recover"
         if t_upright is None and tilted and t_motors is not None and link.tilt_deg < ic.TILT_OK:
             t_upright = t
         if phase == "recover" and rate < ic.RATE_OK and link.tilt_deg < ic.TILT_OK:   # f (Option B): falling allowed
             if limits_off:
-                ic.send_params(link, limits)
+                keeper.set(limits)
                 limits_off = False
             phase, t_caught = "caught", t
         if phase == "recover" and t_motors is not None and t - t_motors > RECOVER_MAX_S:
@@ -606,12 +770,13 @@ def one_throw(link, mode, n, rows, hover, guid, limits, net):
                 t_rec, why = held, "recovered"
                 break
     # ---- the script's control ends: parameters back FIRST, then GUIDED hold 3 s -> LAND
-    if limits_off:
-        ic.send_params(link, limits)
+    if limits:
+        keeper.set(limits)                                          # g: always put back, repeated until confirmed
     after = {}
     if link.armed and link.mode == "GUIDED_NOGPS":
-        after = hold_land(link, n, mode, rows, t_ready, h0, spot, rk, why)
-    ic.send_params(link, {"GUID_OPTIONS": int(guid)})
+        after = hold_land(link, n, mode, rows, t_ready, h0, spot, rk, why, keeper)
+    keeper.set({"GUID_OPTIONS": int(guid)})                         # thrust switch OFF ...
+    after["params_confirmed"] = confirm(link, keeper, f"GUID_OPTIONS {int(guid)} (thrust switch OFF) + rotation limits")
     if why != "recovered":
         print(f"[stop] {why}")
     rel = (lambda x: round(x - t_rel, 2) if (x is not None and t_rel is not None) else None)
@@ -738,11 +903,12 @@ def main(args):
         else:
             raise SystemExit("No position from the EKF after 2 min - check GPS (CH6 middle at power-up)")
     for msg_id, hz in ((M.MAVLINK_MSG_ID_RAW_IMU, 50), (M.MAVLINK_MSG_ID_EXTENDED_SYS_STATE, 10),
+                       (M.MAVLINK_MSG_ID_SERVO_OUTPUT_RAW, 50),
                        (M.MAVLINK_MSG_ID_RC_CHANNELS, 20), (M.MAVLINK_MSG_ID_SYS_STATUS, 2),
                        (M.MAVLINK_MSG_ID_GPS_RAW_INT, 2), (M.MAVLINK_MSG_ID_EKF_STATUS_REPORT, 2)):
         link.request_rate(msg_id, hz)
     t_end, t_ask = time.time() + 20, time.time()
-    need = {"RAW_IMU", "EXTENDED_SYS_STATE", "RC_CHANNELS"} | set(DATA_MSGS)
+    need = {"RAW_IMU", "EXTENDED_SYS_STATE", "RC_CHANNELS", "SERVO_OUTPUT_RAW"} | set(DATA_MSGS)
     while time.time() < t_end and not need <= set(link.msgs):
         link.update()
         if time.time() - t_ask > 2.0:                        # change 2: ask again (a request may be lost)
@@ -765,13 +931,20 @@ def main(args):
         except KeyboardInterrupt:
             print("\ncheck stopped")
         return
-    guid, limits = restore_left_values(link, int(p.get("GUID_OPTIONS", 0)), ic.read_limits(link))
+    if "GUID_OPTIONS" not in p:
+        raise SystemExit("The FC did not answer GUID_OPTIONS - check SERIAL2 (2 / 921); systemd starts me again")
+    keeper = ParamKeeper(link)                                # g (fix A): every parameter write is confirmed
+    guid, limits = restore_left_values(link, int(p["GUID_OPTIONS"]), ic.read_limits(link))
+    guid &= ~ic.GUID_THRUST_BIT                               # the value to put back NEVER has the thrust bit
+    keeper.set({"GUID_OPTIONS": guid, **limits})
+    if not keeper.flush():
+        raise SystemExit(f"The FC did not confirm {keeper.pending()} - systemd starts me again")
     OUT.mkdir(parents=True, exist_ok=True)
     base = OUT / f"throw_real_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}"
     meta = {"date": datetime.datetime.now().isoformat(timespec="seconds"), "mode": args.mode, "hover": hover,
             "model": net.source if net else None, "throw_ch": THROW_CH, "hold_s": HOLD_S, "max_up_m": MAX_UP_M,
             "freefall_g": FREEFALL_G, "freefall_n": FREEFALL_N, "push_g": PUSH_G, "limits": limits,
-            "version": "f (12 Nov 2026)", "spin_r_m": SPIN_R_M, "ground_guard_m": GROUND_GUARD_M,
+            "version": "g2 (15 Nov 2026)", "ready_thrust": READY_THRUST, "spin_r_m": SPIN_R_M, "ground_guard_m": GROUND_GUARD_M,
             "guid_options": guid, "mot_spool_time": p.get("MOT_SPOOL_TIME")}
     results, rows, n = [], [], 0
     ch_was, t_print = rc(link, THROW_CH), 0.0
@@ -784,12 +957,13 @@ def main(args):
             ch = rc(link, THROW_CH)
             if ch > CH_HIGH >= ch_was:                           # throw switch just went ON
                 p.update(link.get_params(["MOT_SPIN_ARM", "MOT_SPOOL_TIME", f"RC{THROW_CH}_OPTION"]))
+                switch_and_limits(link, keeper, p, guid, limits)     # check 10 (g, fix B)
                 ok, out = checks(link, p)
                 if not ok:
                     beep(link, TUNE_REFUSED)
                     print("REFUSED: " + "; ".join(f"{nm} ({txt})" for nm, good, txt in out if not good))
                 else:
-                    e = one_throw(link, args.mode, n + 1, rows, hover, guid, limits, net)
+                    e = one_throw(link, args.mode, n + 1, rows, hover, guid, limits, net, keeper)
                     if e is not None:
                         n += 1
                         e["checks"] = {nm: txt for nm, _, txt in out}
@@ -815,9 +989,9 @@ def main(args):
     except KeyboardInterrupt:
         print("\nStopped by user")
     finally:
-        ic.send_params(link, {"GUID_OPTIONS": guid})
-        if limits:
-            ic.send_params(link, limits)
+        keeper.set({"GUID_OPTIONS": guid, **limits})
+        if not keeper.flush():
+            print(f"[params] NOT CONFIRMED at exit: {keeper.pending()} - the next start fixes it")
         save(base, results, rows, meta)
         print(f"Saved: {base}.csv / _steps.csv / .json")
 

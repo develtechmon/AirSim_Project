@@ -1,0 +1,10 @@
+{
+  "level": 1,
+  "level_name": "MEDIUM",
+  "recovery_rate": 1.0,
+  "episode": 100,
+  "timesteps": 12107,
+  "timestamp": 1316.8487844467163,
+  "total_episodes": 100,
+  "obs_norm": "models/obs_norm.npz (BC scaling, fixed, no VecNormalize)"
+}

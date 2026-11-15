@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-15T13:21:59",
+  "mode": "ppo-policy",
+  "hover": 0.161716490983963,
+  "model": "round1_final.zip",
+  "throw_ch": 5,
+  "hold_s": 10.0,
+  "max_up_m": 5.0,
+  "freefall_g": 0.35,
+  "freefall_n": 3,
+  "push_g": 1.5,
+  "limits": {
+    "ATC_ACCEL_R_MAX": 282459.0,
+    "ATC_ACCEL_P_MAX": 282459.0,
+    "ATC_ACCEL_Y_MAX": 27000.0
+  },
+  "version": "g2 (15 Nov 2026)",
+  "ready_thrust": 0.0,
+  "spin_r_m": 0.03,
+  "ground_guard_m": -0.5,
+  "guid_options": 0,
+  "mot_spool_time": 0.25,
+  "results": []
+}

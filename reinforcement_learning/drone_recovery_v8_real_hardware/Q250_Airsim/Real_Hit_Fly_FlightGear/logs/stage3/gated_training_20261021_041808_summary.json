@@ -1,0 +1,109 @@
+{
+  "settings": {
+    "init_model": "models\\round1_final.zip",
+    "obs_norm": "models/obs_norm.npz",
+    "timesteps": 200000,
+    "wind_strength": 3.0,
+    "obs_noise": 1.0,
+    "thrust_rand": 0.05,
+    "lr": 5e-05,
+    "clip": 0.2,
+    "time_weight": 0.15,
+    "flip_share": 0.6,
+    "critic_warmup": 20000,
+    "early_check": 60000,
+    "conn": "tcp:127.0.0.1:5762",
+    "seed": 0,
+    "resume": true,
+    "new_run": false
+  },
+  "best_model": {
+    "timesteps": 177516,
+    "episode": 1270,
+    "score": 10.234231165969582,
+    "flip_avg_lowest_m": 12.552125902811687,
+    "flip_avg_recovery_s": 2.3178947368421055,
+    "hard_recovery_rate": 97.0,
+    "window": "last 100 HARD episodes after warm-up",
+    "flips_in_window": 60
+  },
+  "training_info": {
+    "total_episodes": 1438,
+    "total_time_seconds": 25615.846106529236,
+    "total_time_hours": 7.115512807369232,
+    "episodes_per_hour": 202.0936563434648,
+    "episodes_cut_by_ppo_update": 10,
+    "end_time": 1792605209.9120305,
+    "virtual_ground_m": 5.0,
+    "crash_rule_brake_mss": 8.0
+  },
+  "final_performance": {
+    "last_10_avg_reward": -30.984121257036662,
+    "last_50_avg_reward": -24.996329634763878,
+    "last_10_recovery_rate": 100.0,
+    "last_50_recovery_rate": 100.0,
+    "avg_recovery_time_steps": 124.02,
+    "avg_recovery_time_seconds": 2.4804
+  },
+  "curriculum_progression": {
+    "level_0": {
+      "level_name": "EASY (0.7-0.9)",
+      "reached_at_episode": 1,
+      "elapsed_time_hours": 0.010777777777777777
+    },
+    "level_1": {
+      "level_name": "MEDIUM (0.9-1.1)",
+      "reached_at_episode": 51,
+      "elapsed_time_hours": 0.19294444444444445
+    },
+    "level_2": {
+      "level_name": "HARD (1.1-1.5)",
+      "reached_at_episode": 101,
+      "elapsed_time_hours": 0.42608333333333337
+    }
+  },
+  "statistics_by_level": {
+    "level_0_EASY": {
+      "episodes_trained": 50,
+      "recovery_rate": 100.0,
+      "avg_reward": -17.068939999999998,
+      "avg_intensity": 0.8033,
+      "avg_lowest_m": 20.8374,
+      "last_50_ppo_avg_lowest_m": null,
+      "last_50_ppo_recovery_rate": null,
+      "by_type_avg_lowest_m": {
+        "bird_attack": 24.066666666666666,
+        "flip": 18.65029411764706,
+        "spin": 29.74
+      }
+    },
+    "level_1_MEDIUM": {
+      "episodes_trained": 50,
+      "recovery_rate": 100.0,
+      "avg_reward": -31.527060000000002,
+      "avg_intensity": 1.0026599999999999,
+      "avg_lowest_m": 16.3926,
+      "last_50_ppo_avg_lowest_m": null,
+      "last_50_ppo_recovery_rate": null,
+      "by_type_avg_lowest_m": {
+        "bird_attack": 18.520000000000003,
+        "flip": 12.978800000000001,
+        "spin": 29.24
+      }
+    },
+    "level_2_HARD": {
+      "episodes_trained": 1338,
+      "recovery_rate": 96.63677130044843,
+      "avg_reward": -31.048836571208454,
+      "avg_intensity": 1.301295069193665,
+      "avg_lowest_m": 14.979880989100367,
+      "last_50_ppo_avg_lowest_m": 15.888682737350464,
+      "last_50_ppo_recovery_rate": 100.0,
+      "by_type_avg_lowest_m": {
+        "bird_attack": 18.72693795122419,
+        "flip": 11.141532016134791,
+        "spin": 29.711440902709963
+      }
+    }
+  }
+}
