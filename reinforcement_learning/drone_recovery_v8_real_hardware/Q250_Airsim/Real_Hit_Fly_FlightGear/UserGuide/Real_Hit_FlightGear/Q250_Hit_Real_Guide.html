@@ -1,0 +1,631 @@
+<!doctype html>
+<html lang="en"><head><title>Q250 Hit Real Guide</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>
+/* Throw & Fly 5-inch guide: same tokens and components as the F450 Throw & Fly guide */
+/* =====================================================================
+   THEME TOKENS  (edit colours here only)
+   ===================================================================== */
+:root{
+  color-scheme:light;
+  --bg:#f6f6f4; --surface:#fcfcfb; --surface-2:#f0efec; --border:#dcdad3;
+  --text:#1a1a19; --text-2:#52514e; --muted:#7a7972;
+  --accent:#2a78d6; --accent-soft:#e3eefb;
+  --good:#1b7f3b; --good-soft:#e2f3e7; --warn:#a96a00; --warn-soft:#fdf1d8; --bad:#c23a39; --bad-soft:#fbe5e4;
+  --code-bg:#f0efec;
+  /* controller colours: one colour per controller, same everywhere */
+  --c-ppo:#2a78d6; --c-bc:#eb6834; --c-rule:#1baf7a; --c-ssf:#eda100; --c-ap:#e87ba4;
+  --s1:#2f5ea8; --s2:#2e7d4f; --s3:#b83232;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#121211; --surface:#1a1a19; --surface-2:#242422; --border:#3a3936;
+    --text:#f0efec; --text-2:#c3c2b7; --muted:#9a998f;
+    --accent:#3987e5; --accent-soft:#1d2a3b;
+    --good:#5cc97f; --good-soft:#16281c; --warn:#e3a53a; --warn-soft:#2c2414; --bad:#ef7473; --bad-soft:#2e1717;
+    --code-bg:#242422;
+    --c-ppo:#3987e5; --c-bc:#d95926; --c-rule:#199e70; --c-ssf:#c98500; --c-ap:#d55181;
+    --s1:#6d9be0; --s2:#5fb383; --s3:#e06a6a;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#121211; --surface:#1a1a19; --surface-2:#242422; --border:#3a3936;
+  --text:#f0efec; --text-2:#c3c2b7; --muted:#9a998f;
+  --accent:#3987e5; --accent-soft:#1d2a3b;
+  --good:#5cc97f; --good-soft:#16281c; --warn:#e3a53a; --warn-soft:#2c2414; --bad:#ef7473; --bad-soft:#2e1717;
+  --code-bg:#242422;
+  --c-ppo:#3987e5; --c-bc:#d95926; --c-rule:#199e70; --c-ssf:#c98500; --c-ap:#d55181;
+  --s1:#6d9be0; --s2:#5fb383; --s3:#e06a6a;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 "Segoe UI",Calibri,system-ui,-apple-system,Arial,sans-serif}
+a{color:var(--accent)}
+code,pre{font-family:Consolas,"Cascadia Mono",Menlo,monospace}
+code{background:var(--code-bg);padding:1px 5px;border-radius:4px;font-size:13px;word-break:break-word}
+/* layout */
+.layout{display:grid;grid-template-columns:270px minmax(0,1fr);min-height:100vh}
+nav.side{position:sticky;top:0;height:100vh;overflow:auto;background:var(--surface);border-right:1px solid var(--border);padding:16px 12px 40px}
+nav.side .brand{font-weight:700;font-size:15px;margin:0 6px 2px}
+nav.side .sub{font-size:12px;color:var(--muted);margin:0 6px 12px}
+nav.side a{display:block;text-decoration:none;color:var(--text-2);padding:4px 8px;border-radius:6px;font-size:13.5px}
+nav.side a.l2{padding-left:22px;font-size:12.5px}
+nav.side a:hover{background:var(--surface-2)}
+nav.side a.active{background:var(--accent-soft);color:var(--accent);font-weight:600}
+nav.side .grp{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:14px 8px 4px}
+main{padding:24px 40px 80px;max-width:1180px}
+.topbar{display:flex;gap:10px;align-items:center;justify-content:flex-end;margin-bottom:6px}
+button,.btn{font:inherit;font-size:13px;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:7px;padding:5px 11px;cursor:pointer}
+button:hover{background:var(--surface-2)}
+button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+h1{font-size:28px;margin:4px 0 2px;line-height:1.2}
+h2{font-size:22px;margin:46px 0 10px;padding-top:10px;border-top:2px solid var(--border)}
+h3{font-size:17px;margin:28px 0 8px}
+h4{font-size:15px;margin:18px 0 6px}
+.lead{color:var(--text-2);font-size:15.5px;margin:4px 0 16px}
+.stage-tag{display:inline-block;color:#fff;border-radius:5px;padding:1px 8px;font-size:13px;font-weight:700;margin-right:8px;vertical-align:2px}
+.t1{background:var(--s1)}.t2{background:var(--s2)}.t3{background:var(--s3)}.thw{background:#5b5b66}
+/* tables */
+.tw{overflow-x:auto;margin:8px 0 14px}
+table{border-collapse:collapse;width:100%;font-size:13.5px;background:var(--surface)}
+th,td{border:1px solid var(--border);padding:5px 8px;text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-weight:600}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.hl td{background:var(--accent-soft);font-weight:600}
+/* callouts */
+.note,.warn,.ok,.bad{border-left:4px solid;border-radius:6px;padding:9px 13px;margin:12px 0;font-size:14px}
+.note{border-color:var(--accent);background:var(--accent-soft)}
+.ok{border-color:var(--good);background:var(--good-soft)}
+.warn{border-color:var(--warn);background:var(--warn-soft)}
+.bad{border-color:var(--bad);background:var(--bad-soft)}
+.note b:first-child,.warn b:first-child,.ok b:first-child,.bad b:first-child{display:inline}
+.analogy{border:1px dashed var(--border);border-radius:8px;padding:9px 13px;margin:12px 0;font-size:14px;background:var(--surface)}
+.analogy::before{content:"Analogy  ";font-weight:700;color:var(--accent)}
+/* status chips */
+.chip{display:inline-block;font-size:11.5px;font-weight:700;border-radius:10px;padding:1px 8px;white-space:nowrap}
+.done{background:var(--good-soft);color:var(--good)}.run{background:var(--warn-soft);color:var(--warn)}.todo{background:var(--surface-2);color:var(--muted)}.fail{background:var(--bad-soft);color:var(--bad)}
+/* steps */
+.step{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin:12px 0}
+.step>.sh{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.step>.sh .num{background:var(--s3);color:#fff;border-radius:6px;font-weight:700;font-size:12.5px;padding:1px 8px}
+.step.s1 .num{background:var(--s1)}.step.s2 .num{background:var(--s2)}.step.hw .num{background:#5b5b66}
+.step>.sh .tt{font-weight:700;font-size:15.5px}
+.step>.sh .meta{margin-left:auto;font-size:12.5px;color:var(--muted)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:900px){.cols{grid-template-columns:1fr}}
+/* command block */
+.cmdbox{position:relative;margin:8px 0}
+pre.cmd{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:10px 70px 10px 12px;margin:0;font-size:13px;white-space:pre-wrap;word-break:break-all}
+.cmdbox button{position:absolute;top:6px;right:6px;font-size:12px;padding:2px 9px}
+details{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;margin:10px 0}
+details>summary{cursor:pointer;font-weight:600;font-size:14px}
+details[open]>summary{margin-bottom:6px}
+/* diagrams */
+.dgwrap{background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px;overflow:hidden;margin:10px 0}
+.dgwrap .dg{transform-origin:0 0}
+.dgwrap table{background:#fff;width:auto}.dgwrap th,.dgwrap td{color:#1d2433}
+.figure{background:#fff;border:1px solid var(--border);border-radius:10px;padding:8px;margin:10px 0;text-align:center}
+.figure img{max-width:100%;height:auto}
+.cap{font-size:12.5px;color:var(--muted);margin:4px 2px 12px}
+/* charts */
+.chart{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin:10px 0}
+.chart .ct{font-weight:700;font-size:14.5px}
+.chart .cs{font-size:12.5px;color:var(--muted);margin-bottom:6px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12.5px;color:var(--text-2);margin:4px 0 2px}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+.tip{position:fixed;pointer-events:none;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:7px;padding:6px 9px;font-size:12.5px;box-shadow:0 4px 14px rgba(0,0,0,.15);z-index:50;display:none;max-width:280px}
+svg text{fill:var(--text-2);font-size:11.5px}
+svg .axis{stroke:var(--border)}
+svg .grid{stroke:var(--border);stroke-dasharray:2 3}
+.charttable{display:none}
+.charttable.show{display:block}
+/* replay */
+.replay{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;margin:14px 0}
+.rp-controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+.rp-controls select{font:inherit;font-size:13px;padding:4px 6px;border-radius:7px;border:1px solid var(--border);background:var(--surface);color:var(--text);max-width:100%}
+.rp-controls input[type=range]{flex:1;min-width:160px}
+.rp-time{font-variant-numeric:tabular-nums;font-size:13px;color:var(--text-2);min-width:120px}
+#rpStage{width:100%;height:auto;display:block;background:linear-gradient(var(--surface-2),var(--surface));border-radius:10px}
+.rp-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:10px}
+.rp-card{border:1px solid var(--border);border-radius:8px;padding:6px 9px;font-size:12.5px;border-top:4px solid}
+.rp-card b{font-size:13px}
+/* timeline (who flies) */
+.tl{position:relative;height:56px;border-radius:9px;overflow:hidden;display:flex;margin:8px 0 4px;border:1px solid var(--border)}
+.tl div{display:flex;align-items:center;justify-content:center;color:#fff;font-size:12.5px;font-weight:700;text-align:center;padding:0 4px}
+.tl .cursor{position:absolute;top:0;bottom:0;width:3px;background:var(--text);left:0;transition:left .1s linear;padding:0}
+.tl-cap{min-height:44px;font-size:14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 12px}
+/* stat tiles */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:12px 0}
+.tile{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+.tile .v{font-size:24px;font-weight:700;line-height:1.1}
+.tile .k{font-size:12.5px;color:var(--muted)}
+/* explorer */
+.explorer{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin:10px 0}
+.explorer label{font-size:13px;color:var(--text-2)}
+.explorer input[type=range]{width:100%}
+.ex-out{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:8px}
+.ex-out div{background:var(--surface-2);border-radius:8px;padding:6px 10px;font-size:13px}
+.ex-out b{display:block;font-size:18px}
+.bar-h{height:14px;border-radius:4px;display:inline-block;vertical-align:middle}
+/* hardware block diagram (editable HTML) */
+.hw{background:#fff;color:#1d2433;border:1px solid var(--border);border-radius:10px;padding:14px;margin:10px 0;overflow-x:auto}
+.hw-grid{display:grid;grid-template-columns:1fr 46px 1.25fr 46px 1fr;gap:0;min-width:860px;align-items:center}
+.hw-col{display:flex;flex-direction:column;gap:12px}
+.hwb{border:2px solid #5b5b66;border-radius:10px;padding:8px 10px;background:#f7f7f9;font-size:13px;line-height:1.35}
+.hwb h5{margin:0 0 3px;font-size:14px;color:#2c2c38}
+.hwb.fc{border-color:#b83232;background:#fbeeee}.hwb.fc h5{color:#b83232}
+.hwb.pi{border-color:#2f5ea8;background:#eef3fb}.hwb.pi h5{color:#2f5ea8}
+.hwb.sens{border-color:#2e7d4f;background:#edf7f0}.hwb.sens h5{color:#2e7d4f}
+.hwb.pwr{border-color:#a96a00;background:#fdf6e6}.hwb.pwr h5{color:#a96a00}
+.hwb .lbl{display:inline-block;background:#fff;border:1px solid #c9ced8;border-radius:4px;padding:0 5px;font-size:11.5px;font-family:Consolas,monospace;margin:1px 0}
+.hw-arrow{text-align:center;font-size:22px;color:#555}
+.hw-bottom{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:14px;min-width:860px}
+/* flow */
+.flow{display:flex;flex-direction:column;align-items:center;gap:0;margin:10px 0}
+.fb{background:var(--surface);border:2px solid var(--border);border-radius:10px;padding:8px 14px;max-width:640px;width:100%;text-align:center;font-size:13.5px}
+.fb.pilot{border-color:var(--c-ssf)}.fb.pi{border-color:var(--c-ppo)}.fb.ap{border-color:var(--c-rule)}.fb.dec{border-color:var(--c-ap);border-style:dashed}
+.fb b{display:block}
+.fa{font-size:18px;color:var(--muted);line-height:1.3}
+.flow-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;justify-content:center;margin-bottom:8px}
+.flow-legend span{border:2px solid;border-radius:6px;padding:0 6px}
+footer{margin-top:60px;font-size:12px;color:var(--muted)}
+@media (max-width:860px){.layout{grid-template-columns:1fr}nav.side{position:relative;height:auto}main{padding:16px}}
+
+main{padding-block:24px 80px;padding-left:max(40px,env(safe-area-inset-left,0px));padding-right:max(40px,env(safe-area-inset-right,0px));min-width:0}
+@media (max-width:860px){main{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}}
+nav.side{padding-left:max(12px,env(safe-area-inset-left,0px))}
+.cmdbox pre{overflow-x:auto}
+h1,h2,h3{text-wrap:balance}
+button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+</style>
+<style>
+#resChart svg,#pathChart svg{display:block;width:100%;height:auto}
+#pathChart svg{min-width:640px}
+.cx-l{fill:var(--text-2);font-size:11px}
+.cx-t{fill:var(--text);font-size:12px;font-weight:600}
+tr.to td{color:var(--muted)}
+</style>
+</head><body>
+<div class="layout"><nav class="side" id="nav"><div class="brand">Q250 Hit Real Guide</div><div class="sub">hit_real.py version e (18 Nov 2026) · simulator → real drone</div>
+<div class="grp">Start here</div>
+<a href="#s0">0. Summary</a><a href="#s1">1. What one hit does</a><a href="#s2">2. Your radio</a><a href="#s3">3. Safety layers (and the 5 m)</a>
+<div class="grp">Part S · Simulator</div>
+<a href="#a1">S1. Folder and files (once)</a><a href="#a2">S2. Run a session</a><a href="#a3">S3. Read the printout</a><a href="#a4">S4. Your results 17–18 Nov</a><a href="#a5">S5. My re-check of the fixes</a>
+<div class="grp">Part H · Real drone</div>
+<a href="#h1">H1. Before the field (home)</a><a href="#h2">H2. Bench: --check</a><a href="#h3">H3. Field day, one hit</a><a href="#h4">H4. Ladder and stop rules</a><a href="#h5">H5. Taking over</a><a href="#h6">H6. Send me</a>
+<div class="grp">Reference</div>
+<a href="#r1">R1. Versions a → e</a><a href="#r2">R2. Troubleshooting</a><a href="#r3">R3. Files and outputs</a><a href="#r4">R4. Verified vs not yet</a><a href="#r5">R5. Sources</a>
+</nav><main>
+<div class="topbar"><span style="font-size:12px;color:var(--muted)">Written 18 Nov 2026 · your FlightGear run 17–18 Nov · my SITL runs 17–18 Nov (firmware 1e001fa0)</span><button id="themeBtn" type="button">◐ Theme</button></div>
+<h1><span class="stage-tag t3">HIT</span>Q250 Hit Real Guide<br><span style="font-size:19px;color:var(--text-2);font-weight:500">Hover at 10 m, press a button, the Pi hits the drone, your PPO catches it, and it flies back to where it was hit</span></h1>
+<p class="lead">The in-flight hit test from start to finish: what the script does, how to run it in the simulator, what your simulator run showed, and the step-by-step plan for the real drone. Every step says what you should see and what to do if you don't.</p>
+
+<h2 id="s0">0. Summary</h2>
+<div class="tiles">
+  <div class="tile"><div class="v">12 / 12</div><div class="k">your simulator run (FlightGear, 17–18 Nov): every hit caught by the PPO, <b>0 rescues</b></div></div>
+  <div class="tile"><div class="v">12 / 12</div><div class="k">flew back to the hit point in 3.1–9.4 s and stopped 0.04–0.17 m from it</div></div>
+  <div class="tile"><div class="v">4 / 4</div><div class="k">take-over tests: CH8 → the script let go at once, no fly-back</div></div>
+  <div class="tile"><div class="v">167–179°</div><div class="k">flip / bird tilt in your run (flip 170–179°): fully upside down, like your real 13 Nov hits (173°, 176°)</div></div>
+  <div class="tile"><div class="v">4.66 m</div><div class="k">lowest point of all (bird hard, from 10.5 m): 1.7 m above the rescue line → hard at 12 m on the real drone</div></div>
+</div>
+<div class="ok"><b>Verdict.</b> The simulator part is done: <b>ready for the real drone</b>, after the home checks in <a href="#h1">H1</a> and the bench check in <a href="#h2">H2</a>. Those two cover the things a simulator can't test: your real Bumblebee buttons, Simple mode, and the files on the Pi.</div>
+<div class="tw"><table>
+<tr><th>You want to…</th><th>Go to</th></tr>
+<tr><td>understand what happens during one hit, and who is flying when</td><td><a href="#s1">1</a></td></tr>
+<tr><td>know which button does what</td><td><a href="#s2">2</a></td></tr>
+<tr><td>know what keeps the drone safe (and what the "5 m" really is)</td><td><a href="#s3">3</a></td></tr>
+<tr><td>run it in the simulator</td><td><a href="#a1">S1</a>, <a href="#a2">S2</a>, <a href="#a3">S3</a></td></tr>
+<tr><td>see your simulator results</td><td><a href="#a4">S4</a></td></tr>
+<tr><td>fly the real drone</td><td><a href="#h1">H1 → H6</a></td></tr>
+</table></div>
+<div class="tw"><table>
+<tr><th>File</th><th>Version</th><th>Where</th><th>Note</th></tr>
+<tr><td><code>hit_real.py</code></td><td><b>e (18 Nov 2026)</b></td><td>PC sim folder + Pi</td><td>the hit test. The .json says <code>"version": "e (18 Nov 2026)"</code></td></tr>
+<tr><td><code>throw_real.py</code></td><td>g2 (16 Nov 2026)</td><td>PC sim folder + Pi</td><td>hit_real borrows its helpers (ParamKeeper, buzzer, link). Must be g2 or newer</td></tr>
+<tr><td><code>impact_check.py</code>, <code>ap_link.py</code></td><td>16 Nov 2026</td><td>PC sim folder + Pi</td><td>the hit itself, the rule, the MAVLink link</td></tr>
+<tr><td><code>sim_pilot.py</code></td><td>17 Nov 2026</td><td><b>PC only</b></td><td>plays your radio in the simulator. Never on the real drone</td></tr>
+<tr><td><code>models\round1_final.onnx</code></td><td>Round 1</td><td>Pi (PC: <code>round1_final.zip</code>)</td><td>your PPO</td></tr>
+</table></div>
+
+<h2 id="s1">1. What one hit does</h2>
+<p>You fly the drone up to 10 m and hold it in PosHold. You press two buttons. From that moment the Pi has the drone until it gives it back to you in PosHold, at the same spot and the same height, usually 5–15 s later.</p>
+<div class="analogy">A crash-test with a homing pigeon. The hit is the gust that throws it off course, the PPO is the bird getting its wings back, the height hold stops the fall, and then it flies home to exactly where it was before handing itself back to you. You stand there the whole time with your hand on the brake (CH8).</div>
+<div class="figure"><svg viewBox="0 0 960 300" width="100%" style="max-width:960px" role="img" aria-label="Timeline of one hit: you in PosHold, the hit, PPO levels, height hold brakes, rescue only if needed, parameters confirmed, fly-back, back to you in PosHold">
+<g style="font-size:12.5px">
+<text x="10" y="22" style="font-weight:700;fill:#1d2433">Who flies, during one hit (your run, flip medium, hit 7)</text>
+<rect x="10" y="40" width="120" height="70" rx="8" fill="#fdf1d8" stroke="#a96a00"/><text x="70" y="64" text-anchor="middle" style="font-weight:700;fill:#1d2433">YOU</text><text x="70" y="82" text-anchor="middle" style="fill:#444">PosHold, 10 m</text><text x="70" y="99" text-anchor="middle" style="fill:#444">right + left button</text>
+<rect x="140" y="40" width="120" height="70" rx="8" fill="#fbe5e4" stroke="#c23a39"/><text x="200" y="64" text-anchor="middle" style="font-weight:700;fill:#c23a39">① HIT</text><text x="200" y="82" text-anchor="middle" style="fill:#444">Pi spins it</text><text x="200" y="99" text-anchor="middle" style="fill:#444">0.69 s, 1.9 turns</text>
+<rect x="270" y="40" width="120" height="70" rx="8" fill="#ece4fb" stroke="#7a4fd0"/><text x="330" y="64" text-anchor="middle" style="font-weight:700;fill:#7a4fd0">② PPO</text><text x="330" y="82" text-anchor="middle" style="fill:#444">levels it</text><text x="330" y="99" text-anchor="middle" style="fill:#444">0.25 s</text>
+<rect x="400" y="40" width="120" height="70" rx="8" fill="#e2f3e7" stroke="#1b7f3b"/><text x="460" y="64" text-anchor="middle" style="font-weight:700;fill:#1b7f3b">③ BRAKE</text><text x="460" y="82" text-anchor="middle" style="fill:#444">height hold</text><text x="460" y="99" text-anchor="middle" style="fill:#444">stops the fall</text>
+<rect x="530" y="40" width="120" height="70" rx="8" fill="#fff" stroke="#c23a39" stroke-dasharray="5 4"/><text x="590" y="64" text-anchor="middle" style="font-weight:700;fill:#c23a39">(RESCUE)</text><text x="590" y="82" text-anchor="middle" style="fill:#444">only if it would</text><text x="590" y="99" text-anchor="middle" style="fill:#444">pass 3 m</text>
+<rect x="660" y="40" width="140" height="70" rx="8" fill="#e3eefb" stroke="#2a78d6"/><text x="730" y="64" text-anchor="middle" style="font-weight:700;fill:#2a78d6">④ FLY BACK</text><text x="730" y="82" text-anchor="middle" style="fill:#444">to the hit point</text><text x="730" y="99" text-anchor="middle" style="fill:#444">5.0 s, 0.08 m off</text>
+<rect x="810" y="40" width="140" height="70" rx="8" fill="#fdf1d8" stroke="#a96a00"/><text x="880" y="64" text-anchor="middle" style="font-weight:700;fill:#1d2433">YOU</text><text x="880" y="82" text-anchor="middle" style="fill:#444">PosHold, same spot</text><text x="880" y="99" text-anchor="middle" style="fill:#444">2 long beeps</text>
+<line x1="140" y1="128" x2="800" y2="128" stroke="#1d2433" stroke-width="2"/>
+<text x="470" y="148" text-anchor="middle" style="fill:#1d2433;font-weight:700">the Pi has the drone (ArduPilot GUIDED) · your sticks do nothing · CH8 takes it back at ANY moment</text>
+<text x="10" y="186" style="font-weight:700;fill:#1d2433">Between ③ and ④ (no flying, ~0.1 s):</text>
+<text x="10" y="206" style="fill:#444">the Pi puts the thrust switch (GUID_OPTIONS) and the rotation limits back and waits until the flight controller confirms them:</text>
+<text x="10" y="226" style="fill:#1b7f3b;font-family:Consolas,monospace">[params] confirmed by the FC: GUID_OPTIONS 0 (thrust switch OFF) + rotation limits</text>
+<text x="10" y="258" style="fill:#444">Your hits: ① 0.4–2.2 s · ② 0.1–0.6 s (spin 1.2 s) · ③ until still · ④ 3.1–9.4 s · whole hit 6–12 s</text>
+<text x="10" y="278" style="fill:#444">Not caught by ② in your run: none. In my SITL run: 2 of 27 needed the rescue (red box)</text>
+</g></svg></div>
+<div class="tw"><table>
+<tr><th>#</th><th>Step</th><th>Who</th><th>What the console prints</th></tr>
+<tr><td>0</td><td>Right button = level (easy / medium / hard)</td><td>You</td><td><code>[level] medium (CH15) - 2 high beep(s)</code></td></tr>
+<tr><td>1</td><td>Left button = hit type. The 8 checks run (<a href="#s3">3</a>)</td><td>You → Pi</td><td>3 short beeps, then <code>HIT flip medium 1.9 turns | rates … | from 10.5 m | ppo-policy</code></td></tr>
+<tr><td>2</td><td>The hit: the Pi spins the drone the planned turns (rotation limits off)</td><td>Pi</td><td>—</td></tr>
+<tr><td>3</td><td>PPO levels it (Option B), then the height hold brakes the fall</td><td>Pi + PPO</td><td><code>[rescue] …</code> only if it would pass 3 m</td></tr>
+<tr><td>4</td><td>Thrust switch + limits put back, the FC confirms (guard A)</td><td>Pi</td><td><code>[params] confirmed by the FC …</code></td></tr>
+<tr><td>5</td><td><b>Fly back</b> to the exact spot and height of the hit, max 2 m/s sideways, 1.5 m/s up/down; must sit within 1 m and slower than 0.5 m/s for 2 s</td><td>Pi → ArduPilot</td><td><code>[return] flying back to the hit point: 7.9 m away, height 4.7 m -&gt; 10.5 m</code><br><code>[return] back at the hit point in 9.4 s (0.1 m off)</code></td></tr>
+<tr><td>6</td><td>Back to YOUR mode (PosHold) right there, 2 long beeps</td><td>You</td><td><code>[return] back to you in POSHOLD</code> then the <code>Hit n | …</code> line</td></tr>
+</table></div>
+
+<h2 id="s2">2. Your radio (Jumper Bumblebee)</h2>
+<div class="figure"><svg viewBox="0 0 900 330" width="100%" style="max-width:900px" role="img" aria-label="Bumblebee radio: left three buttons CH11 flip, CH12 bird, CH13 spin; right three buttons CH14 easy, CH15 medium, CH16 hard">
+<g style="font-size:13px">
+<rect x="150" y="44" width="600" height="246" rx="70" fill="#f1efe8" stroke="#5b5b66" stroke-width="2"/>
+<circle cx="300" cy="170" r="58" fill="#fff" stroke="#888"/><circle cx="300" cy="170" r="14" fill="#5b5b66"/><text x="300" y="250" text-anchor="middle" style="fill:#444">left stick: throttle (middle!)</text>
+<circle cx="600" cy="170" r="58" fill="#fff" stroke="#888"/><circle cx="600" cy="170" r="14" fill="#5b5b66"/><text x="600" y="250" text-anchor="middle" style="fill:#444">right stick: roll / pitch</text>
+<g><rect x="190" y="60" width="44" height="26" rx="6" fill="#c23a39"/><text x="212" y="78" text-anchor="middle" style="fill:#fff;font-weight:700">11</text>
+<rect x="242" y="60" width="44" height="26" rx="6" fill="#c23a39"/><text x="264" y="78" text-anchor="middle" style="fill:#fff;font-weight:700">12</text>
+<rect x="294" y="60" width="44" height="26" rx="6" fill="#c23a39"/><text x="316" y="78" text-anchor="middle" style="fill:#fff;font-weight:700">13</text></g>
+<g><rect x="562" y="60" width="44" height="26" rx="6" fill="#2a78d6"/><text x="584" y="78" text-anchor="middle" style="fill:#fff;font-weight:700">14</text>
+<rect x="614" y="60" width="44" height="26" rx="6" fill="#2a78d6"/><text x="636" y="78" text-anchor="middle" style="fill:#fff;font-weight:700">15</text>
+<rect x="666" y="60" width="44" height="26" rx="6" fill="#2a78d6"/><text x="688" y="78" text-anchor="middle" style="fill:#fff;font-weight:700">16</text></g>
+<text x="10" y="16" style="font-weight:700;fill:#c23a39">LEFT 3 = WHICH HIT (starts it)</text>
+<text x="10" y="33" style="fill:#444">CH11 flip · CH12 bird · CH13 spin</text>
+<text x="890" y="16" text-anchor="end" style="font-weight:700;fill:#2a78d6">RIGHT 3 = HOW HARD</text>
+<text x="890" y="33" text-anchor="end" style="fill:#444">CH14 easy · CH15 medium · CH16 hard</text>
+<text x="450" y="315" text-anchor="middle" style="fill:#1d2433;font-weight:700">One hit = RIGHT button (hear 1 / 2 / 3 high beeps) → then ONE LEFT button</text>
+</g></svg></div>
+<div class="cap">Button positions as you described them (left 3, right 3). The exact layout of your switches CH6–CH9 is as on your radio.</div>
+<div class="tw"><table>
+<tr><th>Channel</th><th>Control</th><th>Does in hit_real</th><th>Beeps</th></tr>
+<tr><td>CH11 / CH12 / CH13</td><td>left buttons</td><td>start a flip / bird / spin hit (ON above 1700 PWM, the press is what counts)</td><td>3 short = checks passed, hit starts · 2 long = REFUSED</td></tr>
+<tr><td>CH14 / CH15 / CH16</td><td>right buttons</td><td>set the level easy / medium / hard. Stays until you press another. Ignored during a hit</td><td>1 / 2 / 3 high beeps</td></tr>
+<tr><td>CH8</td><td>flight-mode switch</td><td>AltHold / PosHold. <b>Moving it = take over at once</b> (<a href="#h5">H5</a>)</td><td>—</td></tr>
+<tr><td>CH9</td><td>arm switch (RC9_OPTION 154)</td><td>arm / disarm, as always</td><td>ArduPilot's own</td></tr>
+<tr><td>CH7</td><td>motors off</td><td>last resort only: the drone drops</td><td>—</td></tr>
+<tr><td>CH6</td><td>EKF source</td><td>must be <b>middle</b> (GPS); the checks need "EKF GPS"</td><td>—</td></tr>
+<tr><td>CH3</td><td>throttle stick</td><td>must be <b>middle</b> (1400–1600) for a hit; PosHold then holds height when you get it back</td><td>—</td></tr>
+</table></div>
+<div class="warn"><b>On the drone:</b> <code>RC14_OPTION</code>, <code>RC15_OPTION</code>, <code>RC16_OPTION</code> must be <b>0</b>, and each right button must go above 1700 when pressed. The simulator presses the buttons in software, so it has never tested your real Bumblebee: <a href="#h1">H1</a> step 4–5.</div>
+
+<h2 id="s3">3. Safety layers (and what the "5 m" really is)</h2>
+<div class="analogy">Like a fairground ride: a guard at the gate (checks before), seat belts during the ride (cut and rescue), the ride brings you back to the platform (fly-back), and the operator's big red button that works at any time (your CH8).</div>
+<div class="tw"><table>
+<tr><th>When</th><th>Layer</th><th>Number</th><th>What happens</th></tr>
+<tr><td rowspan="8"><b>Before</b> (the 8 checks when a left button is pressed; any NO = <code>REFUSED: …</code> + 2 long beeps, the drone just keeps hovering)</td><td>armed and flying</td><td>—</td><td>never hits a drone on the ground</td></tr>
+<tr><td>your mode</td><td>POSHOLD / LOITER</td><td>the Pi hands back to this mode</td></tr>
+<tr><td>height above home</td><td>≥ 8 m</td><td>room to fall (your hits lost up to 5.8 m)</td></tr>
+<tr><td>throttle stick</td><td>1400–1600</td><td>PosHold holds height when handed back</td></tr>
+<tr><td>GPS + EKF</td><td>3D fix, EKF on GPS</td><td>the fly-back steers by GPS</td></tr>
+<tr><td>battery</td><td>≥ 14.4 V</td><td>enough thrust to brake</td></tr>
+<tr><td>thrust switch + limits (guard B)</td><td>read from the FC</td><td>wrong → repaired and read back, or REFUSED (the 14 Nov lesson)</td></tr>
+<tr><td><b>within 5 m of the start point</b></td><td>FIELD_R_M 5 m</td><td>see the box below</td></tr>
+<tr><td rowspan="2"><b>During</b></td><td>hit cut</td><td>5 m</td><td>if braking could not stop above 5 m, the hit stops early and the recovery starts</td></tr>
+<tr><td>rescue</td><td>3 m</td><td>if it would pass 3 m: full-thrust rule until upright and climbing. Counts as FAILED</td></tr>
+<tr><td rowspan="3"><b>After</b></td><td>guard A</td><td>3 s</td><td>every parameter put back and confirmed by the FC, else <code>NOT CONFIRMED</code> + 2 long beeps</td></tr>
+<tr><td>fly-back</td><td>2 m/s, 1.5 m/s</td><td>back to the hit point and the hit height, then your PosHold</td></tr>
+<tr><td>fly-back time-out</td><td>30 s</td><td>not back by then → handed to you anyway, 2 long beeps, <code>back NO</code></td></tr>
+<tr><td><b>Always</b></td><td>you</td><td>CH8</td><td>move CH8 → the script lets go at once, whatever it is doing</td></tr>
+</table></div>
+<div class="note"><b>The 5 m is a doorman, not a fence.</b> It is only checked at the moment you press a left button: if the drone is more than 5 m (sideways) from where the script was started, that hit is refused and the drone keeps hovering in your PosHold. It never moves the drone, never does RTL, never lands. What brings the drone back after a hit is the <b>fly-back</b> (step 5), which is new in version e. Before version e the drone stayed wherever it had slid to.</div>
+<div class="warn"><b>What the fly-back does NOT do:</b> it starts only once the drone is level again, so during the tumble and the braking the drone still slides (your run: up to 10.2 m on bird hard). It trusts GPS: real GPS noise and wind mean "back" will be within a metre or two, not 0.1 m. Keep about 15 m clear around the hit point, nobody in it.</div>
+
+<h2 id="a1"><span class="stage-tag t2">S1</span>Simulator: folder and files (once)</h2>
+<p>Your simulator folder on the PC (yours: <code>…\Q250_Airsim\Real_Hit_Fly_FlightGear\</code>) must hold these, all from the same delivery:</p>
+<div class="tw"><table>
+<tr><th>File</th><th>Check</th></tr>
+<tr><td><code>hit_real.py</code></td><td>top of the file: section 11 ends with "e (18 Nov 2026) - four small fixes"</td></tr>
+<tr><td><code>throw_real.py</code></td><td>has <code>class ParamKeeper</code> (version g2). An older one gives <code>AttributeError: module 'throw_real' has no attribute 'ParamKeeper'</code> (your 17 Nov evening error)</td></tr>
+<tr><td><code>impact_check.py</code>, <code>ap_link.py</code></td><td>16 Nov</td></tr>
+<tr><td><code>sim_pilot.py</code></td><td>has the <code>hits</code> mode with <code>--level</code></td></tr>
+<tr><td><code>models\round1_final.zip</code>, <code>models\obs_norm.npz</code></td><td>your Round 1 PPO</td></tr>
+</table></div>
+<p>One-line check (PowerShell, in that folder):</p>
+<div class="cmdbox"><pre class="cmd">py -c "import throw_real as t, impact_check as i, ap_link; print('OK', hasattr(t,'ParamKeeper'), i.GUID_THRUST_BIT)"</pre><button class="copy" type="button">Copy</button></div>
+<div class="tw"><table><tr><th>You see</th><th>Means</th><th>Do</th></tr>
+<tr><td><code>OK True 8</code></td><td>✅ all helpers are the right version</td><td>S2</td></tr>
+<tr><td><code>OK False 8</code></td><td>❌ old <code>throw_real.py</code></td><td>copy the g2 file in</td></tr>
+<tr><td><code>ModuleNotFoundError</code> / <code>AttributeError</code></td><td>❌ a helper file is missing or old</td><td>copy all four again</td></tr>
+</table></div>
+
+<h2 id="a2"><span class="stage-tag t2">S2</span>Simulator: run a session</h2>
+<p>Three windows, the same as the Throw &amp; Fly guide B10. <code>hit_real.py</code> in window 2 can't tell the simulator from the real drone: only <code>--conn</code> differs. <code>sim_pilot.py</code> in window 3 does what your hands do (arm, take off, CH8, the buttons).</p>
+<div class="step s2"><div class="sh"><span class="num">1</span><span class="tt">Window 1 · WSL: start FlightGear, then the simulator</span><span class="meta">Throw &amp; Fly B1–B3</span></div>
+<p>Double-click <code>FlightGear_quad.bat</code>, wait for the runway. Then in WSL (your Windows IP after <code>--fg</code>, from <code>ip route | grep default</code>):</p>
+<div class="cmdbox"><pre class="cmd">cd ~/sitl_q250_throw
+
+sim_vehicle.py -v ArduCopter -f quad --model quad:@ROMFS/models/q250.json --console --custom-location=37.6188,-122.3754,5,0 -A "--fg 172.28.0.1"</pre><button class="copy" type="button">Copy</button></div>
+<p>✅ Wait for <code>EKF3 IMU0 is using GPS</code>. Without FlightGear (faster): leave out <code>--custom-location…</code> and <code>-A "--fg …"</code>.</p></div>
+<div class="step s2"><div class="sh"><span class="num">2</span><span class="tt">Window 2 · PowerShell: the script under test</span><span class="meta">sim folder</span></div>
+<div class="cmdbox"><pre class="cmd">py .\hit_real.py --conn tcp:127.0.0.1:5762 --baud 115200</pre><button class="copy" type="button">Copy</button></div>
+<p>✅ <code>PPO (ONNX) loaded: round1_final.zip</code> → <code>[link] heartbeat from system 1</code> → <code>Connected | ppo-policy + Option B | level easy …</code> → <code>Pi READY - the spot where you started me is the middle of the field …</code>, then a <code>WAIT | level easy | height …</code> line every 2 s. Leave it running for the whole session.</p></div>
+<div class="step s2"><div class="sh"><span class="num">3</span><span class="tt">Window 3 · PowerShell: the pilot, one level at a time</span><span class="meta">≈ 2 min each</span></div>
+<div class="cmdbox"><pre class="cmd">py .\sim_pilot.py hits --level easy
+
+py .\sim_pilot.py hits --level medium
+
+py .\sim_pilot.py hits --level hard</pre><button class="copy" type="button">Copy</button></div>
+<p>Run one, wait for it to end, then the next. Each run: takes off to 10 m, presses the right button, then CH13 spin, CH12 bird, CH11 flip, then the <b>low test</b> (a hit button at 6 m: must be refused) and the <b>take-over test</b> (CH8 1 s into a spin: the script must let go).</p></div>
+<div class="step s2"><div class="sh"><span class="num">4</span><span class="tt">Optional · guard B test (before the field)</span><span class="meta">window 3</span></div>
+<div class="cmdbox"><pre class="cmd">py .\sim_pilot.py hitsafety</pre><button class="copy" type="button">Copy</button></div>
+<p>✅ Window 2 prints <code>[fix] thrust switch / limits were wrong - fixed and read back</code> before the hit, and the hit runs normally. Result in my re-check: <a href="#a5">S5</a>.</p></div>
+<div class="step s2"><div class="sh"><span class="num">5</span><span class="tt">End: Ctrl+C in window 2</span></div>
+<p>✅ <code>[params] confirmed by the FC …</code> then <code>Saved: runs\hit_real\hit_real_&lt;date&gt;.csv / _steps.csv / .json</code>. If the simulator was closed first: <code>[exit] could not confirm settings …</code> and the files are still saved (fix 4, 18 Nov).</p></div>
+
+<h2 id="a3"><span class="stage-tag t2">S3</span>Read the printout</h2>
+<p>After every hit, window 2 prints one result line. Your hit 14:</p>
+<div class="cmdbox"><pre class="cmd">Hit 14 | bird hard | ppo-policy | turns 1.53/1.47 in 0.58 s | peak rate 23.47 | height lost 5.8 m (lowest 4.66 m) | B hand-over 0.64 s | RECOVERED 0.92 s | drift 10.21 m | back YES 9.4 s | recovered | now POSHOLD</pre><button class="copy" type="button">Copy</button></div>
+<div class="tw"><table>
+<tr><th>Part</th><th>Means</th><th>Good</th><th>Look closer if</th></tr>
+<tr><td><code>turns 1.53/1.47</code></td><td>turns done / planned</td><td>about equal</td><td>much less + <code>hit_cut</code> in the .csv: the 5 m cut stopped it (fine, the safety worked)</td></tr>
+<tr><td><code>height lost … (lowest …)</code></td><td>drop from the hit height, lowest point above home</td><td>lowest above 5 m</td><td>lowest below 5 m → next time hit from 12 m</td></tr>
+<tr><td><code>B hand-over</code></td><td>s until the PPO had it level and the height hold took over</td><td>0.1–0.7 s (spin ≈ 1.2 s)</td><td>None = never level (rescue or take-over)</td></tr>
+<tr><td><code>RECOVERED 0.92 s</code></td><td>level and still for the hold time</td><td>RECOVERED</td><td><code>NOT recovered</code> + <code>RESCUED</code> = the rescue caught it (counts as failed)</td></tr>
+<tr><td><code>drift 10.21 m</code></td><td>furthest it got from the hit point (sideways)</td><td>spin &lt; 1 m; bird / flip a few m</td><td>more than 10 m on the real drone: stop going up the ladder</td></tr>
+<tr><td><code>back YES 9.4 s</code></td><td>flew back to the hit point, time</td><td>YES</td><td><code>back NO</code>: did not get within 1 m in 30 s → why? (wind, GPS)</td></tr>
+<tr><td><code>recovered</code> · <code>now POSHOLD</code></td><td>how it ended · the mode you got it back in</td><td>recovered · POSHOLD</td><td><code>you took over</code> (you moved CH8) · <code>you took over (fly-back)</code> (during the fly-back)</td></tr>
+</table></div>
+<div class="tw"><table>
+<tr><th>Other lines</th><th>Means</th><th>Do</th></tr>
+<tr><td><code>REFUSED: height &gt;= 8 m above home (6.0 m)</code></td><td>a check said NO (here: too low)</td><td>fix what it names, press again</td></tr>
+<tr><td><code>[drift] 2.8 m from the hit point - it flies back once it is level</code></td><td>information only</td><td>nothing</td></tr>
+<tr><td><code>[rescue] would pass 3 m - full-thrust rule (counts as FAILED)</code></td><td>the safety net caught a fast fall; it climbs, then flies back down</td><td>note it; on the real drone go no higher up the ladder</td></tr>
+<tr><td><code>[params] NOT CONFIRMED by the FC: …</code></td><td>guard A: a setting did not come back</td><td><b>no more hits</b> until the next button press repairs it (guard B) — or land</td></tr>
+<tr><td><code>[return] NOT back after 30 s (… m off) - handing it to you anyway</code></td><td>fly-back did not settle</td><td>fly it yourself; stop for the day if it repeats</td></tr>
+<tr><td><code>[return] POSHOLD refused - LAND</code></td><td>ArduPilot refused PosHold (e.g. GPS lost)</td><td>take over with CH8</td></tr>
+</table></div>
+
+<h2 id="a4"><span class="stage-tag t2">S4</span>Your simulator results (17–18 Nov, FlightGear)</h2>
+<p>Your run: <code>hit_real_20261117_204142</code>, version e (17 Nov), one session from 17 Nov 20:41 to 18 Nov 07:45, 10.2–10.5 m hover, battery 15.3 V. 16 hits: 12 real hits + 4 take-over tests.</p>
+<div class="tw"><table id="resTbl"></table></div>
+<div class="chart"><div class="ct">How low each hit went, and how far it slid</div><div class="cs">Bars: from the hit height down to the lowest point. Dots: furthest from the hit point (right axis). The 4 take-over tests are left out.</div><div id="resChart"></div></div>
+<div class="chart"><div class="ct">Seen from above: three of your hits and their fly-back</div><div class="cs">Grey square = a 10 × 10 m field around the hit point. Red = hit, purple = PPO, green = height hold braking, blue = fly-back. Each path ends at the cross (the hit point).</div><div id="pathChart" style="overflow-x:auto"></div></div>
+<h3>What it shows</h3>
+<div class="tw"><table>
+<tr><th>Finding</th><th>From your run</th><th>Meaning for the real drone</th></tr>
+<tr><td>PPO catches every hit</td><td>12 / 12 recovered, B hand-over 0.10–0.64 s (spin 1.17–1.18 s), 0 rescues</td><td>✅ the brain works at all three levels</td></tr>
+<tr><td>Fly-back works</td><td>12 / 12 back, 3.1–9.4 s, 0.04–0.17 m off, end height 10.2–10.5 m</td><td>✅ expect 1–2 m off with real GPS</td></tr>
+<tr><td>Take-over works</td><td>4 / 4 <code>you took over</code>, mode ALT_HOLD, no fly-back</td><td>✅ your CH8 always wins</td></tr>
+<tr><td>Bird slides most</td><td>bird hard: 7.0 m and 10.2 m; it kept sliding 2.3 m <b>after</b> it was level, then came back</td><td>⚠️ the momentum can't be stopped instantly; clear space</td></tr>
+<tr><td>Hard hits go lowest</td><td>bird hard 4.66 m, flip hard 5.01 m (cut), from 10.5 m</td><td>⚠️ hard from 12 m on the real drone</td></tr>
+<tr><td>Spin climbs a little</td><td>to 11.2–11.3 m during the hit, the fly-back brings it to 10.4 m in ≈ 3 s</td><td>fine</td></tr>
+<tr><td>Fly-back speed</td><td>up to 2.9 m/s on a diagonal (the 2 m/s limit was per direction)</td><td>fixed in e (18 Nov): 2 m/s in any direction</td></tr>
+</table></div>
+<h3>Compared with the real drone and my simulator</h3>
+<div class="tw"><table>
+<tr><th></th><th>Real drone, 13 Nov (version b, 30 m, hard)</th><th>Your FlightGear run (e, 10 m)</th><th>My SITL run (e, 10 m, 17 Nov)</th></tr>
+<tr><td>Flip tilt</td><td class="n">173°, 176° (upside down 2–3×)</td><td class="n">170–179°</td><td class="n">92–147° (twists instead)</td></tr>
+<tr><td>Bird tilt</td><td class="n">173°</td><td class="n">167–172°</td><td class="n">77–166°</td></tr>
+<tr><td>Slide</td><td>flip 4.1 m · bird 6.7 m · spin 0.6 m</td><td>flip 1.0–1.6 m · bird 1.3–10.2 m · spin ≤ 0.3 m</td><td>up to 48 m (flip)</td></tr>
+<tr><td>Rescues</td><td>—</td><td>0 / 12</td><td>2 / 27</td></tr>
+<tr><td>Back to the hit point</td><td>(no fly-back in b)</td><td>12 / 12</td><td>27 / 27</td></tr>
+</table></div>
+<div class="note">Your FlightGear run is the closer match to the real drone (fully upside-down flips, slides of a few metres). Use <b>your</b> run as the simulator result in the thesis, and the 13 Nov real hits as the reality check.</div>
+
+<h2 id="a5"><span class="stage-tag t2">S5</span>My re-check of the 18 Nov fixes</h2>
+<p>After the last review (four small fixes, <a href="#r1">R1</a>) I ran the exact delivered <code>hit_real.py</code> again on a simulator built from your firmware (1e001fa0, q250.json, 15.3 V), with your <code>sim_pilot.py</code>.</p>
+<div class="tw"><table id="s5Tbl"><tr><th>Test (18 Nov, version e 18 Nov)</th><th>Result</th><th>Verdict</th></tr>
+<tr><td><code>sim_pilot.py hits --level easy</code> + <code>--level hard</code>: 6 hits</td><td>5 recovered by the PPO, 1 rescued (flip hard, cut at 0.7 turns, lowest 6.4 m); all 6 <code>back YES</code> in 5.0–12.2 s, 0.1 m off; every hit followed by <code>[params] confirmed by the FC</code></td><td>✅</td></tr>
+<tr><td>Fix 2: fly-back speed</td><td>after the first 2.5 s of each fly-back (once the slide has stopped) the speed never went above <b>2.04 m/s</b>, also on diagonals (before: 2.9 m/s)</td><td>✅</td></tr>
+<tr><td>Fix 1: "back" without the tilt test</td><td>all 6 still ended <code>back YES</code> with 2 s sitting still; nothing else changed</td><td>✅</td></tr>
+<tr><td>Take-over tests (2)</td><td><code>you took over</code>, ALT_HOLD, no fly-back</td><td>✅</td></tr>
+<tr><td>Low test (2)</td><td><code>REFUSED: height &gt;= 8 m above home (5.9 m)</code> / <code>(5.8 m)</code></td><td>✅</td></tr>
+<tr><td><code>sim_pilot.py hitsafety</code>: H1 thrust switch left at 8, H2 a rotation limit left at 0, H3 normal hit</td><td>H1 and H2: <code>[fix] thrust switch / limits were wrong - fixed and read back</code> before the hit, then a normal hit, <code>back YES</code>; H3: GUID_OPTIONS 0 after the hit</td><td>✅ guard B works in e</td></tr>
+<tr><td>Fix 4: link gone while stopping</td><td>it happened by chance at the end of the hitsafety run: <code>[exit] could not confirm settings ([Errno 104] Connection reset by peer)</code> and then <code>Saved: …</code> (17 Nov: crash, nothing saved)</td><td>✅</td></tr>
+<tr><td>Fix 3: CH8 during the fly-back</td><td>not tested in the simulator (sim_pilot takes over during the spin, not during the fly-back). Code path checked by reading</td><td>reviewed</td></tr>
+</table></div>
+
+<h2 id="h1"><span class="stage-tag thw">H1</span>Real drone: before the field (at home, props OFF)</h2>
+<div class="step hw"><div class="sh"><span class="num">1</span><span class="tt">Copy the files to the Pi</span><span class="meta">PowerShell, in your sim folder</span></div>
+<div class="cmdbox"><pre class="cmd">scp .\hit_real.py .\throw_real.py .\impact_check.py .\ap_link.py jlukas@10.160.112.138:~/Q250_Hardware_Throw_Fly/</pre><button class="copy" type="button">Copy</button></div>
+<p><code>sim_pilot.py</code> does <b>not</b> go on the Pi (it is the simulator's pilot). <code>models/round1_final.onnx</code> is already there from the throw tests.</p></div>
+<div class="step hw"><div class="sh"><span class="num">2</span><span class="tt">Check the files on the Pi</span><span class="meta">ssh</span></div>
+<div class="cmdbox"><pre class="cmd">ssh jlukas@10.160.112.138
+
+cd ~/Q250_Hardware_Throw_Fly
+
+python3 -c "import throw_real as t, impact_check as i, ap_link; print('OK', hasattr(t,'ParamKeeper'), i.GUID_THRUST_BIT)"
+
+grep -c "e (18 Nov 2026)" hit_real.py</pre><button class="copy" type="button">Copy</button></div>
+<p>✅ <code>OK True 8</code> and a number above 0. Anything else: copy again (step 1).</p></div>
+<div class="step hw"><div class="sh"><span class="num">3</span><span class="tt">Mission Planner: Simple mode</span><span class="meta">Initial Setup → Mandatory Hardware → Flight Modes</span></div>
+<p>Tick <b>Simple Mode</b> on the AltHold row and the PosHold row, leave Super Simple unticked, <b>Save Modes</b>. Check: Config → Full Parameter List → <code>SIMPLE</code> = <b>6</b>, <code>SUPER_SIMPLE</code> = <b>0</b>. Then forward stick = away from you, whichever way the nose points (after a spin the nose can point anywhere). Your firmware 1e001fa0 handles Simple mode correctly (checked in its code; the bug reported for 4.7.0 is not in it).</p></div>
+<div class="step hw"><div class="sh"><span class="num">4</span><span class="tt">Mission Planner: the right buttons do nothing in ArduPilot</span><span class="meta">Full Parameter List</span></div>
+<p><code>RC14_OPTION</code>, <code>RC15_OPTION</code>, <code>RC16_OPTION</code> = <b>0</b>. Also check no <code>RCx_OPTION</code> is 3 or 13 (a Simple-mode switch would override the tick boxes).</p></div>
+<div class="step hw"><div class="sh"><span class="num">5</span><span class="tt">Mission Planner: every button reaches the script's threshold</span><span class="meta">Initial Setup → Radio Calibration</span></div>
+<div class="tw"><table><tr><th>Press</th><th>Expected</th><th>If not</th></tr>
+<tr><td>each left button</td><td>CH11 / CH12 / CH13 above <b>1700</b> while pressed, below 1300 when released</td><td>set the button's output range on the radio (100 %)</td></tr>
+<tr><td>each right button</td><td>CH14 / CH15 / CH16 above <b>1700</b> while pressed</td><td>same</td></tr>
+<tr><td>nothing</td><td>CH11–CH16 all low</td><td>a button mixed as a toggle: make it momentary</td></tr></table></div></div>
+
+<h2 id="h2"><span class="stage-tag thw">H2</span>Bench: --check (props OFF, never arms)</h2>
+<div class="cmdbox"><pre class="cmd">sudo systemctl stop throw
+
+tmux new -s hit
+
+cd ~/Q250_Hardware_Throw_Fly
+
+python3 hit_real.py --check</pre><button class="copy" type="button">Copy</button></div>
+<div class="tw"><table><tr><th>Do</th><th>Expected</th><th>If not</th></tr>
+<tr><td>watch 5 s</td><td>one line per second: <code>CH11 … CH16 … | CH3 … | IMU 50 Hz ATT 50 Hz | … V</code></td><td>link: Throw &amp; Fly C2</td></tr>
+<tr><td>press CH14, CH15, CH16</td><td><code>button CH14 -&gt; level easy</code> + 1 high beep, 2 for CH15, 3 for CH16</td><td>H1 step 5</td></tr>
+<tr><td>press CH13 (then 11, 12)</td><td><code>switch CH13 ON -&gt; spin hit</code>, 3 short then 2 long beeps, the 8 checks. On the bench "armed, flying" and "height" say NO: right. <code>thrust switch OFF + limits</code> must say <b>ok</b> (read only)</td><td>thrust switch NO: GUID_OPTIONS is not 0 → set 0 in Mission Planner</td></tr>
+<tr><td>Ctrl+C</td><td><code>check stopped</code></td><td>—</td></tr></table></div>
+<p>The bench check never writes to the flight controller, never arms, never moves anything.</p>
+
+<h2 id="h3"><span class="stage-tag thw">H3</span>Field day: one hit</h2>
+<div class="tw"><table><tr><th>Condition</th><th>Need</th></tr>
+<tr><td>wind</td><td>calm (the fly-back only pushes 2 m/s)</td></tr>
+<tr><td>space</td><td>about 15 m clear around the hit point, nobody inside, two people if possible</td></tr>
+<tr><td>GPS</td><td>10+ satellites, CH6 middle before the battery goes in</td></tr>
+<tr><td>battery</td><td>full (16.8 V); the script refuses below 14.4 V in the air</td></tr></table></div>
+<div class="tw"><table>
+<tr><th>#</th><th>Who</th><th>Do</th><th>Expected</th></tr>
+<tr><td>1</td><td>You</td><td>drone in the <b>middle of the field</b>, battery in. In tmux on the Pi: <code>python3 hit_real.py</code></td><td>start beep (1 long + 2 short), <code>Pi READY - the spot where you started me is the middle of the field</code></td></tr>
+<tr><td>2</td><td>You</td><td>stand behind the drone, <b>nose pointing away from you</b>, then arm (CH9). This sets "forward" for Simple mode</td><td>arming tone</td></tr>
+<tr><td>3</td><td>You</td><td>take off to 2–3 m. <b>Simple mode test:</b> yaw the nose 90°, push forward</td><td>it moves away from you, not sideways. If not: land, H1 step 3</td></tr>
+<tr><td>4</td><td>You</td><td>CH8 PosHold, climb to <b>10 m</b> (12 m for hard), throttle stick back to the middle, finger next to CH8</td><td><code>WAIT | level easy | height 10.x m | POSHOLD ARMED | CH3 15xx …</code></td></tr>
+<tr><td>5</td><td>You</td><td>right button (level), then one left button</td><td>1/2/3 high beeps, then 3 short = hit starts. 2 long = REFUSED: the console says why</td></tr>
+<tr><td>6</td><td>Pi</td><td>hit → PPO → brake → fly-back</td><td>tumble 0.5–2 s, drone level, slides, then flies back to the spot</td></tr>
+<tr><td>7</td><td>Pi</td><td>hands back in PosHold</td><td>2 long beeps. It's yours, at the same spot and height</td></tr>
+<tr><td>8</td><td>You</td><td>next hit: steps 5–7. Land before the battery reaches about 14.8 V at hover</td><td>—</td></tr>
+<tr><td>9</td><td>You</td><td>after landing and disarming: Ctrl+C on the Pi, then <code>sudo systemctl start throw</code> (throw autostart back on)</td><td><code>Saved: runs/hit_real/…</code></td></tr>
+</table></div>
+
+<h2 id="h4"><span class="stage-tag thw">H4</span>Ladder and stop rules</h2>
+<p>Go up one rung only when the rung before was clean. One battery per rung is fine.</p>
+<div class="tw"><table>
+<tr><th>Rung</th><th>Hits</th><th>Height</th><th>Why</th></tr>
+<tr><td>1</td><td>spin easy × 2</td><td>10 m</td><td>first real fly-back: watch for <code>[return] back at the hit point</code></td></tr>
+<tr><td>2</td><td>spin easy + <b>you move CH8</b> right after the 3 short beeps</td><td>10 m</td><td>proves the take-over on the real drone: <code>you took over</code></td></tr>
+<tr><td>3</td><td>bird easy, flip easy</td><td>10 m</td><td>the first upside-down hits with the fly-back</td></tr>
+<tr><td>4</td><td>spin, bird, flip medium</td><td>10 m</td><td>—</td></tr>
+<tr><td>5</td><td>spin, bird, flip hard</td><td><b>12 m</b></td><td>your sim bird hard reached 4.66 m from 10.5 m</td></tr>
+</table></div>
+<div class="bad"><b>Stop for the day if:</b> <code>back NO</code> · <code>NOT CONFIRMED</code> · <code>RESCUED</code> on easy or medium · lowest below 5 m on easy · slide more than 10 m · the fly-back heads the wrong way · anything looks wrong. Then send me the files (H6) before the next flight.</div>
+
+<h2 id="h5"><span class="stage-tag thw">H5</span>Taking over</h2>
+<p>While the Pi flies, the drone is in GUIDED and your sticks do nothing. <b>CH8 is your brake pedal:</b> ArduPilot only reacts when the switch <b>moves</b>, and it is already on PosHold, so flick it.</p>
+<div class="tw"><table><tr><th>#</th><th>Do</th></tr>
+<tr><td>1</td><td>throttle stick to the middle</td></tr>
+<tr><td>2</td><td>flick CH8 to <b>AltHold</b>: it's yours at once, holding height</td></tr>
+<tr><td>3</td><td>if you want PosHold: flick back to <b>PosHold</b></td></tr></table></div>
+<div class="tw"><table><tr><th>You see</th><th>Do</th></tr>
+<tr><td>heading for a tree, person, building, road</td><td><b>CH8 now</b></td></tr>
+<tr><td>the fly-back goes the wrong way, climbs for no reason, or won't settle</td><td><b>CH8</b></td></tr>
+<tr><td>still tumbling after about 2 s (normal 0.1–1.2 s)</td><td><b>CH8</b></td></tr>
+<tr><td>about to hit something and nothing else works</td><td>CH7 (motors off, it drops) — last resort</td></tr>
+<tr><td>a tumble of under a second that looks scary</td><td>nothing: that's the hit doing its job</td></tr>
+<tr><td>2 long beeps</td><td>nothing: it's already yours in PosHold</td></tr></table></div>
+<p>Be realistic: the first 1–2 s are faster than your thumbs; the script and the rescue handle them. Your job is what the script can't see: obstacles, wind, people.</p>
+
+<h2 id="h6"><span class="stage-tag thw">H6</span>Send me after each session</h2>
+<div class="tw"><table><tr><th>File</th><th>Where</th></tr>
+<tr><td><code>hit_real_&lt;date&gt;.json</code>, <code>.csv</code>, <code>_steps.csv</code></td><td>Pi: <code>~/Q250_Hardware_Throw_Fly/runs/hit_real/</code></td></tr>
+<tr><td>the flight log <code>.bin</code></td><td>Mission Planner → DataFlash Logs → Download</td></tr>
+<tr><td>the console text (copy from tmux) and the video</td><td>—</td></tr></table></div>
+<div class="cmdbox"><pre class="cmd">scp jlukas@10.160.112.138:~/Q250_Hardware_Throw_Fly/runs/hit_real/* .\runs_real\</pre><button class="copy" type="button">Copy</button></div>
+
+<h2 id="r1">R1. Versions a → e</h2>
+<div class="tw"><table>
+<tr><th>Version</th><th>Date</th><th>What changed</th></tr>
+<tr><td>a</td><td>12 Nov</td><td>first version: hit, PPO + Option B, 30 m settings</td></tr>
+<tr><td>b</td><td>13 Nov</td><td>rescue ends as soon as it is upright and climbing (a: SITL climbed to 243 m); 10 m settings 8 / 5 / 3 m. Real drone 13 Nov: hard flips 173°/176°, all recovered</td></tr>
+<tr><td>c</td><td>16 Nov</td><td>14 Nov lessons: guard A (every parameter confirmed), guard B (read + repair at every button); FIELD_R_M 5 m</td></tr>
+<tr><td>d</td><td>17 Nov</td><td>level from the radio: right buttons CH14 / 15 / 16; bench check fixed</td></tr>
+<tr><td>e</td><td>17 Nov</td><td><b>flies back to the hit point</b> (replaces the 10 s hold where it ended up); north_m / east_m in the step log</td></tr>
+<tr><td><b>e</b></td><td><b>18 Nov</b></td><td>four small fixes from the last review: (1) "back" no longer needs tilt &lt; 10° (in wind the drone leans to stay put → would have said back NO); (2) 2 m/s in any direction (was 2.8 m/s on a diagonal); (3) CH8 during the fly-back is saved as <code>you took over (fly-back)</code> (was <code>recovered</code>); (4) logs still saved if the link drops while you stop the script</td></tr>
+</table></div>
+
+<h2 id="r2">R2. Troubleshooting</h2>
+<div class="tw"><table><tr><th>You see</th><th>Cause</th><th>Do</th></tr>
+<tr><td><code>AttributeError: module 'throw_real' has no attribute 'ParamKeeper'</code></td><td>old throw_real.py next to hit_real.py</td><td>copy the g2 file (S1)</td></tr>
+<tr><td><code>REFUSED: … within 5 m of the start point (6.2 m)</code></td><td>drifted from the middle</td><td>fly back to the middle, press again</td></tr>
+<tr><td><code>REFUSED: throttle stick middle (CH3 1320)</code></td><td>stick not centred</td><td>centre it</td></tr>
+<tr><td><code>REFUSED: GPS 3D fix + EKF GPS (… EKF NO)</code></td><td>CH6 not middle or GPS weak</td><td>CH6 middle; wait for satellites</td></tr>
+<tr><td><code>REFUSED: thrust switch OFF + limits (NO ANSWER from the FC)</code></td><td>parameter reads lost on the link</td><td>press again; if it repeats, land and check the link</td></tr>
+<tr><td>no beeps on the right buttons</td><td>button below 1700, or RCx_OPTION set</td><td>H1 steps 4–5</td></tr>
+<tr><td><code>back NO</code> on a calm day</td><td>GPS poor, or EKF jumps</td><td>stop; send me the files</td></tr>
+<tr><td><code>waiting for the EKF position (GPS fix)</code> at start</td><td>no GPS yet (indoors)</td><td>outdoors, wait</td></tr></table></div>
+
+<h2 id="r3">R3. Files and outputs</h2>
+<div class="tw"><table><tr><th>Output</th><th>Holds</th></tr>
+<tr><td><code>runs/hit_real/hit_real_&lt;date&gt;.csv</code></td><td>one line per hit: type, level, turns, impact_s, peak rate / tilt, height before, lowest, lost, b_handover_s, recovered_s, rescued, ended, back_mode, drift_m, <b>returned, return_s, back_err_m</b>, volt</td></tr>
+<tr><td><code>…_steps.csv</code></td><td>every 50 Hz step: phase (hit / ppo / hold-brake / rescue / <b>return</b>), tilt, rate, height, speeds, p q r, <b>north_m, east_m</b> from the hit point</td></tr>
+<tr><td><code>….json</code></td><td>settings (version, limits, level_ch, return_max_s …) + every hit</td></tr></table></div>
+<p>Written and flushed after <b>every</b> hit, so a crash or a pulled battery loses at most the hit in progress.</p>
+
+<h2 id="r4">R4. Verified vs not yet</h2>
+<div class="tw"><table><tr><th>Item</th><th>Status</th></tr>
+<tr><td>PPO recovers spin / bird / flip, easy → hard, from 10 m</td><td><span class="chip done">sim ✓</span> yours 12/12, mine 27/27 (2 by the rescue)</td></tr>
+<tr><td>fly-back to the hit point</td><td><span class="chip done">sim ✓</span> yours 12/12, mine 27/27</td></tr>
+<tr><td>CH8 take-over</td><td><span class="chip done">sim ✓</span> yours 4/4, mine 9/9</td></tr>
+<tr><td>refuse below 8 m</td><td><span class="chip done">sim ✓</span> mine 9/9 (refusals are printed, not saved in the files)</td></tr>
+<tr><td>the 18 Nov fixes</td><td><span class="chip done">sim ✓</span> S5</td></tr>
+<tr><td>real hits (version b, 13 Nov, 30 m)</td><td><span class="chip done">real ✓</span> flips 173°/176°, all recovered</td></tr>
+<tr><td>your real Bumblebee buttons CH14–16</td><td><span class="chip todo">to do</span> H1, H2</td></tr>
+<tr><td>Simple mode on the real drone</td><td><span class="chip todo">to do</span> H1 step 3, H3 step 3</td></tr>
+<tr><td>fly-back with real GPS and wind</td><td><span class="chip todo">to do</span> H4 rung 1</td></tr>
+<tr><td>version e on the real drone</td><td><span class="chip todo">to do</span> H4</td></tr></table></div>
+
+<h2 id="r5">R5. Sources</h2>
+<div class="tw"><table><tr><th>#</th><th>Source</th><th>Used for</th></tr>
+<tr><td>1</td><td>Your run <code>hit_real_20261117_204142</code> (.json, .csv, _steps.csv)</td><td>S3, S4, figures</td></tr>
+<tr><td>2</td><td>Your real hits 13 Nov (steps.csv, run.json)</td><td>S4 comparison</td></tr>
+<tr><td>3</td><td>My SITL runs 17 Nov (27 hits + 9 take-over tests) and 18 Nov (S5), ArduPilot built from your commit 1e001fa0</td><td>S4, S5, R4</td></tr>
+<tr><td>4</td><td><a href="https://ardupilot.org/copter/docs/simpleandsuper-simple-modes.html" target="_blank" rel="noopener">ArduPilot docs: Simple and Super Simple Modes</a></td><td>H1 step 3</td></tr>
+<tr><td>5</td><td><a href="https://ardupilot.org/copter/docs/common-rc-transmitter-flight-mode-configuration.html" target="_blank" rel="noopener">ArduPilot docs: RC Transmitter Flight Mode Configuration</a></td><td>H1 step 3</td></tr>
+<tr><td>6</td><td><a href="https://ardupilot.org/dev/docs/copter-commands-in-guided-mode.html" target="_blank" rel="noopener">ArduPilot docs: Copter commands in Guided mode</a></td><td>the hit and the fly-back (SET_ATTITUDE_TARGET, SET_POSITION_TARGET_LOCAL_NED)</td></tr>
+<tr><td>7</td><td><a href="https://discuss.ardupilot.org/t/copter-4-7-0-simple-super-simple-mode-appears-to-have-no-effect-on-roll-pitch-update-simple-mode-writes-control-in-mode-cpp-now-reads-norm-input-dz/145039" target="_blank" rel="noopener">ArduPilot Discuss: Copter 4.7.0 Simple mode has no effect</a></td><td>why to re-test Simple mode after any firmware update</td></tr></table></div>
+<footer>Q250 Hit Real Guide · hit_real.py e (18 Nov 2026) · companion to the Q250 Throw &amp; Fly guide and the Q250 Build Book.</footer>
+</main></div>
+<script>
+(function(){
+  var btn=document.getElementById("themeBtn");
+  btn.onclick=function(){var c=document.documentElement.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");var n=c==="dark"?"light":"dark";document.documentElement.setAttribute("data-theme",n);try{localStorage.setItem("guideTheme",n)}catch(e){}};
+  try{var t=localStorage.getItem("guideTheme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}
+  document.querySelectorAll(".cmdbox button.copy").forEach(function(b){b.onclick=function(){var pre=b.parentElement.querySelector("pre");var t=pre.innerText;var done=function(){b.textContent="Copied";setTimeout(function(){b.textContent="Copy"},1200)};var sel=function(){var r=document.createRange();r.selectNodeContents(pre);var s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent="Selected: Ctrl+C";setTimeout(function(){b.textContent="Copy"},1600)};try{navigator.clipboard.writeText(t).then(done,sel)}catch(e){sel()}}});
+  var L=[].slice.call(document.querySelectorAll("nav.side a")),S=L.map(function(a){return document.querySelector(a.getAttribute("href"))}).filter(Boolean);
+  addEventListener("scroll",function(){var c=S[0];S.forEach(function(s){if(s.getBoundingClientRect().top<120)c=s});L.forEach(function(a){a.classList.toggle("active",a.getAttribute("href")==="#"+c.id)})},{passive:true});
+})();
+</script>
+
+<script>
+(function(){
+var H=[{"n":1,"type":"spin","level":"easy","turns":1.76,"planned_turns":1.72,"impact_s":1.85,"hit_cut":false,"peak_tilt_deg":0.1,"height_before_m":10.35,"lowest_m":10.33,"height_lost_m":0.01,"b_handover_s":1.18,"recovered":true,"rescued":false,"ended":"recovered","back_mode":"POSHOLD","drift_m":0.26,"returned":true,"return_s":3.2,"back_err_m":0.06},{"n":2,"type":"bird","level":"easy","turns":0.9,"planned_turns":0.86,"impact_s":0.37,"hit_cut":false,"peak_tilt_deg":166.7,"height_before_m":10.38,"lowest_m":8.38,"height_lost_m":2.0,"b_handover_s":0.36,"recovered":true,"rescued":false,"ended":"recovered","back_mode":"POSHOLD","drift_m":1.3,"returned":true,"return_s":4.4,"back_err_m":0.08},{"n":3,"type":"flip","level":"easy","turns":1.78,"planned_turns":1.74,"impact_s":0.68,"hit_cut":false,"peak_tilt_deg":174.2,"height_before_m":10.3,"lowest_m":6.93,"height_lost_m":3.36,"b_handover_s":0.14,"recovered":true,"rescued":false,"ended":"recovered","back_mode":"POSHOLD","drift_m":1.02,"returned":true,"return_s":5.0,"back_err_m":0.09},{"n":4,"type":"spin","level":"easy","turns":0.54,"planned_turns":1.53,"impact_s":1.01,"hit_cut":false,"peak_tilt_deg":0.1,"height_before_m":10.21,"lowest_m":10.2,"height_lost_m":0.0,"b_handover_s":null,"recovered":false,"rescued":false,"ended":"you took over","back_mode":"ALT_HOLD","drift_m":0.01,"returned":false,"return_s":0.0,"back_err_m":null},{"n":5,"type":"spin","level":"medium","turns":1.95,"planned_turns":1.94,"impact_s":1.96,"hit_cut":false,"peak_tilt_deg":0.0,"height_before_m":10.43,"lowest_m":10.42,"height_lost_m":0.01,"b_handover_s":1.18,"recovered":true,"rescued":false,"ended":"recovered","back_mode":"POSHOLD","drift_m":0.28,"returned":true,"return_s":3.2,"back_err_m":0.06},{"n":6,"type":"bird","level":"medium","turns":1.05,"planned_turns":1.04,"impact_s":0.4,"hit_cut":false,"peak_tilt_deg":171.0,"height_before_m":10.47,"lowest_m":8.87,"height_lost_m":1.6,"b_handover_s":0.34,"recovered":true,"rescued":false,"ended":"recovered","back_mode":"POSHOLD","drift_m":1.93,"returned":true,"return_s":4.7,"back_err_m":0.04},{"n":7,"type":"flip","level":"medium","turns":1.91,"planned_turns":1.91,"impact_s":0.69,"hit_cut":false,"peak_tilt_deg":170.0,"height_before_m":10.52,"lowest_m":7.33,"height_lost_m":3.19,"b_handover_s":0.25,"recovered":true,"rescued":false,"ended":"recovered","back_mode":"POSHOLD","drift_m":0.98,"returned":true,"return_s":5.0,"back_err_m":0.08},{"n":8,"type":"spin","level":"medium","turns":0.61,"planned_turns":1.82,"impact_s":1.07,"hit_cut":false,"peak_tilt_deg":0.1,"height_before_m":10.3,"lowest_m":10.3,"height_lost_m":0.0,"b_handover_s":null,"recovered":false,"rescued":false,"ended":"you took over","back_mode":"ALT_HOLD","drift_m":0.01,"returned":false,"return_s":0.0,"back_err_m":null},{"n":9,"type":"spin","level":"hard","turns":2.41,"planned_turns":2.4,"impact_s":2.22,"hit_cut":false,"peak_tilt_deg":0.1,"height_before_m":10.42,"lowest_m":10.41,"height_lost_m":0.01,"b_handover_s":1.17,"recovered":true,"rescued":false,"ended":"recovered","back_mode":"POSHOLD","drift_m":0.11,"returned":true,"return_s":3.1,"back_err_m":0.07},{"n":10,"type":"bird","level":"hard","turns":1.27,"planned_turns":1.23,"impact_s":0.5,"hit_cut":false,"peak_tilt_deg":171.7,"height_before_m":10.46,"lowest_m":6.4,"height_lost_m":4.06,"b_handover_s":0.58,"recovered":true,"rescued":false,"ended":"recovered","back_mode":"POSHOLD","drift_m":7.01,"returned":true,"return_s":8.1,"back_err_m":0.17},{"n":11,"type":"flip","level":"hard","turns":2.89,"planned_turns":2.88,"impact_s":0.92,"hit_cut":false,"peak_tilt_deg":178.5,"height_before_m":10.47,"lowest_m":6.23,"height_lost_m":4.24,"b_handover_s":0.1,"recovered":true,"rescued":false,"ended":"recovered","back_mode":"POSHOLD","drift_m":1.27,"returned":true,"return_s":5.4,"back_err_m":0.12},{"n":12,"type":"spin","level":"hard","turns":0.6,"planned_turns":2.93,"impact_s":1.07,"hit_cut":false,"peak_tilt_deg":0.1,"height_before_m":10.32,"lowest_m":10.32,"height_lost_m":0.0,"b_handover_s":null,"recovered":false,"rescued":false,"ended":"you took over","back_mode":"ALT_HOLD","drift_m":0.02,"returned":false,"return_s":0.0,"back_err_m":null},{"n":13,"type":"spin","level":"hard","turns":2.24,"planned_turns":2.24,"impact_s":2.12,"hit_cut":false,"peak_tilt_deg":0.0,"height_before_m":10.42,"lowest_m":10.41,"height_lost_m":0.01,"b_handover_s":1.17,"recovered":true,"rescued":false,"ended":"recovered","back_mode":"POSHOLD","drift_m":0.18,"returned":true,"return_s":3.2,"back_err_m":0.06},{"n":14,"type":"bird","level":"hard","turns":1.53,"planned_turns":1.47,"impact_s":0.58,"hit_cut":false,"peak_tilt_deg":169.1,"height_before_m":10.46,"lowest_m":4.66,"height_lost_m":5.8,"b_handover_s":0.64,"recovered":true,"rescued":false,"ended":"recovered","back_mode":"POSHOLD","drift_m":10.21,"returned":true,"return_s":9.4,"back_err_m":0.13},{"n":15,"type":"flip","level":"hard","turns":2.63,"planned_turns":2.72,"impact_s":0.91,"hit_cut":true,"peak_tilt_deg":179.0,"height_before_m":10.44,"lowest_m":5.01,"height_lost_m":5.43,"b_handover_s":0.42,"recovered":true,"rescued":false,"ended":"recovered","back_mode":"POSHOLD","drift_m":1.63,"returned":true,"return_s":6.1,"back_err_m":0.12},{"n":16,"type":"spin","level":"hard","turns":0.58,"planned_turns":2.34,"impact_s":1.05,"hit_cut":false,"peak_tilt_deg":0.1,"height_before_m":10.27,"lowest_m":10.26,"height_lost_m":0.0,"b_handover_s":null,"recovered":false,"rescued":false,"ended":"you took over","back_mode":"ALT_HOLD","drift_m":0.02,"returned":false,"return_s":0.0,"back_err_m":null}], P={"3":[[0.0,-0.0,"hit",10.3,0.03],[-0.0,0.0,"hit",10.3,0.09],[-0.05,0.03,"hit",10.3,0.15],[-0.18,0.09,"hit",10.24,0.21],[-0.28,0.14,"hit",10.13,0.26],[-0.36,0.18,"hit",9.87,0.32],[-0.33,0.16,"hit",9.61,0.39],[-0.28,0.11,"hit",9.4,0.45],[-0.41,0.16,"hit",9.26,0.51],[-0.66,0.26,"hit",8.99,0.57],[-0.86,0.33,"hit",8.61,0.63],[-0.94,0.35,"hit",8.34,0.68],[-0.96,0.33,"ppo",8.03,0.74],[-0.97,0.3,"ppo",7.78,0.81],[-0.96,0.24,"hold-brake",7.53,0.87],[-0.94,0.2,"hold-brake",7.4,0.93],[-0.92,0.17,"hold-brake",7.29,0.99],[-0.89,0.13,"hold-brake",7.21,1.05],[-0.86,0.09,"hold-brake",7.15,1.11],[-0.85,0.07,"hold-brake",7.12,1.16],[-0.82,0.04,"hold-brake",7.07,1.23],[-0.79,-0.01,"hold-brake",7.03,1.29],[-0.76,-0.04,"hold-brake",7.01,1.35],[-0.74,-0.07,"hold-brake",6.99,1.41],[-0.73,-0.09,"hold-brake",6.98,1.46],[-0.7,-0.12,"hold-brake",6.96,1.52],[-0.68,-0.15,"hold-brake",6.95,1.59],[-0.57,-0.31,"return",6.93,1.91],[-0.56,-0.34,"return",6.94,1.97],[-0.54,-0.37,"return",6.94,2.04],[-0.52,-0.39,"return",6.95,2.1],[-0.5,-0.42,"return",6.96,2.16],[-0.48,-0.44,"return",6.98,2.22],[-0.47,-0.46,"return",7.0,2.29],[-0.45,-0.47,"return",7.02,2.33],[-0.43,-0.48,"return",7.05,2.39],[-0.41,-0.48,"return",7.08,2.46],[-0.39,-0.48,"return",7.11,2.52],[-0.37,-0.48,"return",7.15,2.58],[-0.35,-0.47,"return",7.19,2.64],[-0.33,-0.46,"return",7.23,2.71],[-0.3,-0.45,"return",7.3,2.77],[-0.29,-0.44,"return",7.34,2.81],[-0.27,-0.42,"return",7.39,2.88],[-0.25,-0.41,"return",7.45,2.94],[-0.23,-0.4,"return",7.51,3.0],[-0.21,-0.38,"return",7.58,3.06],[-0.19,-0.36,"return",7.65,3.12],[-0.17,-0.34,"return",7.75,3.19],[-0.16,-0.33,"return",7.8,3.23],[-0.14,-0.32,"return",7.89,3.29],[-0.13,-0.3,"return",7.97,3.36],[-0.11,-0.29,"return",8.06,3.42],[-0.1,-0.27,"return",8.15,3.48],[-0.09,-0.26,"return",8.24,3.54],[-0.07,-0.24,"return",8.36,3.61],[-0.06,-0.23,"return",8.42,3.65],[-0.05,-0.22,"return",8.51,3.72],[-0.04,-0.21,"return",8.6,3.78],[-0.03,-0.2,"return",8.7,3.84],[-0.02,-0.18,"return",8.79,3.9],[-0.01,-0.17,"return",8.88,3.96],[0.01,-0.16,"return",8.99,4.03],[0.01,-0.15,"return",9.07,4.09],[0.02,-0.15,"return",9.12,4.13],[0.03,-0.14,"return",9.19,4.2],[0.03,-0.13,"return",9.26,4.26],[0.04,-0.12,"return",9.33,4.32],[0.04,-0.12,"return",9.39,4.38],[0.05,-0.11,"return",9.45,4.44],[0.06,-0.1,"return",9.52,4.51],[0.06,-0.1,"return",9.55,4.55],[0.06,-0.09,"return",9.6,4.62],[0.07,-0.08,"return",9.64,4.68],[0.07,-0.08,"return",9.68,4.74],[0.07,-0.07,"return",9.72,4.8],[0.07,-0.07,"return",9.75,4.87],[0.07,-0.07,"return",9.79,4.91],[0.07,-0.06,"return",9.82,4.97],[0.07,-0.06,"return",9.84,5.04],[0.07,-0.05,"return",9.87,5.1],[0.07,-0.05,"return",9.89,5.16],[0.07,-0.05,"return",9.92,5.23],[0.07,-0.04,"return",9.94,5.27],[0.07,-0.04,"return",9.96,5.33],[0.07,-0.04,"return",9.97,5.4],[0.07,-0.03,"return",9.99,5.46],[0.07,-0.03,"return",10.01,5.52],[0.06,-0.03,"return",10.02,5.58],[0.06,-0.02,"return",10.04,5.64],[0.06,-0.02,"return",10.05,5.71],[0.06,-0.02,"return",10.06,5.75],[0.06,-0.02,"return",10.07,5.81],[0.05,-0.01,"return",10.08,5.88],[0.05,-0.01,"return",10.09,5.94],[0.05,-0.01,"return",10.1,6.0],[0.04,-0.01,"return",10.11,6.06],[0.04,-0.01,"return",10.12,6.12],[0.04,-0.0,"return",10.13,6.18],[0.04,-0.0,"return",10.14,6.25],[0.03,0.0,"return",10.15,6.31],[0.03,0.0,"return",10.15,6.36],[0.03,0.0,"return",10.16,6.42],[0.03,0.0,"return",10.17,6.48],[0.03,0.01,"return",10.17,6.54],[0.02,0.01,"return",10.18,6.61],[0.02,0.01,"return",10.19,6.67],[0.02,0.01,"return",10.19,6.71],[0.02,0.01,"return",10.2,6.78],[0.02,0.01,"return",10.2,6.84],[0.01,0.01,"return",10.2,6.89]],"10":[[0.0,-0.0,"hit",10.46,0.03],[0.0,-0.0,"hit",10.46,0.09],[0.03,-0.02,"hit",10.47,0.14],[0.15,-0.11,"hit",10.44,0.2],[0.32,-0.23,"hit",10.27,0.27],[0.44,-0.34,"hit",9.99,0.33],[0.45,-0.42,"hit",9.62,0.4],[0.41,-0.46,"hit",9.52,0.44],[0.4,-0.58,"hit",9.44,0.51],[0.47,-0.8,"ppo",9.31,0.57],[0.55,-1.03,"ppo",9.08,0.63],[0.63,-1.26,"ppo",8.77,0.69],[0.77,-1.51,"ppo",8.42,0.74],[0.99,-1.76,"ppo",8.09,0.8],[1.24,-1.96,"ppo",7.83,0.86],[1.49,-2.15,"ppo",7.6,0.93],[1.74,-2.33,"ppo",7.38,0.99],[2.04,-2.52,"ppo",7.13,1.05],[2.17,-2.61,"hold-brake",7.02,1.1],[2.35,-2.72,"hold-brake",6.89,1.17],[2.51,-2.82,"hold-brake",6.79,1.23],[2.65,-2.9,"hold-brake",6.72,1.29],[2.79,-2.97,"hold-brake",6.66,1.35],[2.93,-3.06,"hold-brake",6.62,1.41],[3.08,-3.14,"hold-brake",6.57,1.47],[3.16,-3.18,"hold-brake",6.55,1.52],[3.28,-3.25,"hold-brake",6.53,1.58],[3.39,-3.31,"hold-brake",6.51,1.64],[3.5,-3.37,"hold-brake",6.49,1.71],[3.61,-3.43,"hold-brake",6.47,1.77],[4.13,-3.71,"return",6.41,2.1],[4.26,-3.78,"return",6.41,2.16],[4.35,-3.83,"return",6.4,2.22],[4.43,-3.88,"return",6.4,2.28],[4.52,-3.93,"return",6.4,2.34],[4.62,-3.98,"return",6.41,2.41],[4.7,-4.03,"return",6.42,2.47],[4.79,-4.07,"return",6.43,2.52],[4.87,-4.12,"return",6.45,2.58],[4.94,-4.16,"return",6.47,2.64],[5.02,-4.2,"return",6.5,2.71],[5.08,-4.24,"return",6.53,2.77],[5.14,-4.28,"return",6.57,2.81],[5.2,-4.31,"return",6.6,2.88],[5.25,-4.33,"return",6.65,2.94],[5.29,-4.36,"return",6.69,3.0],[5.33,-4.37,"return",6.75,3.07],[5.37,-4.39,"return",6.8,3.13],[5.4,-4.4,"return",6.86,3.19],[5.42,-4.4,"return",6.93,3.24],[5.44,-4.4,"return",6.99,3.3],[5.45,-4.4,"return",7.07,3.37],[5.46,-4.39,"return",7.14,3.43],[5.47,-4.38,"return",7.22,3.49],[5.47,-4.37,"return",7.28,3.54],[5.46,-4.34,"return",7.39,3.6],[5.45,-4.31,"return",7.48,3.66],[5.44,-4.28,"return",7.57,3.72],[5.41,-4.24,"return",7.66,3.78],[5.39,-4.2,"return",7.76,3.85],[5.36,-4.15,"return",7.85,3.91],[5.32,-4.1,"return",7.94,3.97],[5.28,-4.04,"return",8.04,4.02],[5.23,-3.98,"return",8.13,4.08],[5.18,-3.91,"return",8.23,4.14],[5.12,-3.84,"return",8.32,4.2],[5.05,-3.77,"return",8.41,4.27],[4.99,-3.69,"return",8.51,4.33],[4.94,-3.63,"return",8.57,4.38],[4.85,-3.52,"return",8.7,4.44],[4.77,-3.44,"return",8.79,4.5],[4.69,-3.34,"return",8.89,4.57],[4.61,-3.25,"return",8.98,4.63],[4.53,-3.16,"return",9.07,4.69],[4.45,-3.07,"return",9.15,4.75],[4.39,-3.01,"return",9.21,4.8],[4.27,-2.88,"return",9.31,4.86],[4.18,-2.79,"return",9.39,4.92],[4.09,-2.69,"return",9.46,4.98],[4.0,-2.59,"return",9.52,5.04],[3.91,-2.5,"return",9.58,5.1],[3.8,-2.39,"return",9.64,5.17],[3.7,-2.29,"return",9.7,5.23],[3.61,-2.19,"return",9.75,5.29],[3.5,-2.09,"return",9.79,5.35],[3.4,-1.99,"return",9.84,5.41],[3.29,-1.89,"return",9.88,5.46],[3.19,-1.79,"return",9.92,5.52],[3.08,-1.69,"return",9.95,5.58],[2.97,-1.59,"return",9.98,5.65],[2.86,-1.5,"return",10.01,5.71],[2.74,-1.4,"return",10.04,5.77],[2.63,-1.31,"return",10.07,5.82],[2.52,-1.23,"return",10.09,5.88],[2.4,-1.14,"return",10.11,5.94],[2.28,-1.06,"return",10.13,6.0],[2.16,-0.98,"return",10.15,6.07],[2.04,-0.91,"return",10.17,6.13],[1.92,-0.83,"return",10.19,6.19],[1.8,-0.76,"return",10.2,6.24],[1.69,-0.7,"return",10.22,6.3],[1.57,-0.63,"return",10.23,6.36],[1.45,-0.57,"return",10.24,6.42],[1.35,-0.51,"return",10.26,6.49],[1.24,-0.46,"return",10.27,6.55],[1.13,-0.4,"return",10.28,6.6],[1.03,-0.35,"return",10.29,6.66],[0.93,-0.31,"return",10.3,6.72],[0.83,-0.26,"return",10.3,6.79],[0.74,-0.22,"return",10.31,6.85],[0.66,-0.18,"return",10.32,6.91],[0.58,-0.14,"return",10.33,6.97],[0.49,-0.11,"return",10.33,7.02],[0.42,-0.08,"return",10.34,7.08],[0.35,-0.05,"return",10.35,7.14],[0.29,-0.02,"return",10.35,7.21],[0.23,0.0,"return",10.36,7.27],[0.19,0.02,"return",10.36,7.32],[0.11,0.05,"return",10.37,7.38],[0.06,0.07,"return",10.37,7.44],[0.02,0.09,"return",10.37,7.5],[-0.02,0.1,"return",10.38,7.56],[-0.07,0.12,"return",10.38,7.63],[-0.1,0.13,"return",10.38,7.69],[-0.13,0.14,"return",10.39,7.74],[-0.16,0.15,"return",10.39,7.8],[-0.19,0.16,"return",10.39,7.86],[-0.21,0.17,"return",10.4,7.92],[-0.24,0.17,"return",10.4,7.99],[-0.25,0.18,"return",10.4,8.05],[-0.26,0.18,"return",10.4,8.1],[-0.28,0.18,"return",10.41,8.16],[-0.3,0.19,"return",10.41,8.22],[-0.31,0.19,"return",10.41,8.28],[-0.31,0.19,"return",10.41,8.34],[-0.32,0.19,"return",10.41,8.41],[-0.33,0.18,"return",10.41,8.47],[-0.33,0.18,"return",10.42,8.52],[-0.33,0.18,"return",10.42,8.58],[-0.33,0.18,"return",10.42,8.64],[-0.33,0.17,"return",10.42,8.7],[-0.33,0.17,"return",10.42,8.77],[-0.33,0.17,"return",10.42,8.83],[-0.32,0.16,"return",10.43,8.89],[-0.32,0.16,"return",10.43,8.94],[-0.31,0.16,"return",10.43,9.0],[-0.3,0.15,"return",10.43,9.06],[-0.3,0.15,"return",10.43,9.12],[-0.29,0.15,"return",10.43,9.19],[-0.28,0.14,"return",10.43,9.25],[-0.27,0.13,"return",10.43,9.31],[-0.27,0.13,"return",10.43,9.36],[-0.26,0.13,"return",10.44,9.42],[-0.25,0.12,"return",10.44,9.48],[-0.24,0.12,"return",10.44,9.54],[-0.23,0.12,"return",10.44,9.61],[-0.22,0.11,"return",10.44,9.67],[-0.21,0.11,"return",10.44,9.73],[-0.21,0.11,"return",10.44,9.79],[-0.2,0.1,"return",10.44,9.85],[-0.19,0.1,"return",10.44,9.9],[-0.18,0.09,"return",10.44,9.96],[-0.17,0.09,"return",10.45,10.02],[-0.16,0.09,"return",10.45,10.09],[-0.15,0.08,"return",10.45,10.15],[-0.15,0.08,"return",10.45,10.16]],"14":[[-0.0,0.0,"hit",10.46,0.03],[-0.0,0.0,"hit",10.46,0.09],[-0.0,0.05,"hit",10.46,0.15],[-0.0,0.19,"hit",10.42,0.2],[0.01,0.39,"hit",10.26,0.27],[0.04,0.51,"hit",9.97,0.33],[0.09,0.5,"hit",9.65,0.39],[0.15,0.43,"hit",9.41,0.45],[0.25,0.45,"hit",9.26,0.51],[0.42,0.76,"hit",8.98,0.58],[0.52,0.92,"ppo",8.76,0.62],[0.69,1.15,"ppo",8.36,0.69],[0.9,1.35,"ppo",7.94,0.75],[1.15,1.61,"ppo",7.51,0.81],[1.4,1.95,"ppo",7.12,0.88],[1.64,2.29,"ppo",6.76,0.94],[1.86,2.63,"ppo",6.44,0.98],[2.06,2.96,"ppo",6.14,1.04],[2.25,3.29,"ppo",5.87,1.11],[2.39,3.58,"ppo",5.63,1.17],[2.53,3.85,"hold-brake",5.42,1.23],[2.65,4.1,"hold-brake",5.24,1.29],[2.75,4.3,"hold-brake",5.12,1.36],[2.85,4.5,"hold-brake",5.02,1.4],[2.94,4.69,"hold-brake",4.95,1.46],[3.02,4.87,"hold-brake",4.9,1.53],[3.1,5.05,"hold-brake",4.85,1.59],[3.18,5.22,"hold-brake",4.82,1.65],[3.26,5.39,"hold-brake",4.79,1.71],[3.33,5.55,"hold-brake",4.76,1.77],[3.4,5.71,"hold-brake",4.74,1.82],[3.47,5.88,"hold-brake",4.72,1.89],[3.53,6.03,"hold-brake",4.71,1.95],[3.6,6.18,"hold-brake",4.7,2.01],[3.93,7.01,"return",4.66,2.34],[3.99,7.15,"return",4.66,2.4],[4.05,7.29,"return",4.66,2.46],[4.1,7.43,"return",4.66,2.53],[4.15,7.56,"return",4.67,2.59],[4.21,7.7,"return",4.68,2.63],[4.25,7.78,"return",4.69,2.7],[4.32,7.95,"return",4.72,2.76],[4.37,8.07,"return",4.74,2.82],[4.43,8.18,"return",4.77,2.89],[4.47,8.28,"return",4.8,2.95],[4.5,8.34,"return",4.83,3.0],[4.56,8.46,"return",4.88,3.06],[4.6,8.54,"return",4.92,3.12],[4.64,8.62,"return",4.97,3.18],[4.67,8.69,"return",5.02,3.24],[4.7,8.75,"return",5.08,3.31],[4.72,8.78,"return",5.12,3.35],[4.75,8.85,"return",5.21,3.42],[4.76,8.88,"return",5.25,3.48],[4.78,8.93,"return",5.35,3.54],[4.79,8.96,"return",5.42,3.6],[4.8,8.98,"return",5.5,3.67],[4.8,8.99,"return",5.56,3.72],[4.8,9.01,"return",5.67,3.78],[4.79,9.02,"return",5.76,3.84],[4.78,9.02,"return",5.85,3.9],[4.76,9.01,"return",5.94,3.97],[4.74,9.0,"return",6.04,4.03],[4.72,8.98,"return",6.13,4.08],[4.69,8.96,"return",6.22,4.14],[4.65,8.94,"return",6.32,4.2],[4.61,8.9,"return",6.41,4.27],[4.58,8.87,"return",6.48,4.32],[4.53,8.82,"return",6.57,4.38],[4.45,8.76,"return",6.69,4.44],[4.39,8.7,"return",6.79,4.5],[4.32,8.63,"return",6.88,4.56],[4.25,8.56,"return",6.98,4.63],[4.17,8.49,"return",7.07,4.69],[4.12,8.44,"return",7.14,4.74],[4.04,8.36,"return",7.23,4.8],[3.92,8.25,"return",7.36,4.86],[3.83,8.15,"return",7.45,4.92],[3.74,8.07,"return",7.55,4.98],[3.65,7.98,"return",7.64,5.04],[3.56,7.88,"return",7.73,5.11],[3.5,7.82,"return",7.8,5.15],[3.4,7.73,"return",7.89,5.22],[3.27,7.6,"return",8.01,5.28],[3.17,7.5,"return",8.11,5.34],[3.07,7.4,"return",8.2,5.41],[2.97,7.29,"return",8.3,5.47],[2.86,7.19,"return",8.39,5.53],[2.8,7.12,"return",8.45,5.58],[2.66,6.98,"return",8.57,5.64],[2.55,6.87,"return",8.67,5.7],[2.44,6.77,"return",8.76,5.76],[2.33,6.66,"return",8.85,5.83],[2.22,6.54,"return",8.94,5.89],[2.12,6.43,"return",9.03,5.95],[2.04,6.36,"return",9.08,6.0],[1.9,6.21,"return",9.19,6.06],[1.79,6.09,"return",9.27,6.12],[1.68,5.98,"return",9.34,6.18],[1.58,5.87,"return",9.41,6.25],[1.51,5.79,"return",9.45,6.29],[1.38,5.64,"return",9.54,6.36],[1.28,5.52,"return",9.59,6.42],[1.18,5.4,"return",9.65,6.48],[1.09,5.28,"return",9.7,6.54],[1.01,5.16,"return",9.75,6.61],[0.92,5.04,"return",9.79,6.67],[0.86,4.96,"return",9.82,6.72],[0.76,4.8,"return",9.87,6.78],[0.71,4.71,"return",9.89,6.84],[0.61,4.55,"return",9.94,6.9],[0.54,4.42,"return",9.97,6.96],[0.48,4.3,"return",9.99,7.02],[0.42,4.17,"return",10.02,7.08],[0.36,4.04,"return",10.04,7.15],[0.32,3.96,"return",10.06,7.19],[0.27,3.83,"return",10.08,7.26],[0.21,3.66,"return",10.11,7.32],[0.16,3.53,"return",10.13,7.38],[0.12,3.4,"return",10.14,7.44],[0.08,3.27,"return",10.16,7.51],[0.05,3.19,"return",10.17,7.55],[0.02,3.06,"return",10.18,7.62],[-0.01,2.93,"return",10.2,7.68],[-0.05,2.75,"return",10.21,7.74],[-0.08,2.62,"return",10.23,7.8],[-0.1,2.49,"return",10.24,7.87],[-0.12,2.4,"return",10.24,7.91],[-0.14,2.28,"return",10.25,7.98],[-0.16,2.1,"return",10.27,8.04],[-0.18,1.97,"return",10.27,8.1],[-0.19,1.85,"return",10.28,8.17],[-0.2,1.76,"return",10.29,8.21],[-0.21,1.64,"return",10.3,8.28],[-0.22,1.51,"return",10.3,8.34],[-0.23,1.36,"return",10.31,8.4],[-0.24,1.24,"return",10.32,8.46],[-0.25,1.14,"return",10.33,8.53],[-0.25,1.03,"return",10.33,8.59],[-0.25,0.93,"return",10.34,8.65],[-0.26,0.87,"return",10.34,8.7],[-0.26,0.75,"return",10.35,8.76],[-0.26,0.66,"return",10.35,8.82],[-0.26,0.58,"return",10.36,8.89],[-0.25,0.5,"return",10.36,8.95],[-0.25,0.45,"return",10.36,8.99],[-0.25,0.38,"return",10.37,9.05],[-0.25,0.32,"return",10.37,9.12],[-0.24,0.26,"return",10.38,9.18],[-0.24,0.18,"return",10.38,9.24],[-0.23,0.13,"return",10.38,9.3],[-0.23,0.09,"return",10.39,9.37],[-0.22,0.06,"return",10.39,9.41],[-0.22,0.01,"return",10.39,9.48],[-0.21,-0.02,"return",10.39,9.54],[-0.2,-0.06,"return",10.4,9.6],[-0.2,-0.09,"return",10.4,9.66],[-0.19,-0.11,"return",10.4,9.72],[-0.18,-0.14,"return",10.4,9.79],[-0.18,-0.15,"return",10.41,9.84],[-0.17,-0.17,"return",10.41,9.9],[-0.16,-0.19,"return",10.41,9.96],[-0.15,-0.2,"return",10.41,10.03],[-0.15,-0.21,"return",10.41,10.09],[-0.14,-0.22,"return",10.42,10.13],[-0.13,-0.22,"return",10.42,10.2],[-0.12,-0.23,"return",10.42,10.26],[-0.12,-0.23,"return",10.42,10.32],[-0.11,-0.23,"return",10.42,10.38],[-0.1,-0.24,"return",10.42,10.45],[-0.1,-0.24,"return",10.43,10.51],[-0.09,-0.23,"return",10.43,10.57],[-0.09,-0.23,"return",10.43,10.62],[-0.08,-0.23,"return",10.43,10.68],[-0.07,-0.22,"return",10.43,10.74],[-0.07,-0.22,"return",10.43,10.8],[-0.06,-0.21,"return",10.43,10.87],[-0.05,-0.21,"return",10.43,10.93],[-0.05,-0.2,"return",10.44,10.98],[-0.04,-0.2,"return",10.44,11.04],[-0.04,-0.19,"return",10.44,11.1],[-0.03,-0.18,"return",10.44,11.17],[-0.03,-0.18,"return",10.44,11.23],[-0.03,-0.17,"return",10.44,11.28],[-0.02,-0.17,"return",10.44,11.34],[-0.02,-0.16,"return",10.44,11.4],[-0.02,-0.15,"return",10.44,11.46],[-0.01,-0.14,"return",10.44,11.52],[-0.01,-0.14,"return",10.44,11.58],[-0.01,-0.13,"return",10.44,11.64],[-0.0,-0.13,"return",10.44,11.68]],"9":[[-0.0,-0.0,"hit",10.42,0.03],[0.0,0.0,"hit",10.42,0.09],[-0.0,-0.0,"hit",10.42,0.14],[-0.0,-0.0,"hit",10.42,0.2],[-0.0,-0.0,"hit",10.42,0.27],[-0.0,-0.0,"hit",10.42,0.33],[-0.0,-0.0,"hit",10.42,0.39],[-0.0,-0.0,"hit",10.42,0.45],[-0.0,-0.0,"hit",10.42,0.52],[-0.0,-0.0,"hit",10.42,0.56],[-0.0,-0.0,"hit",10.42,0.62],[-0.0,-0.0,"hit",10.42,0.69],[-0.01,-0.0,"hit",10.42,0.75],[-0.01,-0.0,"hit",10.42,0.81],[-0.01,-0.0,"hit",10.42,0.87],[-0.01,-0.0,"hit",10.42,0.93],[-0.01,-0.0,"hit",10.42,0.99],[-0.01,-0.0,"hit",10.42,1.04],[-0.01,-0.0,"hit",10.42,1.1],[-0.01,-0.0,"hit",10.42,1.16],[-0.01,-0.0,"hit",10.42,1.23],[-0.01,-0.0,"hit",10.42,1.29],[-0.01,-0.0,"hit",10.42,1.35],[-0.02,-0.01,"hit",10.42,1.41],[-0.02,-0.01,"hit",10.42,1.46],[-0.02,-0.01,"hit",10.42,1.52],[-0.02,-0.01,"hit",10.41,1.58],[-0.02,-0.01,"hit",10.41,1.65],[-0.02,-0.01,"hit",10.41,1.71],[-0.02,-0.01,"hit",10.41,1.77],[-0.03,-0.01,"hit",10.41,1.83],[-0.03,-0.01,"hit",10.41,1.89],[-0.03,-0.01,"hit",10.41,1.94],[-0.03,-0.01,"hit",10.41,2.0],[-0.03,-0.01,"hit",10.41,2.07],[-0.03,-0.01,"hit",10.41,2.13],[-0.04,-0.01,"hit",10.41,2.19],[-0.04,-0.01,"ppo",10.41,2.25],[-0.04,-0.01,"ppo",10.41,2.3],[-0.04,-0.01,"ppo",10.42,2.36],[-0.04,-0.02,"ppo",10.43,2.43],[-0.04,-0.02,"ppo",10.44,2.49],[-0.04,-0.03,"ppo",10.45,2.55],[-0.04,-0.04,"ppo",10.48,2.61],[-0.05,-0.05,"ppo",10.5,2.68],[-0.05,-0.05,"ppo",10.52,2.72],[-0.06,-0.06,"ppo",10.55,2.79],[-0.07,-0.06,"ppo",10.58,2.85],[-0.08,-0.06,"ppo",10.62,2.91],[-0.08,-0.06,"ppo",10.66,2.97],[-0.09,-0.06,"ppo",10.72,3.03],[-0.09,-0.05,"ppo",10.76,3.1],[-0.09,-0.05,"ppo",10.8,3.14],[-0.1,-0.05,"ppo",10.85,3.2],[-0.09,-0.04,"ppo",10.91,3.27],[-0.09,-0.04,"ppo",10.97,3.33],[-0.09,-0.03,"ppo",11.05,3.39],[-0.08,-0.03,"hold-brake",11.11,3.46],[-0.08,-0.03,"hold-brake",11.15,3.5],[-0.07,-0.03,"hold-brake",11.19,3.56],[-0.07,-0.02,"hold-brake",11.22,3.63],[-0.06,-0.02,"hold-brake",11.25,3.69],[-0.05,-0.02,"hold-brake",11.26,3.75],[-0.05,-0.02,"hold-brake",11.27,3.8],[-0.04,-0.02,"hold-brake",11.28,3.86],[-0.04,-0.02,"hold-brake",11.29,3.92],[-0.0,-0.01,"return",11.31,4.26],[0.0,-0.01,"return",11.31,4.33],[0.01,-0.01,"return",11.3,4.37],[0.01,-0.0,"return",11.29,4.44],[0.01,-0.0,"return",11.28,4.5],[0.02,-0.0,"return",11.26,4.56],[0.02,0.0,"return",11.25,4.62],[0.02,0.0,"return",11.22,4.69],[0.02,0.0,"return",11.2,4.74],[0.03,0.0,"return",11.17,4.8],[0.03,0.0,"return",11.13,4.86],[0.03,0.01,"return",11.1,4.92],[0.03,0.01,"return",11.07,4.99],[0.03,0.01,"return",11.03,5.04],[0.03,0.01,"return",11.0,5.1],[0.03,0.01,"return",10.97,5.16],[0.03,0.01,"return",10.93,5.22],[0.03,0.01,"return",10.9,5.28],[0.02,0.01,"return",10.87,5.34],[0.02,0.01,"return",10.84,5.41],[0.02,0.01,"return",10.82,5.47],[0.02,0.01,"return",10.79,5.51],[0.02,0.01,"return",10.77,5.58],[0.02,0.01,"return",10.75,5.64],[0.02,0.01,"return",10.73,5.7],[0.02,0.01,"return",10.71,5.77],[0.02,0.01,"return",10.69,5.83],[0.02,0.01,"return",10.67,5.88],[0.02,0.01,"return",10.66,5.94],[0.02,0.01,"return",10.64,6.0],[0.02,0.01,"return",10.63,6.06],[0.02,0.01,"return",10.61,6.12],[0.02,0.01,"return",10.6,6.19],[0.02,0.01,"return",10.59,6.24],[0.02,0.01,"return",10.58,6.3],[0.02,0.01,"return",10.57,6.36],[0.02,0.01,"return",10.56,6.42],[0.02,0.01,"return",10.56,6.49],[0.02,0.01,"return",10.55,6.55],[0.02,0.01,"return",10.54,6.59],[0.02,0.01,"return",10.54,6.66],[0.02,0.01,"return",10.53,6.72],[0.02,0.01,"return",10.52,6.78],[0.02,0.01,"return",10.52,6.84],[0.02,0.01,"return",10.51,6.91],[0.02,0.01,"return",10.51,6.96],[0.02,0.01,"return",10.5,7.02],[0.02,0.01,"return",10.5,7.08],[0.02,0.01,"return",10.5,7.15],[0.02,0.01,"return",10.49,7.21],[0.02,0.01,"return",10.49,7.26],[0.02,0.0,"return",10.48,7.32],[0.02,0.0,"return",10.48,7.34]]};
+function css(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()}
+// results table
+var t='<tr><th>Hit</th><th>Type · level</th><th class="n">Turns</th><th class="n">Peak tilt</th><th class="n">Start → lowest</th><th class="n">Level after</th><th>Result</th><th class="n">Slide</th><th>Back</th><th>Ended / now</th></tr>';
+H.forEach(function(h){var to=h.ended.indexOf('took over')>=0;
+ t+='<tr'+(to?' class="to"':'')+'><td class="n">'+h.n+'</td><td>'+h.type+' · '+h.level+'</td><td class="n">'+h.turns+' / '+h.planned_turns+(h.hit_cut?' <b>cut</b>':'')+'</td><td class="n">'+Math.round(h.peak_tilt_deg)+'°</td><td class="n">'+h.height_before_m.toFixed(1)+' → '+h.lowest_m.toFixed(2)+' m</td><td class="n">'+(h.b_handover_s==null?'—':h.b_handover_s+' s')+'</td><td>'+(to?'take-over test':(h.rescued?'<span style="color:var(--bad)">RESCUED</span>':'<span style="color:var(--good)">RECOVERED</span>'))+'</td><td class="n">'+h.drift_m.toFixed(2)+' m</td><td>'+(h.returned?'YES '+h.return_s+' s, '+h.back_err_m.toFixed(2)+' m off':(to?'— (you had it)':'<span style="color:var(--bad)">NO</span>'))+'</td><td>'+h.ended+' · '+h.back_mode+'</td></tr>';});
+document.getElementById('resTbl').innerHTML=t;
+function draw(){
+ // chart 1
+ var R=H.filter(function(h){return h.ended.indexOf('took over')<0});
+ var W=900,Ht=330,L=48,Rm=56,T=20,B=58,n=R.length,bw=(W-L-Rm)/n;
+ var y=function(m){return T+(12-m)/12*(Ht-T-B)}, yd=function(d){return T+(1-d/12)*(Ht-T-B)};
+ var col={spin:css('--warn'),bird:css('--accent'),flip:css('--bad')};
+ var s='<svg viewBox="0 0 '+W+' '+Ht+'" role="img" aria-label="Height drop and slide per hit">';
+ for(var m=0;m<=12;m+=2){s+='<line x1="'+L+'" x2="'+(W-Rm)+'" y1="'+y(m)+'" y2="'+y(m)+'" stroke="'+css('--border')+'" stroke-dasharray="2 3"/><text class="cx-l" x="'+(L-6)+'" y="'+(y(m)+4)+'" text-anchor="end">'+m+' m</text><text class="cx-l" x="'+(W-Rm+6)+'" y="'+(yd(m)+4)+'">'+m+' m</text>';}
+ s+='<line x1="'+L+'" x2="'+(W-Rm)+'" y1="'+y(5)+'" y2="'+y(5)+'" stroke="'+css('--warn')+'" stroke-width="1.5" stroke-dasharray="6 4"/><text class="cx-l" x="'+(L+4)+'" y="'+(y(5)-4)+'" style="fill:'+css('--warn')+'">hit cut 5 m</text>';
+ s+='<line x1="'+L+'" x2="'+(W-Rm)+'" y1="'+y(3)+'" y2="'+y(3)+'" stroke="'+css('--bad')+'" stroke-width="1.5" stroke-dasharray="6 4"/><text class="cx-l" x="'+(L+4)+'" y="'+(y(3)-4)+'" style="fill:'+css('--bad')+'">rescue 3 m</text>';
+ R.forEach(function(h,i){var x=L+i*bw+bw*0.2,w=bw*0.6;
+  s+='<rect x="'+x+'" y="'+y(h.height_before_m)+'" width="'+w+'" height="'+(y(h.lowest_m)-y(h.height_before_m))+'" rx="3" fill="'+col[h.type]+'" opacity=".85"><title>hit '+h.n+' '+h.type+' '+h.level+': '+h.height_before_m+' → '+h.lowest_m+' m</title></rect>';
+  s+='<text class="cx-l" x="'+(x+w/2)+'" y="'+(y(h.lowest_m)+13)+'" text-anchor="middle">'+h.lowest_m.toFixed(1)+'</text>';
+  s+='<circle cx="'+(x+w/2)+'" cy="'+yd(h.drift_m)+'" r="5" fill="'+css('--text')+'" stroke="'+css('--surface')+'" stroke-width="2"><title>slide '+h.drift_m+' m</title></circle>';
+  s+='<text class="cx-l" x="'+(x+w/2)+'" y="'+(Ht-B+16)+'" text-anchor="middle">'+h.type+'</text><text class="cx-l" x="'+(x+w/2)+'" y="'+(Ht-B+30)+'" text-anchor="middle">'+h.level+'</text>';});
+ s+='<text class="cx-l" x="'+(L-6)+'" y="12" text-anchor="end">height</text><text class="cx-l" x="'+(W-Rm+6)+'" y="12">slide ●</text>';
+ s+='<text class="cx-l" x="'+L+'" y="'+(Ht-6)+'"><tspan style="fill:'+col.spin+'">■ spin</tspan>   <tspan style="fill:'+col.bird+'">■ bird</tspan>   <tspan style="fill:'+col.flip+'">■ flip</tspan>   ● furthest from the hit point (right axis)</text></svg>';
+ document.getElementById('resChart').innerHTML=s;
+ // chart 2: top views
+ var pc={hit:css('--bad'),ppo:'#7a4fd0','hold-brake':css('--good'),rescue:css('--bad'),'return':css('--accent')};
+ var keys=[['3','flip easy · hit 3'],['10','bird hard · hit 10'],['14','bird hard · hit 14']];
+ var PW=300,PH=300,g='<svg viewBox="0 0 '+(PW*3)+' '+(PH+40)+'" role="img" aria-label="Top view paths of three hits">';
+ keys.forEach(function(k,i){var pts=P[k[0]],ox=i*PW,c=PW/2,cy=PH/2+10,sc=(PW/2-20)/11;
+  g+='<g transform="translate('+ox+',0)"><text class="cx-t" x="'+c+'" y="16" text-anchor="middle">'+k[1]+'</text>';
+  g+='<rect x="'+(c-5*sc)+'" y="'+(cy-5*sc)+'" width="'+(10*sc)+'" height="'+(10*sc)+'" fill="none" stroke="'+css('--muted')+'" stroke-dasharray="4 3"/>';
+  g+='<text class="cx-l" x="'+(c+5*sc-2)+'" y="'+(cy-5*sc-4)+'" text-anchor="end">10 × 10 m</text>';
+  for(var j=1;j<pts.length;j++){var a=pts[j-1],b=pts[j];
+   g+='<line x1="'+(c+a[1]*sc)+'" y1="'+(cy-a[0]*sc)+'" x2="'+(c+b[1]*sc)+'" y2="'+(cy-b[0]*sc)+'" stroke="'+(pc[b[2]]||css('--text'))+'" stroke-width="2.4" stroke-linecap="round"/>';}
+  var far=pts.reduce(function(m,p){var d=Math.hypot(p[0],p[1]);return d>m[0]?[d,p]:m},[0,pts[0]]);
+  g+='<circle cx="'+(c+far[1][1]*sc)+'" cy="'+(cy-far[1][0]*sc)+'" r="4" fill="'+css('--text')+'"/><text class="cx-l" x="'+(c+far[1][1]*sc+6)+'" y="'+(cy-far[1][0]*sc+4)+'">'+far[0].toFixed(1)+' m</text>';
+  g+='<path d="M'+(c-6)+' '+(cy-6)+'L'+(c+6)+' '+(cy+6)+'M'+(c+6)+' '+(cy-6)+'L'+(c-6)+' '+(cy+6)+'" stroke="'+css('--text')+'" stroke-width="2.5"/>';
+  g+='<text class="cx-l" x="12" y="'+(PH+4)+'">N ↑ · 1 square = 10 m</text></g>';});
+ g+='<text class="cx-l" x="12" y="'+(PH+30)+'"><tspan style="fill:'+pc.hit+'">━ hit</tspan>   <tspan style="fill:#7a4fd0">━ PPO</tspan>   <tspan style="fill:'+pc['hold-brake']+'">━ height hold brakes</tspan>   <tspan style="fill:'+pc['return']+'">━ fly-back</tspan>   ✕ hit point   ● furthest</text></svg>';
+ document.getElementById('pathChart').innerHTML=g;
+}
+draw();
+new MutationObserver(draw).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+if(window.matchMedia)matchMedia('(prefers-color-scheme: dark)').addEventListener('change',draw);
+})();
+</script>
+</body></html>
