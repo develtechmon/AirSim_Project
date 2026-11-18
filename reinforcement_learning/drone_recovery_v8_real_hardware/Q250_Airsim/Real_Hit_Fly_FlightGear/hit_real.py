@@ -25,9 +25,14 @@ GUIDED hold (which knows the real hover) then holds the height. SITL: never abov
     | RETURN_OK_M  | 1.0                  | e: m from the hit point that counts as 'back'                |
     | MIN_VOLT     | 14.4                 | V in the air under load (4S, 3.6 V per cell)                 |
 
-1. HOW TO RUN  (Pi, folder Q250_Hardware_Throw_Fly, ALWAYS inside tmux; stop the throw autostart first)
+1. HOW TO RUN  (Pi, folder Q250_Hardware_Throw_Fly)
 ------------------------------------------------------------------------------------------------------
-    sudo systemctl stop throw
+    FIELD: AUTOSTART, no laptop (section 12). Battery in -> the Pi starts hit_real.py by itself ->
+    start tune + 1 HIGH beep (= hit_real, level easy) -> fly. Printout: runs/hit_console.log.
+
+    BY HAND (bench / SITL): stop BOTH services first - only ONE program may use the port:
+
+    sudo systemctl stop throw hit
 
     tmux new -s hit
 
@@ -42,13 +47,15 @@ GUIDED hold (which knows the real hover) then holds the height. SITL: never abov
     python3 hit_real.py --mode attitude-rule       (the rule, for comparison - same hits)
 
     SITL test (WSL, simulator running): add --conn tcp:127.0.0.1:5762 --baud 115200 - the ONLY difference.
-    After the session: sudo systemctl start throw   (throw autostart back on)
+    After the session: the autostart you chose for the day starts again at the next power-up (section 12).
 
 2. THE BUZZER  (same tunes as throw_real.py)
 ------------------------------------------------------------------------------------------------------
     | You hear          | Means                                            | Do                            |
     |-------------------|--------------------------------------------------|-------------------------------|
-    | 1 long + 2 short  | Pi started, PPO (1 long + 1 short = rule)        | take off yourself, PosHold    |
+    | 1 long + 2 short  | Pi started, PPO (1 long + 1 short = rule)        | wait for the high beep(s)     |
+    | THEN 1 HIGH beep  | ...and it is HIT_REAL (level easy). throw_real    | take off yourself, PosHold    |
+    |                   | never plays this - no high beep = THROW service  |                               |
     | 3 short beeps     | checks passed - the hit starts NOW               | hands off the sticks (middle) |
     | 2 long beeps      | REFUSED (see printout) or hit ended / you took   | read the console later        |
     |                   | over                                             |                               |
@@ -207,6 +214,26 @@ GUIDED hold (which knows the real hover) then holds the height. SITL: never abov
     | 3   | CH8 during the fly-back saved as 'recovered'  | saved as 'you took over (fly-back)'           |
     | 4   | link lost while you stop the script -> crash, | still saves the logs, prints [exit] ...        |
     |     | logs not saved                                |                                               |
+    | 5   | start tune only (same as throw_real)          | start tune + 1/2/3 high beeps = the level, so  |
+    |     |                                               | you can HEAR it is hit_real (autostart, s. 12)|
+
+12. AUTOSTART FOR THE FIELD (18 Nov 2026) - like throw_real, no laptop, no tmux
+------------------------------------------------------------------------------------------------------
+    /etc/systemd/system/hit.service runs  python3 -u hit_real.py  at boot (Conflicts=throw.service:
+    the two can never run together - one serial port). You choose the job of the day AT HOME:
+    | Day        | Commands (Pi, at home)                                      | Start sound in the field      |
+    |------------|-------------------------------------------------------------|-------------------------------|
+    | HIT day    | sudo systemctl disable --now throw                          | 1 long + 2 short, then 1 HIGH |
+    |            | sudo systemctl enable hit                                   |                               |
+    | THROW day  | sudo systemctl disable --now hit                            | 1 long + 2 short only         |
+    |            | sudo systemctl enable throw                                 |                               |
+    | check      | systemctl is-enabled throw hit                              | one 'enabled', one 'disabled' |
+    Power the drone up IN THE MIDDLE OF THE FIELD: the spot where the script starts = the centre for the
+    5 m check. If it ever restarts (crash), the new spot is where the drone is then.
+    Crash / no GPS yet -> systemd starts it again after 5 s. Printout: runs/hit_console.log (read at home:
+    grep -a "Hit \|REFUSED\|level\|return" runs/hit_console.log | tail -n 40).
+    systemctl stop hit = Ctrl+C: parameters put back + confirmed, files saved. Pulling the battery loses
+    nothing either: the files are written after EVERY hit, and the parameters are confirmed after every hit.
 """
 
 import argparse
@@ -616,6 +643,9 @@ def main(args):
     print(f"Connected | {args.mode} + Option B | level {level} (right buttons: CH14 easy / CH15 medium / CH16 hard) "
           f"| hover thrust {hover:.3f} | limits {limits}")
     tr.beep(link, tr.TUNE_START[args.mode])
+    time.sleep(1.6)                                              # e-18Nov autostart: let the start tune finish, then
+    tr.beep(link, TUNE_LEVEL[level])                             #   1/2/3 HIGH beeps = this is hit_real (not throw_real)
+    print(f"[start] start tune + {list(LEVEL_CH.values()).index(level) + 1} high beep(s) = hit_real ready, level {level}")
     print(f"Pi READY - the spot where you started me is the middle of the field (a hit further than "
           f"{FIELD_R_M:.0f} m from it is refused).")
     print("Take off yourself, climb to 10 m, CH8 POSHOLD, sticks middle. RIGHT button = level (1/2/3 high beeps), "
