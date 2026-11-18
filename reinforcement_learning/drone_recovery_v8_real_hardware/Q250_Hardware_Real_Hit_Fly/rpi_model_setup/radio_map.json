@@ -1,0 +1,85 @@
+{
+ "radio": "Jumper Bumblebee Joystick",
+ "channels": {
+  "1": [
+   "axis",
+   0,
+   false
+  ],
+  "2": [
+   "axis",
+   1,
+   false
+  ],
+  "3": [
+   "axis",
+   2,
+   false
+  ],
+  "4": [
+   "axis",
+   3,
+   false
+  ],
+  "5": [
+   "axis",
+   4,
+   false
+  ],
+  "6": [
+   "axis",
+   5,
+   false
+  ],
+  "7": [
+   "axis",
+   7,
+   false
+  ],
+  "8": [
+   "axis",
+   6,
+   false
+  ],
+  "9": [
+   "button",
+   0,
+   false
+  ],
+  "10": [
+   "button",
+   1,
+   false
+  ],
+  "11": [
+   "button",
+   2,
+   false
+  ],
+  "12": [
+   "button",
+   3,
+   false
+  ],
+  "13": [
+   "button",
+   4,
+   false
+  ],
+  "14": [
+   "button",
+   5,
+   false
+  ],
+  "15": [
+   "button",
+   6,
+   false
+  ],
+  "16": [
+   "button",
+   7,
+   false
+  ]
+ }
+}

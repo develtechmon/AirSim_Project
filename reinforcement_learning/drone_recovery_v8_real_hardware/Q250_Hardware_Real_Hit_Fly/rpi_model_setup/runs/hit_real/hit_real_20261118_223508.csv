@@ -1,0 +1,12 @@
+n,type,level,mode,date,planned_turns,turns,impact_s,hit_cut,peak_rate_rads,peak_tilt_deg,height_before_m,lowest_m,height_lost_m,b_handover_s,recovered,recovered_s,rescued,ended,back_mode,drift_m,returned,return_s,back_err_m,volt
+1,flip,easy,ppo-policy,2026-11-18T22:37:31,1.56,1.58,0.57,False,25.39,170.4,12.23,8.13,4.1,0.45,True,0.71,False,recovered,POSHOLD,1.51,True,5.1,0.14,15.3
+2,flip,medium,ppo-policy,2026-11-18T22:37:44,1.9,1.93,0.71,False,25.31,174.4,12.01,9.17,2.84,0.25,True,0.36,False,recovered,POSHOLD,1.51,True,5.1,0.07,15.3
+3,flip,hard,ppo-policy,2026-11-18T22:37:57,2.87,2.81,0.99,True,24.62,177.0,12.01,6.16,5.85,0.3,True,0.62,False,recovered,POSHOLD,1.31,True,6.5,0.12,15.3
+4,bird,hard,ppo-policy,2026-11-18T22:38:15,1.48,1.55,0.57,False,22.64,172.5,11.88,6.63,5.24,0.59,True,0.86,False,recovered,POSHOLD,13.21,True,11.6,0.11,15.3
+5,bird,easy,ppo-policy,2026-11-18T22:38:27,0.74,0.81,0.35,False,21.81,172.7,11.86,9.96,1.89,0.36,True,0.54,False,recovered,POSHOLD,1.97,True,4.8,0.08,15.3
+6,bird,easy,ppo-policy,2026-11-18T22:38:35,0.85,0.9,0.4,False,22.28,172.9,11.8,9.93,1.87,0.28,True,0.31,False,recovered,POSHOLD,1.28,True,4.5,0.07,15.3
+7,spin,easy,ppo-policy,2026-11-18T22:38:47,1.62,1.67,1.79,False,10.76,0.2,11.82,11.8,0.02,1.18,True,1.18,False,recovered,POSHOLD,0.13,True,2.0,0.12,15.3
+8,spin,easy,ppo-policy,2026-11-18T22:38:54,1.62,1.64,1.77,False,10.65,0.1,11.88,11.86,0.02,1.2,True,1.2,False,recovered,POSHOLD,0.17,True,2.0,0.13,15.3
+9,spin,hard,ppo-policy,2026-11-18T22:39:08,2.71,2.77,2.41,False,11.21,0.1,11.95,11.93,0.02,1.18,True,1.26,False,recovered,POSHOLD,0.13,True,3.2,0.06,15.3
+10,flip,hard,ppo-policy,2026-11-18T22:39:23,2.28,2.36,0.85,False,24.73,171.4,11.97,6.04,5.93,0.9,True,0.9,False,recovered,POSHOLD,3.31,True,6.9,0.1,15.3
+11,bird,hard,ppo-policy,2026-11-18T22:39:42,1.37,1.38,0.53,False,24.35,168.9,11.93,6.69,5.24,0.5,True,0.84,False,recovered,POSHOLD,3.58,True,7.0,0.17,15.3
