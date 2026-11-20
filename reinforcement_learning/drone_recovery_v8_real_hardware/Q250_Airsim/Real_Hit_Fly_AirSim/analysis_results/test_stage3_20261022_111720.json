@@ -1,0 +1,167 @@
+{
+  "by_level": {
+    "ppo-policy": {
+      "hard": {
+        "flights": 5,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 14.98,
+        "worst_lowest_m": 12.88,
+        "avg_height_loss_m": 15.016,
+        "avg_recovery_time_s": 1.0139999999999998,
+        "below_5m": 0
+      }
+    },
+    "bc-policy": {
+      "hard": {
+        "flights": 5,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 14.736,
+        "worst_lowest_m": 13.06,
+        "avg_height_loss_m": 15.244,
+        "avg_recovery_time_s": 1.038,
+        "below_5m": 0
+      }
+    },
+    "attitude-rule": {
+      "hard": {
+        "flights": 5,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 15.134,
+        "worst_lowest_m": 13.66,
+        "avg_height_loss_m": 14.845999999999998,
+        "avg_recovery_time_s": 0.968,
+        "below_5m": 0
+      }
+    },
+    "spin-stop-fast": {
+      "hard": {
+        "flights": 5,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 14.686000000000002,
+        "worst_lowest_m": 13.83,
+        "avg_height_loss_m": 15.296000000000001,
+        "avg_recovery_time_s": 1.328,
+        "below_5m": 0
+      }
+    }
+  },
+  "by_type": {
+    "ppo-policy": {
+      "flip": {
+        "flights": 5,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 14.98,
+        "worst_lowest_m": 12.88,
+        "avg_height_loss_m": 15.016,
+        "avg_recovery_time_s": 1.0139999999999998,
+        "below_5m": 0
+      }
+    },
+    "bc-policy": {
+      "flip": {
+        "flights": 5,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 14.736,
+        "worst_lowest_m": 13.06,
+        "avg_height_loss_m": 15.244,
+        "avg_recovery_time_s": 1.038,
+        "below_5m": 0
+      }
+    },
+    "attitude-rule": {
+      "flip": {
+        "flights": 5,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 15.134,
+        "worst_lowest_m": 13.66,
+        "avg_height_loss_m": 14.845999999999998,
+        "avg_recovery_time_s": 0.968,
+        "below_5m": 0
+      }
+    },
+    "spin-stop-fast": {
+      "flip": {
+        "flights": 5,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 14.686000000000002,
+        "worst_lowest_m": 13.83,
+        "avg_height_loss_m": 15.296000000000001,
+        "avg_recovery_time_s": 1.328,
+        "below_5m": 0
+      }
+    }
+  },
+  "all": {
+    "ppo-policy": {
+      "flights": 5,
+      "recovered_pct": 100.0,
+      "avg_lowest_m": 14.98,
+      "worst_lowest_m": 12.88,
+      "avg_height_loss_m": 15.016,
+      "avg_recovery_time_s": 1.0139999999999998,
+      "below_5m": 0
+    },
+    "bc-policy": {
+      "flights": 5,
+      "recovered_pct": 100.0,
+      "avg_lowest_m": 14.736,
+      "worst_lowest_m": 13.06,
+      "avg_height_loss_m": 15.244,
+      "avg_recovery_time_s": 1.038,
+      "below_5m": 0
+    },
+    "attitude-rule": {
+      "flights": 5,
+      "recovered_pct": 100.0,
+      "avg_lowest_m": 15.134,
+      "worst_lowest_m": 13.66,
+      "avg_height_loss_m": 14.845999999999998,
+      "avg_recovery_time_s": 0.968,
+      "below_5m": 0
+    },
+    "spin-stop-fast": {
+      "flights": 5,
+      "recovered_pct": 100.0,
+      "avg_lowest_m": 14.686000000000002,
+      "worst_lowest_m": 13.83,
+      "avg_height_loss_m": 15.296000000000001,
+      "avg_recovery_time_s": 1.328,
+      "below_5m": 0
+    }
+  },
+  "settings": {
+    "model": ".\\models\\round2_best.zip",
+    "modes": [
+      "ppo-policy",
+      "bc-policy",
+      "attitude-rule",
+      "spin-stop-fast"
+    ],
+    "types": [
+      "flip"
+    ],
+    "levels": [
+      "hard"
+    ],
+    "repeats": 5,
+    "seed": 1,
+    "yaw_brake_t": 0.5
+  },
+  "comparison": {
+    "bc-policy": {
+      "height_gained_m": 0.24399999999999977,
+      "time_saved_s": 0.024000000000000243,
+      "recovered_pct_diff": 0.0
+    },
+    "attitude-rule": {
+      "height_gained_m": -0.15399999999999991,
+      "time_saved_s": -0.04599999999999982,
+      "recovered_pct_diff": 0.0
+    },
+    "spin-stop-fast": {
+      "height_gained_m": 0.2939999999999987,
+      "time_saved_s": 0.3140000000000003,
+      "recovered_pct_diff": 0.0
+    }
+  }
+}

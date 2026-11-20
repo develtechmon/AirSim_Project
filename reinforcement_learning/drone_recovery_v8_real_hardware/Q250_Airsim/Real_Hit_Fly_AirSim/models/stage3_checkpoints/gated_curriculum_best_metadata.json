@@ -1,0 +1,10 @@
+{
+  "timesteps": 177516,
+  "episode": 1270,
+  "score": 10.234231165969582,
+  "flip_avg_lowest_m": 12.552125902811687,
+  "flip_avg_recovery_s": 2.3178947368421055,
+  "hard_recovery_rate": 97.0,
+  "window": "last 100 HARD episodes after warm-up",
+  "flips_in_window": 60
+}

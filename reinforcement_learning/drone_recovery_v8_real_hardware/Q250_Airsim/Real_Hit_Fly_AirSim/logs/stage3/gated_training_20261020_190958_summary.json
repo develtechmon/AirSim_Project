@@ -1,0 +1,81 @@
+{
+  "training_info": {
+    "total_episodes": 1560,
+    "total_time_seconds": 25326.746673345566,
+    "total_time_hours": 7.035207409262657,
+    "episodes_per_hour": 221.7418633523272,
+    "episodes_cut_by_ppo_update": 97,
+    "end_time": 1792519928.4377396,
+    "virtual_ground_m": 5.0,
+    "crash_rule_brake_mss": 8.0
+  },
+  "final_performance": {
+    "last_10_avg_reward": -8.594986814862192,
+    "last_50_avg_reward": -11.28984259878019,
+    "last_10_recovery_rate": 100.0,
+    "last_50_recovery_rate": 100.0,
+    "avg_recovery_time_steps": 134.72,
+    "avg_recovery_time_seconds": 2.6944
+  },
+  "curriculum_progression": {
+    "level_0": {
+      "level_name": "EASY (0.7-0.9)",
+      "reached_at_episode": 1,
+      "elapsed_time_hours": 0.010382964412371317
+    },
+    "level_1": {
+      "level_name": "MEDIUM (0.9-1.1)",
+      "reached_at_episode": 51,
+      "elapsed_time_hours": 0.17145779914326137
+    },
+    "level_2": {
+      "level_name": "HARD (1.1-1.5)",
+      "reached_at_episode": 101,
+      "elapsed_time_hours": 0.3695678079790539
+    }
+  },
+  "statistics_by_level": {
+    "level_0_EASY": {
+      "episodes_trained": 50,
+      "recovery_rate": 100.0,
+      "avg_reward": -0.7715851760553909,
+      "avg_intensity": 0.8035384691395417,
+      "avg_lowest_m": 23.16183208465576,
+      "last_50_ppo_avg_lowest_m": null,
+      "last_50_ppo_recovery_rate": null,
+      "by_type_avg_lowest_m": {
+        "bird_attack": 24.327414439274715,
+        "flip": 19.280779732598198,
+        "spin": 29.75413227081299
+      }
+    },
+    "level_1_MEDIUM": {
+      "episodes_trained": 50,
+      "recovery_rate": 100.0,
+      "avg_reward": -10.064124332363319,
+      "avg_intensity": 0.9888577170834709,
+      "avg_lowest_m": 19.678804759979247,
+      "last_50_ppo_avg_lowest_m": null,
+      "last_50_ppo_recovery_rate": null,
+      "by_type_avg_lowest_m": {
+        "bird_attack": 19.921642444751882,
+        "flip": 14.9240842461586,
+        "spin": 29.610077721732004
+      }
+    },
+    "level_2_HARD": {
+      "episodes_trained": 1460,
+      "recovery_rate": 98.9041095890411,
+      "avg_reward": -12.348358047922115,
+      "avg_intensity": 1.2964601473532713,
+      "avg_lowest_m": 17.003275601178,
+      "last_50_ppo_avg_lowest_m": 17.80127396583557,
+      "last_50_ppo_recovery_rate": 100.0,
+      "by_type_avg_lowest_m": {
+        "bird_attack": 19.257699045134178,
+        "flip": 12.361924461910506,
+        "spin": 29.585138890280653
+      }
+    }
+  }
+}

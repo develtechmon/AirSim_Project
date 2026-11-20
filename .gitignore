@@ -1,1 +1,8 @@
 /airsimcode
+airsimrun/Lib/site-packages/zipp/compat/py313.py
+*.pyc
+*.pyd
+*.py
+*.bin
+/airsimrun/Lib/site-packages/absl
+/airsimrun/Lib/site-packages

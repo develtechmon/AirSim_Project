@@ -1,0 +1,95 @@
+{
+  "by_level": {
+    "ppo-policy": {
+      "easy": {
+        "flights": 6,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 26.110000000000003,
+        "worst_lowest_m": 21.76,
+        "avg_height_loss_m": 3.878333333333334,
+        "avg_recovery_time_s": 0.935,
+        "below_5m": 0
+      },
+      "medium": {
+        "flights": 6,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 25.411666666666665,
+        "worst_lowest_m": 20.56,
+        "avg_height_loss_m": 4.578333333333333,
+        "avg_recovery_time_s": 1.0666666666666667,
+        "below_5m": 0
+      },
+      "hard": {
+        "flights": 6,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 22.325000000000003,
+        "worst_lowest_m": 12.88,
+        "avg_height_loss_m": 7.666666666666667,
+        "avg_recovery_time_s": 1.4383333333333332,
+        "below_5m": 0
+      }
+    }
+  },
+  "by_type": {
+    "ppo-policy": {
+      "bird": {
+        "flights": 6,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 25.060000000000002,
+        "worst_lowest_m": 23.07,
+        "avg_height_loss_m": 4.9383333333333335,
+        "avg_recovery_time_s": 1.1083333333333334,
+        "below_5m": 0
+      },
+      "flip": {
+        "flights": 6,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 18.78833333333333,
+        "worst_lowest_m": 12.88,
+        "avg_height_loss_m": 11.18,
+        "avg_recovery_time_s": 0.7083333333333334,
+        "below_5m": 0
+      },
+      "spin": {
+        "flights": 6,
+        "recovered_pct": 100.0,
+        "avg_lowest_m": 29.998333333333335,
+        "worst_lowest_m": 29.94,
+        "avg_height_loss_m": 0.005,
+        "avg_recovery_time_s": 1.6233333333333333,
+        "below_5m": 0
+      }
+    }
+  },
+  "all": {
+    "ppo-policy": {
+      "flights": 18,
+      "recovered_pct": 100.0,
+      "avg_lowest_m": 24.61555555555556,
+      "worst_lowest_m": 12.88,
+      "avg_height_loss_m": 5.374444444444445,
+      "avg_recovery_time_s": 1.1466666666666667,
+      "below_5m": 0
+    }
+  },
+  "settings": {
+    "model": "models/stage3_checkpoints/gated_curriculum_policy.zip",
+    "modes": [
+      "ppo-policy"
+    ],
+    "types": [
+      "flip",
+      "spin",
+      "bird"
+    ],
+    "levels": [
+      "easy",
+      "medium",
+      "hard"
+    ],
+    "repeats": 2,
+    "seed": 1,
+    "yaw_brake_t": 0.5
+  },
+  "comparison": {}
+}

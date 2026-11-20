@@ -1,0 +1,10 @@
+{
+  "level": 0,
+  "level_name": "EASY",
+  "recovery_rate": 1.0,
+  "episode": 50,
+  "timesteps": 6296,
+  "timestamp": 678.9201371669769,
+  "total_episodes": 50,
+  "obs_norm": "models/obs_norm.npz (BC scaling, fixed, no VecNormalize)"
+}
