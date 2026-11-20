@@ -236,6 +236,37 @@ thrust 0 (safe in both thrust modes), and a READY watchdog stops any motor start
     on the FC, arm, CH5 ON: version f takes off at 50 % throttle; version g fixes it at CH5 ON and stays on the
     ground; with check 10 switched off for the test, READY still stays on the ground (C); with a take-off forced
     from outside, the watchdog disarms within 0.2 s (D).
+
+12. VERSION g2, 16 NOV UPDATE: THE WATCHDOG'S TRIP LINE WAS TOO LOW  (full story: "Watchdog Trip Line" guide)
+    STILL CALLED g2 ON PURPOSE (your call, 16 Nov): the guides already describe g2 and this is a trip-line
+    change, not new behaviour. The .json meta says "g2 (16 Nov 2026)" - the DATE is what tells the two apart.
+    A run saved with "g2 (15 Nov 2026)" used MOTOR_ON_PWM 1050; "g2 (16 Nov 2026)" uses 1250.
+------------------------------------------------------------------------------------------------------
+    First real flight with g2: 15 Nov, .bin 2026-11-15_14-09-07, 10 throws, all caught.
+    GOOD NEWS - the 14 Nov fly-away did not come back:
+    | GUID_OPTIONS set to 8 | put back to 0 | gap     |  10 throws, 10 set, 10 put back, every one confirmed
+    |-----------------------|---------------|---------|  by the FC. On 14 Nov one put-back never arrived;
+    | 10 times              | 10 times      | 1.1-4.2s|  that cannot happen unnoticed now.
+    BAD NEWS - the watchdog disarmed me 7 times when nothing was wrong (each cost a throw):
+    | Number           | Value  | Where it comes from                                                   |
+    |------------------|--------|-----------------------------------------------------------------------|
+    | armed, idle      | 1000   | your MOT_SPIN_ARM 0.0  -> 1000 + 0.00 x 1000                          |
+    | TOP OF LEGAL IDLE| 1150   | your MOT_SPIN_MIN 0.15 -> 1000 + 0.15 x 1000                          |
+    | old trip line    | 1050   | INSIDE the idle band  <- the bug                                      |
+    | new trip line    | 1250   | middle of the empty gap 1150..1356                                    |
+    | hovering         | 1356   | measured: mean motor output during the 10 GUIDED holds, 15 Nov        |
+    The 7 false trips peaked at 1048 1053 1054 1055 1056 1064 1069 1074 - all normal spool-up, drone on the
+    ground, height +0.0 m. Not one came near 1250. A REAL motor start crosses 1050 after 0.10 s and 1250 after
+    0.31 s (mean of the 10 throws), then runs on to 1500+, so the new line costs ~0.2 s of reaction = ~0.15 m
+    of climb, still far below WATCH_LOW_M (1.0 m).
+    | # | Weak point (15 Nov)                          | Now (16 Nov)                                      |
+    |---|----------------------------------------------|---------------------------------------------------|
+    | D1| MOTOR_ON_PWM 1050, inside legal idle         | MOTOR_ON_PWM 1250, in the empty gap               |
+    | D2| one sample above the line was enough         | must stay above for MOTOR_ON_HOLD_S (0.10 s)      |
+    | E | a failed beep killed the script (6 times on  | beep() catches everything and prints              |
+    |   | 14-15 Nov: play_tune_send AttributeError)    | "[beep] skipped (...)"; the flight carries on     |
+    What this does NOT prove: no runaway happened on 15 Nov, so the watchdog has still never caught a real one.
+    Watch for "[watchdog]" in the console: after this fix it should appear ZERO times on a normal session.
 """
 
 import argparse
@@ -283,7 +314,10 @@ RESEND_S = 0.1             # g (fix A): an unconfirmed parameter write is sent a
 CONFIRM_S = 3.0            # g (fix A): s to wait for the FC to confirm the values after a throw / at CH5 ON
 WATCH_LOW_M = 1.0          # g (fix D): take-off without a throw below this height above the start = DISARM, higher = LAND
 IN_AIR = (2, 3)            # EXTENDED_SYS_STATE.landed_state: in the air / taking off
-MOTOR_ON_PWM = 1050        # g2 (fix D): READY = props still = motor outputs 1000. Above this = a motor turns
+MOTOR_ON_PWM = 1250        # g2-16Nov (fix D): a motor is really turning above this. MUST sit in the empty gap between
+                           #   MOT_SPIN_MIN (0.15 -> 1150, the top of legal idle) and hover (1356, measured 15 Nov).
+                           #   g2 used 1050, which is INSIDE the idle band -> 7 false disarms on 15 Nov.
+MOTOR_ON_HOLD_S = 0.10     # g2-16Nov (fix D): it must stay above MOTOR_ON_PWM for this long before it counts (noise guard)
 PI_MODES = ("GUIDED_NOGPS", "GUIDED", "LAND")   # modes only the script uses
 DATA_MSGS = {"GPS_RAW_INT": 2, "SYS_STATUS": 2, "EKF_STATUS_REPORT": 2}   # needed by the checks (Hz)
 LANDED_ON_GROUND = 1       # EXTENDED_SYS_STATE.landed_state
@@ -345,10 +379,25 @@ def landed_state(link):
     return int(m.landed_state) if m is not None else 0
 
 
+def motors_reset(link):
+    """16 Nov: forget any earlier 'motor high' reading. Called once when READY starts."""
+    link.motors_high_since = None
+
+
 def motors_turning(link):
-    """g2 (fix D): True when any of the 4 motor outputs is above 'stopped' (SERVO_OUTPUT_RAW, 50 Hz)."""
+    """g2-16Nov (fix D): True only when a motor output stays above MOTOR_ON_PWM for MOTOR_ON_HOLD_S
+    (SERVO_OUTPUT_RAW, 50 Hz). One sample above the line is not enough: when the FC spools the
+    motors up it steps through the idle band, so a single reading there means nothing."""
     m = link.msgs.get("SERVO_OUTPUT_RAW")
-    return m is not None and max(m.servo1_raw, m.servo2_raw, m.servo3_raw, m.servo4_raw) > MOTOR_ON_PWM
+    if m is None:
+        return False
+    if max(m.servo1_raw, m.servo2_raw, m.servo3_raw, m.servo4_raw) <= MOTOR_ON_PWM:
+        link.motors_high_since = None
+        return False
+    if getattr(link, "motors_high_since", None) is None:
+        link.motors_high_since = time.time()
+        return False
+    return (time.time() - link.motors_high_since) >= MOTOR_ON_HOLD_S
 
 
 def level_q(link):
@@ -385,9 +434,16 @@ MODE_FILE = "mode.txt"                  # field use without a laptop: the mode t
 
 
 def beep(link, tune):
-    """Play a tune on the drone's buzzer (MAVLink PLAY_TUNE -> ArduPilot AP_Notify / ToneAlarm)."""
-    with link.io_lock:
-        link.m.mav.play_tune_send(link.m.target_system, link.m.target_component, tune)
+    """Play a tune on the drone's buzzer (MAVLink PLAY_TUNE -> ArduPilot AP_Notify / ToneAlarm).
+
+    16 Nov: a beep must never stop the flight. On 14-15 Nov the script died 6 times at start-up with
+    AttributeError: 'MAVLink' object has no attribute 'play_tune_send' (pymavlink had not finished
+    picking the MAVLink 2 dialect yet). A missing beep is a nuisance; a dead script on the field is not."""
+    try:
+        with link.io_lock:
+            link.m.mav.play_tune_send(link.m.target_system, link.m.target_component, tune)
+    except Exception as e:                      # noqa: BLE001 - deliberately catches everything
+        print(f"[beep] skipped ({type(e).__name__}: {e}) - the flight carries on")
 
 
 def ekf_gps(link):
@@ -649,6 +705,7 @@ def one_throw(link, mode, n, rows, hover, guid, limits, net, keeper):
         return None
     link.update()
     spot, h0 = link.pos.copy(), link.alt                     # the hand = height 0
+    motors_reset(link)                                       # 16 Nov: start the watchdog's timer from clean
     beep(link, TUNE_READY)
     print(f"READY - THROW NOW (3 short beeps, props still, stick stays LOW). CH{THROW_CH} OFF = cancel")
     t_ready = time.time()
@@ -694,7 +751,7 @@ def one_throw(link, mode, n, rows, hover, guid, limits, net, keeper):
                 beep(link, TUNE_REFUSED)
                 print(f"Mode changed to {link.mode} while READY - back to WAIT")
                 return None
-            if motors_turning(link) or landed_state(link) in IN_AIR:   # g/g2 (fix D): a motor turns, or "flying", but nobody threw
+            if motors_turning(link) or landed_state(link) in IN_AIR:   # g2-16Nov (fix D): a motor really turns, or "flying", but nobody threw
                 beep(link, TUNE_REFUSED)
                 if h < WATCH_LOW_M and force_disarm(link):
                     print(f"[watchdog] motors started WITHOUT a throw at {h:+.1f} m - DISARMED. Back to WAIT")
@@ -944,7 +1001,9 @@ def main(args):
     meta = {"date": datetime.datetime.now().isoformat(timespec="seconds"), "mode": args.mode, "hover": hover,
             "model": net.source if net else None, "throw_ch": THROW_CH, "hold_s": HOLD_S, "max_up_m": MAX_UP_M,
             "freefall_g": FREEFALL_G, "freefall_n": FREEFALL_N, "push_g": PUSH_G, "limits": limits,
-            "version": "g2 (15 Nov 2026)", "ready_thrust": READY_THRUST, "spin_r_m": SPIN_R_M, "ground_guard_m": GROUND_GUARD_M,
+            "version": "g2 (16 Nov 2026)", "ready_thrust": READY_THRUST,
+            "motor_on_pwm": MOTOR_ON_PWM, "motor_on_hold_s": MOTOR_ON_HOLD_S,
+            "spin_r_m": SPIN_R_M, "ground_guard_m": GROUND_GUARD_M,
             "guid_options": guid, "mot_spool_time": p.get("MOT_SPOOL_TIME")}
     results, rows, n = [], [], 0
     ch_was, t_print = rc(link, THROW_CH), 0.0
